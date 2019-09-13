@@ -1,0 +1,5 @@
+---
+- version: v1alpha1
+  group: service-assurance.infra.watch
+  kind: ServiceAssurance
+  role: /opt/ansible/roles/serviceassurance
