@@ -54,7 +54,7 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - service-assurance.infra.watch
+  - infra.watch
   resources:
   - '*'
   verbs:

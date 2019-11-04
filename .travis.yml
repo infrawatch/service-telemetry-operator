@@ -1,0 +1,14 @@
+# vim: noai:ts=2:sw=2:ft=yaml:
+language: python
+
+git:
+  depth: 1
+
+sudo: required
+
+# execute unit testing and code coverage
+install:
+  - pip install operator-courier
+
+script:
+  - operator-courier verify --ui_validate_io deploy/olm-catalog/service-assurance-operator

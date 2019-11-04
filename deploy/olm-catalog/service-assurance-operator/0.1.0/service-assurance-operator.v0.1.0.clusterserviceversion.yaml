@@ -1,29 +1,49 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
+  name: service-assurance-operator.v0.1.0
+  namespace: placeholder
   annotations:
     alm-examples: |-
       [
         {
-          "apiVersion": "service-assurance.infra.watch/v1alpha1",
+          "apiVersion": "infra.watch/v1alpha1",
           "kind": "ServiceAssurance",
           "metadata": {
             "name": "cloud-serviceassurance"
           },
           "spec": {
-            "size": 1
+            "metrics": {
+              "enabled": "true"
+            },
+            "events": {
+              "enabled": "true"
+            }
           }
         }
       ]
     capabilities: Basic Install
-  name: service-assurance-operator.v0.1.0
-  namespace: sa-telemetry
+    categories: Monitoring
+    description: Service Assurance Framework. Umbrella Operator for instantiating the required dependencies and configuration of various components to build a Service Assurance platform for telco grade monitoring.
+    certified: "false"
+    createdAt: 2019-11-04T08:00:00Z
+    support: Red Hat, Inc.
+    repository: https://github.com/redhat-service-assurance/service-assurance-operator
+    containerImage: 'quay.io/redhat-service-assurance/service-assurance-operator.0.1.0'
 spec:
   apiservicedefinitions: {}
-  customresourcedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - kind: ServiceAssurance
+      name: serviceassurances.infra.watch
+      version: v1alpha1
+      displayName: SAF Cluster
+      description: Represents an instance of the Service Assurance Framework
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
+  minKubeVersion: 1.11.0
   install:
+    strategy: deployment
     spec:
       deployments:
       - name: service-assurance-operator
@@ -43,8 +63,8 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: '{{ REPLACE_IMAGE }}'
-                imagePullPolicy: '{{ pull_policy|default(''Always'') }}'
+                image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
+                imagePullPolicy: Always
                 name: ansible
                 resources: {}
                 volumeMounts:
@@ -64,8 +84,8 @@ spec:
                   value: service-assurance-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: '{{ REPLACE_IMAGE }}'
-                imagePullPolicy: '{{ pull_policy|default(''Always'') }}'
+                image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
+                imagePullPolicy: Always
                 name: operator
                 resources: {}
                 volumeMounts:
@@ -127,13 +147,12 @@ spec:
           verbs:
           - get
         - apiGroups:
-          - service-assurance.infra.watch
+          - infra.watch
           resources:
           - '*'
           verbs:
           - '*'
         serviceAccountName: service-assurance-operator
-    strategy: deployment
   installModes:
   - supported: true
     type: OwnNamespace
@@ -141,9 +160,16 @@ spec:
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
-  - supported: true
+  - supported: false
     type: AllNamespaces
   maturity: alpha
-  provider: {}
-  replaces: service-assurance-operator.v0.0.0
+  maintainers:
+    - email: leif@redhat.com
+      name: Leif Madsen
+  provider:
+    name: Red Hat, Inc.
+  links:
+    - name: Source Code
+      url: https://github.com/redhat-service-assurance/service-assurance-operator
   version: 0.1.0
+# vim: tabstop=2 shiftwidth=2 expandtab ft=yaml:
