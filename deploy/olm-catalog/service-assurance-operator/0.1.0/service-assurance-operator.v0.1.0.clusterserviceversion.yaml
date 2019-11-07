@@ -41,6 +41,48 @@ spec:
       kind: ServiceAssurance
       name: serviceassurances.infra.watch
       version: v1alpha1
+      resources:
+      - kind: Pods
+        version: v1
+      - kind: ConfigMaps
+        version: v1
+      - kind: ServiceAssurances
+        version: v1alpha1
+      - kind: ReplicaSets
+        version: v1
+      - kind: Deployments
+        version: v1
+      - kind: Deployments
+        version: v1
+      - kind: Services
+        version: v1
+      specDescriptors:
+      - description: Metrics related configuration options
+        displayName: Metrics Configuration Options
+        path: metrics
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:'
+      - description: Events related configuration options
+        displayName: Events Configuration Options
+        path: events
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:'
+      - description: Whether to enable collection and storage components for metrics
+        displayName: Metrics Enabled
+        path: metrics.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:tectonic.ui:booleanSwitch'
+      - description: Whether to enable collection and storage components for events
+        displayName: Events Enabled
+        path: events.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:tectonic.ui:booleanSwitch'
+    required:
+    - name: prometheuses.monitoring.coreos.com
+      version: v1
+      kind: Prometheus
+      displayName: Prometheus TSDB
+      description: An instances of the Prometheus time-series database
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
   install:
@@ -163,9 +205,7 @@ spec:
     type: MultiNamespace
   - supported: false
     type: AllNamespaces
-  keywords:
-  - monitoring
-  - serviceassurance
+  keywords: ['serviceassurance','monitoring']
   links:
   - name: Source Code
     url: https://github.com/redhat-service-assurance/service-assurance-operator
