@@ -114,6 +114,10 @@ spec:
         The Smart Gateway is middleware for OpenShift that takes metrics and
         events data streams from an AMQP 1.x message bus, and provides a method
         to having that data stream stored within Prometheus or ElasticSearch.
+    - name: certificates.certmanager.k8s.io
+      version: v1alpha1
+      kind: Certificate
+      description: A declaration of a required Certificate
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
   install:
