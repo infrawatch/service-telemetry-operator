@@ -1,0 +1,11 @@
+apiVersion: infra.watch/v1alpha1
+kind: ServiceAssurance
+metadata:
+  name: cloud-serviceassurance
+spec:
+  metrics:
+    enabled: true
+  events:
+    enabled: true
+
+# vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

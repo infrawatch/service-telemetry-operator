@@ -1,7 +1,0 @@
-apiVersion: service-assurance.infra.watch/v1alpha1
-kind: ServiceAssurance
-metadata:
-  name: example-serviceassurance
-spec:
-  # Add fields here
-  size: 3
