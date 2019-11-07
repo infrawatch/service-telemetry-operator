@@ -1,8 +1,6 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
-  name: service-assurance-operator.v0.1.0
-  namespace: placeholder
   annotations:
     alm-examples: |-
       [
@@ -13,37 +11,39 @@ metadata:
             "name": "cloud-serviceassurance"
           },
           "spec": {
-            "metrics": {
-              "enabled": "true"
-            },
             "events": {
-              "enabled": "true"
+              "enabled": true
+            },
+            "metrics": {
+              "enabled": true
             }
           }
         }
       ]
     capabilities: Basic Install
     categories: Monitoring
-    description: Service Assurance Framework. Umbrella Operator for instantiating the required dependencies and configuration of various components to build a Service Assurance platform for telco grade monitoring.
     certified: "false"
-    createdAt: 2019-11-04T08:00:00Z
-    support: Red Hat, Inc.
+    containerImage: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
+    createdAt: "2019-11-04T08:00:00Z"
+    description: Service Assurance Framework. Umbrella Operator for instantiating
+      the required dependencies and configuration of various components to build a
+      Service Assurance platform for telco grade monitoring.
     repository: https://github.com/redhat-service-assurance/service-assurance-operator
-    containerImage: 'quay.io/redhat-service-assurance/service-assurance-operator.0.1.0'
+    support: Red Hat, Inc.
+  name: service-assurance-operator.v0.1.0
+  namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - kind: ServiceAssurance
+    - description: Represents an instance of the Service Assurance Framework
+      displayName: SAF Cluster
+      kind: ServiceAssurance
       name: serviceassurances.infra.watch
       version: v1alpha1
-      displayName: SAF Cluster
-      description: Represents an instance of the Service Assurance Framework
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
-  minKubeVersion: 1.11.0
   install:
-    strategy: deployment
     spec:
       deployments:
       - name: service-assurance-operator
@@ -153,6 +153,7 @@ spec:
           verbs:
           - '*'
         serviceAccountName: service-assurance-operator
+    strategy: deployment
   installModes:
   - supported: true
     type: OwnNamespace
@@ -162,14 +163,17 @@ spec:
     type: MultiNamespace
   - supported: false
     type: AllNamespaces
-  maturity: alpha
+  keywords:
+  - monitoring
+  - serviceassurance
+  links:
+  - name: Source Code
+    url: https://github.com/redhat-service-assurance/service-assurance-operator
   maintainers:
-    - email: leif@redhat.com
-      name: Leif Madsen
+  - email: leif@redhat.com
+    name: Leif Madsen
+  maturity: alpha
+  minKubeVersion: 1.13.0
   provider:
     name: Red Hat, Inc.
-  links:
-    - name: Source Code
-      url: https://github.com/redhat-service-assurance/service-assurance-operator
   version: 0.1.0
-# vim: tabstop=2 shiftwidth=2 expandtab ft=yaml:
