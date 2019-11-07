@@ -19,7 +19,6 @@ spec:
           - /usr/local/bin/ao-logs
           - /tmp/ansible-operator/runner
           - stdout
-          # Replace this with the built image name
           image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
           imagePullPolicy: Always
           volumeMounts:
@@ -27,7 +26,6 @@ spec:
             name: runner
             readOnly: true
         - name: operator
-          # Replace this with the built image name
           image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
           imagePullPolicy: Always
           volumeMounts:
