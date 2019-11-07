@@ -81,8 +81,39 @@ spec:
     - name: prometheuses.monitoring.coreos.com
       version: v1
       kind: Prometheus
-      displayName: Prometheus TSDB
-      description: An instances of the Prometheus time-series database
+      displayName: Prometheus
+      description: >-
+        The Prometheus Operator for Kubernetes provides easy monitoring
+        definitions for Kubernetes services and deployment and management of
+        Prometheus instances.
+    - name: elasticsearches.logging.openshift.io
+      version: v1
+      kind: Elasticsearch
+      displayName: ElasticSearch
+      description: >-
+        The Elasticsearch Operator for OKD provides a means for configuring and
+        managing an Elasticsearch cluster for use in tracing and cluster
+        logging. This operator only supports OKD Cluster Logging and Jaeger. It
+        is tightly coupled to each and is not currently capable of being used
+        as a general purpose manager of Elasticsearch clusters running on OKD.
+    - name: interconnects.interconnectedcloud.github.io
+      version: v1alpha1
+      kind: Interconnect
+      displayName: AMQ Interconnect
+      description: >-
+        AMQ Interconnect is a lightweight AMQP 1.0 message router for building
+        large, highly resilient messaging networks for hybrid cloud and
+        IoT/edge deployments. AMQ Interconnect transparently learns the
+        addresses of messaging endpoints (such as clients, servers, and message
+        brokers) and flexibly routes messages between them.
+    - name: smartgateways.smartgateway.infra.watch
+      version: v1alpha1
+      kind: SmartGateway
+      displayName: Smart Gateway
+      description: >-
+        The Smart Gateway is middleware for OpenShift that takes metrics and
+        events data streams from an AMQP 1.x message bus, and provides a method
+        to having that data stream stored within Prometheus or ElasticSearch.
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
   install:
