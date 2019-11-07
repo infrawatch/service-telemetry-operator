@@ -10,9 +10,28 @@ spec:
     plural: serviceassurances
     singular: serviceassurance
   scope: Namespaced
+  version: v1alpha1
   subresources:
     status: {}
   versions:
   - name: v1alpha1
     served: true
     storage: true
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          description: Specification of the desired behavior of the Service Assurance Operator.
+          properties:
+            metrics:
+              description: Options related to metrics collection and storage.
+              properties:
+                enabled:
+                  description: Whether the Service Assurance Operator should enable components related to metrics collection and storage.
+                  type: boolean
+            events:
+              description: Options related to events collection and storage.
+              properties:
+                enabled:
+                  description: Whether the Service Assurance Operator should enable components related to events collection and storage.
+                  type: boolean
