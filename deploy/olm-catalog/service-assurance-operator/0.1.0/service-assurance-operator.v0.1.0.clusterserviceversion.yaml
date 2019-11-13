@@ -8,7 +8,7 @@ metadata:
           "apiVersion": "infra.watch/v1alpha1",
           "kind": "ServiceAssurance",
           "metadata": {
-            "name": "cloud-serviceassurance"
+            "name": "cloud1"
           },
           "spec": {
             "events": {
@@ -24,7 +24,7 @@ metadata:
     categories: Monitoring
     certified: "false"
     containerImage: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
-    createdAt: "2019-11-04T08:00:00Z"
+    createdAt: "2019-11-13T17:16:00Z"
     description: Service Assurance Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Assurance platform for telco grade monitoring.
@@ -52,8 +52,6 @@ spec:
         version: v1
       - kind: Deployments
         version: v1
-      - kind: Deployments
-        version: v1
       - kind: Services
         version: v1
       specDescriptors:
@@ -78,45 +76,38 @@ spec:
         x-descriptors:
         - 'urn:alm:descriptor:tectonic.ui:booleanSwitch'
     required:
-    - name: prometheuses.monitoring.coreos.com
-      version: v1
-      kind: Prometheus
-      displayName: Prometheus
-      description: >-
-        The Prometheus Operator for Kubernetes provides easy monitoring
-        definitions for Kubernetes services and deployment and management of
-        Prometheus instances.
-    - name: elasticsearches.logging.openshift.io
-      version: v1
-      kind: Elasticsearch
-      displayName: ElasticSearch
-      description: >-
-        The Elasticsearch Operator for OKD provides a means for configuring and
-        managing an Elasticsearch cluster for use in tracing and cluster
-        logging. This operator only supports OKD Cluster Logging and Jaeger. It
-        is tightly coupled to each and is not currently capable of being used
-        as a general purpose manager of Elasticsearch clusters running on OKD.
+#    - name: prometheuses.monitoring.coreos.com
+#      version: v1
+#      kind: Prometheus
+#      displayName: Prometheus
+#      description: >-
+#        The Prometheus Operator for Kubernetes provides easy monitoring
+#        definitions for Kubernetes services and deployment and management of
+#        Prometheus instances.
+#    - name: elasticsearches.logging.openshift.io
+#      version: v1
+#      kind: Elasticsearch
+#      displayName: ElasticSearch
+#      description: >-
+#        The Elasticsearch Operator for OKD provides a means for configuring and
+#        managing an Elasticsearch cluster for use in tracing and cluster
+#        logging. This operator only supports OKD Cluster Logging and Jaeger. It
+#        is tightly coupled to each and is not currently capable of being used
+#        as a general purpose manager of Elasticsearch clusters running on OKD.
     - name: interconnects.interconnectedcloud.github.io
       version: v1alpha1
       kind: Interconnect
       displayName: AMQ Interconnect
-      description: >-
-        AMQ Interconnect is a lightweight AMQP 1.0 message router for building
-        large, highly resilient messaging networks for hybrid cloud and
-        IoT/edge deployments. AMQ Interconnect transparently learns the
-        addresses of messaging endpoints (such as clients, servers, and message
-        brokers) and flexibly routes messages between them.
+      description: Creation of AMQ Interconnect routers
     - name: smartgateways.smartgateway.infra.watch
-      version: v1alpha1
+      version: v2alpha1
       kind: SmartGateway
       displayName: Smart Gateway
-      description: >-
-        The Smart Gateway is middleware for OpenShift that takes metrics and
-        events data streams from an AMQP 1.x message bus, and provides a method
-        to having that data stream stored within Prometheus or ElasticSearch.
+      description: Creation of Smart Gateways
     - name: certificates.certmanager.k8s.io
       version: v1alpha1
       kind: Certificate
+      displayName: AMQ Certificate Manager
       description: A declaration of a required Certificate
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
@@ -143,7 +134,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
+                image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0:latest
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -164,7 +155,7 @@ spec:
                   value: service-assurance-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
+                image: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0:latest
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -232,6 +223,18 @@ spec:
           - '*'
           verbs:
           - '*'
+        - apiGroups:
+          - smartgateway.infra.watch
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - interconnectedcloud.github.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
         serviceAccountName: service-assurance-operator
     strategy: deployment
   installModes:
@@ -251,7 +254,7 @@ spec:
   - email: leif@redhat.com
     name: Leif Madsen
   maturity: alpha
-  minKubeVersion: 1.13.0
+  minKubeVersion: 1.14.0
   provider:
     name: Red Hat, Inc.
   version: 0.1.0

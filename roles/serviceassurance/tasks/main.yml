@@ -1,2 +1,8 @@
 ---
-# tasks file for serviceassurance
+- name: Execute default tasks when metrics are requested to be enabled
+  include_tasks: sa_metrics.yml
+  when: metrics.enabled
+
+- name: Execute default tasks when events are requested to be enabled
+  include_tasks: sa_events.yml
+  when: events.enabled

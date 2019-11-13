@@ -1,2 +1,5 @@
 ---
-# defaults file for serviceassurance
+metrics:
+    enabled: true
+events:
+    enabled: true

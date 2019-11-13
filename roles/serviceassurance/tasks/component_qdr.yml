@@ -1,0 +1,47 @@
+---
+- name: Create QDR instance
+  k8s:
+    definition:
+      apiVersion: interconnectedcloud.github.io/v1alpha1
+      kind: Interconnect
+      metadata:
+        name: '{{ meta.name }}-interconnect'
+        namespace: '{{ meta.namespace }}'
+      spec:
+        deploymentPlan:
+          size: 2
+          role: interior
+          livenessPort: 8888
+          placement: Any
+        addresses:
+          - distribution: closest
+            prefix: closest
+          - distribution: multicast
+            prefix: multicast
+          - distribution: closest
+            prefix: unicast
+          - distribution: closest
+            prefix: exclusive
+          - distribution: multicast
+            prefix: broadcast
+          - distribution: multicast
+            prefix: collectd
+          - distribution: multicast
+            prefix: collectd/notify
+        edgeListeners:
+          - expose: true
+            host: 0.0.0.0
+            port: 5671
+            saslMechanisms: EXTERNAL
+            sslProfile: openstack
+        interRouterListeners:
+          - authenticatePeer: true
+            expose: true
+            port: 55671
+            saslMechanisms: EXTERNAL
+            sslProfile: inter-router
+        listeners:
+          - port: 5672
+          - expose: true
+            http: true
+            port: 8672

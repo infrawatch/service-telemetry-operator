@@ -1,0 +1,17 @@
+---
+# create QDR instance
+- name: Create QDR instance
+  include_tasks: component_qdr.yml
+
+# create Prometheus instance
+- name: Create Prometheus instance
+  include_tasks: component_prometheus.yml
+
+# create Smart Gateway instance
+- name: Create Smart Gateway instance
+  include_tasks: component_smartgateway.yml
+
+# create Service Monitor instance
+- name: Create Service Monitor instance
+  include_tasks: component_servicemonitor.yml
+

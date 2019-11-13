@@ -27,6 +27,12 @@ rules:
   verbs:
   - '*'
 - apiGroups:
+  - interconnectedcloud.github.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
   - monitoring.coreos.com
   resources:
   - servicemonitors
@@ -55,6 +61,12 @@ rules:
   - get
 - apiGroups:
   - infra.watch
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - smartgateway.infra.watch
   resources:
   - '*'
   verbs:
