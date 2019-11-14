@@ -1,5 +1,5 @@
 ---
 metrics:
-    enabled: true
+  enabled: true
 events:
-    enabled: true
+  enabled: true
