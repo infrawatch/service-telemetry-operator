@@ -50,7 +50,7 @@
         dnsNames:
         - '{{ item }}'
         - '{{ item }}.{{ meta.namespace }}.svc'
-        - '{{ item }}.{{ meta.namespace}}.cluster.local'
+        - '{{ item }}.{{ meta.namespace }}.cluster.local'
         - '{{ item }}.{{ meta.namespace }}.svc.cluster.local'
         issuerRef:
           kind: Issuer
