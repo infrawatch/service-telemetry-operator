@@ -28,6 +28,9 @@ rules:
   - '*'
 - apiGroups:
   - interconnectedcloud.github.io
+  - smartgateway.infra.watch
+  - monitoring.coreos.com
+  - logging.openshift.io
   resources:
   - '*'
   verbs:
@@ -61,12 +64,6 @@ rules:
   - get
 - apiGroups:
   - infra.watch
-  resources:
-  - '*'
-  verbs:
-  - '*'
-- apiGroups:
-  - smartgateway.infra.watch
   resources:
   - '*'
   verbs:

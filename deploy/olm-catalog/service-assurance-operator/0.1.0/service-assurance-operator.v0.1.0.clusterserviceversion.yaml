@@ -40,19 +40,24 @@ spec:
       displayName: SAF Cluster
       kind: ServiceAssurance
       name: serviceassurances.infra.watch
-      version: v1alpha1
       resources:
       - kind: Pods
+        name: ""
         version: v1
       - kind: ConfigMaps
+        name: ""
         version: v1
       - kind: ServiceAssurances
+        name: serviceassurances.infra.watch
         version: v1alpha1
       - kind: ReplicaSets
+        name: ""
         version: v1
       - kind: Deployments
+        name: ""
         version: v1
       - kind: Services
+        name: ""
         version: v1
       specDescriptors:
       - description: Metrics related configuration options
@@ -69,38 +74,39 @@ spec:
         displayName: Metrics Enabled
         path: metrics.enabled
         x-descriptors:
-        - 'urn:alm:descriptor:tectonic.ui:booleanSwitch'
+        - urn:alm:descriptor:tectonic.ui:booleanSwitch
       - description: Whether to enable collection and storage components for events
         displayName: Events Enabled
         path: events.enabled
         x-descriptors:
-        - 'urn:alm:descriptor:tectonic.ui:booleanSwitch'
+        - urn:alm:descriptor:tectonic.ui:booleanSwitch
+      version: v1alpha1
     required:
-    - name: prometheuses.monitoring.coreos.com
-      version: v1
-      kind: Prometheus
-      displayName: Prometheus
-      description: Creation of Prometheus instances
-    - name: elasticsearches.logging.openshift.io
-      version: v1
-      kind: Elasticsearch
-      displayName: ElasticSearch
-      description: Creation of an ElasticSearch cluster
-    - name: interconnects.interconnectedcloud.github.io
-      version: v1alpha1
-      kind: Interconnect
-      displayName: AMQ Interconnect
-      description: Creation of AMQ Interconnect routers
-    - name: smartgateways.smartgateway.infra.watch
-      version: v2alpha1
-      kind: SmartGateway
-      displayName: Smart Gateway
-      description: Creation of Smart Gateways
-    - name: certificates.certmanager.k8s.io
-      version: v1alpha1
-      kind: Certificate
+    - description: A declaration of a required Certificate
       displayName: AMQ Certificate Manager
-      description: A declaration of a required Certificate
+      kind: Certificate
+      name: certificates.certmanager.k8s.io
+      version: v1alpha1
+    - description: Creation of an ElasticSearch cluster
+      displayName: ElasticSearch
+      kind: Elasticsearch
+      name: elasticsearches.logging.openshift.io
+      version: v1
+    - description: Creation of AMQ Interconnect routers
+      displayName: AMQ Interconnect
+      kind: Interconnect
+      name: interconnects.interconnectedcloud.github.io
+      version: v1alpha1
+    - description: Creation of Prometheus instances
+      displayName: Prometheus
+      kind: Prometheus
+      name: prometheuses.monitoring.coreos.com
+      version: v1
+    - description: Creation of Smart Gateways
+      displayName: Smart Gateway
+      kind: SmartGateway
+      name: smartgateways.smartgateway.infra.watch
+      version: v2alpha1
   description: Service Assurance Operator for monitoring clouds
   displayName: Service Assurance Operator
   icon:
@@ -183,6 +189,15 @@ spec:
           verbs:
           - '*'
         - apiGroups:
+          - interconnectedcloud.github.io
+          - smartgateway.infra.watch
+          - monitoring.coreos.com
+          - logging.openshift.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
           - monitoring.coreos.com
           resources:
           - servicemonitors
@@ -215,18 +230,6 @@ spec:
           - '*'
           verbs:
           - '*'
-        - apiGroups:
-          - smartgateway.infra.watch
-          resources:
-          - '*'
-          verbs:
-          - '*'
-        - apiGroups:
-          - interconnectedcloud.github.io
-          resources:
-          - '*'
-          verbs:
-          - '*'
         serviceAccountName: service-assurance-operator
     strategy: deployment
   installModes:
@@ -239,11 +242,11 @@ spec:
   - supported: false
     type: AllNamespaces
   keywords:
-    - "serviceassurance"
-    - "monitoring"
-    - "telemetry"
-    - "notifications"
-    - "telecommunications"
+  - serviceassurance
+  - monitoring
+  - telemetry
+  - notifications
+  - telecommunications
   links:
   - name: Source Code
     url: https://github.com/redhat-service-assurance/service-assurance-operator
