@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: '{{ meta.name }}'
+  name: '{{ meta.name }}'
+  namespace: '{{ meta.namespace }}'
+spec:
+  replicas: 1
+  ruleSelector: {}
+  securityContext: {}
+  serviceAccountName: prometheus-k8s
+  serviceMonitorSelector: {}
+
+# TODO: Create route to access Prometheus (conditional, default off)

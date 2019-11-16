@@ -1,0 +1,30 @@
+- name: Create ServiceMonitor to scrape Smart Gateway
+  k8s:
+    definition:
+      apiVersion: monitoring.coreos.com/v1
+      kind: ServiceMonitor
+      metadata:
+        labels:
+          app: smart-gateway
+        name: '{{ meta.name }}'
+        namespace: '{{ meta.namespace }}'
+      spec:
+        endpoints:
+          - interval: 1s
+            metricRelabelings:
+              - action: labeldrop
+                regex: pod
+                sourcelabels: []
+              - action: labeldrop
+                regex: namespace
+                sourcelabels: []
+              - action: labeldrop
+                regex: instance
+                sourcelabels: []
+              - action: labeldrop
+                regex: job
+                sourcelabels: []
+            port: prom-http
+        selector:
+          matchLabels:
+            app: smart-gateway
