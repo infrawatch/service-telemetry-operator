@@ -1,0 +1,5 @@
+- name: Setup Certificates for ElasticSearch
+  include_tasks: component_certificates.yml
+
+- name: Setup ElasticSearch
+  include_tasks: component_elasticsearch.yml

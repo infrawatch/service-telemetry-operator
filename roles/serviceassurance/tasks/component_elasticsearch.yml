@@ -1,0 +1,28 @@
+- name: Create an instance of ElasticSearch
+  k8s:
+    definition:
+      apiVersion: logging.openshift.io/v1
+      kind: Elasticsearch
+      metadata:
+        name: elasticsearch
+        namespace: '{{ meta.namespace }}'
+      spec:
+        managementState: Managed
+        nodeSpec:
+          image: >-
+            registry.redhat.io/openshift4/ose-logging-elasticsearch5@sha256:a671fe2339f38dc58795e45de4a4310d12efb8ff476b729086badb4900b9c7ba
+          resources:
+            limits:
+              memory: 4Gi
+            requests:
+              memory: 1Gi
+        redundancyPolicy: ZeroRedundancy
+        nodes:
+          - nodeCount: 1
+            roles:
+              - client
+              - data
+              - master
+            storage:
+              storageClassName: ""
+              size: 10Gi

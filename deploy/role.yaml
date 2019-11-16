@@ -31,6 +31,7 @@ rules:
   - smartgateway.infra.watch
   - monitoring.coreos.com
   - logging.openshift.io
+  - certmanager.k8s.io
   resources:
   - '*'
   verbs:
