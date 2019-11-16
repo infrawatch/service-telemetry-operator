@@ -10,7 +10,7 @@
         managementState: Managed
         nodeSpec:
           image: >-
-            registry.redhat.io/openshift4/ose-logging-elasticsearch5:v4.2
+            registry.redhat.io/openshift4/ose-logging-elasticsearch5@sha256:a671fe2339f38dc58795e45de4a4310d12efb8ff476b729086badb4900b9c7ba
           resources:
             limits:
               memory: 4Gi
