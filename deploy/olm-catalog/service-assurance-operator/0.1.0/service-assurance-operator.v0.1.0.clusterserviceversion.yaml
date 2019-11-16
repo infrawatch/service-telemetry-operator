@@ -12,7 +12,7 @@ metadata:
           },
           "spec": {
             "events": {
-              "enabled": true
+              "enabled": false
             },
             "metrics": {
               "enabled": true
