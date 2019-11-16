@@ -1,5 +1,6 @@
-# TODO: move this to another component and make it dependent on self-signed Issuer being enabled
-#
+# ---
+# Build out initial selfsigning issuer
+# ----
 - name: Create selfsigned Issuer
   k8s:
     definition:
@@ -48,6 +49,9 @@
     - { 'name': logging, 'commonName': logging }
     - { 'name': admin, 'commonName': 'system.admin' }
 
+# ----
+# Get certificates to build out 'elasticsearch' secret as used by ElasticSearch object from ESO
+# ----
 - name: Get CA certificate
   k8s_facts:
     api_version: v1
@@ -60,6 +64,7 @@
   set_fact:
     secret_local_ca_credentials: "{{ local_ca.resources | first }}"
 
+  # the ElasticSearch Instance is very particular about how this secret is constructed
 - name: Create ElasticSearch Secret
   k8s:
     definition:
