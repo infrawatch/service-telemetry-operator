@@ -1,6 +1,6 @@
-- name: Create an instance of ElasticSearch
-  k8s:
-    definition:
+- name: Set default ElasticSearch manifest
+  set_fact:
+    elasticsearch_manifest: |
       apiVersion: logging.openshift.io/v1
       kind: Elasticsearch
       metadata:
@@ -26,3 +26,9 @@
             storage:
               storageClassName: ""
               size: 10Gi
+  when: elasticsearch_manifest is not defined
+
+- name: Create an instance of ElasticSearch
+  k8s:
+    definition:
+      '{{ elasticsearch_manifest }}'

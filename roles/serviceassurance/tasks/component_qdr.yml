@@ -1,7 +1,7 @@
 ---
-- name: Create QDR instance
-  k8s:
-    definition:
+- name: Set default Interconnect manifest
+  set_fact:
+    interconnect_manifest: |
       apiVersion: interconnectedcloud.github.io/v1alpha1
       kind: Interconnect
       metadata:
@@ -45,3 +45,9 @@
           - expose: true
             http: true
             port: 8672
+  when: interconnect_manifest is not defined
+
+- name: Create QDR instance
+  k8s:
+    definition:
+      '{{ interconnect_manifest }}'
