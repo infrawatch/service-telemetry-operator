@@ -1,0 +1,26 @@
+- name: Set default Prometheus manifest
+  set_fact:
+    prometheus_manifest: |
+      apiVersion: monitoring.coreos.com/v1
+      kind: Prometheus
+      metadata:
+        labels:
+          prometheus: '{{ meta.name }}'
+        name: '{{ meta.name }}'
+        namespace: '{{ meta.namespace }}'
+      spec:
+        replicas: 1
+        ruleSelector: {}
+        securityContext: {}
+        serviceAccountName: prometheus-k8s
+        serviceMonitorSelector:
+          matchLabels:
+            app: smart-gateway
+  when: prometheus_manifest is not defined
+
+- name: Create an instance of Prometheus
+  k8s:
+    definition:
+      '{{ prometheus_manifest }}'
+
+# TODO: Create route to access Prometheus (conditional, default off)
