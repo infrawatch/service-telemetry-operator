@@ -1,73 +1,11 @@
-# ---
-# Build out initial selfsigning issuer
-# ----
-- name: Create selfsigned Issuer
-  k8s:
-    definition:
-      apiVersion: certmanager.k8s.io/v1alpha1
-      kind: Issuer
-      metadata:
-        name: '{{ meta.namespace }}-selfsigned'
-        namespace: '{{ meta.namespace }}'
-      spec:
-        selfSigned: {}
-
-- name: Create CA certificate
-  k8s:
-    definition:
-      apiVersion: certmanager.k8s.io/v1alpha1
-      kind: Certificate
-      metadata:
-        name: '{{ meta.namespace }}-ca'
-        namespace: '{{ meta.namespace }}'
-      spec:
-        commonName: '{{ meta.namespace }}-ca'
-        isCA: true
-        issuerRef:
-          name: '{{ meta.namespace }}-selfsigned'
-        secretName: '{{ meta.namespace }}-ca'
-
-- name: Create namespace CA Issuer
-  k8s:
-    definition:
-      apiVersion: certmanager.k8s.io/v1alpha1
-      kind: Issuer
-      metadata:
-        name: '{{ meta.namespace }}-ca'
-        namespace: '{{ meta.namespace }}'
-      spec:
-        ca:
-          secretName: '{{ meta.namespace }}-ca'
-
-# ----
-# Setup our certificates for import into ElasticSearch
-# ----
-- name: Setup certificates
-  include_tasks: _setup_certificates.yml
-  loop:
-    - { 'name': elasticsearch, 'commonName': elasticsearch }
-    - { 'name': logging, 'commonName': logging }
-    - { 'name': admin, 'commonName': 'system.admin' }
-
-# ----
-# Get certificates to build out 'elasticsearch' secret as used by ElasticSearch object from ESO
-# ----
-- name: Get CA certificate
-  k8s_facts:
-    api_version: v1
-    kind: Secret
-    name: '{{ meta.namespace }}-ca'
-    namespace: '{{ meta.namespace }}'
-  register: local_ca
-
-- name: Set variable containing CA certificate drilldown files
-  set_fact:
-    secret_local_ca_credentials: "{{ local_ca.resources | first }}"
+- name: Create local signing authority
+  include_tasks: _local_signing_authority.yml
+  when: elasticsearch_secret_manifest is not defined
 
   # the ElasticSearch Instance is very particular about how this secret is constructed
-- name: Create ElasticSearch Secret
-  k8s:
-    definition:
+- name: Create default ElasticSearch Secret
+  set_fact:
+    elasticsearch_secret_manifest: |
       apiVersion: v1
       kind: Secret
       metadata:
@@ -81,3 +19,8 @@
         "admin-key": "{{ secret_admin_credentials.data['tls.key'] }}"
         "admin-cert": "{{ secret_admin_credentials.data['tls.crt'] }}"
         "admin-ca": "{{ secret_local_ca_credentials.data['ca.crt'] }}"
+
+- name: Create ElasticSearch Secret
+  k8s:
+    definition:
+      '{{ elasticsearch_secret_manifest }}'
