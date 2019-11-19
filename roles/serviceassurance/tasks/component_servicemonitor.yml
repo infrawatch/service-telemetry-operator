@@ -1,6 +1,6 @@
-- name: Create ServiceMonitor to scrape Smart Gateway
-  k8s:
-    definition:
+- name: Create default Service Monitor manifest
+  set_fact:
+    servicemonitor_manifest: |
       apiVersion: monitoring.coreos.com/v1
       kind: ServiceMonitor
       metadata:
@@ -28,3 +28,9 @@
         selector:
           matchLabels:
             app: smart-gateway
+  when: servicemonitor_manifest is not defined
+
+- name: Create ServiceMonitor to scrape Smart Gateway
+  k8s:
+    definition:
+      '{{ servicemonitor_manifest }}'
