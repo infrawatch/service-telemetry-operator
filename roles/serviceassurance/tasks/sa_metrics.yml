@@ -9,7 +9,7 @@
 
 # create Smart Gateway instance
 - name: Create Smart Gateway instance
-  include_tasks: component_smartgateway.yml
+  include_tasks: component_metrics_smartgateway.yml
 
 # create Service Monitor instance
 - name: Create Service Monitor instance
