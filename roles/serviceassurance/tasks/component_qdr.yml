@@ -9,7 +9,7 @@
         namespace: '{{ meta.namespace }}'
       spec:
         deploymentPlan:
-          size: 2
+          size: 1
           role: interior
           livenessPort: 8888
           placement: Any
@@ -45,6 +45,13 @@
           - expose: true
             http: true
             port: 8672
+        sslProfiles:
+          - caCert: saf-demo-interconnect-openstack-ca
+            credentials: saf-demo-interconnect-openstack-credentials
+            generateCaCert: true
+            generateCredentials: true
+            name: openstack
+
   when: interconnect_manifest is not defined
 
 - name: Create QDR instance
