@@ -9,7 +9,7 @@
         namespace: '{{ meta.namespace }}'
       spec:
         deploymentPlan:
-          size: 2
+          size: 1
           role: interior
           livenessPort: 8888
           placement: Any
@@ -32,7 +32,7 @@
           - expose: true
             host: 0.0.0.0
             port: 5671
-            saslMechanisms: EXTERNAL
+            saslMechanisms: ANONYMOUS
             sslProfile: openstack
         interRouterListeners:
           - authenticatePeer: true
@@ -45,6 +45,18 @@
           - expose: true
             http: true
             port: 8672
+        sslProfiles:
+          - caCert: {{ meta.name }}-interconnect-openstack-ca
+            credentials: {{ meta.name }}-interconnect-openstack-credentials
+            generateCaCert: true
+            generateCredentials: true
+            name: openstack
+          - caCert: {{ meta.name }}-interconnect-inter-router-ca
+            credentials: {{ meta.name }}-interconnect-inter-router-credentials
+            generateCaCert: true
+            generateCredentials: true
+            mutualAuth: true
+            name: inter-router
   when: interconnect_manifest is not defined
 
 - name: Create QDR instance

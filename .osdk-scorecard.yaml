@@ -1,5 +1,4 @@
 scorecard:
-  # Setting a global scorecard option
   output: text
   plugins:
     - basic:

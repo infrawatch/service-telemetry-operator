@@ -1,6 +1,12 @@
 ---
-metrics:
-  enabled: true
-events:
-  enabled: false
+# set default enablement
+metrics_enabled: true
+events_enabled: false
+
+# default values
+prometheus_storage_class: ""
+prometheus_storage_resources: {}
+prometheus_storage_selector: {}
+prometheus_pvc_storage_request: 20G
+
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
