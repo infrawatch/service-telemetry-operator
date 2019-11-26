@@ -47,11 +47,18 @@
             http: true
             port: 8672
         sslProfiles:
-          - caCert: saf-demo-interconnect-openstack-ca
-            credentials: saf-demo-interconnect-openstack-credentials
+          - caCert: {{ meta.name }}-interconnect-openstack-ca
+            credentials: {{ meta.name }}-interconnect-openstack-credentials
             generateCaCert: true
             generateCredentials: true
             name: openstack
+          - caCert: {{ meta.name }}-interconnect-inter-router-ca
+            credentials: {{ meta.name }}-interconnect-inter-router-credentials
+            generateCaCert: true
+            generateCredentials: true
+            mutualAuth: true
+            name: inter-router
+        users: {{ meta.name }}-interconnect-users
   when: interconnect_manifest is not defined
 
 - name: Create QDR instance

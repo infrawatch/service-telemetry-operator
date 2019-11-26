@@ -66,8 +66,9 @@ spec:
         path: eventsEnabled
         x-descriptors:
         - urn:alm:descriptor:tectonic.ui:booleanSwitch
-      - displayName: Size of PV request for Prometheus storage. Add your unit to the
-          end (i.e. M (Megabytes), G (Gigabytes), etc) such as '20G'.
+      - description: Size of PV request for Prometheus storage. Add your unit to the
+          end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
+        displayName: Prometheus Storage Size
         path: prometheusPvcStorageRequest
         x-descriptors:
         - urn:alm:descriptor:tectonic.ui:text
