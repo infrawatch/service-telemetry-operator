@@ -32,7 +32,7 @@
           - expose: true
             host: 0.0.0.0
             port: 5671
-            saslMechanisms: EXTERNAL
+            saslMechanisms: ANONYMOUS
             sslProfile: openstack
         interRouterListeners:
           - authenticatePeer: true
