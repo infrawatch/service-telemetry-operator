@@ -1,8 +1,4 @@
 ---
-# create QDR instance
-- name: Create QDR instance
-  include_tasks: component_qdr.yml
-
 # create Prometheus instance
 - name: Create Prometheus instance
   include_tasks: component_prometheus.yml

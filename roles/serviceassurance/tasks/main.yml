@@ -1,4 +1,7 @@
 ---
+- name: Create QDR instance
+  include_tasks: component_qdr.yml
+
 - name: Execute default tasks when metrics are requested to be enabled
   include_tasks: sa_metrics.yml
   when: metrics_enabled
