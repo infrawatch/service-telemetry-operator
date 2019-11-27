@@ -2,24 +2,6 @@
   include_tasks: _local_signing_authority.yml
   when: elasticsearch_secret_manifest is not defined
 
-  # the ElasticSearch Instance is very particular about how this secret is constructed
-- name: Create default ElasticSearch Secret
-  set_fact:
-    elasticsearch_secret_manifest: |
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: elasticsearch
-        namespace: "{{ meta.namespace }}"
-      data:
-        "elasticsearch.key": "{{ secret_elasticsearch_credentials.data['tls.key'] }}"
-        "elasticsearch.crt": "{{ secret_elasticsearch_credentials.data['tls.crt'] }}"
-        "logging-es.key": "{{ secret_logging_credentials.data['tls.key'] }}"
-        "logging-es.crt": "{{ secret_logging_credentials.data['tls.crt'] }}"
-        "admin-key": "{{ secret_admin_credentials.data['tls.key'] }}"
-        "admin-cert": "{{ secret_admin_credentials.data['tls.crt'] }}"
-        "admin-ca": "{{ secret_local_ca_credentials.data['ca.crt'] }}"
-
 - name: Create ElasticSearch Secret
   k8s:
     definition:
