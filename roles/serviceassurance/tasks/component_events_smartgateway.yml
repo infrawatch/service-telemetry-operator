@@ -11,7 +11,7 @@
         amqp_url: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/notification'
         service_type: 'events'
         debug: 'true'
-        elastic_url: '{{ meta.name }}-elasticsearch.{{ meta.namespace }}.svc.cluster.local:9200'
+        elastic_url: 'https://elasticsearch.{{ meta.namespace }}.svc.cluster.local:9200'
         container_image_path: 'quay.io/redhat-service-assurance/smart-gateway:latest'
         use_tls: 'true'
         tls_client_cert: /config/certs/admin-cert
