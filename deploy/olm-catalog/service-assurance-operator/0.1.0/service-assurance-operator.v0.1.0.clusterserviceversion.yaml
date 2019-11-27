@@ -73,11 +73,36 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:tectonic.ui:text
       statusDescriptors:
-      - description: Status conditions of the ServiceAssurance object creation
-        displayName: Status
-        path: conditions
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:statusConditions
+        - description: Tasks changed
+          displayName: Changed
+          path: conditions[0].ansibleResult.changed
+          x-descriptors:
+            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
+            - urn:alm:descriptor:com.tectonic.ui:number
+        - description: Tasks last completed
+          displayName: Last Completed
+          path: conditions[0].ansibleResult.completion
+          x-descriptors:
+            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
+            - urn:alm:descriptor:com.tectonic.ui:text
+        - description: Tasks failed
+          displayName: Failed
+          path: conditions[0].ansibleResult.failures
+          x-descriptors:
+            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
+            - urn:alm:descriptor:com.tectonic.ui:number
+        - description: Tasks OK
+          displayName: OK
+          path: conditions[0].ansibleResult.ok
+          x-descriptors:
+            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
+            - urn:alm:descriptor:com.tectonic.ui:number
+        - description: Tasks skipped
+          displayName: Skipped
+          path: conditions[0].ansibleResult.skipped
+          x-descriptors:
+            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
+            - urn:alm:descriptor:com.tectonic.ui:number
       version: v1alpha1
     required:
     - description: A declaration of a required Certificate
