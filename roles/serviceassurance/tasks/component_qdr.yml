@@ -26,8 +26,6 @@
             prefix: broadcast
           - distribution: multicast
             prefix: collectd
-          - distribution: multicast
-            prefix: collectd/notify
         edgeListeners:
           - expose: true
             host: 0.0.0.0
