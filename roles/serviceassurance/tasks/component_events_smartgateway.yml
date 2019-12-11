@@ -8,7 +8,7 @@
         namespace: '{{ meta.namespace }}'
       spec:
         size: 1
-        amqp_url: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/notification'
+        amqp_url: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/notify'
         service_type: 'events'
         debug: 'true'
         elastic_url: 'https://elasticsearch.{{ meta.namespace }}.svc.cluster.local:9200'
