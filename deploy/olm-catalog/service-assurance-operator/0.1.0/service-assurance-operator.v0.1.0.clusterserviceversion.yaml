@@ -12,7 +12,8 @@ metadata:
           },
           "spec": {
             "eventsEnabled": false,
-            "metricsEnabled": true
+            "metricsEnabled": true,
+            "haEnabled": false,
           }
         }
       ]
@@ -66,6 +67,16 @@ spec:
         path: eventsEnabled
         x-descriptors:
         - urn:alm:descriptor:tectonic.ui:booleanSwitch
+      - description: Whether to deploy the services in HA mode
+        displayName: HA Enabled
+        path: haEnabled
+        x-descriptors:
+        - urn:alm:descriptor:tectonic.ui:booleanSwitch
+      - description: How many Elastic Search instances to deploy in HA mode
+        displayName: Elastic Search Node Count
+        path: esNodeCount
+        x-descriptors:
+        - urn:alm:descriptor:tectonic.ui:text
       - description: Size of PV request for Prometheus storage. Add your unit to the
           end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
         displayName: Prometheus Storage Size
