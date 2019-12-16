@@ -13,6 +13,7 @@
         service_type: 'metrics'
         size: 1
         prefetch: 15000
+        use_timestamp: 'true'
   when: smartgateway_metrics_manifest is not defined
 
 - name: Deploy instance of Smart Gateway for Metrics
