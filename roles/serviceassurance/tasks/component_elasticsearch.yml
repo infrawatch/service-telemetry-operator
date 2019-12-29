@@ -15,9 +15,9 @@
               memory: 4Gi
             requests:
               memory: 1Gi
-        redundancyPolicy: {{ "FullRedundancy" if haEnabled else "ZeroRedundancy" }}
+        redundancyPolicy: {{ "FullRedundancy" if highAvailabilityEnabled else "ZeroRedundancy" }}
         nodes:
-          - nodeCount: {{ esNodeCount if haEnabled else "1" }}
+          - nodeCount: {{ elasticSearchNodeCount if highAvailabilityEnabled else "1" }}
             roles:
               - client
               - data

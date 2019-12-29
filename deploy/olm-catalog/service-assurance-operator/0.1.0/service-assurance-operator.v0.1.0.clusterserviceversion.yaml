@@ -8,12 +8,15 @@ metadata:
           "apiVersion": "infra.watch/v1alpha1",
           "kind": "ServiceAssurance",
           "metadata": {
-            "name": "saf-default"
+            "name": "cloud1"
           },
           "spec": {
-            "eventsEnabled": false,
-            "metricsEnabled": true,
-            "haEnabled": false,
+            "events": {
+              "enabled": false
+            },
+            "metrics": {
+              "enabled": true
+            }
           }
         }
       ]
@@ -57,63 +60,26 @@ spec:
         name: ""
         version: v1
       specDescriptors:
+      - description: Metrics related configuration options
+        displayName: Metrics Configuration Options
+        path: metrics
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:'
+      - description: Events related configuration options
+        displayName: Events Configuration Options
+        path: events
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:'
       - description: Whether to enable collection and storage components for metrics
         displayName: Metrics Enabled
-        path: metricsEnabled
+        path: metrics.enabled
         x-descriptors:
         - urn:alm:descriptor:tectonic.ui:booleanSwitch
       - description: Whether to enable collection and storage components for events
         displayName: Events Enabled
-        path: eventsEnabled
+        path: events.enabled
         x-descriptors:
         - urn:alm:descriptor:tectonic.ui:booleanSwitch
-      - description: Whether to deploy the services in HA mode
-        displayName: HA Enabled
-        path: haEnabled
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:booleanSwitch
-      - description: How many Elastic Search instances to deploy in HA mode
-        displayName: Elastic Search Node Count
-        path: esNodeCount
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:text
-      - description: Size of PV request for Prometheus storage. Add your unit to the
-          end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
-        displayName: Prometheus Storage Size
-        path: prometheusPvcStorageRequest
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:text
-      statusDescriptors:
-        - description: Tasks changed
-          displayName: Changed
-          path: conditions[0].ansibleResult.changed
-          x-descriptors:
-            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
-            - urn:alm:descriptor:com.tectonic.ui:number
-        - description: Tasks last completed
-          displayName: Last Completed
-          path: conditions[0].ansibleResult.completion
-          x-descriptors:
-            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
-            - urn:alm:descriptor:com.tectonic.ui:text
-        - description: Tasks failed
-          displayName: Failed
-          path: conditions[0].ansibleResult.failures
-          x-descriptors:
-            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
-            - urn:alm:descriptor:com.tectonic.ui:number
-        - description: Tasks OK
-          displayName: OK
-          path: conditions[0].ansibleResult.ok
-          x-descriptors:
-            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
-            - urn:alm:descriptor:com.tectonic.ui:number
-        - description: Tasks skipped
-          displayName: Skipped
-          path: conditions[0].ansibleResult.skipped
-          x-descriptors:
-            - urn:alm:descriptor:com.tectonic.ui:arrayFieldGroup:ansibleResults
-            - urn:alm:descriptor:com.tectonic.ui:number
       version: v1alpha1
     required:
     - description: A declaration of a required Certificate
