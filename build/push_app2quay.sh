@@ -16,5 +16,8 @@ AUTH_TOKEN=$(curl -sH "Content-Type: application/json" \
 -XPOST https://quay.io/cnr/api/v1/users/login \
 -d '{"user": {"username": "'"${USERNAME}"'", "password": "'"${PASSWORD}"'"}}' | jq -r '.token')
 
-operator-courier push "./deploy/olm-catalog/service-assurance-operator" "redhat-service-assurance" "service-assurance-operator" "${CSV_VERSION}-${UNIXDATE}" "${AUTH_TOKEN}"
+# The application registry name and the container registry name can not be the same on quay.io. Same as we do with the smart-gateway-operator we remove the first
+# instance of the hyphen for the application registry (serviceassurance-operator). For the container registry we match the git repository name (service-assurance-operator).
+operator-courier push "./deploy/olm-catalog/service-assurance-operator" "redhat-service-assurance" "serviceassurance-operator" "${CSV_VERSION}-${UNIXDATE}" "${AUTH_TOKEN}"
+
 # vim: set ft=bash:
