@@ -9,10 +9,10 @@
         namespace: '{{ meta.namespace }}'
       spec:
         deploymentPlan:
-          size: 1
+          size: {{ qdr_deployment_size }}
           role: interior
           livenessPort: 8888
-          placement: Any
+          placement: Anti-Affinity
         addresses:
           - distribution: closest
             prefix: closest
