@@ -9,4 +9,8 @@ prometheus_storage_resources: {}
 prometheus_storage_selector: {}
 prometheus_pvc_storage_request: 20G
 
+alertmanager_storage_class: ""
+alertmanager_storage_resources: {}
+alertmanager_storage_selector: {}
+alertmanager_pvc_storage_request: 20G
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

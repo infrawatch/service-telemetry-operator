@@ -3,6 +3,10 @@
 - name: Create Prometheus instance
   include_tasks: component_prometheus.yml
 
+# create Alertmanager instance
+- name: Create Alertmanager instance
+  include_tasks: component_alertmanager.yml
+
 # create Smart Gateway instance
 - name: Create Smart Gateway instance
   include_tasks: component_metrics_smartgateway.yml
