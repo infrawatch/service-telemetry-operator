@@ -2,4 +2,4 @@ channels:
 - currentCSV: service-assurance-operator.v0.1.0
   name: alpha
 defaultChannel: alpha
-packageName: service-assurance-operator
+packageName: serviceassurance-operator
