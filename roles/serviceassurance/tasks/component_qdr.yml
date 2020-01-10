@@ -12,7 +12,7 @@
           size: {{ qdr_deployment_size }}
           role: interior
           livenessPort: 8888
-          placement: Anti-Affinity
+          placement: AntiAffinity
         addresses:
           - distribution: closest
             prefix: closest
