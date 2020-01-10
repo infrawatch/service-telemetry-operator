@@ -42,6 +42,9 @@ spec:
             eventsEnabled:
               description: Whether the Service Assurance Operator should enable components related to events collection and storage.
               type: boolean
+            highAvailabilityEnabled:
+              description: Whether to deploy the services in HA mode.
+              type: boolean
             prometheusStorageClass:
               description: Storage class name used for Prometheus PVC
               type: string
