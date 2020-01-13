@@ -21,14 +21,14 @@ metadata:
     categories: Monitoring
     certified: "false"
     containerImage: quay.io/redhat-service-assurance/service-assurance-operator.0.1.0
-    createdAt: "2019-11-13T17:16:00Z"
+    createdAt: "2020-01-10T21:30:00Z"
     description: Service Assurance Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Assurance platform for telco grade monitoring.
     repository: https://github.com/redhat-service-assurance/service-assurance-operator
     support: Red Hat, Inc.
-  name: service-assurance-operator.v0.1.0
-  namespace: placeholder
+  name: service-assurance-operator.v0.1.1
+  namespace: sa-telemetry
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
@@ -111,11 +111,6 @@ spec:
       kind: Certificate
       name: certificates.certmanager.k8s.io
       version: v1alpha1
-    - description: Creation of an ElasticSearch cluster
-      displayName: ElasticSearch
-      kind: Elasticsearch
-      name: elasticsearches.logging.openshift.io
-      version: v1
     - description: Creation of AMQ Interconnect routers
       displayName: AMQ Interconnect
       kind: Interconnect
@@ -216,7 +211,6 @@ spec:
           - interconnectedcloud.github.io
           - smartgateway.infra.watch
           - monitoring.coreos.com
-          - logging.openshift.io
           - certmanager.k8s.io
           resources:
           - '*'
@@ -282,4 +276,5 @@ spec:
   minKubeVersion: 1.14.0
   provider:
     name: Red Hat, Inc.
-  version: 0.1.0
+  replaces: service-assurance-operator.v0.1.0
+  version: 0.1.1
