@@ -276,5 +276,4 @@ spec:
   minKubeVersion: 1.14.0
   provider:
     name: Red Hat, Inc.
-  replaces: service-assurance-operator.v0.1.0
   version: 0.1.1
