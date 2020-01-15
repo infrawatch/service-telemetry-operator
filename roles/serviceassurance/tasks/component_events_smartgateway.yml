@@ -1,13 +1,3 @@
-#- name: Check if elasticsearches.elasticsearch.k8s.elastic.co CRD is available
-#  k8s_facts:
-#    api_version: 'apiextensions.k8s.io/v1beta1'
-#    kind: 'customresourcedefinition'
-#    name: 'elasticsearches.elasticsearch.k8s.elastic.co'
-#  register: elasticsearch_crd
-#
-#- debug:
-#    var: elasticsearch_crd
-
 - name: Lookup ElasticSearch BasicAuth
   k8s_facts:
     api_version: v1
@@ -20,9 +10,6 @@
   set_fact:
     elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[].data.elastic') | b64decode }}"
   no_log: true
-
-- debug:
-    var: elastic_pass
 
 - name: Create default Events Smart Gateway manifest
   set_fact:
