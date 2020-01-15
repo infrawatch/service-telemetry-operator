@@ -27,9 +27,36 @@
                   storage: {{ alertmanager_pvc_storage_request }}
   when: alertmanager_manifest is not defined
 
+- name: Set default Alertmanager configuration manifest
+  set_fact:
+    alertmanager_config_manifest: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: alertmanager-'{{ meta.name }}'
+        namespace: '{{ meta.namespace }}'
+      type: Opaque
+      stringData:
+        alertmanager.yaml: |-
+          global:
+            resolve_timeout: 5m
+          route:
+            group_by: ['job']
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 12h
+            receiver: 'null'
+            routes:
+            - match:
+                alertname: DeadMansSwitch
+              receiver: 'null'
+          receivers:
+          - name: 'null'
+  when: alertmanager_config_manifest is not defined
+
 - name: Create an instance of Alertmanager
   k8s:
     definition:
-      '{{ alertmanager_manifest }}'
+      '{{ alertmanager_config_manifest }}'
 
 # TODO: Create route to access Alertmanager (conditional, default off)
