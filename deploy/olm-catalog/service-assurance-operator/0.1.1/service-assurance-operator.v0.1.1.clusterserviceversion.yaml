@@ -61,12 +61,12 @@ spec:
         displayName: Metrics Enabled
         path: metricsEnabled
         x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Whether to enable collection and storage components for events
         displayName: Events Enabled
         path: eventsEnabled
         x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Size of PV request for Prometheus storage. Add your unit to the
           end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
         displayName: Prometheus Storage Size
