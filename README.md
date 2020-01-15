@@ -37,3 +37,12 @@ loaded for you.
 * smartgateway_metrics_manifest
 * smartgateway_events_manifest
 * servicemonitor_manifest
+
+
+## Local testing ##
+
+Dependencies:
+
+* python3-ansible-runner
+* python3-kubernetes
+* python3-openshift

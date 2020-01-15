@@ -125,6 +125,11 @@ spec:
       kind: Prometheus
       name: prometheuses.monitoring.coreos.com
       version: v1
+    - description: Creation of Alertmanager instances
+      displayName: Alertmanager
+      kind: Alertmanager
+      name: alertmanager.monitoring.coreos.com
+      version: v1
     - description: Creation of Smart Gateways
       displayName: Smart Gateway
       kind: SmartGateway

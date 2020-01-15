@@ -12,7 +12,7 @@
         replicas: 1
         ruleSelector: {}
         securityContext: {}
-        serviceAccountName: alertmanager-k8s
+        serviceAccountName: prometheus-k8s
         serviceMonitorSelector:
           matchLabels:
             app: smart-gateway
