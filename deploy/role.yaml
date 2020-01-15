@@ -30,7 +30,7 @@ rules:
   - interconnectedcloud.github.io
   - smartgateway.infra.watch
   - monitoring.coreos.com
-  - elasticsearches.elasticsearch.k8s.elastic.co
+  - elasticsearch.k8s.elastic.co
   - certmanager.k8s.io
   resources:
   - '*'
@@ -72,8 +72,6 @@ rules:
 - apiGroups:
   - apiextensions.k8s.io
   resources:
-  - '*'
+  - customresourcedefinitions
   verbs:
-  - get
-  - watch
-  - list
+  - '*'

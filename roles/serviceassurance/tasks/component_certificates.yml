@@ -1,8 +1,2 @@
 - name: Create local signing authority
   include_tasks: _local_signing_authority.yml
-  when: elasticsearch_secret_manifest is not defined
-
-- name: Create ElasticSearch Secret
-  k8s:
-    definition:
-      '{{ elasticsearch_secret_manifest }}'

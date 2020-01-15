@@ -3,7 +3,7 @@
 
 set -e
 
-CSV_VERSION=${CSV_VERSION:-0.1.0}
+CSV_VERSION=${CSV_VERSION:-0.1.1}
 UNIXDATE=$(date +%s)
 ORGANIZATION=${ORGANIZATION:-redhat-service-assurance}
 
