@@ -15,9 +15,9 @@
               memory: 4Gi
             requests:
               memory: 1Gi
-        redundancyPolicy: ZeroRedundancy
+        redundancyPolicy: {{ elasticsearch_redundancy_policy }}
         nodes:
-          - nodeCount: 1
+          - nodeCount: {{ elasticsearch_node_count }}
             roles:
               - client
               - data
