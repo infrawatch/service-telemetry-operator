@@ -18,4 +18,5 @@ alertmanager_pvc_storage_request: 20G
 elasticsearch_node_count: 1
 elasticsearch_redundancy_policy: ZeroRedundancy
 qdr_deployment_size: 1
+elastic_user: elastic
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

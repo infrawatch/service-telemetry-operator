@@ -1,3 +1,29 @@
+#- name: Check if elasticsearches.elasticsearch.k8s.elastic.co CRD is available
+#  k8s_facts:
+#    api_version: 'apiextensions.k8s.io/v1beta1'
+#    kind: 'customresourcedefinition'
+#    name: 'elasticsearches.elasticsearch.k8s.elastic.co'
+#  register: elasticsearch_crd
+#
+#- debug:
+#    var: elasticsearch_crd
+
+- name: Lookup ElasticSearch BasicAuth
+  k8s_facts:
+    api_version: v1
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: 'elasticsearch-es-elastic-user'
+  register: elasticsearch_es_elastic_user
+
+- name: Filter out ElasticSearch password for BasicAuth
+  set_fact:
+    elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[].data.elastic') | b64decode }}"
+  no_log: true
+
+- debug:
+    var: elastic_pass
+
 - name: Create default Events Smart Gateway manifest
   set_fact:
     smartgateway_events_manifest: |
@@ -11,13 +37,16 @@
         amqp_url: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/notify'
         service_type: 'events'
         debug: 'false'
-        elastic_url: 'https://elasticsearch.{{ meta.namespace }}.svc.cluster.local:9200'
-        container_image_path: 'quay.io/redhat-service-assurance/smart-gateway:latest'
+        elastic_url: 'https://elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local:9200'
+        use_basic_auth: 'true'
+        elastic_user: '{{ elastic_user }}'
+        elastic_pass: '{{ elastic_pass }}'
+        container_image_path: 'quay.io/leifmadsen/smart-gateway:latest'
         use_tls: 'true'
-        tls_client_cert: /config/certs/admin-cert
-        tls_client_key: /config/certs/admin-key
-        tls_ca_cert: /config/certs/admin-ca
-        tls_server_name: 'elasticsearch.{{ meta.namespace }}.svc.cluster.local'
+        tls_client_cert: /config/certs/tls.crt
+        tls_client_key: /config/certs/tls.key
+        tls_ca_cert: /config/certs/ca.crt
+        tls_server_name: 'elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local'
         reset_index: 'true'
   when: smartgateway_events_manifest is not defined
 
