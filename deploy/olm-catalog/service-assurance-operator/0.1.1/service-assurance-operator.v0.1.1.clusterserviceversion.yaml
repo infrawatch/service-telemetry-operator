@@ -20,7 +20,7 @@ metadata:
     capabilities: Basic Install
     categories: Monitoring
     certified: "false"
-    containerImage: quay.io/leifmadsen/service-assurance-operator
+    containerImage: quay.io/redhat-service-assurance/service-assurance-operator
     createdAt: "2020-01-10T21:30:00Z"
     description: Service Assurance Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
