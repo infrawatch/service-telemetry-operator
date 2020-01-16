@@ -7,7 +7,7 @@
       apiVersion: certmanager.k8s.io/v1alpha1
       kind: Issuer
       metadata:
-        name: elasticsearch-selfsigned
+        name: '{{ meta.name }}-selfsigned'
         namespace: '{{ meta.namespace }}'
       spec:
         selfSigned: {}
@@ -28,7 +28,7 @@
         isCA: true
         issuerRef:
           kind: Issuer
-          name: elasticsearch-selfsigned
+          name: {{ meta.name }}-selfsigned
         secretName: elasticsearch-es-cert
   when: elasticsearch_certificate_manifest is not defined
 
