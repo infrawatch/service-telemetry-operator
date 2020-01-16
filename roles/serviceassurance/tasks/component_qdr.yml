@@ -26,18 +26,17 @@
             prefix: broadcast
           - distribution: multicast
             prefix: collectd
-        edgeListeners:
-          - expose: true
-            host: 0.0.0.0
-            port: 5671
-            saslMechanisms: ANONYMOUS
-            sslProfile: openstack
         interRouterListeners:
           - authenticatePeer: true
             expose: true
             port: 55671
             saslMechanisms: EXTERNAL
             sslProfile: inter-router
+          - expose: true
+            host: 0.0.0.0
+            port: 5671
+            saslMechanisms: ANONYMOUS
+            sslProfile: openstack
         listeners:
           - port: 5672
           - expose: true
