@@ -1,35 +1,61 @@
-# ---
 # Build out initial selfsigning issuer
-# ----
 - name: Create selfsigned Issuer
   k8s:
     definition:
       apiVersion: certmanager.k8s.io/v1alpha1
       kind: Issuer
       metadata:
-        name: '{{ meta.name }}-selfsigned'
+        name: '{{ meta.namespace }}-selfsigned'
         namespace: '{{ meta.namespace }}'
       spec:
         selfSigned: {}
 
-- name: Create default Certificate manifest for Elasticsearch
-  set_fact:
-    elasticsearch_certificate_manifest: |
+- name: Create CA certificate
+  k8s:
+    definition:
       apiVersion: certmanager.k8s.io/v1alpha1
       kind: Certificate
       metadata:
-        name: elasticsearch-es-cert
+        name: '{{ meta.namespace }}-ca'
         namespace: '{{ meta.namespace }}'
       spec:
+        secretName: '{{ meta.namespace }}-ca'
+        commonName: '{{ meta.namespace }}-ca'
+        isCA: true
+        issuerRef:
+          name: '{{ meta.namespace }}-selfsigned'
+
+- name: Create namespace CA Issuer
+  k8s:
+    definition:
+      apiVersion: certmanager.k8s.io/v1alpha1
+      kind: Issuer
+      metadata:
+        name: '{{ meta.namespace }}-ca'
+        namespace: '{{ meta.namespace }}'
+      spec:
+        ca:
+          secretName: '{{ meta.namespace }}-ca'
+
+# Create the ElasticSearch certificate using our new Issuer
+- name: Create certificate for elasticsearch
+  set_fact:
+    elasticsearch_certificate_manifest:
+      apiVersion: certmanager.k8s.io/v1alpha1
+      kind: Certificate
+      metadata:
+        name: elasticsearch-es-http
+        namespace: '{{ meta.namespace }}'
+      spec:
+        commonName: elasticsearch-es-http
+        secretName: 'elasticsearch-es-cert'
         dnsNames:
           - elasticsearch-es-http
           - elasticsearch-es-http.{{ meta.namespace }}.svc
           - elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local
-        isCA: true
         issuerRef:
           kind: Issuer
-          name: {{ meta.name }}-selfsigned
-        secretName: elasticsearch-es-cert
+          name: '{{ meta.namespace }}-ca'
   when: elasticsearch_certificate_manifest is not defined
 
 - name: Create certificate for Elasticsearch
