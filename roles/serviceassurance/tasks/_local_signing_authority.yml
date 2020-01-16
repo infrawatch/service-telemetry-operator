@@ -19,7 +19,7 @@
       kind: Certificate
       metadata:
         name: elasticsearch-es-cert
-        namespace: default
+        namespace: '{{ meta.namespace }}'
       spec:
         dnsNames:
           - elasticsearch-es-http
