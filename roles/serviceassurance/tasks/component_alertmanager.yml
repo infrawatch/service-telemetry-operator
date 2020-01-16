@@ -44,10 +44,6 @@
             group_interval: 5m
             repeat_interval: 12h
             receiver: 'null'
-            routes:
-            - match:
-                alertname: DeadMansSwitch
-              receiver: 'null'
           receivers:
           - name: 'null'
   when: alertmanager_config_manifest is not defined
