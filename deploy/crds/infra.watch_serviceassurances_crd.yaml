@@ -56,6 +56,17 @@ spec:
               type: string
             prometheusPvcStorageRequest:
               description: PVC storage requested size for Prometheus
+            alertmanagerStorageClass:
+              description: Storage class name used for Alertmanager PVC
+              type: string
+            alertmanagerStorageResources:
+              description: Storage resource definition for Alertmanager
+              type: string
+            alertmanagerStorageSelector:
+              description: Storage selector definition for Alertmanager
+              type: string
+            alertmanagerPvcStorageRequest:
+              description: PVC storage requested size for Alertmanager
         status:
           description: Status results of an instance of Service Assurance
           properties:

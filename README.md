@@ -30,6 +30,8 @@ ServiceAssurance) via the YAML configuration to override the default manifests
 loaded for you.
 
 * prometheus_manifest
+* alertmanager_config_manifest
+* alertmanager_manifest
 * elasticsearch_secret_manifest
 * interconnect_manifest
 * elasticsearch_manifest

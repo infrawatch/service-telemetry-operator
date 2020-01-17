@@ -42,6 +42,9 @@ spec:
             eventsEnabled:
               description: Whether the Service Assurance Operator should enable components related to events collection and storage.
               type: boolean
+            highAvailabilityEnabled:
+              description: Whether to deploy the services in HA mode.
+              type: boolean
             prometheusStorageClass:
               description: Storage class name used for Prometheus PVC
               type: string
@@ -53,6 +56,17 @@ spec:
               type: string
             prometheusPvcStorageRequest:
               description: PVC storage requested size for Prometheus
+            alertmanagerStorageClass:
+              description: Storage class name used for Alertmanager PVC
+              type: string
+            alertmanagerStorageResources:
+              description: Storage resource definition for Alertmanager
+              type: string
+            alertmanagerStorageSelector:
+              description: Storage selector definition for Alertmanager
+              type: string
+            alertmanagerPvcStorageRequest:
+              description: PVC storage requested size for Alertmanager
         status:
           description: Status results of an instance of Service Assurance
           properties:
