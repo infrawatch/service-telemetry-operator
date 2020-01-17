@@ -48,9 +48,13 @@
           - name: 'null'
   when: alertmanager_config_manifest is not defined
 
-- name: Create an instance of Alertmanager
+- name: Create an Alertmanager configuration secret
   k8s:
     definition:
       '{{ alertmanager_config_manifest }}'
 
+- name: Create an instance of Alertmanager
+  k8s:
+    definition:
+      '{{ alertmanager_manifest }}'
 # TODO: Create route to access Alertmanager (conditional, default off)
