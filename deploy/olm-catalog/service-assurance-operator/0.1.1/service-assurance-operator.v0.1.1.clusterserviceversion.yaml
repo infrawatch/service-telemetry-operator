@@ -28,7 +28,7 @@ metadata:
     repository: https://github.com/redhat-service-assurance/service-assurance-operator
     support: Red Hat, Inc.
   name: service-assurance-operator.v0.1.1
-  namespace: sa-telemetry
+  namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
