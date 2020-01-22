@@ -1,5 +1,5 @@
 - name: Lookup ElasticSearch BasicAuth
-  k8s_facts:
+  k8s_info:
     api_version: v1
     kind: Secret
     namespace: '{{ meta.namespace }}'
