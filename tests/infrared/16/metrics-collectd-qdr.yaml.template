@@ -1,0 +1,12 @@
+---
+tripleo_heat_templates:
+    - /usr/share/openstack-tripleo-heat-templates/environments/enable-saf.yaml
+
+custom_templates:
+    parameter_defaults:
+        MetricsQdrConnectors:
+            - host: <<AMQP_HOST>>
+              port: <<AMQP_PORT>>
+              role: edge
+              verifyHostname: false
+              sslProfile: sslProfile

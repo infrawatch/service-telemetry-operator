@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: 'saf-default-interconnect'
+  labels:
+    app: smart-gateway
+spec:
+  selector:
+    matchLabels:
+      application: saf-default-interconnect
+  endpoints:
+  - port: "8672"
+    interval: 10s 
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: 'qdr-test'
+  labels:
+    app: smart-gateway
+spec:
+  selector:
+    matchLabels:
+      application: qdr-test
+  endpoints:
+  - port: "8672"
+    interval: 10s

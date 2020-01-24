@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <<PREFIX>>runner
+  labels:
+    app: saf-performance-test
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      labels:
+        app: saf-performance-test
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: performance-test
+          image: quay.io/redhat-service-assurance/telemetry-bench
+          imagePullPolicy: Always
+          args: ["-hostprefix", "<<PREFIX>>", "-hosts", "<<HOSTS>>", "-plugins", "<<PLUGINS>>", "-instances", "1", "-send", "<<COUNT>>", "-interval", "<<INTERVAL>>", "-startmetricenable", "-verbose", "amqp://saf-default-interconnect:5672/collectd/telemetry/"]
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - saf-performance-test
+                  - smart-gateway
+              topologyKey: kubernetes.io/hostname
