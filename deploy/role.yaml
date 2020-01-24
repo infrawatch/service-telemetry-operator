@@ -30,7 +30,7 @@ rules:
   - interconnectedcloud.github.io
   - smartgateway.infra.watch
   - monitoring.coreos.com
-  - logging.openshift.io
+  - elasticsearch.k8s.elastic.co
   - certmanager.k8s.io
   resources:
   - '*'

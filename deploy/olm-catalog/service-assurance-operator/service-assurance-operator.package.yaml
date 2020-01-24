@@ -1,5 +1,5 @@
 channels:
-- currentCSV: service-assurance-operator.v0.1.0
-  name: alpha
-defaultChannel: alpha
+- currentCSV: service-assurance-operator.v0.1.1
+  name: beta
+defaultChannel: beta
 packageName: serviceassurance-operator
