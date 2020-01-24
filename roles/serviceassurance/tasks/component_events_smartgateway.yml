@@ -34,7 +34,7 @@
         tls_client_key: /config/certs/tls.key
         tls_ca_cert: /config/certs/ca.crt
         tls_server_name: 'elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local'
-        reset_index: 'true'
+        reset_index: 'false'
   when: smartgateway_events_manifest is not defined
 
 - name: Deploy instance of Smart Gateway for Events
