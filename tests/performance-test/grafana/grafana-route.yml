@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: grafana
+  labels:
+    app: performance-test
+spec:
+  to:
+    kind: Service
+    name: grafana

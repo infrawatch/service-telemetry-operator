@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: 'prometheus'
+  labels:
+    app: smart-gateway
+spec:
+  selector:
+    matchLabels:
+      operated-prometheus: "true"
+  endpoints:
+  - port: web
+    interval: 1s

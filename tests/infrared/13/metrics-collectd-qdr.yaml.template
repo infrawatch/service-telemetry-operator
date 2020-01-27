@@ -1,0 +1,56 @@
+---
+tripleo_heat_templates:
+    - /usr/share/openstack-tripleo-heat-templates/environments/metrics-collectd-qdr.yaml
+
+custom_templates:
+    parameter_defaults:
+        CollectdAmqpInterval: 5
+        CollectdDefaultPollingInterval: 5
+        CollectdDefaultPlugins:
+            - cpu
+            - df
+            - disk
+            - hugepages
+            - intel_rdt
+            - interface
+            - ipmi
+            - load
+            - memory
+            - processes
+            - unixsock
+            - uptime
+        DnsServers: ["10.19.42.41","10.11.5.19","10.5.30.160"]
+        ExtraConfig:
+            collectd::plugin::cpu::interval: 5
+            collectd::plugin::cpu::reportbycpu: true
+            collectd::plugin::cpu::reportbystate: true
+            collectd::plugin::cpu::reportnumcpu: false
+            collectd::plugin::cpu::valuespercentage: true
+            collectd::plugin::df::interval: 300
+            collectd::plugin::df::ignoreselected: true
+            collectd::plugin::df::fstypes: ['xfs']
+            collectd::plugin::disk::interval: 5
+            collectd::plugin::hugepages::interval: 60
+            collectd::plugin::intel_rdt::interval: 5
+            collectd::plugin::interface::interval: 5
+            collectd::plugin::ipmi::interval: 60
+            collectd::plugin::load::interval: 60
+            collectd::plugin::load::reportrelative: true
+            collectd::plugin::memory::interval: 5
+            collectd::plugin::processes::interval: 5
+            collectd::plugin::uptime::interval: 60
+            collectd::plugin::virt::interval: 5
+            collectd::plugin::virt::connection: "qemu:///system"
+            collectd::plugin::virt::extra_stats: "cpu_util disk disk_err pcpu job_stats_background perf vcpupin"
+            collectd::plugin::virt::hostname_format: "hostname uuid"
+        MetricsQdrAddresses:
+            - prefix: 'collectd'
+              distribution: multicast
+        MetricsQdrConnectors:
+            - host: <<AMQP_HOST>>
+              port: <<AMQP_PORT>>
+              role: edge
+              verifyHostname: false
+              sslProfile: sslProfile
+        MetricsQdrSSLProfiles:
+            - name: sslProfile

@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: saf-smoketest-<<CLOUDNAME>>
+spec:
+  parallelism: 1
+  completions: 1
+spec:
+  template:
+    metadata:
+      labels:
+        app: saf-smoketest
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: smoketest
+        image: tripleomaster/centos-binary-collectd:current-tripleo-rdo
+        command:
+        - /smoketest_entrypoint.sh
+        env:
+        - name: CLOUDNAME
+          value: <<CLOUDNAME>>
+        volumeMounts:
+        - name: collectd-config
+          mountPath: /etc/minimal-collectd.conf.template
+          subPath: minimal-collectd.conf.template
+        - name: entrypoint-script
+          mountPath: /smoketest_entrypoint.sh
+          subPath: smoketest_entrypoint.sh
+        - mountPath: /certificates
+          name: certificates
+      volumes:
+      - name: collectd-config
+        configMap:
+          name: saf-smoketest-collectd-config
+      - name: entrypoint-script
+        configMap:
+          name: saf-smoketest-entrypoint-script
+          defaultMode: 0555
+      - name: certificates
+        secret:
+          secretName: elasticsearch
+          defaultMode: 420

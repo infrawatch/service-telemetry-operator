@@ -1,0 +1,8 @@
+- metadata:
+    name: SAF Performance Test 1
+  spec:
+    value-lists: 20000
+    hosts: 20
+    plugins: 1000
+    interval: 1
+    length: 180
