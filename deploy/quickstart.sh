@@ -51,12 +51,12 @@ metadata:
   name: serviceassurance-operator-alpha-redhat-service-assurance-operators-openshift-marketplace
   namespace: ${SAF_PROJECT}
 spec:
-  channel: alpha
+  channel: beta
   installPlanApproval: Automatic
   name: serviceassurance-operator
   source: redhat-service-assurance-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: service-assurance-operator.v0.1.0
+  startingCSV: service-assurance-operator.v0.1.1
 EOF
 while ! oc get csv | grep service-assurance-operator | grep Succeeded; do echo "waiting for SAO..."; sleep 3; done
 oc create -f - <<EOF
