@@ -16,6 +16,11 @@
         serviceMonitorSelector:
           matchLabels:
             app: smart-gateway
+        alerting:
+          alertmanagers:
+          - name: alertmanager-operated
+            namespace: '{{ meta.namespace }}'
+            port: web
         storage:
           class: {{ prometheus_storage_class }}
           resources: {{ prometheus_storage_resources }}
