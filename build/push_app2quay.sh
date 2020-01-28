@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # contents of this file originally from https://redhat-connect.gitbook.io/certified-operator-guide/ocp-deployment/openshift-deployment
+source "$(dirname "$0")/metadata.sh"
 
 set -e
 
-CSV_VERSION=${CSV_VERSION:-0.1.1}
 UNIXDATE=$(date +%s)
 ORGANIZATION=${ORGANIZATION:-redhat-service-assurance}
 

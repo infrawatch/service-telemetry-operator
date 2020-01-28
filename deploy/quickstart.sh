@@ -1,9 +1,10 @@
 #!/bin/bash
-SAF_PROJECT=${SAF_PROJECT:-sa-telemetry}
+REL=$(dirname "$0");
+OCP_PROJECT=${OCP_PROJECT:-sa-telemetry}
 SAF_CONFIG=${SAF_CONFIG:-configs/default.bash}
-source ${SAF_CONFIG}
+source "${REL}/${SAF_CONFIG}"
 
-oc new-project "${SAF_PROJECT}"
+oc new-project "${OCP_PROJECT}"
 oc create -f - <<EOF
 apiVersion: operators.coreos.com/v1
 kind: OperatorSource
@@ -37,11 +38,11 @@ spec:
 apiVersion: operators.coreos.com/v1alpha2
 kind: OperatorGroup
 metadata:
-  name: ${SAF_PROJECT}-og
-  namespace: ${SAF_PROJECT}
+  name: ${OCP_PROJECT}-og
+  namespace: ${OCP_PROJECT}
 spec:
   targetNamespaces:
-  -  ${SAF_PROJECT}
+  -  ${OCP_PROJECT}
 
 ---
 
@@ -49,7 +50,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: serviceassurance-operator-alpha-redhat-service-assurance-operators-openshift-marketplace
-  namespace: ${SAF_PROJECT}
+  namespace: ${OCP_PROJECT}
 spec:
   channel: beta
   installPlanApproval: Automatic
@@ -59,6 +60,6 @@ spec:
   startingCSV: service-assurance-operator.v0.1.1
 EOF
 while ! oc get csv | grep service-assurance-operator | grep Succeeded; do echo "waiting for SAO..."; sleep 3; done
-oc create -f - <<EOF
-${KIND_SERVICEASSURANCE}
-EOF
+if [ ! -z "${KIND_SERVICEASSURANCE}" ]; then
+  oc create -f - <<< ${KIND_SERVICEASSURANCE}
+fi

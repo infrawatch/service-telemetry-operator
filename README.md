@@ -41,9 +41,12 @@ loaded for you.
 
 ## Development
 
-The quickest way to start up Service Assurance Framework for development is to run the
-`quickstart.sh` script located in the `deploy/` directory after starting up a
-[Code Ready Containers](https://github.com/code-ready/crc) environment.
+The quickest way to start up Service Assurance Framework for development is to
+run the `quickstart.sh` script located in the `deploy/` directory after starting
+up a [Code Ready Containers](https://github.com/code-ready/crc) environment.
+
+To deploy a local build of the Service Assurance Operator itself, follow the
+process shown in `build/build_ci.sh`.
 
 ## Tech Preview
 
@@ -52,3 +55,14 @@ documentation](https://redhat-service-assurance.github.io/saf-documentation)
 for more information about installing for production-style use cases on OCP3.
 
 Please use [the legacy saf-ocp3 branch](https://github.com/redhat-service-assurance/telemetry-framework/tree/saf-ocp3) for all such installations.
+
+## CI
+
+### Travis
+
+* Runs OLM and Ansible linting
+
+### Hybrid DYI CI
+
+* We run an internal CI server that smoketests builds and publishes the results
+* WIP - Not fully implemented yet
