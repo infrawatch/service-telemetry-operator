@@ -3,7 +3,7 @@
 # Source this file from other build scripts
 #
 
-# Configure these as necesarry
+# Configure these
 OPERATOR_NAME=${OPERATOR_NAME:-service-assurance-operator}
 CSV_VERSION=${CSV_VERSION:-0.1.1}
 IMAGE_BUILDER=${IMAGE_BUILDER:-podman}
