@@ -45,8 +45,15 @@ The quickest way to start up Service Assurance Framework for development is to
 run the `quickstart.sh` script located in the `deploy/` directory after starting
 up a [Code Ready Containers](https://github.com/code-ready/crc) environment.
 
-To deploy a local build of the Service Assurance Operator itself, follow the
-process shown in `build/build_ci.sh`.
+To deploy a local build of the Service Assurance Operator itself, start by
+running `build/build_ci.sh`. Once that's done, you can test new builds of the
+core operator code like this:
+
+```shell
+./build/build.sh &&\
+./build/push_container2ocp.sh &&\
+oc delete po -l name=service-assurance-operator
+```
 
 ## Tech Preview
 
