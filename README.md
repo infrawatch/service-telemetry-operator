@@ -69,7 +69,7 @@ Please use [the legacy saf-ocp3 branch](https://github.com/redhat-service-assura
 
 * Runs OLM and Ansible linting
 
-### Hybrid DYI CI
+### Hybrid DIY CI
 
 * We run an internal CI server that smoketests builds and publishes the results
 * WIP - Not fully implemented yet
