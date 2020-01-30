@@ -1,8 +1,8 @@
 #!/bin/bash
 REL=$(dirname "$0");
 OCP_PROJECT=${OCP_PROJECT:-sa-telemetry}
-SAF_CONFIG=${SAF_CONFIG:-configs/default.bash}
-source "${REL}/${SAF_CONFIG}"
+QUICKSTART_CONFIG=${QUICKSTART_CONFIG:-configs/default.bash}
+source "${REL}/${QUICKSTART_CONFIG}"
 
 oc new-project "${OCP_PROJECT}"
 oc create -f - <<EOF

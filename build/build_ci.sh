@@ -18,7 +18,7 @@ echo -e "\n* [info] Removing old SAF...\n"
 # object itself, effectively preventing the original operator from doing
 # "anything" (except establishing the CRD.... and...?)
 echo -e "\n* [info] Running quickstart...\n"
-SAF_CONFIG="configs/nosaf.bash" "${REL}/../deploy/quickstart.sh"
+QUICKSTART_CONFIG="configs/nosaf.bash" "${REL}/../deploy/quickstart.sh"
 
 echo -e "\n* [info] Pushing new operator image...\n"
 "${REL}/push_container2ocp.sh"
@@ -29,7 +29,7 @@ echo -e "\n* [info] Re-deploying with local build...\n"
 "${REL}/deploy_local_build.sh"
 
 # Now we can install an SAF object for the locally built operator to work on
-source "${REL}/../deploy/configs/default.bash"
+source "${REL}/../deploy/${QUICKSTART_CONFIG}"
 oc create -f - <<< "${KIND_SERVICEASSURANCE}"
 
 # Play the (automated!) waiting game
