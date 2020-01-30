@@ -18,7 +18,8 @@ CSV_FILE=${CSV_FILE:-"deploy/olm-catalog/${OPERATOR_NAME}/${CSV_VERSION}/${OPERA
 # NOTE: Strongly suggest that the destination tag in OCP is "latest" for testing
 # purposes, otherwise additional procedures are required to force a pull of an
 # updated container image
-OCP_TAG=${OCP_TAG:-latest}
+OCP_PROJECT=${OCP_PROJECT:-sa-telemetry}
 OCP_REGISTRY=${OCP_REGISTRY:-$(oc registry info)}
 OCP_REGISTRY_INTERNAL=${OCP_REGISTRY_INTERNAL:-$(oc registry info --internal=true)}
-OCP_PROJECT=${OCP_PROJECT:-sa-telemetry}
+OCP_TAG=${OCP_TAG:-latest}
+OCP_USER=${OCP_USER:-openshift}

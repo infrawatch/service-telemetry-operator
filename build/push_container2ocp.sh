@@ -12,5 +12,5 @@ if [ "${IMAGE_BUILDER}" = "podman" ]; then
 fi
 
 ${IMAGE_BUILDER} tag "${OPERATOR_NAME}:${IMAGE_TAG}" "${OCP_REGISTRY}/${OCP_PROJECT}/${OPERATOR_NAME}:${OCP_TAG}"
-${IMAGE_BUILDER} login ${REG_EXTRAFLAGS} -u 'openshift' -p "$(oc whoami -t)" "${OCP_REGISTRY}"
+${IMAGE_BUILDER} login ${REG_EXTRAFLAGS} -u "${OCP_USER}" -p "$(oc whoami -t)" "${OCP_REGISTRY}"
 ${IMAGE_BUILDER} push ${REG_EXTRAFLAGS} "${OCP_REGISTRY}/${OCP_PROJECT}/${OPERATOR_NAME}"
