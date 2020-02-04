@@ -12,5 +12,4 @@ if [ "${SDK_VERSION}" != "${REQUIRED_OPERATOR_SDK_VERSION}" ]; then
     exit 1
 fi
 
-
-operator-sdk build "${OPERATOR_NAME}:${IMAGE_TAG}" --image-builder "${IMAGE_BUILDER}"
+operator-sdk build "${OPERATOR_NAME}:${IMAGE_TAG}" --image-builder "${IMAGE_BUILDER}" --image-build-args "${IMAGE_BUILD_ARGS}"
