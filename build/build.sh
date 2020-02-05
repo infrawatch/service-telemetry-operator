@@ -6,7 +6,7 @@ REL=$(dirname "$0"); source "${REL}/metadata.sh"
 cd "${REL}/.."
 
 echo -e "\n* [info] Checking operator-sdk version\n"
-SDK_VERSION=$(operator-sdk version | cut -d '"' -f2)
+SDK_VERSION=$(operator-sdk version | cut -d '"' -f2 | cut -d '-' -f1)
 if [ "${SDK_VERSION}" != "${REQUIRED_OPERATOR_SDK_VERSION}" ]; then
     echo -e "* [error] Wrong operator-sdk version. Wanted ${REQUIRED_OPERATOR_SDK_VERSION}, Got: ${SDK_VERSION}\n";
     exit 1
