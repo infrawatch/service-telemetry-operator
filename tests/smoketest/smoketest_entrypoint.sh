@@ -3,7 +3,8 @@ set -e
 
 # Executes inside the test harness container to start collectd and look for resulting metrics in prometheus
 PROMETHEUS=${PROMETHEUS:-"prometheus-operated:9090"}
-ELASTICSEARCH=${ELASTICSEARCH:-"elasticsearch:9200"}
+ELASTICSEARCH=${ELASTICSEARCH:-"elasticsearch-es-http:9200"}
+ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
 
@@ -43,7 +44,7 @@ grep -E '"result":\[{"metric":{"__name__":"sa_collectd_cpu_total","cpu":"0","end
 metrics_result=$?
 
 echo "Get documents for this test from ElasticSearch..."
-DOCUMENT_HITS=$(curl -sk --cacert /certificates/admin-ca --cert /certificates/admin-cert --key /certificates/admin-key -X GET "https://${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'
+DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'
 {
   "size": 0,
   "terminate_after": 1,
@@ -66,7 +67,8 @@ DOCUMENT_HITS=$(curl -sk --cacert /certificates/admin-ca --cert /certificates/ad
       }
     }
   }
-}' | python -c "import sys, json; print json.load(sys.stdin)['hits']['total']")
+}' | python -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['_shards']['total'])")
+echo ${DOCUMENT_HITS}
 echo; echo
 
 # check if we got documents back for this test

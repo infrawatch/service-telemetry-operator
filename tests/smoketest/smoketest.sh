@@ -19,6 +19,9 @@ for ((i=1; i<=NUMCLOUDS; i++)); do
   CLOUDNAMES+=(${NAME})
 done
 
+echo "*** [INFO] Getting ElasticSearch authentication password"
+ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
+
 echo "*** [INFO] Creating configmaps..."
 oc delete configmap/saf-smoketest-collectd-config configmap/saf-smoketest-entrypoint-script job/saf-smoketest || true
 oc create configmap saf-smoketest-collectd-config --from-file ./minimal-collectd.conf.template
@@ -27,7 +30,7 @@ oc create configmap saf-smoketest-entrypoint-script --from-file ./smoketest_entr
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=saf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/" smoketest_job.yaml.template)
+    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/" smoketest_job.yaml.template)
 done
 
 # Trying to find a less brittle test than a timeout
@@ -69,7 +72,7 @@ oc logs "$(oc get pod -l prometheus=saf-default -o jsonpath='{.items[0].metadata
 echo
 
 echo "*** [INFO] Logs from elasticsearch..."
-oc logs "$(oc get pod -l component=elasticsearch -o jsonpath='{.items[0].metadata.name}')" -c elasticsearch
+oc logs "$(oc get pod -l common.k8s.elastic.co/type=elasticsearch -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 if [ $RET -eq 0 ]; then
