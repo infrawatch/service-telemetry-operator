@@ -6,12 +6,8 @@ to an SAF instance all on one (large) baremetal machine.
 ## Usage
 
 1. Have `ir --version` working
-1. Have `oc` tools working and pointed at a deploy SAF namespace
 1. Set VIRTHOST and have key based SSH access to root@$VIRTHOST
-1. (optional - not yet fully working) Run `minishift-saf.sh` to install OCP + SAF on $VIRTHOST
-    * Ensure the smoketest is passing before proceeding
-1. (optional) Set AMQP_HOST to point to your SAF
-    * Default is taken from the route if `oc` is pointing to your SAF namespace
+1. Set AMQP_HOST and AMQP_PORT
 1. Run `infrared-openstack.sh` to install OSP on $VIRTHOST
 (Cry when it fails; try to pick up where it left off)
 
@@ -32,13 +28,11 @@ You should be seeing samples for both compute-0 and controller-0
 Tested with the following versions:
 
 * infrared
-  * 2.0.1.dev3506 (ansible-2.7.12, python-2.7.5)
-* oc
-  * v3.11.0+0cbc58b
+  * 2.0.1.dev3952 (ansible-2.7.16, python-2.7.5)
 * "Virthost"
   * RHEL 7.6
 
 ## TODO
 * Stamp out the few remaining IP addresses and RH internal defaults
-* Get the minishift on VIRTHOST scenario working
+* Get the crc on VIRTHOST scenario working
 * Automated verification script
