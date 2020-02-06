@@ -44,31 +44,21 @@ grep -E '"result":\[{"metric":{"__name__":"sa_collectd_cpu_total","cpu":"0","end
 metrics_result=$?
 
 echo "Get documents for this test from ElasticSearch..."
-DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'
-{
-  "size": 0,
-  "terminate_after": 1,
+DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{
   "query": {
     "bool": {
-      "must": {
-        "match_phrase": {
-          "labels.instance": {
-            "query": "saf-smoketest-'"${CLOUDNAME}"'*"
-          }
-        }
-      },
-      "filter": {
-        "range" : {
-          "startsAt" : {
-            "gte" : "now-1m",
-            "lt" :  "now"
-           }
-         }
-      }
+      "must": [
+        { "match": { "labels.instance":   "'${CLOUDNAME}'" }}
+      ],
+      "filter": [
+        { "range" : { "startsAt" : { "gte" : "now-1m", "lt" : "now" } } }
+      ]
     }
   }
-}' | python -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['_shards']['total'])")
-echo ${DOCUMENT_HITS}
+}' | python -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
+
+echo "Found ${DOCUMENT_HITS} documents"
+
 echo; echo
 
 # check if we got documents back for this test
