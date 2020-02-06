@@ -9,9 +9,16 @@ VIRTHOST=${VIRTHOST:-localhost}
 AMQP_HOST=${AMQP_HOST:-saf-default-interconnect-5671-sa-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
-VM_IMAGE="${VM_IMAGE:-http://download.devel.redhat.com/brewroot/packages/rhel-guest-image/8.1/333/images/rhel-guest-image-8.1-333.x86_64.qcow2}"
-OSP_BUILD="${OSP_BUILD:-latest-RHOS_TRUNK-16-RHEL-8.1}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
+
+VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://127.0.0.1/my_image_location/}"
+if [ "${VM_IMAGE_URL_PATH}" = "http://127.0.0.1/my_image_location/" -a -z "${VM_IMAGE}" ]; then
+    echo "Please provide a VM_IMAGE_URL_PATH or VM_IMAGE"
+    exit 1
+fi
+# Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
+VM_IMAGE="${VM_IMAGE:-${VM_IMAGE_URL_PATH}/rhel-guest-image-8.1-413.x86_64.qcow2}"
+OSP_BUILD="${OSP_BUILD:-RHOS_TRUNK-16.0-RHEL-8-20200204.n.1}"
 
 infrared virsh \
     -vv \

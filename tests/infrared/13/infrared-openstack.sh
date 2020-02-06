@@ -8,9 +8,16 @@ set -e
 VIRTHOST=${VIRTHOST:-my.big.hypervisor.net}
 AMQP_HOST=${AMQP_HOST:-$(oc get route -l application=qdr-white -o jsonpath='{.items[0].spec.host}')}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
-VM_IMAGE="${VM_IMAGE:-http://download-node-02.eng.bos.redhat.com/released/RHEL-7/7.7/Server/x86_64/images/rhel-guest-image-7.7-261.x86_64.qcow2}"
-OSP_BUILD="${OSP_BUILD:-7.7-latest}"
 NTP_SERVER="${NTP_SERVER:-10.35.255.6}"
+
+VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://127.0.0.1/my_image_location/}"
+if [ "${VM_IMAGE_URL_PATH}" = "http://127.0.0.1/my_image_location/" -a -z "${VM_IMAGE}" ]; then
+    echo "Please provide a VM_IMAGE_URL_PATH or VM_IMAGE"
+    exit 1
+fi
+# Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
+VM_IMAGE="${VM_IMAGE:-${VM_IMAGE_URL_PATH}/rhel-guest-image-7.7-261.x86_64.qcow2}"
+OSP_BUILD="${OSP_BUILD:-7.7-latest}"
 
 infrared virsh \
     -vv \
