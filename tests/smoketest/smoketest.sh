@@ -18,19 +18,20 @@ for ((i=1; i<=NUMCLOUDS; i++)); do
   NAME="smoke${i}"
   CLOUDNAMES+=(${NAME})
 done
+REL=$(dirname "$0")
 
 echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
 
 echo "*** [INFO] Creating configmaps..."
 oc delete configmap/saf-smoketest-collectd-config configmap/saf-smoketest-entrypoint-script job/saf-smoketest || true
-oc create configmap saf-smoketest-collectd-config --from-file ./minimal-collectd.conf.template
-oc create configmap saf-smoketest-entrypoint-script --from-file ./smoketest_entrypoint.sh
+oc create configmap saf-smoketest-collectd-config --from-file ${REL}/minimal-collectd.conf.template
+oc create configmap saf-smoketest-entrypoint-script --from-file ${REL}/smoketest_entrypoint.sh
 
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=saf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/" smoketest_job.yaml.template)
+    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
 done
 
 # Trying to find a less brittle test than a timeout
