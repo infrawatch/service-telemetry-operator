@@ -5,7 +5,33 @@ QUICKSTART_CONFIG=${QUICKSTART_CONFIG:-configs/default.bash}
 source "${REL}/${QUICKSTART_CONFIG}"
 
 oc new-project "${OCP_PROJECT}"
-oc create -f - <<EOF
+oc apply -f - <<EOF
+
+apiVersion: config.openshift.io/v1
+kind: OperatorHub
+metadata:
+  name: cluster
+spec:
+  disableAllDefaultSources: true
+  sources:
+  - disabled: false
+    name: certified-operators
+  - disabled: false
+    name: redhat-operators
+
+---
+
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  name: ${OCP_PROJECT}-og
+  namespace: ${OCP_PROJECT}
+spec:
+  targetNamespaces:
+  -  ${OCP_PROJECT}
+
+---
+
 apiVersion: operators.coreos.com/v1
 kind: OperatorSource
 metadata:
@@ -17,6 +43,19 @@ spec:
   registryNamespace: redhat-service-assurance
   displayName: Service Assurance Operators
   publisher: Red Hat (CloudOps)
+
+---
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: operatorhubio-operators
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: quay.io/operator-framework/upstream-community-operators:latest
+  displayName: OperatorHub.io Operators
+  publisher: OperatorHub.io
 
 ---
 
@@ -35,14 +74,18 @@ spec:
 
 ---
 
-apiVersion: operators.coreos.com/v1alpha2
-kind: OperatorGroup
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
 metadata:
-  name: ${OCP_PROJECT}-og
+  name: elastic-cloud-eck
   namespace: ${OCP_PROJECT}
 spec:
-  targetNamespaces:
-  -  ${OCP_PROJECT}
+  channel: stable
+  installPlanApproval: Automatic
+  name: elastic-cloud-eck
+  source: operatorhubio-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: elastic-cloud-eck.v1.0.0
 
 ---
 

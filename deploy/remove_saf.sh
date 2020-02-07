@@ -11,6 +11,25 @@ oc delete project "${OCP_PROJECT}"
 # Our custom OperatorSource
 oc delete OperatorSource redhat-service-assurance-operators -n openshift-marketplace
 
+# Revert our OperatorHub.io catalog for default built-in Community Operators
+oc delete CatalogSource operatorhubio-operators -n openshift-marketplace
+
+oc apply -f - <<EOF
+apiVersion: config.openshift.io/v1
+kind: OperatorHub
+metadata:
+  name: cluster
+spec:
+  disableAllDefaultSources: true
+  sources:
+  - disabled: false
+    name: certified-operators
+  - disabled: false
+    name: redhat-operators
+  - disabled: false
+    name: community-operators
+EOF
+
 # SAF CRDs
 oc get crd | grep infra.watch | cut -d ' ' -f 1 | xargs oc delete crd
 

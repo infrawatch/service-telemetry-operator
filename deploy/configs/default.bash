@@ -5,4 +5,4 @@ metadata:
   namespace: ${OCP_PROJECT}
 spec:
   metricsEnabled: true
-  eventsEnabled: false"
+  eventsEnabled: true"
