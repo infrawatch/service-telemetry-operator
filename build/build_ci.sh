@@ -5,9 +5,6 @@
 set -e
 REL=$(dirname "$0"); source "${REL}/metadata.sh"
 
-echo -e "\n* [info] Building...\n"
-"${REL}/build.sh"
-
 echo -e "\n* [info] Removing old SAF...\n"
 "${REL}/../deploy/remove_saf.sh"
 
@@ -20,8 +17,8 @@ echo -e "\n* [info] Removing old SAF...\n"
 echo -e "\n* [info] Running quickstart...\n"
 QUICKSTART_CONFIG="configs/nosaf.bash" "${REL}/../deploy/quickstart.sh"
 
-echo -e "\n* [info] Pushing new operator image...\n"
-"${REL}/push_container2ocp.sh"
+echo -e "\n* [info] Building...\n"
+"${REL}/build.sh"
 
 # After quickstart, a CSV pointing at the upstream SAO image will be installed.
 # This script removes it and replaces it with the patched version
