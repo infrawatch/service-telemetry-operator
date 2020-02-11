@@ -4,6 +4,4 @@ script:
         - cd ./tests/smoketest 
         - ./smoketest.sh
 after_script:
-        - oc get subscriptions 
-        - oc get csv
         - ./deploy/remove_saf.sh
