@@ -15,7 +15,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: performance-test
-          image: quay.io/redhat-service-assurance/telemetry-bench
+          image: quay.io/redhat-service-telemetry/telemetry-bench
           imagePullPolicy: Always
           args: ["-hostprefix", "<<PREFIX>>", "-hosts", "<<HOSTS>>", "-plugins", "<<PLUGINS>>", "-instances", "1", "-send", "<<COUNT>>", "-interval", "<<INTERVAL>>", "-startmetricenable", "-verbose", "amqp://saf-default-interconnect:5672/collectd/telemetry/"]
       affinity:

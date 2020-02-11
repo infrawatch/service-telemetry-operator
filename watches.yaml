@@ -1,5 +1,5 @@
 ---
 - version: v1alpha1
   group: infra.watch
-  kind: ServiceAssurance
-  role: /opt/ansible/roles/serviceassurance
+  kind: ServiceTelemetry
+  role: /opt/ansible/roles/servicetelemetry

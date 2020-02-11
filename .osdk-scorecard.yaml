@@ -3,8 +3,8 @@ scorecard:
   plugins:
     - basic:
         cr-manifest:
-          - "deploy/crds/infra.watch_v1alpha1_serviceassurance_cr.yaml"
+          - "deploy/crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml"
     - olm:
         cr-manifest:
-          - "deploy/crds/infra.watch_v1alpha1_serviceassurance_cr.yaml"
-        csv-path: "deploy/olm-catalog/service-assurance-operator/0.1.0/service-assurance-operator.v0.1.0.clusterserviceversion.yaml"
+          - "deploy/crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml"
+        csv-path: "deploy/olm-catalog/service-telemetry-operator/0.1.0/service-telemetry-operator.v0.1.0.clusterserviceversion.yaml"

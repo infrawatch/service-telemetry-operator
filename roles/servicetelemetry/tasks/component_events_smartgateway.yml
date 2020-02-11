@@ -28,7 +28,7 @@
         use_basic_auth: 'true'
         elastic_user: '{{ elastic_user }}'
         elastic_pass: '{{ elastic_pass }}'
-        container_image_path: 'quay.io/redhat-service-assurance/smart-gateway:latest'
+        container_image_path: 'quay.io/redhat-service-telemetry/smart-gateway:latest'
         use_tls: 'true'
         tls_client_cert: /config/certs/tls.crt
         tls_client_key: /config/certs/tls.key

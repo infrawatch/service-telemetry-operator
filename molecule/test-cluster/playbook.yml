@@ -6,22 +6,22 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
-    image_name: infra.watch/service-assurance-operator:testing
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/infra.watch_v1alpha1_serviceassurance_cr.yaml'])) | from_yaml }}"
+    image_name: infra.watch/service-telemetry-operator:testing
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml'])) | from_yaml }}"
   tasks:
-  - name: Create the infra.watch/v1alpha1.ServiceAssurance
+  - name: Create the infra.watch/v1alpha1.ServiceTelemetry
     k8s:
       namespace: '{{ namespace }}'
-      definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/infra.watch_v1alpha1_serviceassurance_cr.yaml'])) }}"
+      definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml'])) }}"
 
   - name: Get the newly created Custom Resource
     debug:
-      msg: "{{ lookup('k8s', group='infra.watch', api_version='v1alpha1', kind='ServiceAssurance', namespace=namespace, resource_name=custom_resource.metadata.name) }}"
+      msg: "{{ lookup('k8s', group='infra.watch', api_version='v1alpha1', kind='ServiceTelemetry', namespace=namespace, resource_name=custom_resource.metadata.name) }}"
 
   - name: Wait 60s for reconciliation to run
     k8s_facts:
       api_version: 'v1alpha1'
-      kind: 'ServiceAssurance'
+      kind: 'ServiceTelemetry'
       namespace: '{{ namespace }}'
       name: '{{ custom_resource.metadata.name }}'
     register: reconcile_cr

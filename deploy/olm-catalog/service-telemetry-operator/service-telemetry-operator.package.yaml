@@ -1,0 +1,5 @@
+channels:
+- currentCSV: service-telemetry-operator.v0.1.1
+  name: beta
+defaultChannel: beta
+packageName: servicetelemetry-operator

@@ -14,7 +14,7 @@ echo -e "\n* [info] Removing old SAF...\n"
 # Running quickstart triggers an initial install via a subscription.
 # OLM satisfies dependencies via the subscription, allowing us to test our deps
 # are still working as well as creating a more DRY CI deployment.
-# We pass "nosaf" config which supresses the creation of the ServiceAssurance
+# We pass "nosaf" config which supresses the creation of the ServiceTelemetry
 # object itself, effectively preventing the original operator from doing
 # "anything" (except establishing the CRD.... and...?)
 echo -e "\n* [info] Running quickstart...\n"
