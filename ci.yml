@@ -1,10 +1,10 @@
 script:
         - export HOME=$(dirname "$PWD")
         - oc login -u kubeadmin -p BdTY8-Vra64-gD3cI-dAPS6 --insecure-skip-tls-verify=true https://api.crc.testing:6443
-        - IMAGE_BUILD_ARGS="--storage-driver vfs" ./build/build_ci.sh
-        - cd ./tests/smoketest 
-        - ./smoketest.sh
+        - oc new-project "${OCP_PROJECT}"
+        - ./build/build.sh
+        - ./build/deploy_ci.sh
+        - ./tests/smoketest/smoketest.sh
 after_script:
-        - cd deploy/ 
         - export HOME=$(dirname "$PWD")
-        - ./remove_saf.sh
+        - ./deploy/remove_saf.sh

@@ -5,9 +5,6 @@
 set -e
 REL=$(dirname "$0"); source "${REL}/metadata.sh"
 
-echo -e "\n* [info] Removing old SAF...\n"
-"${REL}/../deploy/remove_saf.sh"
-
 # Running quickstart triggers an initial install via a subscription.
 # OLM satisfies dependencies via the subscription, allowing us to test our deps
 # are still working as well as creating a more DRY CI deployment.
@@ -16,9 +13,6 @@ echo -e "\n* [info] Removing old SAF...\n"
 # "anything" (except establishing the CRD.... and...?)
 echo -e "\n* [info] Running quickstart...\n"
 QUICKSTART_CONFIG="configs/nosaf.bash" "${REL}/../deploy/quickstart.sh"
-
-echo -e "\n* [info] Building...\n"
-"${REL}/build.sh"
 
 # After quickstart, a CSV pointing at the upstream SAO image will be installed.
 # This script removes it and replaces it with the patched version
