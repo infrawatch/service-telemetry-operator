@@ -25,7 +25,7 @@ metadata:
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
-    repository: https://github.com/redhat-service-telemetry/service-telemetry-operator
+    repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
   name: service-telemetry-operator.v0.1.1
   namespace: placeholder
