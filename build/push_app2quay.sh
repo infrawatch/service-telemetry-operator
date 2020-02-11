@@ -5,7 +5,7 @@ source "$(dirname "$0")/metadata.sh"
 set -e
 
 UNIXDATE=$(date +%s)
-ORGANIZATION=${ORGANIZATION:-redhat-service-telemetry}
+ORGANIZATION=${ORGANIZATION:-infrawatch}
 
 if [ -z "$USERNAME" ]; then
     echo -n "Username: "

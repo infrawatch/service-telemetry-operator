@@ -35,13 +35,13 @@ spec:
 apiVersion: operators.coreos.com/v1
 kind: OperatorSource
 metadata:
-  name: redhat-service-telemetry-operators
+  name: infrawatch-operators
   namespace: openshift-marketplace
 spec:
   type: appregistry
   endpoint: https://quay.io/cnr
-  registryNamespace: redhat-service-telemetry
-  displayName: Service Telemetry Operators
+  registryNamespace: infrawatch
+  displayName: InfraWatch Operators
   publisher: Red Hat (CloudOps)
 
 ---
@@ -92,13 +92,13 @@ spec:
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: servicetelemetry-operator-alpha-redhat-service-telemetry-operators-openshift-marketplace
+  name: servicetelemetry-operator-beta-infrawatch-operators-openshift-marketplace
   namespace: ${OCP_PROJECT}
 spec:
   channel: beta
   installPlanApproval: Automatic
   name: servicetelemetry-operator
-  source: redhat-service-telemetry-operators
+  source: infrawatch-operators
   sourceNamespace: openshift-marketplace
   startingCSV: service-telemetry-operator.v0.1.1
 EOF
