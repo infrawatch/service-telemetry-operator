@@ -4,4 +4,8 @@ script:
         - cd ./tests/smoketest 
         - ./smoketest.sh
 after_script:
+        - oc get subscriptions 
+        - for i in subscriptions; do oc get subscription $i -oyaml; done
+        - oc get csv
+        - for i in csvs; do oc get csv $i -oyaml; done
         - ./deploy/remove_saf.sh
