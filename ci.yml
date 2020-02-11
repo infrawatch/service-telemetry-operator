@@ -1,6 +1,4 @@
 script:
-        - cd build
-        - echo $PATH
         - export HOME=$(dirname "$PWD")
         - oc login -u kubeadmin -p BdTY8-Vra64-gD3cI-dAPS6 --insecure-skip-tls-verify=true https://api.crc.testing:6443
         - IMAGE_BUILD_ARGS="--storage-driver vfs" ./build_ci.sh
