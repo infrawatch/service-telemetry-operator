@@ -7,7 +7,6 @@ spec:
   source:
     git:
       uri: https://github.com/redhat-service-assurance/service-assurance-operator.git
-      ref: csibbitt-902-buildconfig
   strategy:
     dockerStrategy:
         dockerfilePath: build/Dockerfile
