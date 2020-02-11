@@ -11,5 +11,4 @@ oc create -f <(sed "
     s|<<OCP_TAG>>|${OCP_TAG}|g"\
     "buildConfig.yaml.template")
 
-oc start-build "${OPERATOR_NAME}"
-
+oc start-build "${OPERATOR_NAME}" --wait --follow
