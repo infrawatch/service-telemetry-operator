@@ -2,7 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
-  name: service-assurance-operator
+  name: service-telemetry-operator
 rules:
 - apiGroups:
   - ""
@@ -46,7 +46,7 @@ rules:
 - apiGroups:
   - apps
   resourceNames:
-  - service-assurance-operator
+  - service-telemetry-operator
   resources:
   - deployments/finalizers
   verbs:

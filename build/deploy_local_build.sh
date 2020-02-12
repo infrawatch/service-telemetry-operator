@@ -11,7 +11,7 @@ REL=$(dirname "$0"); source "${REL}/metadata.sh"
 CSV_NAME="${OPERATOR_NAME}.v${CSV_VERSION}"
 
 # Do a partial SAO uninstall (non-DRY/generic name, matches quickstart manifest)
-oc delete sub serviceassurance-operator-alpha-redhat-service-assurance-operators-openshift-marketplace || true
+oc delete sub servicetelemetry-operator-beta-infrawatch-operators-openshift-marketplace || true
 while oc get csv "${CSV_NAME}"; do
     oc delete csv "${CSV_NAME}" || true
     echo "Waiting for csv "${CSV_NAME}" to disappear"

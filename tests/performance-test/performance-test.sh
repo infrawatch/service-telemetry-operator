@@ -83,7 +83,7 @@ make_qdr_edge_router(){
 # basic check if necessary resources exist. DOES NOT verify they work correctly
 check_resources(){
     printf "\n*** Performing Resource Checks ***\n"
-    if ! oc get ServiceAssurance; then 
+    if ! oc get ServiceTelemetry; then 
         echo "No SAF found deployed in this namespace. Deploy SAF before running performance test" 1>&2
         exit 1
     fi

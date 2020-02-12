@@ -8,7 +8,7 @@
         namespace: '{{ meta.namespace }}'
       spec:
         amqp_url: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/telemetry'
-        container_image_path: 'quay.io/redhat-service-assurance/smart-gateway:latest'
+        container_image_path: 'quay.io/infrawatch/smart-gateway:latest'
         debug: 'false'
         service_type: 'metrics'
         size: 1

@@ -12,5 +12,5 @@ install:
   - pip install ansible-lint
 
 script:
-  - operator-courier verify --ui_validate_io deploy/olm-catalog/service-assurance-operator
-  - ansible-lint roles/serviceassurance/
+  - operator-courier verify --ui_validate_io deploy/olm-catalog/service-telemetry-operator
+  - ansible-lint roles/servicetelemetry/

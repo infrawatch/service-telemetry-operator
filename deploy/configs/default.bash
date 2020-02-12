@@ -1,5 +1,5 @@
 KIND_SERVICEASSURANCE="apiVersion: infra.watch/v1alpha1
-kind: ServiceAssurance
+kind: ServiceTelemetry
 metadata:
   name: saf-default
   namespace: ${OCP_PROJECT}

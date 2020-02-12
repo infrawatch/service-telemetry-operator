@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Pushes local container image `service-assurance-operator` into OCP
+# Pushes local container image `service-telemetry-operator` into OCP
 # * `oc` must already target OCP
 # * container image must already be built. See build.sh for more information
 #

@@ -18,7 +18,7 @@ grafana instance and one that executes the testing logic.
 
 ## Setup
 
-SAF must already be deployed including the default ServiceAssurance example CR.
+SAF must already be deployed including the default ServiceTelemetry example CR.
 A quick way to do this is using the `quickstart.sh` script in 
 `telemetry-framework/deploy/` directory to run SAF.	
 

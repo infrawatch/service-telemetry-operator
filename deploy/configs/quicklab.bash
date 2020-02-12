@@ -1,6 +1,6 @@
 # NOTE: namespace is hardcoded because the namespace is embedded in the certs loaded by this configuration
 KIND_SERVICEASSURANCE="apiVersion: infra.watch/v1alpha1
-kind: ServiceAssurance
+kind: ServiceTelemetry
 metadata:
   name: saf-default
   namespace: sa-telemetry
