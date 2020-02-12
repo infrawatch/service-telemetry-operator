@@ -8,12 +8,27 @@
 set -e
 REL=$(dirname "$0"); source "${REL}/metadata.sh"
 
+CSV_NAME="${OPERATOR_NAME}.v${CSV_VERSION}"
+
 # Do a partial SAO uninstall (non-DRY/generic name, matches quickstart manifest)
 oc delete sub serviceassurance-operator-alpha-redhat-service-assurance-operators-openshift-marketplace || true
-oc delete csv "${OPERATOR_NAME}.v${CSV_VERSION}" || true
+while oc get csv "${CSV_NAME}"; do
+    oc delete csv "${CSV_NAME}" || true
+    echo "Waiting for csv "${CSV_NAME}" to disappear"
+    sleep 3
+done
 
 # RBAC is handled by the subscription controller
 # But we are installing directly from a csv so we have to do it ourselves
+# These should be removed by the csv deletion but we do it again
+# so we can redeploy from a local deploy where we've already installed them
+for kind in serviceaccount role rolebinding; do
+    while oc get "${kind}" "${OPERATOR_NAME}"; do
+        oc delete "${kind}" "${OPERATOR_NAME}" || true
+        echo "Waiting for ${kind} ${OPERATOR_NAME} to disappear"
+        sleep 3
+    done
+done
 oc create -f "${REL}/../deploy/service_account.yaml"
 oc create -f "${REL}/../deploy/role.yaml"
 oc create -f "${REL}/../deploy/role_binding.yaml"
