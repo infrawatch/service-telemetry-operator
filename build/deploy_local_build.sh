@@ -9,7 +9,7 @@ set -e
 REL=$(dirname "$0"); source "${REL}/metadata.sh"
 
 # Do a partial SAO uninstall (non-DRY/generic name, matches quickstart manifest)
-oc delete sub serviceassurance-operator-alpha-redhat-service-assurance-operators-openshift-marketplace || true
+oc delete sub servicetelemetry-operator-beta-infrawatch-operators-openshift-marketplace || true
 oc delete csv "${OPERATOR_NAME}.v${CSV_VERSION}" || true
 
 # RBAC is handled by the subscription controller

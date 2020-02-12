@@ -1,6 +1,6 @@
 galaxy_info:
   author: Leif Madsen <leif@redhat.com>
-  description: Service Assurance Framework Umbrella Operator
+  description: Service Telemetry Framework Umbrella Operator
   company: Red Hat, Inc.
   license: Apache
   min_ansible_version: 2.7
@@ -15,6 +15,6 @@ galaxy_info:
 
   galaxy_tags:
   - monitoring
-  - serviceassurance
+  - servicetelemetry
 
 dependencies: []
