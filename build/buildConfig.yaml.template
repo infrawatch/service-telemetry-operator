@@ -1,0 +1,16 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: "<<OPERATOR_NAME>>"
+spec:
+  runPolicy: "Serial"
+  source:
+    git:
+      uri: https://github.com/redhat-service-assurance/service-assurance-operator.git
+  strategy:
+    dockerStrategy:
+        dockerfilePath: build/Dockerfile
+  output:
+    to:
+      kind: "ImageStreamTag"
+      name: "<<OPERATOR_NAME>>:<<OCP_TAG>>"
