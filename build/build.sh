@@ -9,4 +9,4 @@ oc apply -f <(sed "
     s|<<OCP_TAG>>|${OCP_TAG}|g"\
     "${REL}/buildConfig.yaml.template")
 
-oc start-build "${OPERATOR_NAME}" --wait --follow --from-repo "${REL}/.."
+oc start-build "${OPERATOR_NAME}" --wait --follow --from-dir "${REL}/.."
