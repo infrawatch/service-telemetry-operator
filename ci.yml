@@ -1,6 +1,6 @@
 script:
         - export HOME=$(dirname "$PWD")
-        - oc login -u kubeadmin -p BdTY8-Vra64-gD3cI-dAPS6 --insecure-skip-tls-verify=true https://api.crc.testing:6443
+        - oc login -u kubeadmin -p mhk2X-Y8ozE-9icYb-uLCdV --insecure-skip-tls-verify=true https://api.crc.testing:6443
         - oc new-project "${OCP_PROJECT}"
         - ./build/build.sh
         - ./build/deploy_ci.sh
