@@ -24,12 +24,12 @@ echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
 
 echo "*** [INFO] Creating configmaps..."
-oc delete configmap/saf-smoketest-collectd-config configmap/saf-smoketest-entrypoint-script job/saf-smoketest || true
-oc create configmap saf-smoketest-collectd-config --from-file ${REL}/minimal-collectd.conf.template
-oc create configmap saf-smoketest-entrypoint-script --from-file ${REL}/smoketest_entrypoint.sh
+oc delete configmap/stf-smoketest-collectd-config configmap/stf-smoketest-entrypoint-script job/stf-smoketest || true
+oc create configmap stf-smoketest-collectd-config --from-file ${REL}/minimal-collectd.conf.template
+oc create configmap stf-smoketest-entrypoint-script --from-file ${REL}/smoketest_entrypoint.sh
 
 echo "*** [INFO] Creating smoketest jobs..."
-oc delete job -l app=saf-smoketest
+oc delete job -l app=stf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
     oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
 done
@@ -37,8 +37,8 @@ done
 # Trying to find a less brittle test than a timeout
 JOB_TIMEOUT=300s
 for NAME in "${CLOUDNAMES[@]}"; do
-    echo "*** [INFO] Waiting on job/saf-smoketest-${NAME}..."
-    oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/saf-smoketest-${NAME}"
+    echo "*** [INFO] Waiting on job/stf-smoketest-${NAME}..."
+    oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/stf-smoketest-${NAME}"
     RET=$((RET || $?)) # Accumulate exit codes
 done
 
@@ -52,16 +52,16 @@ echo
 
 echo "*** [INFO] Logs from smoketest containers..."
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc logs "$(oc get pod -l "job-name=saf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')"
+    oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')"
 done
 echo
 
 echo "*** [INFO] Logs from qdr..."
-oc logs "$(oc get pod -l application=saf-default-interconnect -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l application=stf-default-interconnect -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from smart gateways..."
-oc logs "$(oc get pod -l "deploymentconfig=saf-default-telemetry-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "deploymentconfig=stf-default-telemetry-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
@@ -69,7 +69,7 @@ oc logs "$(oc get pod -l app=smart-gateway -o jsonpath='{.items[0].metadata.name
 echo
 
 echo "*** [INFO] Logs from prometheus..."
-oc logs "$(oc get pod -l prometheus=saf-default -o jsonpath='{.items[0].metadata.name}')" -c prometheus
+oc logs "$(oc get pod -l prometheus=stf-default -o jsonpath='{.items[0].metadata.name}')" -c prometheus
 echo
 
 echo "*** [INFO] Logs from elasticsearch..."

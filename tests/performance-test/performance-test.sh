@@ -58,9 +58,9 @@ ellipse(){
 
 # cleans up all resources created by performance test
 delete(){
-    oc delete servicemonitor saf-default-interconnect qdr-test prometheus || true
+    oc delete servicemonitor stf-default-interconnect qdr-test prometheus || true
     oc delete qdr qdr-test || true
-    oc delete job -l app=saf-performance-test || true
+    oc delete job -l app=stf-performance-test || true
 }
 
 # create service monitors
@@ -129,7 +129,7 @@ delete_es_events(){
     local esPod=$(oc get elasticsearch elasticsearch -o jsonpath='{.status.pods.master.ready[0]}')
     local secretPath="/etc/elasticsearch/secret/"
     local esQuery=$(cat <<EOF
-        { "query" : { "bool": { "must": { "match_phrase": { "labels.instance": { "query": "saf-perftest-notify-*" } } } } } }
+        { "query" : { "bool": { "must": { "match_phrase": { "labels.instance": { "query": "stf-perftest-notify-*" } } } } } }
 EOF
 )
     printf "\n*** Deleting ES Events ***\n"
@@ -144,7 +144,7 @@ get_es_event_count(){
         local esPod=$(oc get elasticsearch elasticsearch -o jsonpath='{.status.pods.master.ready[0]}')
         local secretPath="/etc/elasticsearch/secret/"
         local esQuery=$(cat <<EOF
-        { "query" : { "bool": { "must": { "match_phrase": { "labels.instance": { "query": "saf-perftest-notify-*" } } } } } }
+        { "query" : { "bool": { "must": { "match_phrase": { "labels.instance": { "query": "stf-perftest-notify-*" } } } } } }
 EOF
 )
     ES_EVENT_RECV_COUNT=$(oc exec "$esPod" -- curl --silent --cacert "${secretPath}admin-ca" --cert \
@@ -234,8 +234,8 @@ while true; do
             fi
         ;;
         "TARGET")
-            TARGETS=$(oc exec prometheus-saf-default-0 -c prometheus -- wget -qO - http://localhost:9090/api/v1/targets)
-            QDRWHITE=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"saf-default-interconnect"' || true)
+            TARGETS=$(oc exec prometheus-stf-default-0 -c prometheus -- wget -qO - http://localhost:9090/api/v1/targets)
+            QDRWHITE=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"stf-default-interconnect"' || true)
             QDRTEST=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"qdr-test"' || true)
             PROM=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"prometheus-operated"' || true)
 
@@ -252,7 +252,7 @@ while true; do
             fi
         ;;
         "TEST")
-            estab=$(oc get pod -l job-name=saf-perftest-1-runner -o jsonpath='{.items[0].status.conditions[?(@.type=="ContainersReady")].status}')
+            estab=$(oc get pod -l job-name=stf-perftest-1-runner -o jsonpath='{.items[0].status.conditions[?(@.type=="ContainersReady")].status}')
             if [ "${estab}" != "True" ]; then
                 printf '%s' "Waiting on SAF performance test pod creation"; ellipse
                 sleep 1
@@ -260,13 +260,13 @@ while true; do
                 printf "\nSAF performance test pod established\n"
                 printf "\n*** Listening to job runner ***\n"
 
-                oc logs -f "$(oc get pod -l job-name=saf-perftest-1-runner -o jsonpath='{.items[0].metadata.name}')" |  grep -E 'total [0-9]+'
+                oc logs -f "$(oc get pod -l job-name=stf-perftest-1-runner -o jsonpath='{.items[0].metadata.name}')" |  grep -E 'total [0-9]+'
                 STAGE="RESULTS"
             fi
         ;;
         "RESULTS")
             printf "\n*** Collecting test results ***\n"
-            # PODNAME=$(oc get pod -l job-name=saf-perftest-notify -o jsonpath='{.items[0].metadata.name}')
+            # PODNAME=$(oc get pod -l job-name=stf-perftest-notify -o jsonpath='{.items[0].metadata.name}')
             # oc exec "$PODNAME" -- pkill collectd > /dev/null
             # sleep 3
             # oc cp "${PODNAME}:/tmp/events.json" /tmp/events.json

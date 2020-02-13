@@ -1,6 +1,6 @@
 #!/bin/bash
 REL=$(dirname "$0");
-OCP_PROJECT=${OCP_PROJECT:-sa-telemetry}
+OCP_PROJECT=${OCP_PROJECT:-service-telemetry}
 QUICKSTART_CONFIG=${QUICKSTART_CONFIG:-configs/default.bash}
 source "${REL}/${QUICKSTART_CONFIG}"
 

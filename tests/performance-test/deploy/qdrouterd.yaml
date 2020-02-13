@@ -30,6 +30,6 @@ spec:
       http: true
   edgeConnectors:
     - name: router
-      host: saf-default-interconnect
+      host: stf-default-interconnect
       port: 5671
       verifyHostname: no

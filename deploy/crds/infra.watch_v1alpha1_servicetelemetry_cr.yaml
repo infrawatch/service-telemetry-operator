@@ -1,7 +1,7 @@
 apiVersion: infra.watch/v1alpha1
 kind: ServiceTelemetry
 metadata:
-  name: saf-default
+  name: stf-default
 spec:
   metricsEnabled: true
   eventsEnabled: false

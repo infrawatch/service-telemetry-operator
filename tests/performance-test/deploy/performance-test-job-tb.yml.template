@@ -17,7 +17,7 @@ spec:
         - name: performance-test
           image: quay.io/infrawatch/telemetry-bench
           imagePullPolicy: Always
-          args: ["-hostprefix", "<<PREFIX>>", "-hosts", "<<HOSTS>>", "-plugins", "<<PLUGINS>>", "-instances", "1", "-send", "<<COUNT>>", "-interval", "<<INTERVAL>>", "-startmetricenable", "-verbose", "amqp://saf-default-interconnect:5672/collectd/telemetry/"]
+          args: ["-hostprefix", "<<PREFIX>>", "-hosts", "<<HOSTS>>", "-plugins", "<<PLUGINS>>", "-instances", "1", "-send", "<<COUNT>>", "-interval", "<<INTERVAL>>", "-startmetricenable", "-verbose", "amqp://stf-default-interconnect:5672/collectd/telemetry/"]
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

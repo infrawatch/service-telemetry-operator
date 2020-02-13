@@ -1,13 +1,13 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: 'saf-default-interconnect'
+  name: 'stf-default-interconnect'
   labels:
     app: smart-gateway
 spec:
   selector:
     matchLabels:
-      application: saf-default-interconnect
+      application: stf-default-interconnect
   endpoints:
   - port: "8672"
     interval: 10s 

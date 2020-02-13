@@ -7,4 +7,4 @@ script:
         - ./tests/smoketest/smoketest.sh
 after_script:
         - export HOME=$(dirname "$PWD")
-        - ./deploy/remove_saf.sh
+        - ./deploy/remove_stf.sh

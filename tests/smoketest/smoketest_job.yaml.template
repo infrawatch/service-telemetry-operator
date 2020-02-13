@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: saf-smoketest-<<CLOUDNAME>>
+  name: stf-smoketest-<<CLOUDNAME>>
 spec:
   parallelism: 1
   completions: 1
@@ -9,7 +9,7 @@ spec:
   template:
     metadata:
       labels:
-        app: saf-smoketest
+        app: stf-smoketest
     spec:
       restartPolicy: Never
       containers:
@@ -32,8 +32,8 @@ spec:
       volumes:
       - name: collectd-config
         configMap:
-          name: saf-smoketest-collectd-config
+          name: stf-smoketest-collectd-config
       - name: entrypoint-script
         configMap:
-          name: saf-smoketest-entrypoint-script
+          name: stf-smoketest-entrypoint-script
           defaultMode: 0555
