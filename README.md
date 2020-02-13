@@ -61,7 +61,7 @@ See the [official
 documentation](https://redhat-service-assurance.github.io/stf-documentation)
 for more information about installing for production-style use cases on OCP3.
 
-Please use [the legacy stf-ocp3 branch](https://github.com/redhat-service-assurance/telemetry-framework/tree/stf-ocp3) for all such installations.
+Please use [the legacy saf-ocp3 branch](https://github.com/redhat-service-assurance/telemetry-framework/tree/saf-ocp3) for all such installations.
 
 ## CI
 
