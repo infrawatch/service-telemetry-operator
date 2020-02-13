@@ -6,7 +6,7 @@ spec:
   runPolicy: "Serial"
   source:
     git:
-      uri: https://github.com/redhat-service-assurance/service-telemetry-operator.git
+      uri: https://github.com/infrawatch/service-telemetry-operator.git
   strategy:
     dockerStrategy:
         dockerfilePath: build/Dockerfile
