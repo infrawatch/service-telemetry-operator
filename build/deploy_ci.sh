@@ -8,11 +8,11 @@ REL=$(dirname "$0"); source "${REL}/metadata.sh"
 # Running quickstart triggers an initial install via a subscription.
 # OLM satisfies dependencies via the subscription, allowing us to test our deps
 # are still working as well as creating a more DRY CI deployment.
-# We pass "nosaf" config which supresses the creation of the ServiceTelemetry
+# We pass "nostf" config which supresses the creation of the ServiceTelemetry
 # object itself, effectively preventing the original operator from doing
 # "anything" (except establishing the CRD.... and...?)
 echo -e "\n* [info] Running quickstart...\n"
-QUICKSTART_CONFIG="configs/nosaf.bash" "${REL}/../deploy/quickstart.sh"
+QUICKSTART_CONFIG="configs/nostf.bash" "${REL}/../deploy/quickstart.sh"
 
 # After quickstart, a CSV pointing at the upstream SAO image will be installed.
 # This script removes it and replaces it with the patched version
@@ -25,9 +25,9 @@ oc create -f - <<< "${KIND_SERVICEASSURANCE}"
 
 # Play the (automated!) waiting game
 echo -e "\n* [info] Waiting for QDR deployment to complete\n"
-until timeout 300 oc rollout status deployment.apps/saf-default-interconnect; do sleep 3; done
+until timeout 300 oc rollout status deployment.apps/stf-default-interconnect; do sleep 3; done
 echo -e "\n* [info] Waiting for prometheus deployment to complete\n"
-until timeout 300 oc rollout status statefulset.apps/prometheus-saf-default; do sleep 3; done
+until timeout 300 oc rollout status statefulset.apps/prometheus-stf-default; do sleep 3; done
 echo -e "\n* [info] Waiting for elasticsearch deployment to complete \n"
 while true; do
     ES_READY=$(oc get statefulsets elasticsearch-es-default -ogo-template='{{ .status.readyReplicas }}') || continue
@@ -37,10 +37,10 @@ while true; do
     sleep 3
 done
 echo -e "\n* [info] Waiting for alertmanager deployment to complete\n"
-until timeout 300 oc rollout status statefulset.apps/alertmanager-saf-default; do sleep 3; done
+until timeout 300 oc rollout status statefulset.apps/alertmanager-stf-default; do sleep 3; done
 echo -e "\n* [info] Waiting for smart-gateway deployment to complete\n"
-until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/saf-default-telemetry-smartgateway; do sleep 3; done
-until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/saf-default-notification-smartgateway; do sleep 3; done
+until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/stf-default-telemetry-smartgateway; do sleep 3; done
+until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/stf-default-notification-smartgateway; do sleep 3; done
 echo -e "\n* [info] Waiting for all pods to show Ready/Complete\n"
 while oc get pods | tail -n +2 | grep -v -E 'Running|Completed'; do
     sleep 3

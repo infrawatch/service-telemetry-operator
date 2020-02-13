@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: saf-perftest-notify
+  name: stf-perftest-notify
 spec:
   parallelism: 1
   completions: 1
@@ -9,11 +9,11 @@ spec:
   template:
     metadata:
       labels:
-        app: saf-performance-test
+        app: stf-performance-test
     spec:
       restartPolicy: Never
       containers:
-      - name: saf-perftest-notify
+      - name: stf-perftest-notify
         image: tripleomaster/centos-binary-collectd:current-tripleo-rdo
         command: 
         - /entrypoint.sh
@@ -27,9 +27,9 @@ spec:
       volumes:
       - name: entrypoint
         configMap:
-          name: saf-performance-test-events-entry
+          name: stf-performance-test-events-entry
           defaultMode: 0777
       - name: collectd-config
         configMap:
-          name: saf-performance-test-collectd-config
+          name: stf-performance-test-collectd-config
 

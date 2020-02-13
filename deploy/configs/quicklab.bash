@@ -2,8 +2,8 @@
 KIND_SERVICEASSURANCE="apiVersion: infra.watch/v1alpha1
 kind: ServiceTelemetry
 metadata:
-  name: saf-default
-  namespace: sa-telemetry
+  name: stf-default
+  namespace: service-telemetry
 spec:
   metricsEnabled: true
   eventsEnabled: true
@@ -12,9 +12,9 @@ spec:
     kind: Prometheus
     metadata:
       labels:
-        prometheus: saf-default
-      name: saf-default
-      namespace: sa-telemetry
+        prometheus: stf-default
+      name: stf-default
+      namespace: service-telemetry
     spec:
       replicas: 1
       ruleSelector: {}
@@ -28,7 +28,7 @@ spec:
     kind: Elasticsearch
     metadata:
       name: elasticsearch
-      namespace: sa-telemetry
+      namespace: service-telemetry
     spec:
       http:
         service:

@@ -55,5 +55,5 @@ Once the Grafana instance is running, launch the performance test OpenShift job:
 ```
 
 Monitor the performance test status by watching the job with
-`oc get job -l app=saf-performance-test -w`. Logs can be viewed with
-`oc logs saf-perftest-<NUM>-runner-<ID> -f`
+`oc get job -l app=stf-performance-test -w`. Logs can be viewed with
+`oc logs stf-perftest-<NUM>-runner-<ID> -f`
