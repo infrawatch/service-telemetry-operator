@@ -3,7 +3,7 @@
 # Entrypoint to build and deploy for CI
 #
 set -e
-REL=$(dirname "$0"); source "${REL}/metadata.sh"
+REL=$(dirname "$0"); source "${REL}/../build/metadata.sh"
 
 # Running quickstart triggers an initial install via a subscription.
 # OLM satisfies dependencies via the subscription, allowing us to test our deps
@@ -12,7 +12,7 @@ REL=$(dirname "$0"); source "${REL}/metadata.sh"
 # object itself, effectively preventing the original operator from doing
 # "anything" (except establishing the CRD.... and...?)
 echo -e "\n* [info] Running quickstart...\n"
-QUICKSTART_CONFIG="configs/nostf.bash" "${REL}/../deploy/quickstart.sh"
+QUICKSTART_CONFIG="configs/nostf.bash" "${REL}/quickstart.sh"
 
 # After quickstart, a CSV pointing at the upstream SAO image will be installed.
 # This script removes it and replaces it with the patched version
@@ -20,7 +20,7 @@ echo -e "\n* [info] Re-deploying with local build...\n"
 "${REL}/deploy_local_build.sh"
 
 # Now we can install an SAF object for the locally built operator to work on
-source "${REL}/../deploy/${QUICKSTART_CONFIG}"
+source "${REL}/${QUICKSTART_CONFIG}"
 oc create -f - <<< "${KIND_SERVICEASSURANCE}"
 
 # Play the (automated!) waiting game

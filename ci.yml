@@ -3,7 +3,7 @@ script:
         - oc login -u kubeadmin -p mhk2X-Y8ozE-9icYb-uLCdV --insecure-skip-tls-verify=true https://api.crc.testing:6443
         - oc new-project "${OCP_PROJECT}"
         - ./build/build.sh
-        - ./build/deploy_ci.sh
+        - ./deploy/deploy_ci.sh
         - ./tests/smoketest/smoketest.sh
 after_script:
         - export HOME=$(dirname "$PWD")
