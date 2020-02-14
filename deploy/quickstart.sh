@@ -103,5 +103,5 @@ spec:
 EOF
 while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for SAO..."; sleep 3; done
 if [ ! -z "${KIND_SERVICEASSURANCE}" ]; then
-  oc create -f - <<< ${KIND_SERVICEASSURANCE}
+  oc create -f - <<< "${KIND_SERVICEASSURANCE}"
 fi
