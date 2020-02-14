@@ -1,7 +1,6 @@
 #!/bin/bash
-REL=$(dirname "$0");
-OCP_PROJECT=${OCP_PROJECT:-service-telemetry}
-QUICKSTART_CONFIG=${QUICKSTART_CONFIG:-configs/default.bash}
+REL=$(dirname "$0"); source "${REL}/../build/metadata.sh"
+
 source "${REL}/${QUICKSTART_CONFIG}"
 
 oc new-project "${OCP_PROJECT}"

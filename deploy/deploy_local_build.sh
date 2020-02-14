@@ -6,7 +6,7 @@
 # in the OCP registry. See build/push_container2ocp.sh for more information
 #
 set -e
-REL=$(dirname "$0"); source "${REL}/metadata.sh"
+REL=$(dirname "$0"); source "${REL}/../build/metadata.sh"
 
 CSV_NAME="${OPERATOR_NAME}.v${CSV_VERSION}"
 
@@ -29,9 +29,9 @@ for kind in serviceaccount role rolebinding; do
         sleep 3
     done
 done
-oc create -f "${REL}/../deploy/service_account.yaml"
-oc create -f "${REL}/../deploy/role.yaml"
-oc create -f "${REL}/../deploy/role_binding.yaml"
+oc create -f "${REL}/service_account.yaml"
+oc create -f "${REL}/role.yaml"
+oc create -f "${REL}/role_binding.yaml"
 
 # Mutate the CSV to pull the image from the OCP registry and install it
 oc create -f <(sed "\

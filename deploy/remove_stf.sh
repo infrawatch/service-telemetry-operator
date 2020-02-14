@@ -2,7 +2,7 @@
 #
 # Removes SAF and (optionally) amq7 certmanager from your cluster
 #
-OCP_PROJECT=${OCP_PROJECT:-service-telemetry}
+REL=$(dirname "$0"); . "${REL}/../build/metadata.sh"
 REMOVE_CERTMANAGER=${REMOVE_CERTMANAGER:-true}
 
 # The whole SAF project (start this first since it's slow)
