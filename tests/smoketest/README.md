@@ -1,9 +1,9 @@
-# SAF Testing notes
+# STF Testing notes
 
-Here are some artifacts to assist with testing the SAF after it is deployed.
+Here are some artifacts to assist with testing the STF after it is deployed.
 
 Currently this is just a "smoke test" that runs internal to the OCP cluster. It
-delivers collectd data to the SAF amqp node and verifies that it can be seen in
+delivers collectd data to the STF amqp node and verifies that it can be seen in
 prometheus. This is intended to be usable for developers and TravisCI to
 validate our builds before merging changes to this repo.
 
