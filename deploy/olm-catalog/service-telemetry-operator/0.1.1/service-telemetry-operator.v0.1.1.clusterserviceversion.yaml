@@ -34,7 +34,7 @@ spec:
   customresourcedefinitions:
     owned:
     - description: Represents an instance of the Service Telemetry Framework
-      displayName: SAF Cluster
+      displayName: STF Cluster
       kind: ServiceTelemetry
       name: servicetelemetrys.infra.watch
       resources:
