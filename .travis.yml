@@ -12,7 +12,8 @@ install:
 - curl -L https://github.com/operator-framework/operator-sdk/releases/download/v0.12.0/operator-sdk-v0.12.0-x86_64-linux-gnu -o $HOME/bin/operator-sdk-v0.12.0
 - chmod +x $HOME/bin/operator-sdk-v0.12.0
 script:
-- operator-sdk version
+- export PATH=$HOME/bin:$PATH
 - operator-courier verify --ui_validate_io deploy/olm-catalog/service-telemetry-operator
 - ansible-lint roles/servicetelemetry/
+- ./build/update_csv.sh
 - ./build/push_app2quay.sh
