@@ -13,4 +13,4 @@ script:
 - operator-courier verify --ui_validate_io deploy/olm-catalog/service-telemetry-operator
 - ansible-lint roles/servicetelemetry/
 after_success:
-- ./build/travis.sh
+- ./build/travis/after_success.sh

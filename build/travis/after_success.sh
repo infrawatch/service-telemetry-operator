@@ -5,9 +5,9 @@ set -e
 
 REL=$(dirname "$0")
 
-# Add everything, get ready for commit. But only do it if we're on
-# master. If you want to deploy on different branches, you can change
-# this.
+# Add everything, get ready for commit. But only do it if we're on master or a
+# named branch of the format <#>.<#>.X. If you want to deploy on different
+# branches, you can change this.
 if [[ "$BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
     echo "Branch is master, so push new application to Quay registry"
     export PATH=$HOME/bin:$PATH
