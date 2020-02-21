@@ -6,7 +6,7 @@ usage(){
 Runs on the dev/CI machine to execute a performance test and abstracts between
 running collectd-tg (tg) or telemetry-bench (tb).
 Requires:
-  * oc tools pointing at your SAF instance
+  * oc tools pointing at your STF instance
   * gnu sed
 
 Usage: ./performance-test.sh -t <tg|tb> -c <intervals> -h <#hosts> -p <#plugins> -i <seconds> [-n <#concurrent>]
@@ -84,7 +84,7 @@ make_qdr_edge_router(){
 check_resources(){
     printf "\n*** Performing Resource Checks ***\n"
     if ! oc get ServiceTelemetry; then
-        echo "No SAF found deployed in this namespace. Deploy SAF before running performance test" 1>&2
+        echo "No STF found deployed in this namespace. Deploy STF before running performance test" 1>&2
         exit 1
     fi
 
@@ -113,13 +113,13 @@ check_resources(){
         exit 1
     fi
 
-    if ! echo $datasources | grep -q "SAFPrometheus"; then
-        echo "Error: unable to find Grafana datasource SAFPrometheus"
+    if ! echo $datasources | grep -q "STFPrometheus"; then
+        echo "Error: unable to find Grafana datasource STFPrometheus"
         exit 1
     fi
 
-    if ! echo $datasources | grep -q "SAFElasticsearch"; then
-        echo "Error: unable to find Grafana datasource SAFElasticsearch"
+    if ! echo $datasources | grep -q "STFElasticsearch"; then
+        echo "Error: unable to find Grafana datasource STFElasticsearch"
         exit 1
     fi
 }
@@ -254,10 +254,10 @@ while true; do
         "TEST")
             estab=$(oc get pod -l job-name=stf-perftest-1-runner -o jsonpath='{.items[0].status.conditions[?(@.type=="ContainersReady")].status}')
             if [ "${estab}" != "True" ]; then
-                printf '%s' "Waiting on SAF performance test pod creation"; ellipse
+                printf '%s' "Waiting on STF performance test pod creation"; ellipse
                 sleep 1
             else
-                printf "\nSAF performance test pod established\n"
+                printf "\nSTF performance test pod established\n"
                 printf "\n*** Listening to job runner ***\n"
 
                 oc logs -f "$(oc get pod -l job-name=stf-perftest-1-runner -o jsonpath='{.items[0].metadata.name}')" |  grep -E 'total [0-9]+'

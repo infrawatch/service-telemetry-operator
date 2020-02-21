@@ -1,5 +1,5 @@
 - metadata:
-    name: SAF Performance Test 1
+    name: STF Performance Test 1
   spec:
     value-lists: 20000
     hosts: 20
