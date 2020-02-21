@@ -5,22 +5,22 @@ datasources:
   type: elasticsearch
   access: proxy
   orgId: 1
-  url: "https://elasticsearch:9200"
+  url: "https://elasticsearch-es-http:9200"
   database: "performance-test"
-  basicAuth: false
-  withCredentials: true
+  basicAuth: true
+  basicAuthUser: elastic
+  basicAuthPassword: ${ES_PASS}
+  withCredentials: false
   isDefault: false
   jsonData:
     esVersion: 5
     keepCookies: []
     maxConcurrentShardRequests: 256
     timeField: "startsAt"
-    tlsAuth: true
+    tlsAuth: false
     tlsAuthWithCACert: true
   secureJsonData:
     tlsCACert:     ${CACERT}
-    tlsClientCert: ${CLIENTCERT}
-    tlsClientKey:  ${CLIENTKEY}
   version: 1
   editable: true
 

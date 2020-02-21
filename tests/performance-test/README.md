@@ -19,15 +19,15 @@ grafana instance and one that executes the testing logic.
 ## Setup
 
 SAF must already be deployed including the default ServiceTelemetry example CR.
-A quick way to do this is using the `quickstart.sh` script in 
-`telemetry-framework/deploy/` directory to run SAF.	
+A quick way to do this is using the `quickstart.sh` script in
+`service-telemetry-operator/deploy/` directory to run SAF.
 
- Here is an example of how to do that in crc:	
+ Here is an example of how to do that in crc:
 
- ```shell	
-crc start	
-eval $(crc oc-env)	
-cd telemetry-framework/deploy/; ./quickstart.sh	
+ ```shell
+crc start
+eval $(crc oc-env)
+cd service-telemetry-operator/deploy/; ./quickstart.sh
 ```
 
 ## Deploying Grafana
@@ -37,7 +37,7 @@ Next, launch the grafana instance for test results gathering. This only needs
 to be done once:
 
 ```shell
-cd telemetry-framework/tests/performance-test/grafana
+cd service-telemetry-operator/tests/performance-test/grafana
 ./grafana-launcher.sh
 ```
 
