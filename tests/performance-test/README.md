@@ -20,7 +20,7 @@ grafana instance and one that executes the testing logic.
 
 SAF must already be deployed including the default ServiceTelemetry example CR.
 A quick way to do this is using the `quickstart.sh` script in
-`service-telemetry-operator/deploy/` directory to run SAF.
+`service-telemetry-operator/deploy/` directory to run STF.
 
  Here is an example of how to do that in crc:
 
