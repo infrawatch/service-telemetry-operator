@@ -1,7 +1,7 @@
 apiVersion: 1
 
 datasources:
-- name: SAFElasticsearch
+- name: STFElasticsearch
   type: elasticsearch
   access: proxy
   orgId: 1
@@ -24,7 +24,7 @@ datasources:
   version: 1
   editable: true
 
-- name: SAFPrometheus
+- name: STFPrometheus
   type: prometheus
   access: proxy
   orgId: 1

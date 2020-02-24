@@ -19,7 +19,7 @@ QUICKSTART_CONFIG="configs/nostf.bash" "${REL}/quickstart.sh"
 echo -e "\n* [info] Re-deploying with local build...\n"
 "${REL}/deploy_local_build.sh"
 
-# Now we can install an SAF object for the locally built operator to work on
+# Now we can install an STF object for the locally built operator to work on
 source "${REL}/${QUICKSTART_CONFIG}"
 oc create -f - <<< "${KIND_SERVICEASSURANCE}"
 

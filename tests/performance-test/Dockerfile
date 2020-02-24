@@ -1,4 +1,4 @@
-#--- Build SAF performance test ---
+#--- Build STF performance test ---
 FROM golang:1.13
 WORKDIR /go/src/performance-test/
 
