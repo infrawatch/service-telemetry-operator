@@ -1,5 +1,5 @@
 global:
-        timeout: 60
+        timeout: 2400
 script:
         - oc login -u kubeadmin -p mhk2X-Y8ozE-9icYb-uLCdV --insecure-skip-tls-verify=true https://api.crc.testing:6443
         - oc delete project "${OCP_PROJECT}" || true
