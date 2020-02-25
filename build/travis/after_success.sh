@@ -11,7 +11,7 @@ REL=$(dirname "$0")
 if [[ "$BRANCH" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
     echo "Branch is master, so push new application to Quay registry"
     export PATH=$HOME/bin:$PATH
-    curl -L https://github.com/operator-framework/operator-sdk/releases/download/v0.12.0/operator-sdk-v0.12.0-x86_64-linux-gnu -o $HOME/bin/operator-sdk
+    curl -L https://github.com/operator-framework/operator-sdk/releases/download/v0.15.2/operator-sdk-v0.15.2-x86_64-linux-gnu -o $HOME/bin/operator-sdk
     chmod +x $HOME/bin/operator-sdk
     operator-courier verify --ui_validate_io deploy/olm-catalog/service-telemetry-operator
     ansible-lint roles/servicetelemetry/
