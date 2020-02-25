@@ -1,7 +1,7 @@
 global:
         timeout: 2400
 script:
-        - oc login -u kubeadmin -p sXrUX-mnUP4-oM4Lw-VbWUs --insecure-skip-tls-verify=true https://api.ciserver.lab.upshift.rdu2.redhat.com:6443 
+        - oc login -u kubeadmin -p 7z6T5-qmTth-oxaoD-p3xQF --insecure-skip-tls-verify=true https://api.crc.testing:6443 
         - oc delete project "${OCP_PROJECT}" || true
         - oc new-project "${OCP_PROJECT}"
         - ./build/build.sh
