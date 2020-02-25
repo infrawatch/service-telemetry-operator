@@ -1,7 +1,7 @@
 # Integration tests
 
 Use Infrared (and optionally minishift) to test a simple OSP cluster connected
-to an SAF instance all on one (large) baremetal machine.
+to an STF instance all on one (large) baremetal machine.
 
 ## Usage
 

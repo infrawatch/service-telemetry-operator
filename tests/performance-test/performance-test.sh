@@ -6,9 +6,9 @@ usage(){
 Runs on the dev/CI machine to execute a performance test and abstracts between
 running collectd-tg (tg) or telemetry-bench (tb).
 Requires:
-  * oc tools pointing at your SAF instance
+  * oc tools pointing at your STF instance
   * gnu sed
-  
+
 Usage: ./performance-test.sh -t <tg|tb> -c <intervals> -h <#hosts> -p <#plugins> -i <seconds> [-n <#concurrent>]
   -t: Which tool to use ('tg' = collectd-tg, 'tb' = telemetry-bench (recommended))
   -c: The number of intervals to run for
@@ -83,18 +83,18 @@ make_qdr_edge_router(){
 # basic check if necessary resources exist. DOES NOT verify they work correctly
 check_resources(){
     printf "\n*** Performing Resource Checks ***\n"
-    if ! oc get ServiceTelemetry; then 
-        echo "No SAF found deployed in this namespace. Deploy SAF before running performance test" 1>&2
+    if ! oc get ServiceTelemetry; then
+        echo "No STF found deployed in this namespace. Deploy STF before running performance test" 1>&2
         exit 1
     fi
 
-    if ! oc get project openshift-monitoring; then 
+    if ! oc get project openshift-monitoring; then
         echo "Error: openshift-monitoring not enabled on host. Continuing without it will result \
         in reduced functionality of performance test. Would you like to continue without \
         it? [y/n]"
         read RESP
         case $RESP in
-            "y") 
+            "y")
             ;;
             *)
                 exit 1
@@ -102,7 +102,7 @@ check_resources(){
         esac
     fi
 
-    if ! GRAF_HOST=$(oc get routes --field-selector metadata.name=grafana -o jsonpath="{.items[0].spec.host}") 2> /dev/null; then 
+    if ! GRAF_HOST=$(oc get routes --field-selector metadata.name=grafana -o jsonpath="{.items[0].spec.host}") 2> /dev/null; then
         echo "Error: cannot find Grafana instance in cluster. Has it been deployed?" 1>&2
         exit 1
     fi
@@ -113,42 +113,43 @@ check_resources(){
         exit 1
     fi
 
-    if ! echo $datasources | grep -q "SAFPrometheus"; then
-        echo "Error: unable to find Grafana datasource SAFPrometheus"
+    if ! echo $datasources | grep -q "STFPrometheus"; then
+        echo "Error: unable to find Grafana datasource STFPrometheus"
         exit 1
     fi
 
-    if ! echo $datasources | grep -q "SAFElasticsearch"; then
-        echo "Error: unable to find Grafana datasource SAFElasticsearch"
+    if ! echo $datasources | grep -q "STFElasticsearch"; then
+        echo "Error: unable to find Grafana datasource STFElasticsearch"
         exit 1
     fi
 }
 
+ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
+ES_POD='elasticsearch-es-default-0'
+
 # Delete recorded events in Elastic Search
 delete_es_events(){
-    local esPod=$(oc get elasticsearch elasticsearch -o jsonpath='{.status.pods.master.ready[0]}')
-    local secretPath="/etc/elasticsearch/secret/"
     local esQuery=$(cat <<EOF
         { "query" : { "bool": { "must": { "match_phrase": { "labels.instance": { "query": "stf-perftest-notify-*" } } } } } }
 EOF
 )
     printf "\n*** Deleting ES Events ***\n"
 
-    local response=$(oc exec "$esPod" -- curl --silent --cacert "${secretPath}admin-ca" --cert \
-        "${secretPath}admin-cert" --key "${secretPath}admin-key" -X POST "https://localhost:9200/collectd_interface_if/_delete_by_query" \
+    local response=$(oc exec "${ES_POD}" -- curl --silent -k -u "elastic:${ELASTICSEARCH_AUTH_PASS}" \
+        -H 'Content-Type: application/json' \
+        -X POST "https://localhost:9200/collectd_interface_if/_delete_by_query" \
         -d "$esQuery")
 }
 
 # Get number of events recorded by elastic search since last clear
 get_es_event_count(){
-        local esPod=$(oc get elasticsearch elasticsearch -o jsonpath='{.status.pods.master.ready[0]}')
-        local secretPath="/etc/elasticsearch/secret/"
         local esQuery=$(cat <<EOF
         { "query" : { "bool": { "must": { "match_phrase": { "labels.instance": { "query": "stf-perftest-notify-*" } } } } } }
 EOF
 )
-    ES_EVENT_RECV_COUNT=$(oc exec "$esPod" -- curl --silent --cacert "${secretPath}admin-ca" --cert \
-         "${secretPath}admin-cert" --key "${secretPath}admin-key" -X GET "https://localhost:9200/collectd_interface_if/_count" \
+    ES_EVENT_RECV_COUNT=$(oc exec "${ES_POD}" -- curl --silent -k -u "elastic:${ELASTICSEARCH_AUTH_PASS}" \
+         -H 'Content-Type: application/json' \
+         -X GET "https://localhost:9200/collectd_interface_if/_count" \
          -d "$esQuery")
 
     ES_EVENT_RECV_COUNT=$(echo "$ES_EVENT_RECV_COUNT" | python -c "import sys, json; print json.load(sys.stdin)['count']")
@@ -156,9 +157,6 @@ EOF
 
 # Post result of events test into Elastic Search
 post_ratio_to_es(){
-    local esPod=$(oc get elasticsearch elasticsearch -o jsonpath='{.status.pods.master.ready[0]}')
-    local secretPath="/etc/elasticsearch/secret/"
-
     local esPost=$(cat <<EOF
     {
         "events_successful": $SUCCESS_RATIO,
@@ -167,11 +165,13 @@ post_ratio_to_es(){
 EOF
 )
     # tell ES to map data to float
-    local response=$(oc exec "$esPod" -- curl --silent --cacert "${secretPath}admin-ca" --cert \
-        "${secretPath}admin-cert" --key "${secretPath}admin-key" -X PUT "https://localhost:9200/performance-test" \
+    local response=$(oc exec "${ES_POD}" -- curl --silent -k -u "elastic:${ELASTICSEARCH_AUTH_PASS}" \
+        -H 'Content-Type: application/json' \
+        -X PUT "https://localhost:9200/performance-test" \
         -d ' { "mappings": { "status": { "properties": { "events_successful": { "type": "float" },"startsAt": { "type": "date", "format": "strict_date_optional_time||epoch_millis" } } } } }')
-    local response=$(oc exec "$esPod" -- curl --silent --cacert "${secretPath}admin-ca" --cert \
-        "${secretPath}admin-cert" --key "${secretPath}admin-key" -X PUT "https://localhost:9200/performance-test/status/1" \
+    local response=$(oc exec "${ES_POD}" -- curl --silent -k -u "elastic:${ELASTICSEARCH_AUTH_PASS}" \
+        -H 'Content-Type: application/json' \
+        -X PUT "https://localhost:9200/performance-test/status/1" \
         -d "$esPost")
 }
 
@@ -207,11 +207,11 @@ fi
 
 # Test groundwork - order matters
 check_resources
-#delete_es_events
+delete_es_events
 make_qdr_edge_router
 
 SUCCESS_RATIO=0.00
-#post_ratio_to_es
+post_ratio_to_es
 
 # Test procedure
 STAGE="ROUTER"
@@ -220,13 +220,13 @@ while true; do
         "ROUTER")
             printf "%s" "Waiting on qdr edge test pod creation"; ellipse
             until timeout 300 oc rollout status deploy/qdr-test; do sleep 3; done
-            
+
             printf "\nQdr edge test pod established\n"
             make_service_monitors
 
             QDR_READY=$(oc logs $(oc get pod -l application=qdr-test -o jsonpath='{.items[0].metadata.name}') | grep -o "Listening")
 
-            if [ -z "$QDR_READY" ]; then 
+            if [ -z "$QDR_READY" ]; then
                 printf "Waiting on router to complete initialization"; ellipse
             else
                 #oc logs $(oc get pod -l application=qdr-test -o jsonpath='{.items[0].metadata.name}')
@@ -254,10 +254,10 @@ while true; do
         "TEST")
             estab=$(oc get pod -l job-name=stf-perftest-1-runner -o jsonpath='{.items[0].status.conditions[?(@.type=="ContainersReady")].status}')
             if [ "${estab}" != "True" ]; then
-                printf '%s' "Waiting on SAF performance test pod creation"; ellipse
+                printf '%s' "Waiting on STF performance test pod creation"; ellipse
                 sleep 1
             else
-                printf "\nSAF performance test pod established\n"
+                printf "\nSTF performance test pod established\n"
                 printf "\n*** Listening to job runner ***\n"
 
                 oc logs -f "$(oc get pod -l job-name=stf-perftest-1-runner -o jsonpath='{.items[0].metadata.name}')" |  grep -E 'total [0-9]+'
@@ -266,25 +266,25 @@ while true; do
         ;;
         "RESULTS")
             printf "\n*** Collecting test results ***\n"
-            # PODNAME=$(oc get pod -l job-name=stf-perftest-notify -o jsonpath='{.items[0].metadata.name}')
-            # oc exec "$PODNAME" -- pkill collectd > /dev/null
-            # sleep 3
-            # oc cp "${PODNAME}:/tmp/events.json" /tmp/events.json
+            PODNAME=$(oc get pod -l job-name=stf-perftest-notify -o jsonpath='{.items[0].metadata.name}')
+            oc exec "$PODNAME" -- pkill collectd > /dev/null
+            sleep 3
+            oc cp "${PODNAME}:/tmp/events.json" /tmp/events.json
 
-            # # get total number of events generated by collectd
-            # NUM_COLLECTD_EVENTS=$(wc -l /tmp/events.json | awk '{ print $1 }')
+            # get total number of events generated by collectd
+            NUM_COLLECTD_EVENTS=$(wc -l /tmp/events.json | awk '{ print $1 }')
 
-            # # get number of events seen by elasticsearch
-            # get_es_event_count
+            # get number of events seen by elasticsearch
+            get_es_event_count
 
-            # # calulate success ratio
-            # SUCCESS_RATIO=$(( ES_EVENT_RECV_COUNT / NUM_COLLECTD_EVENTS)).$(( (ES_EVENT_RECV_COUNT * 100 / NUM_COLLECTD_EVENTS) % 100 ))
+            # calulate success ratio
+            SUCCESS_RATIO=$(( ES_EVENT_RECV_COUNT / NUM_COLLECTD_EVENTS)).$(( (ES_EVENT_RECV_COUNT * 100 / NUM_COLLECTD_EVENTS) % 100 ))
 
-            # # DEBUG and TESTING - DELETE 
-            # echo "EVENTS generated: $NUM_COLLECTD_EVENTS, recieved by Elastic Search: $ES_EVENT_RECV_COUNT, success rate: $SUCCESS_RATIO"
+            # DEBUG and TESTING - DELETE
+            echo "EVENTS generated: $NUM_COLLECTD_EVENTS, recieved by Elastic Search: $ES_EVENT_RECV_COUNT, success rate: $SUCCESS_RATIO"
 
-            # printf "\n*** Posting events results to Elastic Search ***\n"
-            # post_ratio_to_es
+            printf "\n*** Posting events results to Elastic Search ***\n"
+            post_ratio_to_es
 
             break
         ;;

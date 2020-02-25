@@ -23,18 +23,13 @@ spec:
            - name: CACERT
              valueFrom:
               secretKeyRef:
-                name: elasticsearch
-                key: admin-ca
-           - name: CLIENTCERT
+                name: elasticsearch-es-http-certs-public
+                key: ca.crt
+           - name: ES_PASS
              valueFrom:
               secretKeyRef:
-                name: elasticsearch
-                key: admin-cert
-           - name: CLIENTKEY
-             valueFrom:
-              secretKeyRef:
-                name: elasticsearch
-                key: admin-key
+                name: elasticsearch-es-elastic-user
+                key: elastic
          volumeMounts:
            - name: grafana-config
              mountPath: /etc/grafana/grafana.ini
