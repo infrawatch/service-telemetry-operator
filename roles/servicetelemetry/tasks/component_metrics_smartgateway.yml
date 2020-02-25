@@ -7,13 +7,13 @@
         name: '{{ meta.name }}-telemetry'
         namespace: '{{ meta.namespace }}'
       spec:
-        amqp_url: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/telemetry'
-        container_image_path: 'quay.io/infrawatch/smart-gateway:latest'
-        debug: 'false'
-        service_type: 'metrics'
+        amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/telemetry'
+        containerImagePath: 'quay.io/infrawatch/smart-gateway:latest'
+        debug: false
+        serviceType: 'metrics'
         size: 1
         prefetch: 15000
-        use_timestamp: 'true'
+        useTimestamp: true
   when: smartgateway_metrics_manifest is not defined
 
 - name: Deploy instance of Smart Gateway for Metrics
