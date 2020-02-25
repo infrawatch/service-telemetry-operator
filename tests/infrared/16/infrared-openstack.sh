@@ -50,7 +50,7 @@ infrared tripleo-undercloud \
     --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
     --config-options DEFAULT.undercloud_timezone=UTC
 
-sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" metrics-qdr-connectors.template > outputs/metrics-qdr-connectors.yaml
+sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" metrics-qdr-connectors.yaml.template > outputs/metrics-qdr-connectors.yaml
 
 infrared tripleo-overcloud \
     -vv \
