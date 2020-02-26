@@ -707,7 +707,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sa_collectd_qpid_router_status",
+          "expr": "collectd_qpid_router_status",
           "refId": "A"
         }
       ],
@@ -1068,7 +1068,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sa_collectd_total_amqp_processed_message_count",
+          "expr": "collectd_total_amqp_processed_message_count",
           "refId": "A"
         }
       ],
@@ -1566,19 +1566,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(sa_collectd_total_amqp_message_recv_count[10s])",
+          "expr": "rate(collectd_total_amqp_message_recv_count[10s])",
           "hide": false,
           "legendFormat": "{{service}} Recv (10s avg)",
           "refId": "A"
         },
         {
-          "expr": "rate(sa_collectd_total_amqp_processed_message_count[10s])",
+          "expr": "rate(collectd_total_amqp_processed_message_count[10s])",
           "hide": false,
           "legendFormat": "{{service}} Proc (10s avg)",
           "refId": "B"
         },
         {
-          "expr": "sa_collectd_total_amqp_message_recv_count - sa_collectd_total_amqp_processed_message_count",
+          "expr": "collectd_total_amqp_message_recv_count - collectd_total_amqp_processed_message_count",
           "hide": false,
           "legendFormat": "{{service}} Unproc",
           "refId": "C"
