@@ -30,7 +30,7 @@ infrared virsh \
 infrared virsh \
     -vvv \
     -o outputs/provision.yml \
-    --topology-nodes undercloud:1,controller:1,compute:1,ceph:1 \
+    --topology-nodes undercloud:1,controller:1,compute:1 \
     --host-address "${VIRTHOST}" \
     --host-key "${SSH_KEY}" \
     --image-url "${VM_IMAGE}" \
@@ -62,8 +62,6 @@ infrared tripleo-overcloud \
     --network-backend geneve \
     --network-protocol ipv4 \
     --network-dvr yes \
-    --storage-backend ceph \
-    --storage-external no \
     --overcloud-ssl no \
     --introspect yes \
     --tagging yes \
