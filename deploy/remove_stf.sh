@@ -9,7 +9,7 @@ REMOVE_CERTMANAGER=${REMOVE_CERTMANAGER:-true}
 oc delete project "${OCP_PROJECT}"
 
 # Our custom OperatorSource
-oc delete OperatorSource redhat-service-telemetry-operators -n openshift-marketplace
+oc delete OperatorSource infrawatch-operators -n openshift-marketplace
 
 # Revert our OperatorHub.io catalog for default built-in Community Operators
 oc delete CatalogSource operatorhubio-operators -n openshift-marketplace
