@@ -35,8 +35,9 @@ loaded for you.
 * elasticsearch_secret_manifest
 * interconnect_manifest
 * elasticsearch_manifest
-* smartgateway_metrics_manifest
-* smartgateway_events_manifest
+* smartgateway_collectd_metrics_manifest
+* smartgateway_collectd_events_manifest
+* smartgateway_ceilometer_events_manifest
 * servicemonitor_manifest
 
 ## Development
