@@ -1,15 +1,15 @@
 #!/bin/sh
 #
-# Removes SAF and (optionally) amq7 certmanager from your cluster
+# Removes STF and (optionally) amq7 certmanager from your cluster
 #
 REL=$(dirname "$0"); . "${REL}/../build/metadata.sh"
 REMOVE_CERTMANAGER=${REMOVE_CERTMANAGER:-true}
 
-# The whole SAF project (start this first since it's slow)
+# The whole STF project (start this first since it's slow)
 oc delete project "${OCP_PROJECT}"
 
 # Our custom OperatorSource
-oc delete OperatorSource redhat-service-telemetry-operators -n openshift-marketplace
+oc delete OperatorSource infrawatch-operators -n openshift-marketplace
 
 # Revert our OperatorHub.io catalog for default built-in Community Operators
 oc delete CatalogSource operatorhubio-operators -n openshift-marketplace
@@ -30,7 +30,7 @@ spec:
     name: community-operators
 EOF
 
-# SAF CRDs
+# STF CRDs
 oc get crd | grep infra.watch | cut -d ' ' -f 1 | xargs oc delete crd
 
 if [ "${REMOVE_CERTMANAGER}" = "true" ]; then

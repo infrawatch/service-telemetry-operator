@@ -139,7 +139,7 @@
       "type": "table"
     },
     {
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Shows the % of messages that made it all the way from the AMQP bus to prometheus.",
       "gridPos": {
         "h": 6,
@@ -207,7 +207,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "The number of presettled messages received by the QDR test for routing.\n\nNOTE: The QDR outputs metrics slowly so we can only poll every 10s. That means this number can be up to 9 seconds behind the other counters on this part of the dashboard.",
       "format": "none",
       "gauge": {
@@ -291,7 +291,7 @@
         "#73BF69",
         "#F2495C"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Shows the dropped deliveries for the time period. \n\nNOTE: Despite the name \"dropped_presettled_deliveries\" this metric appears to include messages that are not \"presettled\"",
       "format": "none",
       "gauge": {
@@ -378,7 +378,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "The total number of messages received by the server side QDR mesh for routing.\n\nNOTE: The QDR outputs metrics slowly so we can only poll every 10s. That means this number can be up to 9 seconds behind the other counters on this part of the dashboard.",
       "format": "none",
       "gauge": {
@@ -442,7 +442,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Received by SAF QDRs",
+      "title": "Received by STF QDRs",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -463,7 +463,7 @@
         "#73BF69",
         "#F2495C"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Shows the dropped deliveries for the time period. \n\nNOTE: Despite the name \"dropped_presettled_deliveries\" this metric appears to include messages that are not \"presettled\"",
       "format": "none",
       "gauge": {
@@ -527,7 +527,7 @@
       "thresholds": "1,1",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Dropped by SAF QDRs",
+      "title": "Dropped by STF QDRs",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -564,7 +564,7 @@
       "type": "alertlist"
     },
     {
-      "datasource": "SAFElasticsearch",
+      "datasource": "STFElasticsearch",
       "description": "Describes the ratio of number of events triggered in the cloud to the number of events logged in Elastic Search.  \n\nThis result WILL NOT be accurate until after a performance test has completed. Result reflects the most recent test only - resizing the dashboard time interval over previous tests will not give the correct result for that previous test.",
       "gridPos": {
         "h": 6,
@@ -651,7 +651,7 @@
         "#F2495C",
         "#299c46"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Detects if the smartgateway has ever reported that it was disconnected from the qdr. This is based on metric polling, not events so may not be 100% reliable.",
       "format": "none",
       "gauge": {
@@ -707,7 +707,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sa_collectd_qpid_router_status",
+          "expr": "collectd_qpid_router_status",
           "refId": "A"
         }
       ],
@@ -740,7 +740,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -823,7 +823,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -885,7 +885,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Peak Input Rate -> SAF QDRs",
+      "title": "Peak Input Rate -> STF QDRs",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -906,7 +906,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFElasticsearch",
+      "datasource": "STFElasticsearch",
       "description": "",
       "format": "none",
       "gauge": {
@@ -1012,7 +1012,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Delta of the total number of amqp messages the smartgateway has successfully processed.",
       "format": "none",
       "gauge": {
@@ -1068,7 +1068,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sa_collectd_total_amqp_processed_message_count",
+          "expr": "collectd_total_amqp_processed_message_count",
           "refId": "A"
         }
       ],
@@ -1096,7 +1096,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Counts discrete metrics samples that can be queried from prometheus for the selected time range. Only includes metrics that are generated by our performance tests.",
       "format": "none",
       "gauge": {
@@ -1256,7 +1256,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1365,7 +1365,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1524,7 +1524,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Shows the rate of amqp message receiving and processing as well as whether any messages have ever failed to process. Restart the smartgateway to clear the counters if you need reset the unprocessed message count.",
       "fill": 1,
       "fillGradient": 0,
@@ -1566,19 +1566,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(sa_collectd_total_amqp_message_recv_count[10s])",
+          "expr": "rate(collectd_total_amqp_message_recv_count[10s])",
           "hide": false,
           "legendFormat": "{{service}} Recv (10s avg)",
           "refId": "A"
         },
         {
-          "expr": "rate(sa_collectd_total_amqp_processed_message_count[10s])",
+          "expr": "rate(collectd_total_amqp_processed_message_count[10s])",
           "hide": false,
           "legendFormat": "{{service}} Proc (10s avg)",
           "refId": "B"
         },
         {
-          "expr": "sa_collectd_total_amqp_message_recv_count - sa_collectd_total_amqp_processed_message_count",
+          "expr": "collectd_total_amqp_message_recv_count - collectd_total_amqp_processed_message_count",
           "hide": false,
           "legendFormat": "{{service}} Unproc",
           "refId": "C"
@@ -1676,7 +1676,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "The golang prometheus client does not capture the max response time, only quantiles and sum/count. \n\nUsing rate() we found the spikes were getting averaged out, so I use irate(sum)/irate(count) which should represent the request time of the last request at 1s intervals. This is not still not an exact max because we still average the data within the 1s interval, but it's the best we can do.\n\nWe also graph the quantiles to give an overall view of the request time",
       "fill": 1,
       "fillGradient": 0,
@@ -1829,7 +1829,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1970,7 +1970,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Shows a 10s moving average as well as a 99th percentile of the scrape performance for 1s scrape intervals.",
       "fill": 1,
       "fillGradient": 0,
@@ -2072,7 +2072,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "Shows the samples scraped per smartgateway as well as a total number of discrete metrics that were produced for each node.",
       "fill": 1,
       "fillGradient": 0,
@@ -2212,7 +2212,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "description": "This panel will appear  blank until the first sync occurs",
       "fill": 1,
       "fillGradient": 0,
@@ -2317,7 +2317,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "SAFPrometheus",
+      "datasource": "STFPrometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2409,7 +2409,7 @@
       },
       "id": 17,
       "panels": [],
-      "title": "SAF Pods",
+      "title": "STF Pods",
       "type": "row"
     },
     {
@@ -3146,7 +3146,7 @@
     ]
   },
   "timezone": "",
-  "title": "SAF Perf Test Dashboard",
+  "title": "STF Perf Test Dashboard",
   "uid": "J13LKTcZk",
   "version": 2
 }

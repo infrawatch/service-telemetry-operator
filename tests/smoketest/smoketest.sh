@@ -3,7 +3,7 @@
 # Runs on the dev/CI machine to execute the test harness job in the cluster
 #
 # Requires:
-#   * oc tools pointing at your SAF instance
+#   * oc tools pointing at your STF instance
 #   * gnu sed
 #
 # Usage: ./smoketest.sh [NUMCLOUDS]

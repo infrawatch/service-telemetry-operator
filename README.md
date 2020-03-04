@@ -21,11 +21,11 @@ use the defaults.
 
 Once the Service Telemetry Operator is available in the _Installed Operators_
 page, select _Service Telemetry Operator_ and select _Create instance_ within
-the _SAF Cluster_ box under _Provided APIs_. Then press _Create_.
+the _STF Cluster_ box under _Provided APIs_. Then press _Create_.
 
 ## Overriding Default Manifests
 
-The following variables can be passed to a new instance of SAF Cluster (kind:
+The following variables can be passed to a new instance of STF Cluster (kind:
 ServiceTelemetry) via the YAML configuration to override the default manifests
 loaded for you.
 

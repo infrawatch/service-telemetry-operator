@@ -1,10 +1,10 @@
-# SAF Performance Test
+# STF Performance Test
 
 ## Introduction
 
 The performance test provides an automated environment in which to to run stress
-tests on SAF. Collectd-tg or telemetry-bench are used to simulate extensive
-metrics data to pump through SAF. Results of testing can be analyzed in a
+tests on STF. Collectd-tg or telemetry-bench are used to simulate extensive
+metrics data to pump through STF. Results of testing can be analyzed in a
 grafana dashboard.
 
 Two additional pods are deployed by the performance test: one that hosts a
@@ -18,26 +18,26 @@ grafana instance and one that executes the testing logic.
 
 ## Setup
 
-SAF must already be deployed including the default ServiceTelemetry example CR.
-A quick way to do this is using the `quickstart.sh` script in 
-`telemetry-framework/deploy/` directory to run SAF.	
+STF must already be deployed including the default ServiceTelemetry example CR.
+A quick way to do this is using the `quickstart.sh` script in
+`service-telemetry-operator/deploy/` directory to run STF.
 
- Here is an example of how to do that in crc:	
+ Here is an example of how to do that in crc:
 
- ```shell	
-crc start	
-eval $(crc oc-env)	
-cd telemetry-framework/deploy/; ./quickstart.sh	
+ ```shell
+crc start
+eval $(crc oc-env)
+cd service-telemetry-operator/deploy/; ./quickstart.sh
 ```
 
 ## Deploying Grafana
 
-Ensure that all of the SAF pods are already marked running with `oc get pods`.
+Ensure that all of the STF pods are already marked running with `oc get pods`.
 Next, launch the grafana instance for test results gathering. This only needs
 to be done once:
 
 ```shell
-cd telemetry-framework/tests/performance-test/grafana
+cd service-telemetry-operator/tests/performance-test/grafana
 ./grafana-launcher.sh
 ```
 

@@ -1,4 +1,4 @@
-#--- Build SAF performance test ---
+#--- Build STF performance test ---
 FROM golang:1.13
 WORKDIR /go/src/performance-test/
 
@@ -16,7 +16,7 @@ USER root
 RUN yum install golang -y && \
     yum update-minimal --security -y && \ 
                                           #issue with full update:
-                                          #https://github.com/redhat-service-telemetry/telemetry-framework/issues/81
+                                          #https://github.com/infrawatch/telemetry-framework/issues/81
     yum clean all
 
 COPY --from=0 /tmp/main /performance-test/exec/main

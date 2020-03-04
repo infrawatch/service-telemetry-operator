@@ -7,6 +7,20 @@ metadata:
 spec:
   metricsEnabled: true
   eventsEnabled: true
+  alertmanager_manifest: |
+    apiVersion: monitoring.coreos.com/v1
+    kind: Alertmanager
+    metadata:
+      labels:
+        alertmanager: stf-default
+      name: stf-default
+      namespace: service-telemetry
+    spec:
+      replicas: 1
+      serviceAccountName: prometheus-k8s
+      serviceMonitorSelector:
+        matchLabels:
+          app: smart-gateway
   prometheus_manifest: |
     apiVersion: monitoring.coreos.com/v1
     kind: Prometheus
