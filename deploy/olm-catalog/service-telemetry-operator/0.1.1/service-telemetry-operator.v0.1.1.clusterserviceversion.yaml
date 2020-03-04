@@ -249,7 +249,7 @@ spec:
   - telecommunications
   links:
   - name: Source Code
-    url: https://github.com/redhat-service-telemetry/service-telemetry-operator
+    url: https://github.com/infrawatch/service-telemetry-operator
   maintainers:
   - email: support@redhat.com
     name: Red Hat (CloudOps)
