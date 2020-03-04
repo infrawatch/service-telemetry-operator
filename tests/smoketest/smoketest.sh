@@ -61,7 +61,9 @@ oc logs "$(oc get pod -l application=stf-default-interconnect -o jsonpath='{.ite
 echo
 
 echo "*** [INFO] Logs from smart gateways..."
-oc logs "$(oc get pod -l "deploymentconfig=stf-default-telemetry-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "deploymentconfig=stf-default-collectd-telemetry-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "deploymentconfig=stf-default-collectd-notification-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "deploymentconfig=stf-default-ceilometer-notification-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
