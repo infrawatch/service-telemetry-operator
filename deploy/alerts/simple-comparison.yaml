@@ -16,8 +16,7 @@ spec:
           annotations:
             summary: CPU usage high (warning)
           expr: >-
-            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) /
-sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.5
+            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) / sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.5
           for: 10m
         - alert: high cpu
           labels:
@@ -25,8 +24,7 @@ sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.5
           annotations:
             summary: CPU usage high (critical)
           expr: >-
-            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) /
-sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
+            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) / sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
           for: 10m
         - alert: inode usage
           labels:
@@ -34,8 +32,7 @@ sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
           annotations:
             summary: Inodes usage (warning)
           expr: >-
-            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/
-(sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
+            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/ (sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
           for: 10m
         - alert: inode usage
           labels:
@@ -43,8 +40,7 @@ sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
           annotations:
             summary: Inodes usage (critical)
           expr: >-
-            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/
-(sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
+            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/ (sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
           for: 10m
         - alert: hugepages
           labels:
@@ -52,8 +48,7 @@ sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
           annotations:
             summary: Hugepages (warning)
           expr: >-
-            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/
-sum without (type) (collectd_hugepages_vmpage_number) < 0.2
+            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/ sum without (type) (collectd_hugepages_vmpage_number) < 0.2
           for: 10m
         - alert: hugepages
           labels:
@@ -61,8 +56,7 @@ sum without (type) (collectd_hugepages_vmpage_number) < 0.2
           annotations:
             summary: Hugepages (warning)
           expr: >-
-            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/
-sum without (type) (collectd_hugepages_vmpage_number) < 0.1
+            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/ sum without (type) (collectd_hugepages_vmpage_number) < 0.1
           for: 10m
         - alert: load longterm
           labels:
