@@ -24,7 +24,7 @@
         amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/collectd/notify'
         amqpDataSource: 'collectd'
         serviceType: 'events'
-        debug: false
+        debug: {{ events_smart_gateway_collectd_debug_enabled }}
         elasticUrl: 'https://elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local:9200'
         useBasicAuth: true
         elasticUser: '{{ elastic_user }}'
@@ -51,7 +51,7 @@
         amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/ceilometer/event.sample'
         amqpDataSource: 'ceilometer'
         serviceType: 'events'
-        debug: false
+        debug: {{ events_smart_gateway_ceilometer_debug_enabled }}
         elasticUrl: 'https://elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local:9200'
         useBasicAuth: true
         elasticUser: '{{ elastic_user }}'

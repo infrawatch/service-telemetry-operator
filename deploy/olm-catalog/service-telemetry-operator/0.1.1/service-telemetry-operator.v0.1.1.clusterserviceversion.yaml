@@ -62,9 +62,24 @@ spec:
         path: metricsEnabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable Smart Gateway debugging for collectd telemetry
+        displayName: Smart Gateway Collectd Telemetry Debugging
+        path: metricsSmartGatewayCollectdDebugEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Whether to enable collection and storage components for events
         displayName: Events Enabled
         path: eventsEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable Smart Gateway debugging for collectd notifications
+        displayName: Smart Gateway Collectd Telemetry Debugging
+        path: eventsSmartGatewayCollectdDebugEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable Smart Gateway debugging for ceilometer notifications
+        displayName: Smart Gateway Ceilometer Notification Debugging
+        path: eventsSmartGatewayCeilometerDebugEnabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Whether to enable high availability for Service Telemetry components
