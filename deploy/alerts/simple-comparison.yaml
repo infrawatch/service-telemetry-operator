@@ -1,0 +1,124 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: stf-default
+    role: alert-rules
+  name: prometheus-alarms-part-two
+  namespace: service-telemetry
+spec:
+  groups:
+    - name: ./openstack.rules
+      rules:
+        - alert: high cpu
+          labels:
+            severity: warn
+          annotations:
+            summary: CPU usage high (warning)
+          expr: >-
+            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) / sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.5
+          for: 10m
+        - alert: high cpu
+          labels:
+            severity: critical
+          annotations:
+            summary: CPU usage high (critical)
+          expr: >-
+            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) / sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
+          for: 10m
+        - alert: inode usage
+          labels:
+            severity: warning
+          annotations:
+            summary: Inodes usage (warning)
+          expr: >-
+            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/ (sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
+          for: 10m
+        - alert: inode usage
+          labels:
+            severity: critical
+          annotations:
+            summary: Inodes usage (critical)
+          expr: >-
+            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/ (sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
+          for: 10m
+        - alert: hugepages
+          labels:
+            severity: warning
+          annotations:
+            summary: Hugepages (warning)
+          expr: >-
+            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/ sum without (type) (collectd_hugepages_vmpage_number) < 0.2
+          for: 10m
+        - alert: hugepages
+          labels:
+            severity: critical
+          annotations:
+            summary: Hugepages (warning)
+          expr: >-
+            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/ sum without (type) (collectd_hugepages_vmpage_number) < 0.1
+          for: 10m
+        - alert: load longterm
+          labels:
+            severity: warning
+          annotations:
+            summary: load longterm (warning)
+          expr: >-
+            collectd_load_longterm > 0.7 and collectd_load_longterm < 0.9
+          for: 10m
+        - alert: load longterm
+          labels:
+            severity: critical
+          annotations:
+            summary: load longterm (critical)
+          expr: >-
+            collectd_load_longterm >= 0.9
+          for: 10m
+        - alert: load midterm
+          labels:
+            severity: warning
+          annotations:
+            summary: load midterm (warning)
+          expr: >-
+            collectd_load_midterm > 0.7 and collectd_load_midterm < 0.9
+          for: 10m
+        - alert: load midterm
+          labels:
+            severity: critical
+          annotations:
+            summary: load midterm (critical)
+          expr: >-
+            collectd_load_midterm >= 0.9
+          for: 10m
+        - alert: load shortterm
+          labels:
+            severity: warning
+          annotations:
+            summary: load shortterm (warning)
+          expr: >-
+            collectd_load_shortterm > 0.7 and collectd_load_shortterm < 0.9
+          for: 10m
+        - alert: load midterm
+          labels:
+            severity: critical
+          annotations:
+            summary: load shortterm (critical)
+          expr: >-
+            collectd_load_shortterm >= 0.9
+          for: 10m
+        - alert: memory low
+          labels:
+            severity: warning
+          annotations:
+            summary: memory low (warning)
+          expr: >-
+            sum without(memory) (collectd_memory{memory="used"})/sum without(memory) (collectd_memory) > 0.8 and sum without(memory) (collectd_memory{memory="used"})/sum without(memory) (collectd_memory) < 0.9
+          for: 10m
+        - alert: memory low
+          labels:
+            severity: critical
+          annotations:
+            summary: memory low (critical)
+          expr: >-
+            sum without(memory) (collectd_memory{memory="used"})/sum without(memory) (collectd_memory) >= 0.9
+          for: 10m
