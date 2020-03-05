@@ -1,7 +1,10 @@
 ---
 # set default enablement
 metrics_enabled: true
+metrics_smart_gateway_collectd_debug_enabled: false
 events_enabled: false
+events_smart_gateway_collectd_debug_enabled: false
+events_smart_gateway_ceilometer_debug_enabled: false
 high_availability_enabled: false
 
 # default values
