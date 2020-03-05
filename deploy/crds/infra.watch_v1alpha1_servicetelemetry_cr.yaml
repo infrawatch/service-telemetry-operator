@@ -4,7 +4,9 @@ metadata:
   name: stf-default
 spec:
   metricsEnabled: true
+  metricsSmartGatewayCollectdDebugEnabled: false
   eventsEnabled: false
-  debug: true
+  eventsSmartGatewayCollectdDebugEnabled: false
+  eventsSmartGatewayCeilometerDebugEnabled: false
   highAvailabilityEnabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
