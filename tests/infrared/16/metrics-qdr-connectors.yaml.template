@@ -6,9 +6,10 @@ tripleo_heat_templates:
     - /usr/share/openstack-tripleo-heat-templates/environments/metrics/ceilometer-write-qdr.yaml
 
 custom_templates:
-    CeilometerQdrPublishEvents: true
-    CeilometerQdrPublishMetrics: true
     parameter_defaults:
+        CeilometerQdrPublishEvents: true
+        CeilometerQdrPublishMetrics: true
+
         MetricsQdrConnectors:
             - host: <<AMQP_HOST>>
               port: <<AMQP_PORT>>
