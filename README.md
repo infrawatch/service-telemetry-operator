@@ -56,14 +56,6 @@ core operator code like this:
 oc delete po -l name=service-telemetry-operator
 ```
 
-## Tech Preview
-
-See the [official
-documentation](https://infrawatch.github.io/documentation)
-for more information about installing for production-style use cases on OCP3.
-
-Please use [the legacy saf-ocp3 branch](https://github.com/infrawatch/telemetry-framework/tree/saf-ocp3) for all such installations.
-
 ## CI
 
 ### Travis

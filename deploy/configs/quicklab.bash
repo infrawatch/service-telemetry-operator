@@ -1,5 +1,5 @@
 # NOTE: namespace is hardcoded because the namespace is embedded in the certs loaded by this configuration
-KIND_SERVICEASSURANCE="apiVersion: infra.watch/v1alpha1
+KIND_SERVICETELEMETRY="apiVersion: infra.watch/v1alpha1
 kind: ServiceTelemetry
 metadata:
   name: stf-default

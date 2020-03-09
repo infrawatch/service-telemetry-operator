@@ -13,6 +13,4 @@ script:
 - operator-courier verify --ui_validate_io deploy/olm-catalog/service-telemetry-operator
 - ansible-lint roles/servicetelemetry/
 after_success:
-- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-- echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
-- ./build/travis/after_success.sh
+- if [ "$TRAVIS_TAG" == ""  ]; then echo "Not a tagged release, skipping after_success.sh"; else ./build/travis/after_success.sh; fi
