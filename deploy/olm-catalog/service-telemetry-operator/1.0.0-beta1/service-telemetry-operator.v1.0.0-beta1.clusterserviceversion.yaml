@@ -1,0 +1,261 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "infra.watch/v1alpha1",
+          "kind": "ServiceTelemetry",
+          "metadata": {
+            "name": "stf-default"
+          },
+          "spec": {
+            "eventsEnabled": false,
+            "highAvailabilityEnabled": false,
+            "metricsEnabled": true
+          }
+        }
+      ]
+    capabilities: Basic Install
+    categories: Monitoring
+    certified: "false"
+    containerImage: quay.io/infrawatch/service-telemetry-operator:1.0.0-beta1
+    createdAt: "2020-01-10T21:30:00Z"
+    description: Service Telemetry Framework. Umbrella Operator for instantiating
+      the required dependencies and configuration of various components to build a
+      Service Telemetry platform for telco grade monitoring.
+    repository: https://github.com/infrawatch/service-telemetry-operator
+    support: Red Hat, Inc.
+  name: service-telemetry-operator.v1.0.0-beta1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Represents an instance of the Service Telemetry Framework
+      displayName: STF Cluster
+      kind: ServiceTelemetry
+      name: servicetelemetrys.infra.watch
+      resources:
+      - kind: Pods
+        name: ""
+        version: v1
+      - kind: ConfigMaps
+        name: ""
+        version: v1
+      - kind: ServiceTelemetrys
+        name: servicetelemetrys.infra.watch
+        version: v1alpha1
+      - kind: ReplicaSets
+        name: ""
+        version: v1
+      - kind: Deployments
+        name: ""
+        version: v1
+      - kind: Services
+        name: ""
+        version: v1
+      specDescriptors:
+      - description: Whether to enable collection and storage components for metrics
+        displayName: Metrics Enabled
+        path: metricsEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Whether to enable collection and storage components for events
+        displayName: Events Enabled
+        path: eventsEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Whether to enable high availability for Service Telemetry components
+        displayName: High Availability Enabled
+        path: highAvailabilityEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Size of PV request for Prometheus storage. Add your unit to the
+          end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
+        displayName: Prometheus Storage Size
+        path: prometheusPvcStorageRequest
+        x-descriptors:
+        - urn:alm:descriptor:tectonic.ui:text
+      statusDescriptors:
+      - description: Conditions provided by deployment
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      version: v1alpha1
+    required:
+    - description: A declaration of a required Certificate
+      displayName: AMQ Certificate Manager
+      kind: Certificate
+      name: certificates.certmanager.k8s.io
+      version: v1alpha1
+    - description: Creation of AMQ Interconnect routers
+      displayName: AMQ Interconnect
+      kind: Interconnect
+      name: interconnects.interconnectedcloud.github.io
+      version: v1alpha1
+    - description: Creation of Prometheus instances
+      displayName: Prometheus
+      kind: Prometheus
+      name: prometheuses.monitoring.coreos.com
+      version: v1
+    - description: Creation of Smart Gateways
+      displayName: Smart Gateway
+      kind: SmartGateway
+      name: smartgateways.smartgateway.infra.watch
+      version: v2alpha1
+  description: Service Telemetry Operator for monitoring clouds
+  displayName: Service Telemetry Operator
+  icon:
+  - base64data: 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
+    mediatype: image/png
+  install:
+    spec:
+      deployments:
+      - name: service-telemetry-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: service-telemetry-operator
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: service-telemetry-operator
+            spec:
+              containers:
+              - command:
+                - /usr/local/bin/ao-logs
+                - /tmp/ansible-operator/runner
+                - stdout
+                image: quay.io/infrawatch/service-telemetry-operator:1.0.0-beta1
+                imagePullPolicy: Always
+                name: ansible
+                resources: {}
+                volumeMounts:
+                - mountPath: /tmp/ansible-operator/runner
+                  name: runner
+                  readOnly: true
+              - env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: service-telemetry-operator
+                - name: ANSIBLE_GATHERING
+                  value: explicit
+                image: quay.io/infrawatch/service-telemetry-operator:1.0.0-beta1
+                imagePullPolicy: Always
+                name: operator
+                resources: {}
+                volumeMounts:
+                - mountPath: /tmp/ansible-operator/runner
+                  name: runner
+              serviceAccountName: service-telemetry-operator
+              volumes:
+              - emptyDir: {}
+                name: runner
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - services/finalizers
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - '*'
+        - apiGroups:
+          - interconnectedcloud.github.io
+          - smartgateway.infra.watch
+          - monitoring.coreos.com
+          - elasticsearch.k8s.elastic.co
+          - certmanager.k8s.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - apps
+          resourceNames:
+          - service-telemetry-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          verbs:
+          - get
+        - apiGroups:
+          - infra.watch
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        serviceAccountName: service-telemetry-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  keywords:
+  - servicetelemetry
+  - monitoring
+  - telemetry
+  - notifications
+  - telecommunications
+  links:
+  - name: Source Code
+    url: https://github.com/infrawatch/service-telemetry-operator
+  maintainers:
+  - email: support@redhat.com
+    name: Red Hat (CloudOps)
+  maturity: alpha
+  minKubeVersion: 1.14.0
+  provider:
+    name: Red Hat, Inc.
+  replaces: service-telemetry-operator.v0.1.1
+  version: 1.0.0-beta1

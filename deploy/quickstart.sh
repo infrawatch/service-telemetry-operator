@@ -99,7 +99,7 @@ spec:
   name: servicetelemetry-operator
   source: infrawatch-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: service-telemetry-operator.v0.1.1
+  startingCSV: service-telemetry-operator.v1.0.0-beta1
 EOF
 while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for SAO..."; sleep 3; done
 if [ ! -z "${KIND_SERVICEASSURANCE}" ]; then
