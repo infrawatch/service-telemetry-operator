@@ -131,7 +131,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/infrawatch/service-telemetry-operator:1.0.0-beta1
+                image: quay.io/infrawatch/service-telemetry-operator:v1.0.0-beta1
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -152,7 +152,7 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/infrawatch/service-telemetry-operator:1.0.0-beta1
+                image: quay.io/infrawatch/service-telemetry-operator:v1.0.0-beta1
                 imagePullPolicy: Always
                 name: operator
                 resources: {}

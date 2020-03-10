@@ -3,5 +3,5 @@ channels:
   name: beta
 - currentCSV: service-telemetry-operator.v1.0.0-beta1
   name: stable
-defaultChannel: beta
+defaultChannel: stable
 packageName: servicetelemetry-operator
