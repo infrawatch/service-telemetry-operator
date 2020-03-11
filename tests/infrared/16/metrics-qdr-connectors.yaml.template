@@ -7,6 +7,9 @@ tripleo_heat_templates:
 
 custom_templates:
     parameter_defaults:
+        CeilometerQdrPublishEvents: true
+        CeilometerQdrPublishMetrics: true
+
         MetricsQdrConnectors:
             - host: <<AMQP_HOST>>
               port: <<AMQP_PORT>>
