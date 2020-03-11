@@ -20,14 +20,14 @@ metadata:
     capabilities: Basic Install
     categories: Monitoring
     certified: "false"
-    containerImage: quay.io/infrawatch/service-telemetry-operator:1.0.0-beta1
+    containerImage: quay.io/infrawatch/service-telemetry-operator:latest
     createdAt: "2020-01-10T21:30:00Z"
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.0.0
+  name: service-telemetry-operator.v1.0.0-next
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -258,4 +258,4 @@ spec:
   provider:
     name: Red Hat, Inc.
   replaces: service-telemetry-operator.v1.0.0-beta1
-  version: 1.0.0
+  version: 1.0.0-next
