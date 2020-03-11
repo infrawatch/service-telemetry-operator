@@ -1,6 +1,6 @@
 channels:
-- currentCSV: service-telemetry-operator.v1.0.0-beta1
-  name: beta
+- currentCSV: service-telemetry-operator.v1.0.0
+  name: latest
 - currentCSV: service-telemetry-operator.v1.0.0-beta1
   name: stable
 defaultChannel: stable

@@ -29,7 +29,7 @@
         useBasicAuth: true
         elasticUser: '{{ elastic_user }}'
         elasticPass: '{{ elastic_pass }}'
-        containerImagePath: 'quay.io/infrawatch/smart-gateway:v1.0.0-beta1'
+        containerImagePath: '{{ smartgateway_container_image_path }}:{{ smartgateway_container_image_tag }}'
         useTls: true
         tlsClientCert: /config/certs/tls.crt
         tlsClientKey: /config/certs/tls.key
@@ -56,7 +56,7 @@
         useBasicAuth: true
         elasticUser: '{{ elastic_user }}'
         elasticPass: '{{ elastic_pass }}'
-        containerImagePath: 'quay.io/infrawatch/smart-gateway:v1.0.0-beta1'
+        containerImagePath: '{{ smartgateway_container_image_path }}:{{ smartgateway_container_image_tag }}'
         useTls: true
         tlsClientCert: /config/certs/tls.crt
         tlsClientKey: /config/certs/tls.key

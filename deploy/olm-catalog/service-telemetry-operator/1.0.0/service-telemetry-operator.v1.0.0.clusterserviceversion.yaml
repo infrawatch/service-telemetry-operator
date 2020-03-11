@@ -13,8 +13,7 @@ metadata:
           "spec": {
             "eventsEnabled": false,
             "highAvailabilityEnabled": false,
-            "metricsEnabled": true,
-            "smartgatewayContainerImageTag": "v2.0.0-beta1"
+            "metricsEnabled": true
           }
         }
       ]
@@ -28,7 +27,7 @@ metadata:
       Service Telemetry platform for telco grade monitoring.
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.0.0-beta1
+  name: service-telemetry-operator.v1.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -132,7 +131,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.0-beta1
+                image: quay.io/infrawatch/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -153,7 +152,7 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.0-beta1
+                image: quay.io/infrawatch/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -258,5 +257,5 @@ spec:
   minKubeVersion: 1.14.0
   provider:
     name: Red Hat, Inc.
-  replaces: service-telemetry-operator.v0.1.1
-  version: 1.0.0-beta1
+  replaces: service-telemetry-operator.v1.0.0-beta1
+  version: 1.0.0
