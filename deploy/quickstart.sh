@@ -101,6 +101,6 @@ spec:
   sourceNamespace: openshift-marketplace
 EOF
 while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for Service Telemetry Operator..."; sleep 3; done
-if [ ! -z "${KIND_SERVICEASSURANCE}" ]; then
-  oc create -f - <<< "${KIND_SERVICEASSURANCE}"
+if [ ! -z "${KIND_SERVICETELEMETRY}" ]; then
+  oc create -f - <<< "${KIND_SERVICETELEMETRY}"
 fi

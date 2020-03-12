@@ -1,4 +1,4 @@
-KIND_SERVICEASSURANCE="apiVersion: infra.watch/v1alpha1
+KIND_SERVICETELEMETRY="apiVersion: infra.watch/v1alpha1
 kind: ServiceTelemetry
 metadata:
   name: stf-default

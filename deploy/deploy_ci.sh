@@ -21,7 +21,7 @@ echo -e "\n* [info] Re-deploying with local build...\n"
 
 # Now we can install an STF object for the locally built operator to work on
 source "${REL}/${QUICKSTART_CONFIG}"
-oc create -f - <<< "${KIND_SERVICEASSURANCE}"
+oc create -f - <<< "${KIND_SERVICETELEMETRY}"
 
 # Play the (automated!) waiting game
 echo -e "\n* [info] Waiting for QDR deployment to complete\n"
