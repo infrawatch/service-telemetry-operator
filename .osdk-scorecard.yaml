@@ -1,13 +1,13 @@
 scorecard:
   version: v1alpha2
   output: text
-  bundle: deploy/olm-catalog/service-telemetry-operator/metadata
+  bundle: deploy/olm-catalog/service-telemetry-operator/1.0.0-next/metadata
   plugins:
     - basic:
         cr-manifest:
           - "deploy/crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml"
-        csv-path: "deploy/olm-catalog/service-telemetry-operator/1.0.0/service-telemetry-operator.v1.0.0.clusterserviceversion.yaml"
+        csv-path: "deploy/olm-catalog/service-telemetry-operator/1.0.0-next/service-telemetry-operator.v1.0.0-next.clusterserviceversion.yaml"
     - olm:
         cr-manifest:
           - "deploy/crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml"
-        csv-path: "deploy/olm-catalog/service-telemetry-operator/1.0.0/service-telemetry-operator.v1.0.0.clusterserviceversion.yaml"
+        csv-path: "deploy/olm-catalog/service-telemetry-operator/1.0.0-next/service-telemetry-operator.v1.0.0-next.clusterserviceversion.yaml"
