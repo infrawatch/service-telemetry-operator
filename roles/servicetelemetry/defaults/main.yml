@@ -5,9 +5,6 @@ events_enabled: false
 high_availability_enabled: false
 
 # default values
-smartgateway_container_image_path: quay.io/infrawatch/smart-gateway
-smartgateway_container_image_tag: latest
-
 prometheus_storage_class: ""
 prometheus_storage_resources: {}
 prometheus_storage_selector: {}
