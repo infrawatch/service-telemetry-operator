@@ -10,7 +10,7 @@
         namespace: '{{ meta.namespace }}'
       spec:
         endpoints:
-          - interval: 1s
+          - interval: {{ smartgateway_servicemonitor_spec_endpoints_interval }}
             metricRelabelings:
               - action: labeldrop
                 regex: pod

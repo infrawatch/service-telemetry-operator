@@ -91,17 +91,16 @@ spec:
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: servicetelemetry-operator-beta-infrawatch-operators-openshift-marketplace
+  name: servicetelemetry-operator-stable-infrawatch-operators-openshift-marketplace
   namespace: ${OCP_PROJECT}
 spec:
-  channel: beta
+  channel: stable
   installPlanApproval: Automatic
   name: servicetelemetry-operator
   source: infrawatch-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: service-telemetry-operator.v0.1.1
 EOF
-while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for SAO..."; sleep 3; done
-if [ ! -z "${KIND_SERVICEASSURANCE}" ]; then
-  oc create -f - <<< "${KIND_SERVICEASSURANCE}"
+while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for Service Telemetry Operator..."; sleep 3; done
+if [ ! -z "${KIND_SERVICETELEMETRY}" ]; then
+  oc create -f - <<< "${KIND_SERVICETELEMETRY}"
 fi

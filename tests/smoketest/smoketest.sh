@@ -61,13 +61,13 @@ oc logs "$(oc get pod -l application=stf-default-interconnect -o jsonpath='{.ite
 echo
 
 echo "*** [INFO] Logs from smart gateways..."
-oc logs "$(oc get pod -l "deploymentconfig=stf-default-collectd-telemetry-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "deploymentconfig=stf-default-collectd-notification-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "deploymentconfig=stf-default-ceilometer-notification-smartgateway" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=stf-default-collectd-telemetry" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=stf-default-collectd-notification" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=stf-default-ceilometer-notification" -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
-oc logs "$(oc get pod -l app=smart-gateway -o jsonpath='{.items[0].metadata.name}')" -c ansible
+oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].metadata.name}')" -c ansible
 echo
 
 echo "*** [INFO] Logs from prometheus..."

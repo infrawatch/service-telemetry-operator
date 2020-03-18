@@ -21,7 +21,7 @@ echo -e "\n* [info] Re-deploying with local build...\n"
 
 # Now we can install an STF object for the locally built operator to work on
 source "${REL}/${QUICKSTART_CONFIG}"
-oc create -f - <<< "${KIND_SERVICEASSURANCE}"
+oc create -f - <<< "${KIND_SERVICETELEMETRY}"
 
 # Play the (automated!) waiting game
 echo -e "\n* [info] Waiting for QDR deployment to complete\n"
@@ -39,9 +39,9 @@ done
 echo -e "\n* [info] Waiting for alertmanager deployment to complete\n"
 until timeout 300 oc rollout status statefulset.apps/alertmanager-stf-default; do sleep 3; done
 echo -e "\n* [info] Waiting for smart-gateway deployment to complete\n"
-until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/stf-default-collectd-telemetry-smartgateway; do sleep 3; done
-until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/stf-default-collectd-notification-smartgateway; do sleep 3; done
-until timeout 300 oc rollout status deploymentconfig.apps.openshift.io/stf-default-ceilometer-notification-smartgateway; do sleep 3; done
+until timeout 300 oc rollout status deployment.apps/stf-default-collectd-telemetry-smartgateway; do sleep 3; done
+until timeout 300 oc rollout status deployment.apps/stf-default-collectd-notification-smartgateway; do sleep 3; done
+until timeout 300 oc rollout status deployment.apps/stf-default-ceilometer-notification-smartgateway; do sleep 3; done
 echo -e "\n* [info] Waiting for all pods to show Ready/Complete\n"
 while oc get pods | tail -n +2 | grep -v -E 'Running|Completed'; do
     sleep 3
