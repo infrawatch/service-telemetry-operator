@@ -85,6 +85,27 @@ spec:
 EOF
 ```
 
+## AMQ Interconnect
+
+Install the `Subscription` for AMQ7 Interconnect Operator.
+
+```
+oc apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: amq7-interconnect-operator
+  namespace: service-telemetry
+spec:
+  channel: 1.2.0
+  installPlanApproval: Automatic
+  name: amq7-interconnect-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: amq7-interconnect-operator.v1.2.0
+EOF
+```
+
 ### InfraWatch Operators
 
 Install the `OperatorSource` for InfraWatch. You can validate the installation
