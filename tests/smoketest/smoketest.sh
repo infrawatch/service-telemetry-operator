@@ -67,7 +67,7 @@ oc logs "$(oc get pod -l "smart-gateway=stf-default-ceilometer-notification" -o 
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
-oc logs "$(oc get pod -l app=smart-gateway -o jsonpath='{.items[0].metadata.name}')" -c ansible
+oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].metadata.name}')" -c ansible
 echo
 
 echo "*** [INFO] Logs from prometheus..."
