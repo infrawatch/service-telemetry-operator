@@ -1068,7 +1068,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "collectd_total_amqp_processed_message_count",
+          "expr": "sg_total_metric_rcv_count",
           "refId": "A"
         }
       ],
@@ -1566,19 +1566,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(collectd_total_amqp_message_recv_count[10s])",
+          "expr": "rate(sg_total_amqp_rcv_count[10s])",
           "hide": false,
           "legendFormat": "{{service}} Recv (10s avg)",
           "refId": "A"
         },
         {
-          "expr": "rate(collectd_total_amqp_processed_message_count[10s])",
+          "expr": "rate(sg_total_metric_rcv_count[10s])",
           "hide": false,
           "legendFormat": "{{service}} Proc (10s avg)",
           "refId": "B"
         },
         {
-          "expr": "collectd_total_amqp_message_recv_count - collectd_total_amqp_processed_message_count",
+          "expr": "sg_total_amqp_rcv_count - sg_total_metric_rcv_count",
           "hide": false,
           "legendFormat": "{{service}} Unproc",
           "refId": "C"
