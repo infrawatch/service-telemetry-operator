@@ -185,7 +185,7 @@
       "pluginVersion": "6.4.4",
       "targets": [
         {
-          "expr": "sum(count_over_time({exported_instance !~ \"stf-perftest-.*-runner.*\", type =~ \".+\"}[$__range])) / sum(delta(deliveries_ingress{service=\"stf-default-interconnect\"}[$__range]))",
+          "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type =~ \".+\"}[$__range])) / sum(delta(deliveries_ingress{service=\"stf-default-interconnect\"}[$__range]))",
           "hide": false,
           "instant": true,
           "refId": "A"
@@ -1152,7 +1152,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(count_over_time({exported_instance !~ \"stf-perftest-.*-runner.*\", type =~ \".+\"}[$__range]))",
+          "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type =~ \".+\"}[$__range]))",
           "hide": false,
           "instant": true,
           "refId": "A"
@@ -2122,10 +2122,10 @@
           "refId": "A"
         },
         {
-          "expr": "count({exported_instance=~\".+\", type=~\".+\"}) by (exported_instance)",
+          "expr": "count({host=~\".+\", type=~\".+\"}) by (host)",
           "hide": false,
           "interval": "1s",
-          "legendFormat": "{{exported_instance}}",
+          "legendFormat": "{{host}}",
           "refId": "B"
         }
       ],
