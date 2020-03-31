@@ -1,0 +1,12 @@
+- name: Figure out manifest override parameter
+  set_fact:
+    smartgateway_manifest_override: "smartgateway_{{ agent.name|lower }}_{{ data_type }}_manifest"
+- name: "Create default Smart Gateway manifest for {{ agent_name }} {{ data_type }}"
+  set_fact:
+    "{{ smartgateway_manifest_override }}": "{{ lookup('template', manifest) }}"
+  when: "{{ smartgateway_manifest_override }} is not defined"
+  tags:
+    - skip_ansible_lint
+- name: "Deploy instance of Smart Gateway for {{ agent_name }} {{ data_type }}"
+  k8s:
+    definition: "{{ lookup('vars', smartgateway_manifest_override) }}"
