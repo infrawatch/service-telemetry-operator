@@ -185,7 +185,7 @@
       "pluginVersion": "6.4.4",
       "targets": [
         {
-          "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type =~ \".+\"}[$__range])) / sum(delta(deliveries_ingress{service=\"stf-default-interconnect\"}[$__range]))",
+          "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type_instance =~ \".+\"}[$__range])) / sum(delta(deliveries_ingress{service=\"stf-default-interconnect\"}[$__range]))",
           "hide": false,
           "instant": true,
           "refId": "A"
@@ -1152,7 +1152,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type =~ \".+\"}[$__range]))",
+          "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type_instance =~ \".+\"}[$__range]))",
           "hide": false,
           "instant": true,
           "refId": "A"
@@ -2122,7 +2122,7 @@
           "refId": "A"
         },
         {
-          "expr": "count({host=~\".+\", type=~\".+\"}) by (host)",
+          "expr": "count({host=~\".+\", type_instance=~\".+\"}) by (host)",
           "hide": false,
           "interval": "1s",
           "legendFormat": "{{host}}",

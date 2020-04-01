@@ -41,7 +41,7 @@ Initialization complete, entering read-loop.
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100   328  100   262  100    66  16926   4263 --:--:-- --:--:-- --:--:-- 17466
-{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"collectd_cpu_total","cpu":"0","endpoint":"metrics","host":"stf-smoketest-md967","service":"white-smartgateway","type":"user"},"value":[1562363042.123,"518777"]}]}}
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"collectd_cpu_total","cpu":"0","endpoint":"metrics","host":"stf-smoketest-md967","service":"white-smartgateway","type_instance":"user"},"value":[1562363042.123,"518777"]}]}}
 ```
 
 ## Improvements
