@@ -139,7 +139,7 @@ spec:
           annotations:
             summary: CPU usage high (warning)
           expr: >-
-            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) / sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.5
+            sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance=~"user|system"}) / sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance="idle"}) > 0.5
           for: 10m
         - alert: high cpu
           labels:
@@ -147,7 +147,7 @@ spec:
           annotations:
             summary: CPU usage high (critical)
           expr: >-
-            sum without(cpu,type) (collectd_cpu_percent{type=~"user|system"}) / sum without(cpu,type) (collectd_cpu_percent{type="idle"}) > 0.7
+            sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance=~"user|system"}) / sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance="idle"}) > 0.7
           for: 10m
         - alert: inode usage
           labels:
@@ -155,7 +155,7 @@ spec:
           annotations:
             summary: Inodes usage (warning)
           expr: >-
-            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/ (sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.6
+            sum without (endpoint,service,type_instance) (collectd_df_df_inodes{plugin_instance="root",type_instance="used"})/ (sum without (endpoint,service,type_instance) (collectd_df_df_inodes{plugin_instance="root",type_instance=~"free|used"})) > 0.6
           for: 10m
         - alert: inode usage
           labels:
@@ -163,7 +163,7 @@ spec:
           annotations:
             summary: Inodes usage (critical)
           expr: >-
-            sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type="used"})/ (sum without (endpoint,service,type) (collectd_df_df_inodes{df="root",type=~"free|used"})) > 0.8
+            sum without (endpoint,service,type_instance) (collectd_df_df_inodes{plugin_instance="root",type_instance="used"})/ (sum without (endpoint,service,type_instance) (collectd_df_df_inodes{plugin_instance="root",type_instance=~"free|used"})) > 0.8
           for: 10m
         - alert: hugepages
           labels:
@@ -171,7 +171,7 @@ spec:
           annotations:
             summary: Hugepages (warning)
           expr: >-
-            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/ sum without (type) (collectd_hugepages_vmpage_number) < 0.2
+            sum without (type_instance) (collectd_hugepages_vmpage_number{type_instance="free"})/ sum without (type_instance) (collectd_hugepages_vmpage_number) < 0.2
           for: 10m
         - alert: hugepages
           labels:
@@ -179,7 +179,7 @@ spec:
           annotations:
             summary: Hugepages (warning)
           expr: >-
-            sum without (type) (collectd_hugepages_vmpage_number{type="free"})/ sum without (type) (collectd_hugepages_vmpage_number) < 0.1
+            sum without (type_instance) (collectd_hugepages_vmpage_number{type_instance="free"})/ sum without (type_instance) (collectd_hugepages_vmpage_number) < 0.1
           for: 10m
         - alert: load longterm
           labels:
@@ -235,7 +235,7 @@ spec:
           annotations:
             summary: memory low (warning)
           expr: >-
-            sum without(memory) (collectd_memory{memory="used"})/sum without(memory) (collectd_memory) > 0.8 and sum without(memory) (collectd_memory{memory="used"})/sum without(memory) (collectd_memory) < 0.9
+            sum without(plugin_instance) (collectd_memory{plugin_instance="used"})/sum without(plugin_instance) (collectd_memory) > 0.8 and sum without(plugin_instance) (collectd_memory{plugin_instance="used"})/sum without(plugin_instance) (collectd_memory) < 0.9
           for: 10m
         - alert: memory low
           labels:
@@ -243,5 +243,5 @@ spec:
           annotations:
             summary: memory low (critical)
           expr: >-
-            sum without(memory) (collectd_memory{memory="used"})/sum without(memory) (collectd_memory) >= 0.9
+            sum without(plugin_instance) (collectd_memory{plugin_instance="used"})/sum without(plugin_instance) (collectd_memory) >= 0.9
           for: 10m
