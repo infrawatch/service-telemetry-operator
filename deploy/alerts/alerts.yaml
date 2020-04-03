@@ -235,7 +235,7 @@ spec:
           annotations:
             summary: memory low (warning)
           expr: >-
-            sum without(plugin_instance) (collectd_memory{plugin_instance="used"})/sum without(plugin_instance) (collectd_memory) > 0.8 and sum without(plugin_instance) (collectd_memory{plugin_instance="used"})/sum without(plugin_instance) (collectd_memory) < 0.9
+            sum without(type_instance) (collectd_memory{type_instance="used"})/sum without(type_instance) (collectd_memory) > 0.8 and sum without(type_instance) (collectd_memory{type_instance="used"})/sum without(type_instance) (collectd_memory) < 0.9
           for: 10m
         - alert: memory low
           labels:
@@ -243,5 +243,5 @@ spec:
           annotations:
             summary: memory low (critical)
           expr: >-
-            sum without(plugin_instance) (collectd_memory{plugin_instance="used"})/sum without(plugin_instance) (collectd_memory) >= 0.9
+            sum without(type_instance) (collectd_memory{type_instance="used"})/sum without(type_instance) (collectd_memory) >= 0.9
           for: 10m
