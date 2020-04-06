@@ -1,0 +1,20 @@
+- name: Figure out manifest override parameter
+  set_fact:
+    smartgateway_manifest_override: "smartgateway_{{ agent.name|lower }}_{{ data_type }}_manifest"
+
+- name: What SmartGateway manifest are we working on?
+  debug:
+    msg: "Working on {{ smartgateway_manifest_override }}"
+
+- name: "Generate Smart Gateway manifest and store when override is not provided"
+  set_fact:
+    "{{ smartgateway_manifest_override }}": "{{ lookup('template', manifest) }}"
+  when: "vars[smartgateway_manifest_override] is not defined"
+
+- name: "Show manifest we're going to load"
+  debug:
+    var: vars[smartgateway_manifest_override] | from_yaml
+
+- name: "Deploy instance of Smart Gateway"
+  k8s:
+    definition: "{{ lookup('vars', smartgateway_manifest_override) | from_yaml }}"
