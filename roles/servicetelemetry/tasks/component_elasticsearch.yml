@@ -1,46 +1,19 @@
+- name: Lookup template
+  debug:
+    msg: "{{ lookup('template', './manifest_elasticsearch.j2') }}"
+
 - name: Set default ElasticSearch manifest
   set_fact:
-    elasticsearch_manifest: |
-      apiVersion: elasticsearch.k8s.elastic.co/v1beta1
-      kind: Elasticsearch
-      metadata:
-        name: elasticsearch
-        namespace: '{{ meta.namespace }}'
-      spec:
-        http:
-          tls:
-            certificate:
-              secretName: 'elasticsearch-es-cert'
-        nodeSets:
-          - config:
-              node.data: true
-              node.ingest: true
-              node.master: true
-              node.store.allow_mmap: false
-            count: {{ elasticsearch_node_count }}
-            name: default
-            podTemplate:
-              spec:
-                containers:
-                  - name: elasticsearch
-                    resources:
-                      limits:
-                        cpu: '2'
-                        memory: 4Gi
-                      requests:
-                        cpu: '1'
-                        memory: 4Gi
-            volumeClaimTemplate:
-              - metadata:
-                  name: elasticsearch-data
-                spec:
-                  accessModes:
-                    - ReadWriteOnce
-                  resources:
-                    requests:
-                      storage: {{ elasticsearch_pvc_storage_request }}
-        version: 7.5.1
+    elasticsearch_manifest: "{{ lookup('template', './manifest_elasticsearch.j2') }}"
   when: elasticsearch_manifest is not defined
+
+- name: Show ElasticSearch manifest being loaded
+  debug:
+    var: elasticsearch_manifest | from_yaml
+
+- name: Show ElasticSearch manifest being loaded
+  debug:
+    var: elasticsearch_manifest | from_yaml
 
 - name: Create an instance of ElasticSearch
   k8s:
