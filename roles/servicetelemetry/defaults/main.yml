@@ -3,6 +3,7 @@
 metrics_enabled: true
 events_enabled: false
 high_availability_enabled: false
+storage_ephemeral_enabled: false
 
 # default values
 prometheus_storage_class: ""
