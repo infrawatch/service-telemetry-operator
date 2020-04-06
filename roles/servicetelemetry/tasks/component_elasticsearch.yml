@@ -1,19 +1,11 @@
 - name: Lookup template
   debug:
-    msg: "{{ lookup('template', './manifest_elasticsearch.j2') }}"
+    msg: "{{ lookup('template', './manifest_elasticsearch.j2') | from_yaml }}"
 
 - name: Set default ElasticSearch manifest
   set_fact:
-    elasticsearch_manifest: "{{ lookup('template', './manifest_elasticsearch.j2') }}"
+    elasticsearch_manifest: "{{ lookup('template', './manifest_elasticsearch.j2') | from_yaml }}"
   when: elasticsearch_manifest is not defined
-
-- name: Show ElasticSearch manifest being loaded
-  debug:
-    var: elasticsearch_manifest | from_yaml
-
-- name: Show ElasticSearch manifest being loaded
-  debug:
-    var: elasticsearch_manifest | from_yaml
 
 - name: Create an instance of ElasticSearch
   k8s:
