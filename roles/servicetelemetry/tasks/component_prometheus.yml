@@ -1,35 +1,10 @@
+- name: Lookup template
+  debug:
+    msg: "{{ lookup('template', './manifest_prometheus.j2') | from_yaml }}"
+
 - name: Set default Prometheus manifest
   set_fact:
-    prometheus_manifest: |
-      apiVersion: monitoring.coreos.com/v1
-      kind: Prometheus
-      metadata:
-        labels:
-          prometheus: '{{ meta.name }}'
-        name: '{{ meta.name }}'
-        namespace: '{{ meta.namespace }}'
-      spec:
-        replicas: 1
-        ruleSelector: {}
-        securityContext: {}
-        serviceAccountName: prometheus-k8s
-        serviceMonitorSelector:
-          matchLabels:
-            app: smart-gateway
-        alerting:
-          alertmanagers:
-          - name: alertmanager-operated
-            namespace: '{{ meta.namespace }}'
-            port: web
-        storage:
-          class: {{ prometheus_storage_class }}
-          resources: {{ prometheus_storage_resources }}
-          selector: {{ prometheus_storage_selector }}
-          volumeClaimTemplate:
-            spec:
-              resources:
-                requests:
-                  storage: {{ prometheus_pvc_storage_request }}
+    prometheus_manifest: "{{ lookup('template', './manifest_prometheus.j2') | from_yaml }}"
   when: prometheus_manifest is not defined
 
 - name: Create an instance of Prometheus

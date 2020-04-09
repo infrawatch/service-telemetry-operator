@@ -6,4 +6,5 @@ spec:
   metricsEnabled: true
   eventsEnabled: false
   highAvailabilityEnabled: false
+  storageEphemeralEnabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

@@ -1,0 +1,48 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1beta1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: '{{ meta.namespace }}'
+spec:
+  version: 7.5.1
+  http:
+    tls:
+      certificate:
+        secretName: 'elasticsearch-es-cert'
+  nodeSets:
+    - config:
+        node.data: true
+        node.ingest: true
+        node.master: true
+        node.store.allow_mmap: true
+      count: {{ elasticsearch_node_count }}
+      name: default
+      podTemplate:
+        metadata:
+          labels:
+            tuned.openshift.io/elasticsearch: elasticsearch
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                limits:
+                  cpu: '2'
+                  memory: 4Gi
+                requests:
+                  cpu: '1'
+                  memory: 4Gi
+{% if storage_ephemeral_enabled %}
+          volumes:
+            - emptyDir: {}
+              name: elasticsearch-data
+{% else %}
+      volumeClaimTemplate:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: {{ elasticsearch_pvc_storage_request }}
+{% endif %}
