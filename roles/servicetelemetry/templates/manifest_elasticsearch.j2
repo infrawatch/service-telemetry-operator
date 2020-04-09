@@ -14,10 +14,13 @@ spec:
         node.data: true
         node.ingest: true
         node.master: true
-        node.store.allow_mmap: false
+        node.store.allow_mmap: true
       count: {{ elasticsearch_node_count }}
       name: default
       podTemplate:
+        metadata:
+          labels:
+            tuned.openshift.io/elasticsearch: elasticsearch
         spec:
           containers:
             - name: elasticsearch
