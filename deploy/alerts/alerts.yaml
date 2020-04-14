@@ -221,7 +221,7 @@ spec:
           expr: >-
             collectd_load_shortterm > 0.7 and collectd_load_shortterm < 0.9
           for: 10m
-        - alert: load midterm
+        - alert: load shortterm
           labels:
             severity: critical
           annotations:
