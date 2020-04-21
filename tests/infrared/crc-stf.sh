@@ -14,13 +14,13 @@ function check_prerequisites() {
 }
 
 check_prerequisites
-crc delete -f
+crc delete --force
 
 # takes probably a lot shorter
 sleep 60
 
 crc setup
-crc start --memory 32768 -c 8 -p ~/.crc/pull-secret
+crc start --memory 49152 --cpus 8 --pull-secret-file ~/.crc/pull-secret
 
 # oc startup can take some time
 sleep 60
