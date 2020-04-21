@@ -25,26 +25,26 @@ the _STF Cluster_ box under _Provided APIs_. Then press _Create_.
 
 ## Overriding Default Manifests
 
-The following variables can be passed to a new instance of STF Cluster (kind:
-ServiceTelemetry) via the YAML configuration to override the default manifests
+The following variables can be passed to a new instance of STF Cluster (`kind:
+ServiceTelemetry`) via the YAML configuration to override the default manifests
 loaded for you.
 
-* prometheus_manifest
-* alertmanager_config_manifest
-* alertmanager_manifest
-* elasticsearch_secret_manifest
-* interconnect_manifest
-* elasticsearch_manifest
-* smartgateway_collectd_metrics_manifest
-* smartgateway_collectd_events_manifest
-* smartgateway_ceilometer_events_manifest
-* servicemonitor_manifest
+* prometheusManifest
+* alertmanagerConfigManifest
+* alertmanagerManifest
+* elasticsearchSecretManifest
+* interconnectManifest
+* elasticsearchManifest
+* smartgatewayCollectdMetricsManifest
+* smartgatewayCollectdEventsManifest
+* smartgatewayCeilometerEventsManifest
+* servicemonitorManifest
 
 ## Development
 
 The quickest way to start up Service Telemetry Framework for development is to
 run the `quickstart.sh` script located in the `deploy/` directory after starting
-up a [Code Ready Containers](https://github.com/code-ready/crc) environment.
+up a [CodeReady Containers](https://github.com/code-ready/crc) environment.
 
 To deploy a local build of the Service Telemetry Operator itself, start by
 running `build/build_ci.sh`. Once that's done, you can test new builds of the
