@@ -1,8 +1,7 @@
 ---
 tripleo_heat_templates:
-    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/collectd-write-qdr.yaml
-    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/qdr-edge-only.yaml
     - /usr/share/openstack-tripleo-heat-templates/environments/enable-legacy-telemetry.yaml
+    - /usr/share/openstack-tripleo-heat-templates/environments/enable-stf.yaml
     - /usr/share/openstack-tripleo-heat-templates/environments/metrics/ceilometer-write-qdr.yaml
 
 custom_templates:
