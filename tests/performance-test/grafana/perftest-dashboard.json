@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": null,
-  "iteration": 1574392990927,
+  "iteration": 1587668048120,
   "links": [],
   "panels": [
     {
@@ -48,7 +48,6 @@
       "limit": 10,
       "nameFilter": "",
       "onlyAlertsOnDashboard": false,
-      "options": {},
       "show": "current",
       "sortOrder": 1,
       "stateFilter": [],
@@ -76,7 +75,6 @@
         "y": 1
       },
       "id": 38,
-      "options": {},
       "pageSize": 10,
       "scroll": true,
       "showHeader": true,
@@ -87,12 +85,14 @@
       "styles": [
         {
           "alias": "Time",
+          "align": "auto",
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "pattern": "Time",
           "type": "date"
         },
         {
           "alias": "",
+          "align": "auto",
           "colorMode": "row",
           "colors": [
             "rgba(50, 172, 45, 0.97)",
@@ -154,35 +154,41 @@
             "max"
           ],
           "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
             "decimals": 2,
             "mappings": [],
             "max": 1,
             "min": 0,
-            "thresholds": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 0.8
-              },
-              {
-                "color": "green",
-                "value": 0.9
-              }
-            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 0.8
+                },
+                {
+                  "color": "green",
+                  "value": 0.9
+                }
+              ]
+            },
             "title": "",
             "unit": "percentunit"
           },
-          "override": {},
+          "overrides": [],
           "values": true
         },
         "orientation": "auto",
         "showThresholdLabels": true,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.4.4",
+      "pluginVersion": "6.7.3",
       "targets": [
         {
           "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type_instance =~ \".+\"}[$__range])) / sum(delta(deliveries_ingress{service=\"stf-default-interconnect\"}[$__range]))",
@@ -240,7 +246,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -324,7 +329,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -411,7 +415,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -496,7 +499,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -554,7 +556,6 @@
       "limit": "10000",
       "nameFilter": "",
       "onlyAlertsOnDashboard": true,
-      "options": {},
       "show": "changes",
       "sortOrder": 1,
       "stateFilter": [],
@@ -579,6 +580,9 @@
             "lastNotNull"
           ],
           "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
             "links": [
               {
                 "title": "",
@@ -588,26 +592,29 @@
             "mappings": [],
             "max": 1,
             "min": 0,
-            "thresholds": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 0.97
-              }
-            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 0.97
+                }
+              ]
+            },
             "unit": "percentunit"
           },
-          "override": {},
+          "overrides": [],
           "values": false
         },
         "orientation": "auto",
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.4.4",
+      "pluginVersion": "6.7.3",
       "targets": [
         {
           "bucketAggs": [
@@ -684,7 +691,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -772,7 +778,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "/s",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -855,7 +860,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "/s",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -939,7 +943,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1045,7 +1048,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1129,7 +1131,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1265,6 +1266,7 @@
         "x": 0,
         "y": 14
       },
+      "hiddenSeries": false,
       "id": 60,
       "legend": {
         "alignAsTable": true,
@@ -1374,6 +1376,7 @@
         "x": 12,
         "y": 14
       },
+      "hiddenSeries": false,
       "id": 58,
       "legend": {
         "avg": false,
@@ -1534,6 +1537,7 @@
         "x": 0,
         "y": 23
       },
+      "hiddenSeries": false,
       "id": 24,
       "legend": {
         "alignAsTable": false,
@@ -1686,6 +1690,7 @@
         "x": 12,
         "y": 23
       },
+      "hiddenSeries": false,
       "id": 32,
       "legend": {
         "avg": false,
@@ -1838,6 +1843,7 @@
         "x": 0,
         "y": 31
       },
+      "hiddenSeries": false,
       "id": 13,
       "legend": {
         "alignAsTable": false,
@@ -1980,6 +1986,7 @@
         "x": 12,
         "y": 31
       },
+      "hiddenSeries": false,
       "id": 30,
       "legend": {
         "avg": false,
@@ -2082,6 +2089,7 @@
         "x": 0,
         "y": 38
       },
+      "hiddenSeries": false,
       "id": 11,
       "legend": {
         "alignAsTable": true,
@@ -2222,6 +2230,7 @@
         "x": 12,
         "y": 38
       },
+      "hiddenSeries": false,
       "id": 21,
       "legend": {
         "avg": true,
@@ -2326,6 +2335,7 @@
         "x": 18,
         "y": 38
       },
+      "hiddenSeries": false,
       "id": 46,
       "legend": {
         "avg": false,
@@ -2427,6 +2437,7 @@
         "x": 0,
         "y": 46
       },
+      "hiddenSeries": false,
       "id": 2,
       "legend": {
         "alignAsTable": true,
@@ -2454,9 +2465,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pod_name:container_cpu_usage:sum{$all_stf_pods}",
+          "expr": "pod:container_cpu_usage:sum{$all_stf_pods}",
           "hide": false,
-          "legendFormat": "{{pod_name}}",
+          "interval": "",
+          "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ],
@@ -2517,6 +2529,7 @@
         "x": 12,
         "y": 46
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "alignAsTable": true,
@@ -2544,10 +2557,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(container_memory_working_set_bytes{$all_stf_pods}) by (pod_name)",
+          "expr": "sum(container_memory_working_set_bytes{$all_stf_pods}) by (pod)",
           "hide": false,
           "instant": false,
-          "legendFormat": "{{pod_name}}",
+          "interval": "",
+          "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ],
@@ -2606,6 +2620,7 @@
         "x": 0,
         "y": 53
       },
+      "hiddenSeries": false,
       "id": 6,
       "legend": {
         "alignAsTable": true,
@@ -2643,13 +2658,15 @@
         {
           "expr": "rate(container_network_transmit_bytes_total{$all_stf_pods}[1m])*8",
           "hide": false,
-          "legendFormat": "{{pod_name}} tx",
+          "interval": "",
+          "legendFormat": "{{pod}} tx",
           "refId": "A"
         },
         {
           "expr": "rate(container_network_receive_bytes_total{$all_stf_pods}[1m])*8",
           "hide": false,
-          "legendFormat": "{{pod_name}} rx",
+          "interval": "",
+          "legendFormat": "{{pod}} rx",
           "refId": "B"
         }
       ],
@@ -2708,6 +2725,7 @@
         "x": 12,
         "y": 53
       },
+      "hiddenSeries": false,
       "id": 7,
       "legend": {
         "alignAsTable": true,
@@ -2745,25 +2763,29 @@
         {
           "expr": "rate(container_network_transmit_packets_total{$all_stf_pods}[1m])*8",
           "hide": false,
-          "legendFormat": "{{pod_name}} tx",
+          "interval": "",
+          "legendFormat": "{{pod}} tx",
           "refId": "A"
         },
         {
           "expr": "rate(container_network_receive_packets_total{$all_stf_pods}[1m])*8",
           "hide": false,
-          "legendFormat": "{{pod_name}} rx",
+          "interval": "",
+          "legendFormat": "{{pod}} rx",
           "refId": "B"
         },
         {
           "expr": "container_network_transmit_packets_dropped_total{$all_stf_pods}",
           "hide": false,
-          "legendFormat": "{{pod_name}} tx dropped",
+          "interval": "",
+          "legendFormat": "{{pod}} tx dropped",
           "refId": "C"
         },
         {
           "expr": "container_network_receive_packets_dropped_total{$all_stf_pods}",
           "hide": false,
-          "legendFormat": "{{pod_name}} rx dropped",
+          "interval": "",
+          "legendFormat": "{{pod}} rx dropped",
           "refId": "D"
         }
       ],
@@ -2823,6 +2845,7 @@
         "x": 18,
         "y": 53
       },
+      "hiddenSeries": false,
       "id": 22,
       "legend": {
         "alignAsTable": true,
@@ -2858,13 +2881,15 @@
         {
           "expr": "irate(container_network_transmit_bytes_total{$all_stf_pods}[1m]) / irate(container_network_transmit_packets_total{$all_stf_pods}[1m])",
           "hide": false,
-          "legendFormat": "{{pod_name}} tx",
+          "interval": "",
+          "legendFormat": "{{pod}} tx",
           "refId": "A"
         },
         {
           "expr": "irate(container_network_receive_bytes_total{$all_stf_pods}[1m]) / irate(container_network_receive_packets_total{$all_stf_pods}[1m])",
           "hide": false,
-          "legendFormat": "{{pod_name}} rx",
+          "interval": "",
+          "legendFormat": "{{pod}} rx",
           "refId": "B"
         }
       ],
@@ -2937,6 +2962,7 @@
         "x": 0,
         "y": 61
       },
+      "hiddenSeries": false,
       "id": 40,
       "legend": {
         "alignAsTable": true,
@@ -3025,6 +3051,7 @@
         "x": 12,
         "y": 61
       },
+      "hiddenSeries": false,
       "id": 44,
       "legend": {
         "alignAsTable": true,
@@ -3100,16 +3127,17 @@
       }
     }
   ],
-  "refresh": "",
-  "schemaVersion": 20,
+  "refresh": false,
+  "schemaVersion": 22,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "text": "pod_name=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\"",
-          "value": "pod_name=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\""
+          "selected": false,
+          "text": "pod=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\"",
+          "value": "pod=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\""
         },
         "hide": 2,
         "label": "",
@@ -3117,11 +3145,11 @@
         "options": [
           {
             "selected": true,
-            "text": "pod_name=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\"",
-            "value": "pod_name=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\""
+            "text": "pod=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\"",
+            "value": "pod=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\""
           }
         ],
-        "query": "pod_name=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\"",
+        "query": "pod=~\".*-smartgateway-.*|.*stf-default-interconnect-.*|qdr-test.*|prometheus-stf-default-0|stf-perftest-.*|elasticsearch-cdm.*\"",
         "skipUrlSync": false,
         "type": "constant"
       }
@@ -3148,5 +3176,8 @@
   "timezone": "",
   "title": "STF Perf Test Dashboard",
   "uid": "J13LKTcZk",
+  "variables": {
+    "list": []
+  },
   "version": 2
 }
