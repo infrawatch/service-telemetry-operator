@@ -1566,15 +1566,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(sg_total_amqp_rcv_count[10s])",
+          "expr": "rate(sg_total_amqp_rcv_count[30s])",
           "hide": false,
-          "legendFormat": "{{service}} Recv (10s avg)",
+          "legendFormat": "{{service}} Recv (30s avg)",
           "refId": "A"
         },
         {
-          "expr": "rate(sg_total_metric_rcv_count[10s])",
+          "expr": "rate(sg_total_metric_rcv_count[30s])",
           "hide": false,
-          "legendFormat": "{{service}} Proc (10s avg)",
+          "legendFormat": "{{service}} Proc (30s avg)",
           "refId": "B"
         },
         {
