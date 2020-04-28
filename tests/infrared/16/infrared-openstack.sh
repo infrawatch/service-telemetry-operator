@@ -18,7 +18,7 @@ VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
 OSP_BUILD="${OSP_BUILD:-RHOS_TRUNK-16.0-RHEL-8-20200406.n.1}"
 OSP_VERSION="${OSP_VERSION:-16}"
-OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:1,compute:1,ceph:1}"
+OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:1,compute:1}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
@@ -76,8 +76,6 @@ ir_create_overcloud() {
       --network-backend geneve \
       --network-protocol ipv4 \
       --network-dvr yes \
-      --storage-backend ceph \
-      --storage-external no \
       --overcloud-ssl no \
       --introspect yes \
       --tagging yes \
