@@ -13,10 +13,10 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: smoketest
+      - name: smoketest-collectd
         image: tripleomaster/centos-binary-collectd:current-tripleo-rdo
         command:
-        - /smoketest_entrypoint.sh
+        - /smoketest_collectd_entrypoint.sh
         env:
         - name: CLOUDNAME
           value: <<CLOUDNAME>>
@@ -26,14 +26,37 @@ spec:
         - name: collectd-config
           mountPath: /etc/minimal-collectd.conf.template
           subPath: minimal-collectd.conf.template
-        - name: entrypoint-script
-          mountPath: /smoketest_entrypoint.sh
-          subPath: smoketest_entrypoint.sh
+        - name: collectd-entrypoint-script
+          mountPath: /smoketest_collectd_entrypoint.sh
+          subPath: smoketest_collectd_entrypoint.sh
+      - name: smoketest-ceilometer
+        image: tripleomaster/centos-binary-ceilometer-notification:current-tripleo-rdo
+        command:
+        - /smoketest_ceilometer_entrypoint.sh
+        env:
+        - name: CLOUDNAME
+          value: <<CLOUDNAME>>
+        - name: ELASTICSEARCH_AUTH_PASS
+          value: <<ELASTICSEARCH_AUTH_PASS>>
+        volumeMounts:
+        - name: ceilometer-publisher
+          mountPath: /publisher
+          subPath: ceilometer_publisher
+        - name: ceilometer-entrypoint-script
+          mountPath: /smoketest_ceilometer_entrypoint.sh
+          subPath: smoketest_ceilometer_entrypoint.sh
       volumes:
       - name: collectd-config
         configMap:
           name: stf-smoketest-collectd-config
-      - name: entrypoint-script
+      - name: collectd-entrypoint-script
         configMap:
-          name: stf-smoketest-entrypoint-script
+          name: stf-smoketest-collectd-entrypoint-script
+          defaultMode: 0555
+      - name: ceilometer-publisher
+        configMap:
+          name: stf-smoketest-ceilometer-publisher
+      - name: ceilometer-entrypoint-script
+        configMap:
+          name: stf-smoketest-ceilometer-entrypoint-script
           defaultMode: 0555

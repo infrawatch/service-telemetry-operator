@@ -63,6 +63,7 @@ echo
 echo "*** [INFO] Logs from smart gateways..."
 oc logs "$(oc get pod -l "smart-gateway=stf-default-collectd-telemetry" -o jsonpath='{.items[0].metadata.name}')"
 oc logs "$(oc get pod -l "smart-gateway=stf-default-collectd-notification" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=stf-default-ceilometer-telemetry" -o jsonpath='{.items[0].metadata.name}')"
 oc logs "$(oc get pod -l "smart-gateway=stf-default-ceilometer-notification" -o jsonpath='{.items[0].metadata.name}')"
 echo
 
