@@ -30,11 +30,11 @@ echo -e "\n* [info] Waiting for prometheus deployment to complete\n"
 until timeout 300 oc rollout status statefulset.apps/prometheus-stf-default; do sleep 3; done
 echo -e "\n* [info] Waiting for elasticsearch deployment to complete \n"
 while true; do
+    sleep 3
     ES_READY=$(oc get statefulsets elasticsearch-es-default -ogo-template='{{ .status.readyReplicas }}') || continue
     if [ "${ES_READY}" == "1" ]; then
         break
     fi
-    sleep 3
 done
 echo -e "\n* [info] Waiting for alertmanager deployment to complete\n"
 until timeout 300 oc rollout status statefulset.apps/alertmanager-stf-default; do sleep 3; done
