@@ -8,5 +8,8 @@ script:
   - ./deploy/deploy_ci.sh
   - ./tests/smoketest/smoketest.sh
 after_script:
+  - echo Final State; echo
   - oc get pods
+  - echo
+  - ./deploy/containerlogs.sh
   - ./deploy/remove_stf.sh
