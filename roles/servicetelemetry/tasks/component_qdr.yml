@@ -34,6 +34,8 @@
             port: 5671
             saslMechanisms: ANONYMOUS
             sslProfile: openstack
+          - port: 5673
+            linkCapacity: 25000
         interRouterListeners:
           - authenticatePeer: true
             expose: true
