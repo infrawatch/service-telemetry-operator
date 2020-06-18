@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import click
+import sys
 
 from oslo_config import cfg
 from oslo_utils import netutils
@@ -232,14 +232,7 @@ METRICS = [
 ]
 
 
-@click.command()
-@click.argument('qdr-connection', default='127.0.0.1:5672')
-@click.option('--metering-setting', '-m', default='driver=amqp&topic=metering',
-              help='query string used in connection URL for metering trasport')
-@click.option('--events-setting', '-e', default='driver=amqp&topic=event',
-              help='query string used in connection URL for events trasport')
-@click.option('--debug', '-d', is_flag=True)
-def publish_data(qdr_connection, metering_setting, events_setting, debug):
+def publish_data(metering_connection, events_connection):
     '''Connects to given QDR passed by argument (default '127.0.0.1:5672')
     and sends sample metric and event data to the bus.
     '''
@@ -253,18 +246,13 @@ def publish_data(qdr_connection, metering_setting, events_setting, debug):
     conf.set_override('control_exchange', 'ceilometer')
 
     try:
-        url = f'notifier://{qdr_connection}/?{metering_setting}'
         metric_publisher = messaging.SampleNotifierPublisher(
-            conf, netutils.urlsplit(url))
-        url = f'notifier://{qdr_connection}/?{events_setting}'
+            conf, netutils.urlsplit(metering_connection))
         event_publisher = messaging.EventNotifierPublisher(
-            conf, netutils.urlsplit(url))
+            conf, netutils.urlsplit(events_connection))
     except Exception as ex:
         print(f'Failed to connect to QDR ({url}) due to {ex}')
-        if debug:
-            raise
-        else:
-            os.exit(1)
+        sys.exit(1)
 
     for evt in EVENTS:
         itm = event.Event(message_id=evt['message_id'],
@@ -272,16 +260,14 @@ def publish_data(qdr_connection, metering_setting, events_setting, debug):
                           generated=evt['generated'],
                           traits=[event.Trait(*tr) for tr in evt['traits']],
                           raw=evt['raw'])
-        if debug:
-            topic = conf.publisher_notifier.event_topic
-            print(f'Sending event to {topic}: '
-                  f'{utils.message_from_event(itm, conf.publisher.telemetry_secret)}')
+        topic = conf.publisher_notifier.event_topic
+        print(f'Sending event to {topic}: '
+              f'{utils.message_from_event(itm, conf.publisher.telemetry_secret)}')
         try:
             event_publisher.publish_events([itm])
         except Exception as ex:
             print(f'Failed to send event due to {ex}')
-            if debug:
-                raise
+            sys.exit(1)
 
     for metr in METRICS:
         itm = sample.Sample(name=metr['counter_name'],
@@ -293,17 +279,21 @@ def publish_data(qdr_connection, metering_setting, events_setting, debug):
                             resource_id=metr['resource_id'],
                             timestamp=metr['timestamp'],
                             resource_metadata=metr['resource_metadata'])
-        if debug:
-            topic = conf.publisher_notifier.metering_topic
-            print(f'Sending metric to {topic}: '
-                  f'{utils.meter_message_from_counter(itm, conf.publisher.telemetry_secret)}')
+        topic = conf.publisher_notifier.metering_topic
+        print(f'Sending metric to {topic}: '
+              f'{utils.meter_message_from_counter(itm, conf.publisher.telemetry_secret)}')
         try:
             metric_publisher.publish_samples([itm])
         except Exception as ex:
             print(f'Failed to send metric due to {ex}')
-            if debug:
-                raise
+            sys.exit(1)
 
 
 if __name__ == '__main__':
-    publish_data()
+    qdr_connection = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1:5672'
+    metering_setting = sys.argv[2] if len(sys.argv) > 2 else 'driver=amqp&topic=metering'
+    events_setting = sys.argv[3] if len(sys.argv) > 3 else 'driver=amqp&topic=event'
+
+    metering_connection = f'notifier://{qdr_connection}/?{metering_setting}'
+    events_connection = f'notifier://{qdr_connection}/?{events_setting}'
+    publish_data(metering_connection, events_connection)

@@ -65,6 +65,9 @@ if [ "$DOCUMENT_HITS" -gt "0" ]; then
     events_result=0
 fi
 
+echo "[INFO] Verification results: events=${events_result} metrics=${metrics_result}"
+echo; echo
+
 if [ "$metrics_result" = "0" ] && [ "$events_result" = "0" ]; then
     echo "*** [INFO] Testing completed with success"
     exit 0

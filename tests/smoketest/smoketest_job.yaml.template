@@ -40,8 +40,8 @@ spec:
           value: <<ELASTICSEARCH_AUTH_PASS>>
         volumeMounts:
         - name: ceilometer-publisher
-          mountPath: /publisher
-          subPath: ceilometer_publisher
+          mountPath: /ceilometer_publish.py
+          subPath: ceilometer_publish.py
         - name: ceilometer-entrypoint-script
           mountPath: /smoketest_ceilometer_entrypoint.sh
           subPath: smoketest_ceilometer_entrypoint.sh
@@ -53,10 +53,11 @@ spec:
         configMap:
           name: stf-smoketest-collectd-entrypoint-script
           defaultMode: 0555
-      - name: ceilometer-publisher
-        configMap:
-          name: stf-smoketest-ceilometer-publisher
       - name: ceilometer-entrypoint-script
         configMap:
           name: stf-smoketest-ceilometer-entrypoint-script
+          defaultMode: 0555
+      - name: ceilometer-publisher
+        configMap:
+          name: stf-smoketest-ceilometer-publisher
           defaultMode: 0555
