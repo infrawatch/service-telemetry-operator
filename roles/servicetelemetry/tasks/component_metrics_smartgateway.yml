@@ -5,7 +5,7 @@
   include_tasks: base_smartgateway.yml
   loop:
     - { name: 'Collectd', channel: 'collectd/telemetry'}
-    - { name: 'Ceilometer', channel: 'anycast/ceilometer/metric.sample'}
+    - { name: 'Ceilometer', channel: 'anycast/ceilometer/metering.sample'}
   loop_control:
     loop_var: agent
     label: "{{ agent.name }}"
