@@ -1,12 +1,15 @@
 global:
-        timeout: 2400
+  timeout: 2400
+  env:
+    OCP_PROJECT: __commit__
 script:
-        - oc login -u kubeadmin -p 7z6T5-qmTth-oxaoD-p3xQF --insecure-skip-tls-verify=true https://api.crc.testing:6443
-        - oc delete project "${OCP_PROJECT}" || true
-        - oc new-project "${OCP_PROJECT}"
-        - ./build/build.sh
-        - ./deploy/deploy_ci.sh
-        - ./tests/smoketest/smoketest.sh
+  - oc new-project "${OCP_PROJECT}"
+  - ./build/build.sh
+  - ./deploy/deploy_ci.sh
+  - ./tests/smoketest/smoketest.sh
 after_script:
-        - oc get pods
-        - ./deploy/remove_stf.sh
+  - echo Final State; echo
+  - oc get pods
+  - echo
+  - ./deploy/containerlogs.sh
+  - ./deploy/remove_stf.sh

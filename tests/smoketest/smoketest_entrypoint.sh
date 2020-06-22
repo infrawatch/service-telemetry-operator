@@ -54,7 +54,7 @@ DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https:/
       ]
     }
   }
-}' | python -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
+}' | python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
 
 echo "*** [INFO] Found ${DOCUMENT_HITS} documents"
 echo; echo
