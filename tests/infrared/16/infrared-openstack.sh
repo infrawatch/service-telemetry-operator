@@ -11,14 +11,14 @@ AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
 
-VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.eng.bos.redhat.com/brewroot/packages/rhel-guest-image/8.1/333/images}"
+VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.2.0/compose/BaseOS/x86_64/images/}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
-VM_IMAGE="${VM_IMAGE:-rhel-guest-image-8.1-333.x86_64.qcow2}"
+VM_IMAGE="${VM_IMAGE:-rhel-guest-image-8.2-290.x86_64.qcow2}"
 VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
-OSP_BUILD="${OSP_BUILD:-RHOS_TRUNK-16.0-RHEL-8-20200406.n.1}"
-OSP_VERSION="${OSP_VERSION:-16}"
-OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:1,compute:1}"
+OSP_BUILD="${OSP_BUILD:-RHOS-16.1-RHEL-8-20200625.n.0}"
+OSP_VERSION="${OSP_VERSION:-16.1}"
+OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
@@ -38,7 +38,7 @@ ir_run_provision() {
   infrared virsh \
       -vvv \
       -o outputs/provision.yml \
-      --disk-pool /home/libvirt/images \
+      --disk-pool "${LIBVIRT_DISKPOOL}" \
       --topology-nodes "${OSP_TOPOLOGY}" \
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
@@ -76,13 +76,14 @@ ir_create_overcloud() {
       --network-backend geneve \
       --network-protocol ipv4 \
       --network-dvr yes \
+      --storage-backend ceph \
+      --storage-external no \
       --overcloud-ssl no \
       --introspect yes \
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --containers yes \
-      --overcloud-templates outputs/stf-connectors.yaml
+      --containers yes
 }
 
 ir_run_tempest() {
@@ -107,5 +108,4 @@ else
   ir_create_undercloud
   stf_create_config
   ir_create_overcloud
-  ir_run_tempest
 fi

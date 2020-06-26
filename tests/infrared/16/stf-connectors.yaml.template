@@ -1,12 +1,47 @@
 ---
 tripleo_heat_templates:
-    - /usr/share/openstack-tripleo-heat-templates/environments/enable-stf.yaml
-    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/ceilometer-write-qdr.yaml
+    []
 
 custom_templates:
+    resource_registry:
+        OS::TripleO::Services::Collectd: /usr/share/openstack-tripleo-heat-templates/deployment/metrics/collectd-container-puppet.yaml
+        OS::TripleO::Services::MetricsQdr: /usr/share/openstack-tripleo-heat-templates/deployment/metrics/qdr-container-puppet.yaml
+        OS::TripleO::Services::CeilometerAgentCentral: /usr/share/openstack-tripleo-heat-templates/deployment/ceilometer/ceilometer-agent-central-container-puppet.yaml
+        OS::TripleO::Services::CeilometerAgentNotification: /usr/share/openstack-tripleo-heat-templates/deployment/ceilometer/ceilometer-agent-notification-container-puppet.yaml
+        OS::TripleO::Services::CeilometerAgentIpmi: /usr/share/openstack-tripleo-heat-templates/deployment/ceilometer/ceilometer-agent-ipmi-container-puppet.yaml
+        OS::TripleO::Services::ComputeCeilometerAgent: /usr/share/openstack-tripleo-heat-templates/deployment/ceilometer/ceilometer-agent-compute-container-puppet.yaml
+        OS::TripleO::Services::Redis: /usr/share/openstack-tripleo-heat-templates/deployment/database/redis-pacemaker-puppet.yaml
+
     parameter_defaults:
+        EnableSTF: true
+
         CeilometerQdrPublishEvents: true
         CeilometerQdrPublishMetrics: true
+        CeilometerQdrEventsConfig:
+            driver: amqp
+            topic: cloud1-event
+
+        CollectdConnectionType: amqp1
+        CollectdAmqpInterval: 5
+        CollectdDefaultPollingInterval: 5
+
+        CollectdAmqpInstances:
+            cloud1-notify:
+                notify: true
+                format: JSON
+                presettle: false
+            cloud1-telemetry:
+                format: JSON
+                presettle: false
+
+        MetricsQdrAddresses:
+            - prefix: collectd
+              distribution: multicast
+            - prefix: anycast/ceilometer
+              distribution: multicast
+
+        MetricsQdrSSLProfiles:
+            - name: sslProfile
 
         MetricsQdrConnectors:
             - host: <<AMQP_HOST>>
