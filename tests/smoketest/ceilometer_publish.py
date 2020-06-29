@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import datetime
 import sys
 
 from oslo_config import cfg
@@ -13,6 +14,7 @@ from ceilometer import sample
 
 from ceilometer.publisher import utils
 
+CREATE_DT = datetime.datetime.utcnow().isoformat()
 # Following is real and complete metric and event data sent by OpenStack
 # instance after running following actions:
 # $ openstack image delete cirros ; sleep 5
@@ -22,7 +24,7 @@ from ceilometer.publisher import utils
 EVENTS = [
     {"message_id": "b6f075ce-3c69-4cd1-b581-ad2c8e40a4ce",
      "event_type": "image.delete",
-     "generated": "2020-05-21T14:43:37.255256",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"],
          ["project_id", 1, "f7a5d2ac23aa43bb844c6e1cd873c48c"],
@@ -30,8 +32,8 @@ EVENTS = [
          ["resource_id", 1, "fb2bbe17-24fd-4487-99c3-d4c5ef279550"],
          ["name", 1, "cirros"],
          ["status", 1, "deleted"],
-         ["created_at", 4, "2020-05-21T14:03:05"],
-         ["deleted_at", 4, "2020-05-21T14:43:37"],
+         ["created_at", 4, CREATE_DT],
+         ["deleted_at", 4, CREATE_DT],
          ["size", 2, 13287936]
      ],
      "raw": {},
@@ -39,21 +41,22 @@ EVENTS = [
      },
     {"message_id": "49d16489-411d-4b9b-9a6c-0b29c7a2416a",
      "event_type": "image.create",
-     "generated": "2020-05-21T14:43:44.868133",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"],
          ["project_id", 1, "f7a5d2ac23aa43bb844c6e1cd873c48c"],
          ["user_id", 1, "f7a5d2ac23aa43bb844c6e1cd873c48c"],
          ["resource_id", 1, "693d53eb-2b24-4761-87e4-2ffabc1cf410"],
          ["name", 1, "cirros"],
-         ["status", 1, "queued"], ["created_at", 4, "2020-05-21T14:43:44"]
+         ["status", 1, "queued"],
+         ["created_at", 4, CREATE_DT]
      ],
      "raw": {},
      "message_signature": "9bde7e9f06ee5811c06b1b8397bc5c6a48849c075f6ae7e02727719f6ac0de18"
      },
     {"message_id": "b1570a8b-87f6-485a-afa6-16a738d56417",
      "event_type": "image.update",
-     "generated": "2020-05-21T14:43:44.931239",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"],
          ["project_id", 1, "f7a5d2ac23aa43bb844c6e1cd873c48c"],
@@ -61,14 +64,14 @@ EVENTS = [
          ["resource_id", 1, "693d53eb-2b24-4761-87e4-2ffabc1cf410"],
          ["name", 1, "cirros"],
          ["status", 1, "saving"],
-         ["created_at", 4, "2020-05-21T14:43:44"]
+         ["created_at", 4, CREATE_DT]
      ],
      "raw": {},
      "message_signature": "b3f526c9eda45fb2f7c801dcac7a902dffb813ec671399a834140768929d21d0"
      },
     {"message_id": "d37fa610-49c1-47b7-a47d-4a04cede9581",
      "event_type": "image.prepare",
-     "generated": "2020-05-21T14:43:44.932660",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"]
      ],
@@ -77,7 +80,7 @@ EVENTS = [
      },
     {"message_id": "49cb5cc8-fd50-444e-9abc-f3df6d9eb8ce",
      "event_type": "image.activate",
-     "generated": "2020-05-21T14:43:45.697522",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"]
      ],
@@ -86,7 +89,7 @@ EVENTS = [
      },
     {"message_id": "fc26a59c-7a13-45d2-bd78-ee35ecbb002a",
      "event_type": "image.upload",
-     "generated": "2020-05-21T14:43:45.696028",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"],
          ["project_id", 1, "f7a5d2ac23aa43bb844c6e1cd873c48c"],
@@ -94,14 +97,15 @@ EVENTS = [
          ["resource_id", 1, "693d53eb-2b24-4761-87e4-2ffabc1cf410"],
          ["name", 1, "cirros"],
          ["status", 1, "active"],
-         ["created_at", 4, "2020-05-21T14:43:44"], ["size", 2, 13287936]
+         ["created_at", 4, CREATE_DT],
+         ["size", 2, 13287936]
      ],
      "raw": {},
      "message_signature": "caac0eee38bb1e74c7479173796f17c1f241b4387f509e3a0a8deb7d7cf5c5b0"
      },
     {"message_id": "634de968-2bbb-4e55-a1fd-9fa123ac3423",
      "event_type": "image.update",
-     "generated": "2020-05-21T14:43:45.731495",
+     "generated": CREATE_DT,
      "traits": [
          ["service", 1, "image.localhost"],
          ["project_id", 1, "f7a5d2ac23aa43bb844c6e1cd873c48c"],
@@ -109,7 +113,7 @@ EVENTS = [
          ["resource_id", 1, "693d53eb-2b24-4761-87e4-2ffabc1cf410"],
          ["name", 1, "cirros"],
          ["status", 1, "active"],
-         ["created_at", 4, "2020-05-21T14:43:44"],
+         ["created_at", 4, CREATE_DT],
          ["size", 2, 13287936]
      ],
      "raw": {},
@@ -125,13 +129,13 @@ METRICS = [
      "user_id": None,
      "project_id": "f7a5d2ac23aa43bb844c6e1cd873c48c",
      "resource_id": "693d53eb-2b24-4761-87e4-2ffabc1cf410",
-     "timestamp": "2020-05-21T14:52:50.613253+00:00",
+     "timestamp": CREATE_DT,
      "resource_metadata": {
          "id": "693d53eb-2b24-4761-87e4-2ffabc1cf410",
          "name": "cirros",
          "status": "deleted",
-         "created_at": "2020-05-21T14:43:44Z",
-         "updated_at": "2020-05-21T14:52:50Z",
+         "created_at": CREATE_DT,
+         "updated_at": CREATE_DT,
          "min_disk": 0,
          "min_ram": 0,
          "protected": False,
@@ -146,7 +150,7 @@ METRICS = [
          "properties": {},
          "tags": [],
          "deleted": True,
-         "deleted_at": "2020-05-21T14:52:50Z",
+         "deleted_at": CREATE_DT,
          "event_type": "image.delete",
          "host": "image.localhost"
      },
@@ -161,13 +165,13 @@ METRICS = [
      "user_id": None,
      "project_id": "f7a5d2ac23aa43bb844c6e1cd873c48c",
      "resource_id": "f297d2f9-168d-49d4-a33c-b68f4a4d5a48",
-     "timestamp": "2020-05-21T14:52:58.803749+00:00",
+     "timestamp": CREATE_DT,
      "resource_metadata": {
          "id": "f297d2f9-168d-49d4-a33c-b68f4a4d5a48",
          "name": "cirros",
          "status": "active",
-         "created_at": "2020-05-21T14:52:57Z",
-         "updated_at": "2020-05-21T14:52:57Z",
+         "created_at": CREATE_DT,
+         "updated_at": CREATE_DT,
          "min_disk": 0,
          "min_ram": 0,
          "protected": False,
@@ -200,13 +204,13 @@ METRICS = [
      "user_id": None,
      "project_id": "f7a5d2ac23aa43bb844c6e1cd873c48c",
      "resource_id": "f297d2f9-168d-49d4-a33c-b68f4a4d5a48",
-     "timestamp": "2020-05-21T14:52:58.837031+00:00",
+     "timestamp": CREATE_DT,
      "resource_metadata": {
          "id": "f297d2f9-168d-49d4-a33c-b68f4a4d5a48",
          "name": "cirros",
          "status": "active",
-         "created_at": "2020-05-21T14:52:57Z",
-         "updated_at": "2020-05-21T14:52:58Z",
+         "created_at": CREATE_DT,
+         "updated_at": CREATE_DT,
          "min_disk": 0,
          "min_ram": 0,
          "protected": False,
