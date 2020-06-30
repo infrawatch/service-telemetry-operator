@@ -54,7 +54,8 @@ echo
 
 echo "*** [INFO] Logs from smoketest containers..."
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')"
+    oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')" -c smoketest-collectd
+    oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')" -c smoketest-ceilometer
 done
 echo
 
