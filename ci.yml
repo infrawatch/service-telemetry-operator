@@ -1,5 +1,5 @@
 global:
-  timeout: 2400
+  timeout: 3600
   env:
     OCP_PROJECT: __commit__
 script:
