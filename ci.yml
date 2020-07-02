@@ -3,17 +3,12 @@ global:
   env:
     OCP_PROJECT: __commit__
 script:
-  - oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge
   - oc new-project service-telemetry
-  - REGISTRY=$(oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}')
-  - TOKEN=$(oc whoami -t)
-  - echo ${REGISTRY}
-  - echo ${TOKEN}
-  - buildah login --tls-verify=false -u kubeadmin -p "${TOKEN}" "${REGISTRY}"
-  - ls -lah
-  - mkdir hack
-  - pushd hack
-  - git clone https://github.com/infrawatch/smart-gateway
-  - git clone https://github.com/infrawatch/smart-gateway-operator
-  - ls -lah
-  - popd
+  - ./build/ci_local_images.sh
+after_script:
+  - echo Final State; echo
+  - oc get pods
+  - echo
+  - ./deploy/containerlogs.sh
+  - ./deploy/remove_stf.sh
+
