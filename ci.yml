@@ -3,7 +3,7 @@ global:
   env:
     OCP_PROJECT: __commit__
 script:
-  - oc new-project service-telemetry
+  - echo === Creating project ; oc new-project service-telemetry
   - echo === Getting related projects and importing local builds ; ./build/ci_local_images.sh
 after_script:
   - echo === Final State; echo
