@@ -4,7 +4,7 @@ global:
     OCP_PROJECT: __commit__
 script:
   - oc new-project service-telemetry
-  - ./build/ci_local_images.sh
+  - echo === Getting related projects and importing local builds ; ./build/ci_local_images.sh
 after_script:
   - echo Final State; echo
   - oc get pods
