@@ -4,3 +4,9 @@ global:
     OCP_PROJECT: __commit__
 script:
   - ls -lah
+  - mkdir hack
+  - pushd hack
+  - git clone https://github.com/infrawatch/smart-gateway
+  - git clone https://github.com/infrawatch/smart-gateway-operator
+  - ls -lah
+  - popd
