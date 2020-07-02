@@ -6,7 +6,7 @@ script:
   - oc new-project service-telemetry
   - echo === Getting related projects and importing local builds ; ./build/ci_local_images.sh
 after_script:
-  - echo Final State; echo
+  - echo === Final State; echo
   - oc get pods
   - echo
   - ./deploy/containerlogs.sh
