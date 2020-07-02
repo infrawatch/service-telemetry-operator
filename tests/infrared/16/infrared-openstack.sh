@@ -83,6 +83,7 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
+      --overcloud-templates outputs/stf-connectors.yaml \
       --containers yes
 }
 
