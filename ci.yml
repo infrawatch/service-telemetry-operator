@@ -3,6 +3,8 @@ global:
   env:
     OCP_PROJECT: __commit__
 script:
+  - oc delete project service-telemetry
+  - while oc get ns "service-telemetry" > /dev/null; do echo "Waiting for service-telemetry to disappear"; sleep 5; done
   - oc new-project service-telemetry
   - ./build/ci_local_images.sh
 after_script:
