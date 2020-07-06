@@ -36,8 +36,15 @@
             name: "{{ artifact.name }}:latest"
 
 - name: Kick off build
-  command: oc start-build {{ artifact.name }} --wait
-  register: build_name
+  block:
+    - command: oc start-build {{ artifact.name }} --wait
+      register: build_name
+  always:
+    - command: oc describe build {{ artifact.name }}
+      register: build_describe
+
+    - debug:
+        var: build_describe.stdout_lines
 
 - debug:
     var: build_name
