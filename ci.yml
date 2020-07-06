@@ -6,10 +6,11 @@ global:
 script:
   - oc new-project "${OCP_PROJECT}"
   - echo "${THIS_BRANCH}"
-  - ansible-playbook build/run-ci.yml
+  - ansible-playbook --extra-vars working_namespace="${OCP_PROJECT}" build/run-ci.yml
 after_script:
   - echo Final State; echo
   - oc get pods
   - echo
   - ./deploy/containerlogs.sh
   - ./deploy/remove_stf.sh
+  - rm -rf /tmp/smart-gateway-operator ; rm -rf /tmp/smart-gateway
