@@ -16,7 +16,7 @@ if [ "${VM_IMAGE_URL_PATH}" = "http://127.0.0.1/my_image_location/" -a -z "${VM_
     exit 1
 fi
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
-VM_IMAGE="${VM_IMAGE:-${VM_IMAGE_URL_PATH}/rhel-guest-image-7.8-134.x86_64.qcow2}"
+VM_IMAGE="${VM_IMAGE:-${VM_IMAGE_URL_PATH}/rhel-guest-image-7.8-41.x86_64.qcow2}"
 OSP_BUILD="${OSP_BUILD:-7.8-passed_phase2}"
 
 infrared virsh \
