@@ -10,7 +10,7 @@ AMQP_HOST=${AMQP_HOST:-$(oc get route -l application=qdr-white -o jsonpath='{.it
 AMQP_PORT=${AMQP_PORT:-443}
 CONTAINER_REGISTRY=${CONTAINER_REGISTRY:-registry-proxy.engineering.redhat.com}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
-NTP_SERVER="${NTP_SERVER:-10.35.255.6}"
+NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
 
 VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://127.0.0.1/my_image_location/}"
 if [ "${VM_IMAGE_URL_PATH}" = "http://127.0.0.1/my_image_location/" -a -z "${VM_IMAGE}" ]; then
