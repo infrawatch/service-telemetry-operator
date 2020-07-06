@@ -1,10 +1,12 @@
 ---
 # tasks file for stf-run-ci
-
 - name: Setup default values
   set_fact:
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ working_namespace | default('service-telemetry') }}"
+
+- name: Setup supporting repositories
+  include_tasks: clone_repos.yml
 
 - name: Create builds and artifacts
   include_tasks: create_builds.yml

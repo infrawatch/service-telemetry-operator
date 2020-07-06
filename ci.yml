@@ -2,6 +2,7 @@ global:
   timeout: 2400
   env:
     OCP_PROJECT: __commit__
+    THIS_BRANCH: __branch__
 script:
   - oc new-project "${OCP_PROJECT}"
   - ./build/build.sh
