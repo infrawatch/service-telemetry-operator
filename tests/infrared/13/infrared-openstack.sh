@@ -77,5 +77,5 @@ infrared tripleo-overcloud \
     --ntp-server "${NTP_SERVER}" \
     --containers yes \
     --registry-mirror docker-registry.engineering.redhat.com \
-    --overcloud-templates outputs/metrics-collectd-qdr.yaml \
+    --overcloud-templates outputs/stf-connectors.yaml \
     --registry-undercloud-skip no
