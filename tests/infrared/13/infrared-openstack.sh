@@ -7,6 +7,7 @@ set -e
 
 VIRTHOST=${VIRTHOST:-my.big.hypervisor.net}
 AMQP_HOST=${AMQP_HOST:-$(oc get route -l application=qdr-white -o jsonpath='{.items[0].spec.host}')}
+AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-10.35.255.6}"
 
