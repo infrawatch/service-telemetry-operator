@@ -5,9 +5,8 @@ global:
     THIS_BRANCH: __branch__
 script:
   - oc new-project "${OCP_PROJECT}"
-  - ./build/build.sh
-  - ./deploy/deploy_ci.sh
-  - ./tests/smoketest/smoketest.sh
+  - echo "${THIS_BRANCH}"
+  - ansible-playbook build/run-ci.yml
 after_script:
   - echo Final State; echo
   - oc get pods
