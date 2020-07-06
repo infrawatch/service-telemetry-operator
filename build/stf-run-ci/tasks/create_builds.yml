@@ -1,0 +1,68 @@
+---
+- name: Create ImageStream
+  k8s:
+    state: present
+    definition:
+      apiVersion: image.openshift.io/v1
+      kind: ImageStream
+      metadata:
+        name: "{{ artifact.name }}"
+        namespace: "{{ namespace }}"
+      spec:
+        lookupPolicy:
+          local: false
+
+- name: Create BuildConfig
+  k8s:
+    state: present
+    definition:
+      kind: BuildConfig
+      apiVersion: build.openshift.io/v1
+      metadata:
+        name: "{{ artifact.name }}"
+        namespace: "{{ namespace }}"
+      spec:
+        runPolicy: "Serial"
+        source:
+          git:
+            uri: https://github.com/infrawatch/{{ artifact.name }}.git
+            ref: "{{ branch }}"
+        strategy:
+          dockerStrategy:
+              dockerfilePath: "{{ artifact.dockerfile_path }}"
+        output:
+          to:
+            kind: "ImageStreamTag"
+            name: "{{ artifact.name }}:latest"
+
+- name: Kick off build
+  command: oc start-build {{ artifact.name }} --wait
+  register: build_name
+
+- debug:
+    var: build_name
+
+- name: Set current build name
+  set_fact:
+    this_build_name: "{{ build_name['stdout'].split(' ')[0].split('/')[1] }}"
+
+- debug:
+    var: this_build_name
+
+- name: Get artifact path
+  k8s_info:
+    api_version: build.openshift.io/v1
+    kind: Build
+    name: "{{ this_build_name }}"
+    namespace: "{{ namespace }}"
+  register: image_reference
+
+- debug:
+    var: image_reference.resources[0].status.outputDockerImageReference
+
+- name: Set unique image reference for this artifact
+  set_fact:
+    "{{ artifact.image_reference_name }}": "{{ image_reference.resources[0].status.outputDockerImageReference }}"
+
+- debug:
+    var: "{{ artifact.image_reference_name }}"

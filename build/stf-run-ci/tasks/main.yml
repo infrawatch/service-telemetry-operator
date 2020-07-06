@@ -1,2 +1,16 @@
 ---
 # tasks file for stf-run-ci
+
+- name: Setup default values
+  set_fact:
+    branch: "{{ working_branch | default('master') }}"
+    namespace: "{{ working_namespace | default('service-telemetry') }}"
+
+- name: Create builds and artifacts
+  include_tasks: create_builds.yml
+  loop:
+    - { name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path }
+    - { name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path }
+    - { name: smart-gateway, dockerfile_path: Dockerfile, image_reference_name: sg_image_path }
+  loop_control:
+    loop_var: artifact
