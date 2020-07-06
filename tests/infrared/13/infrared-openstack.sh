@@ -8,6 +8,7 @@ set -e
 VIRTHOST=${VIRTHOST:-my.big.hypervisor.net}
 AMQP_HOST=${AMQP_HOST:-$(oc get route -l application=qdr-white -o jsonpath='{.items[0].spec.host}')}
 AMQP_PORT=${AMQP_PORT:-443}
+CONTAINER_REGISTRY=${CONTAINER_REGISTRY:-registry-proxy.engineering.redhat.com}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-10.35.255.6}"
 
@@ -44,7 +45,7 @@ infrared tripleo-undercloud \
     --mirror rdu2 \
     --version 13 \
     --build "${OSP_BUILD}" \
-    --registry-mirror docker-registry.engineering.redhat.com \
+    --registry-mirror "${CONTAINER_REGISTRY}" \
     --registry-undercloud-skip no
 
 infrared tripleo-undercloud -vv \
@@ -77,6 +78,6 @@ infrared tripleo-overcloud \
     --public-subnet default_subnet \
     --ntp-server "${NTP_SERVER}" \
     --containers yes \
-    --registry-mirror docker-registry.engineering.redhat.com \
+    --registry-mirror "${CONTAINER_REGISTRY}" \
     --overcloud-templates outputs/stf-connectors.yaml \
     --registry-undercloud-skip no
