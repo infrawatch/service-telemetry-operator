@@ -5,6 +5,7 @@ global:
     THIS_BRANCH: __branch__
 script:
   - oc new-project "${OCP_PROJECT}"
+  - pwd ; ls -lah
   - echo "${THIS_BRANCH}"
   - ansible-playbook --extra-vars working_namespace="${OCP_PROJECT}" build/run-ci.yml
 after_script:
