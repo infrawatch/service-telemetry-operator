@@ -47,3 +47,5 @@ fi
 
 # Wait for namespace to actually disappear (this can take awhile)
 while oc get ns "${OCP_PROJECT}" > /dev/null; do echo "Waiting for ${OCP_PROJECT} to disappear"; sleep 5; done
+
+for i in $(oc get images | grep "${OCP_PROJECT}" | cut -f1 -d' '); do oc delete image $i; done

@@ -1,0 +1,58 @@
+---
+# TODO: not super pretty but it seems to work for now. Would be a bit cleaner
+# perhaps if we imported a semver function of some sort.
+- name: Get latest CSV for Smart Gateway Operator
+  shell: |
+    ls -1v --hide=*.yaml working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | tail -1
+  register: sgo_current_csv
+
+- name: Get latest CSV for Service Telemetry Operator
+  shell: |
+    ls -1v --hide=*.yaml ../deploy/olm-catalog/service-telemetry-operator/ | tail -1
+  register: sto_current_csv
+
+- name: Load Smart Gateway Operator RBAC
+  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }}
+  loop:
+    - service_account.yaml
+    - role.yaml
+    - role_binding.yaml
+    - olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smartgateway.infra.watch_smartgateways_crd.yaml
+
+# TODO: I'm sorry this is pretty messy. There is probably an Ansible module
+# that would make this a bit cleaner to read. Likely start with lineinfile or a
+# filter that could parse the contents inline via lookup to the k8s module
+- name: Load Smart Gateway Operator CSV
+  shell: |
+    sed -e "s#quay.io/infrawatch/smart-gateway:latest#{{ sg_image_path }}#g;s#quay.io/infrawatch/smart-gateway-operator:latest#{{ sgo_image_path }}#g;s#placeholder#{{ namespace }}#g" working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml | oc apply -f -
+
+- name: Load Service Telemetry Operator RBAC
+  command: oc apply -f ../deploy/{{ item }}
+  loop:
+    - service_account.yaml
+    - role.yaml
+    - role_binding.yaml
+    - olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/infra.watch_servicetelemetrys_crd.yaml
+
+- name: Load Service Telemetry Operator CSV
+  shell: |
+    sed -e "s#quay.io/infrawatch/service-telemetry-operator:v{{ sto_current_csv.stdout }}#{{ sto_image_path }}#g;s#placeholder#{{ namespace }}#g" ../deploy/olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml | oc apply -f -
+
+- name: Wait for Service Telemetry Operator to be Succeeded
+  shell: |
+    while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for Service Telemetry Operator..."; sleep 3; done
+
+# NOTE: be aware that if the API version changes for the ServiceTelemetry
+# object that it'll need to be updated here
+- name: Create ServiceTelemetry instance
+  k8s:
+    definition:
+      apiVersion: infra.watch/v1alpha1
+      kind: ServiceTelemetry
+      metadata:
+        name: stf-default
+        namespace: "{{ namespace }}"
+      spec:
+        eventsEnabled: true
+        highAvailabilityEnabled: false
+        metricsEnabled: true
