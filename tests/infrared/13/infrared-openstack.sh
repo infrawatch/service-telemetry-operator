@@ -16,7 +16,7 @@ VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-7/
 VM_IMAGE="${VM_IMAGE:-rhel-guest-image-7.8-41.x86_64.qcow2}"
 VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
-OSP_BUILD="${OSP_BUILD:-2020-07-01.1}"
+OSP_BUILD="${OSP_BUILD:-7.8-passed_phase2}"
 OSP_VERSION="${OSP_VERSION:-13}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
@@ -65,6 +65,14 @@ ir_create_undercloud() {
       --config-options DEFAULT.container_insecure_registries=registry-proxy.engineering.redhat.com
 }
 
+ir_image_sync_undercloud() {
+  infrared tripleo-undercloud \
+      -o outputs/undercloud-image-sync.yml \
+      --images-task rpm \
+      --build "${OSP_BUILD}" \
+      --images-update no
+}
+
 stf_create_config() {
   sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" stf-connectors.yaml.template > outputs/stf-connectors.yaml
 }
@@ -86,6 +94,7 @@ ir_create_overcloud() {
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
       --registry-mirror "${OSP_REGISTRY_MIRROR}" \
+      --overcloud-templates outputs/stf-connectors.yaml \
       --containers yes
 }
 
@@ -109,6 +118,7 @@ else
   ir_run_cleanup
   ir_run_provision
   ir_create_undercloud
+  ir_image_sync_undercloud
   stf_create_config
   ir_create_overcloud
 fi
