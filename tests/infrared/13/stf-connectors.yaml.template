@@ -6,7 +6,11 @@ tripleo_heat_templates:
 
 custom_templates:
     parameter_defaults:
+        MetricsQdrSSLProfiles:
+            - name: sslProfile
         MetricsQdrConnectors:
             - host: <<AMQP_HOST>>
               port: <<AMQP_PORT>>
               role: edge
+              verifyHostname: false
+              sslProfile: sslProfile
