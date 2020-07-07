@@ -103,4 +103,3 @@
         source: operatorhubio-operators
         sourceNamespace: openshift-marketplace
         startingCSV: prometheusoperator.0.37.0
-

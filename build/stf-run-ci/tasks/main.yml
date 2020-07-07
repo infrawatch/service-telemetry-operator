@@ -22,3 +22,12 @@
 
 - name: Deploy STF using local artifacts
   include_tasks: deploy_stf.yml
+
+- name: Validate system is operational
+  shell: ./validate_deployment.sh
+  args:
+    executable: /bin/bash
+  register: validate_deployment
+
+- debug:
+    var: validate_deployment.stdout_lines
