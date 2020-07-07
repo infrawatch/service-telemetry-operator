@@ -1,39 +1,6 @@
 ---
-- name: Create ImageStream
-  k8s:
-    state: present
-    definition:
-      apiVersion: image.openshift.io/v1
-      kind: ImageStream
-      metadata:
-        name: "{{ artifact.name }}"
-        namespace: "{{ namespace }}"
-      spec:
-        lookupPolicy:
-          local: false
-
-- name: Create BuildConfig
-  k8s:
-    state: present
-    definition:
-      kind: BuildConfig
-      apiVersion: build.openshift.io/v1
-      metadata:
-        name: "{{ artifact.name }}"
-        namespace: "{{ namespace }}"
-      spec:
-        runPolicy: "Serial"
-        source:
-          git:
-            uri: https://github.com/infrawatch/{{ artifact.name }}.git
-            ref: "{{ branch }}"
-        strategy:
-          dockerStrategy:
-              dockerfilePath: "{{ artifact.dockerfile_path }}"
-        output:
-          to:
-            kind: "ImageStreamTag"
-            name: "{{ artifact.name }}:latest"
+- name: Create BuildConfig and ImageStream
+  shell: oc new-build --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
 
 - name: Kick off build
   block:

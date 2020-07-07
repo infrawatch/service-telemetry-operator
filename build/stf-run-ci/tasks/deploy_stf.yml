@@ -3,12 +3,12 @@
 # perhaps if we imported a semver function of some sort.
 - name: Get latest CSV for Smart Gateway Operator
   shell: |
-    ls -1 working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | sort --human-numeric-sort | tail -1
+    ls -1v --hide=*.yaml working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | tail -1
   register: sgo_current_csv
 
 - name: Get latest CSV for Service Telemetry Operator
   shell: |
-    ls -1 ../deploy/olm-catalog/service-telemetry-operator/ | sort --human-numeric-sort | tail -1
+    ls -1v --hide=*.yaml ../deploy/olm-catalog/service-telemetry-operator/ | tail -1
   register: sto_current_csv
 
 - name: Load Smart Gateway Operator RBAC
@@ -36,7 +36,7 @@
 
 - name: Load Service Telemetry Operator CSV
   shell: |
-    sed -e "s#quay.io/infrawatch/service-telemetry-operator:{{ sto_current_csv.stdout }}#{{ sto_image_path }}#g;s#placeholder#{{ namespace }}#g" ../deploy/olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml | oc apply -f -
+    sed -e "s#quay.io/infrawatch/service-telemetry-operator:v{{ sto_current_csv.stdout }}#{{ sto_image_path }}#g;s#placeholder#{{ namespace }}#g" ../deploy/olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml | oc apply -f -
 
 - name: Wait for Service Telemetry Operator to be Succeeded
   shell: |

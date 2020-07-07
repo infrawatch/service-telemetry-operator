@@ -21,7 +21,7 @@ until timeout 300 oc rollout status deployment.apps/stf-default-collectd-telemet
 until timeout 300 oc rollout status deployment.apps/stf-default-collectd-notification-smartgateway; do sleep 3; done
 until timeout 300 oc rollout status deployment.apps/stf-default-ceilometer-notification-smartgateway; do sleep 3; done
 echo -e "\n* [info] Waiting for all pods to show Ready/Complete\n"
-while oc get pods | tail -n +2 | grep -v -E 'Running|Completed'; do
+while oc get pods --selector '!openshift.io/build.name' | tail -n +2 | grep -v -E 'Running|Completed'; do
     sleep 3
 done
 
