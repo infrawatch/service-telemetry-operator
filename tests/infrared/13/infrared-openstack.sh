@@ -20,6 +20,7 @@ OSP_BUILD="${OSP_BUILD:-2020-07-01.1}"
 OSP_VERSION="${OSP_VERSION:-13}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
+OSP_REGISTRY_MIRROR="${OSP_REGISTRY_MIRROR:-registry-proxy.engineering.redhat.com}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
@@ -58,8 +59,10 @@ ir_create_undercloud() {
       --build "${OSP_BUILD}" \
       --images-task rpm \
       --images-update no \
+      --registry-mirror "${OSP_REGISTRY_MIRROR}" \
       --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
-      --config-options DEFAULT.undercloud_timezone=UTC
+      --config-options DEFAULT.undercloud_timezone=UTC \
+      --config-options DEFAULT.container_insecure_registries=registry-proxy.engineering.redhat.com
 }
 
 stf_create_config() {
@@ -82,7 +85,7 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --overcloud-templates outputs/stf-connectors.yaml \
+      --registry-mirror "${OSP_REGISTRY_MIRROR}" \
       --containers yes
 }
 
