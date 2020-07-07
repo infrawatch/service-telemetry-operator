@@ -5,8 +5,6 @@ global:
     THIS_BRANCH: __branch__
 script:
   - oc new-project "${OCP_PROJECT}"
-  - echo "Current working directory is $(pwd)"
-  - ls -lah ; ls -lah build
   - ansible-playbook --extra-vars working_namespace="${OCP_PROJECT}" --extra-vars working_branch="${THIS_BRANCH}" build/run-ci.yaml
 after_script:
   - echo Final State; echo
