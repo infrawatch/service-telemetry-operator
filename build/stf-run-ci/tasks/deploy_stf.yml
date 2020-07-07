@@ -1,0 +1,34 @@
+---
+- name: Get latest CSV for Smart Gateway Operator
+  shell: |
+    ls -1 working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | sort --human-numeric-sort | tail -1
+  register: sgo_current_csv
+
+- name: Get latest CSV for Service Telemetry Operator
+  shell: |
+    ls -1 ../deploy/olm-catalog/service-telemetry-operator/ | sort --human-numeric-sort | tail -1
+  register: sto_current_csv
+
+- name: Load Smart Gateway Operator RBAC
+  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }}
+  loop:
+    - service_account.yaml
+    - role.yaml
+    - role_binding.yaml
+    - olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smartgateway.infra.watch_smartgateways_crd.yaml
+
+- name: Load Smart Gateway Operator CSV
+  shell: |
+    sed -e "s#quay.io/infrawatch/smart-gateway:latest#{{ sg_image_path }}#g;s#quay.io/infrawatch/smart-gateway-operator:latest#{{ sgo_image_path }}#g;s#placeholder#{{ namespace }}#g" working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml | oc apply -f -
+
+- name: Load Service Telemetry Operator RBAC
+  command: oc apply -f ../deploy/{{ item }}
+  loop:
+    - service_account.yaml
+    - role.yaml
+    - role_binding.yaml
+    - olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/infra.watch_servicetelemetrys_crd.yaml
+
+- name: Load Service Telemetry Operator CSV
+  shell: |
+    sed -e "s#quay.io/infrawatch/service-telemetry-operator:{{ sto_current_csv.stdout }}#{{ sto_image_path }}#g;s#placeholder#{{ namespace }}#g" ../deploy/olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml | oc apply -f -
