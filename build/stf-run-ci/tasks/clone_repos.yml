@@ -5,13 +5,13 @@
     - name: Try cloning same-named branch
       git:
         repo: https://github.com/infrawatch/smart-gateway-operator
-        dest: /tmp/smart-gateway-operator
+        dest: working/smart-gateway-operator
         version: "{{ branch }}"
   rescue:
     - name: Get master branch because same-named doesn't exist
       git:
         repo: https://github.com/infrawatch/smart-gateway-operator
-        dest: /tmp/smart-gateway-operator
+        dest: working/smart-gateway-operator
         version: master
 
 - name: Get Smart Gateway
@@ -19,12 +19,12 @@
     - name: Try cloning same-named branch
       git:
         repo: https://github.com/infrawatch/smart-gateway
-        dest: /tmp/smart-gateway
+        dest: working/smart-gateway
         version: "{{ branch }}"
   rescue:
     - name: Get master branch because same-named doesn't exist
       git:
         repo: https://github.com/infrawatch/smart-gateway
-        dest: /tmp/smart-gateway
+        dest: working/smart-gateway
         version: master
 

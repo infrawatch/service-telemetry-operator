@@ -37,10 +37,12 @@
 
 - name: Kick off build
   block:
-    - command: oc start-build {{ artifact.name }} --wait
+    - name: Start local image build
+      command: oc start-build {{ artifact.name }} --wait --from-dir "{{ artifact.working_build_dir }}"
       register: build_name
   always:
-    - command: oc describe build {{ artifact.name }}
+    - name: Describe local image build (results)
+      command: oc describe build {{ artifact.name }}
       register: build_describe
 
     - debug:
