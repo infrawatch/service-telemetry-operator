@@ -1,0 +1,30 @@
+---
+# clone our other repositories into this repo
+- name: Get Smart Gateway Operator
+  block:
+    - name: Try cloning same-named branch
+      git:
+        repo: https://github.com/infrawatch/smart-gateway-operator
+        dest: working/smart-gateway-operator
+        version: "{{ branch }}"
+  rescue:
+    - name: Get master branch because same-named doesn't exist
+      git:
+        repo: https://github.com/infrawatch/smart-gateway-operator
+        dest: working/smart-gateway-operator
+        version: master
+
+- name: Get Smart Gateway
+  block:
+    - name: Try cloning same-named branch
+      git:
+        repo: https://github.com/infrawatch/smart-gateway
+        dest: working/smart-gateway
+        version: "{{ branch }}"
+  rescue:
+    - name: Get master branch because same-named doesn't exist
+      git:
+        repo: https://github.com/infrawatch/smart-gateway
+        dest: working/smart-gateway
+        version: master
+

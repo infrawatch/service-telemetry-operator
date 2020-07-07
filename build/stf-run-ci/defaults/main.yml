@@ -1,0 +1,6 @@
+---
+# defaults file for stf-run-ci
+list_of_stf_objects:
+  - service-telemetry-operator
+  - smart-gateway-operator
+  - smart-gateway
