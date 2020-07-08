@@ -6,6 +6,26 @@ tripleo_heat_templates:
 
 custom_templates:
     parameter_defaults:
+        CeilometerQdrPublishEvents: true
+
+        CollectdAmqpInstances:
+            notify:
+                notify: true
+                format: JSON
+                presettle: false
+            telemetry:
+                format: JSON
+                presettle: false
+
+        CollectdDefaultPlugins:
+            - cpu
+            - df
+            - load
+            - connectivity
+            - intel_rdt
+            - ipmi
+            - procevent
+
         MetricsQdrSSLProfiles:
             - name: sslProfile
 
