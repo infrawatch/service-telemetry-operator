@@ -46,8 +46,6 @@ The quickest way to start up Service Telemetry Framework for development is to
 run the `quickstart.sh` script located in the `deploy/` directory after starting
 up a [CodeReady Containers](https://github.com/code-ready/crc) environment.
 
-To deploy a local build of the Service Telemetry Operator itself, start by
-running `build/build_ci.sh`. Once that's done, you can test new builds of the
 core operator code like this:
 
 ```shell
