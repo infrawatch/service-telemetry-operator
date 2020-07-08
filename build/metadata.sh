@@ -25,4 +25,3 @@ OCP_REGISTRY=${OCP_REGISTRY:-$(oc registry info)}
 OCP_REGISTRY_INTERNAL=${OCP_REGISTRY_INTERNAL:-$(oc registry info --internal=true)}
 OCP_TAG=${OCP_TAG:-latest}
 OCP_USER=${OCP_USER:-openshift}
-QUICKSTART_CONFIG=${QUICKSTART_CONFIG:-configs/default.bash}
