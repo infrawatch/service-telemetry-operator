@@ -4,3 +4,8 @@ list_of_stf_objects:
   - service-telemetry-operator
   - smart-gateway-operator
   - smart-gateway
+
+__service_telemetry_events_enabled: true
+__service_telemetry_high_availability_enabled: false
+__service_telemetry_metrics_enabled: true
+__service_telemetry_storage_ephemeral_enabled: false

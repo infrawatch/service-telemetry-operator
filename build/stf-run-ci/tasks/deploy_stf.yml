@@ -44,15 +44,19 @@
 
 # NOTE: be aware that if the API version changes for the ServiceTelemetry
 # object that it'll need to be updated here
-- name: Create ServiceTelemetry instance
-  k8s:
-    definition:
+- name: Create default ServiceTelemetry manifest
+  set_fact:
+    service_telemetry_manifest: |
       apiVersion: infra.watch/v1alpha1
       kind: ServiceTelemetry
       metadata:
         name: stf-default
         namespace: "{{ namespace }}"
       spec:
-        eventsEnabled: true
-        highAvailabilityEnabled: false
-        metricsEnabled: true
+        eventsEnabled: {{ __service_telemetry_events_enabled }}
+        highAvailabilityEnabled: {{ __service_telemetry_high_availability_enabled }}
+        metricsEnabled: {{ __service_telemetry_metrics_enabled }}
+        storageEphemeralEnabled: {{ __service_telemetry_storage_ephemeral_enabled }}- name: Create ServiceTelemetry instance
+  k8s:
+    definition:
+      '{{ service_telemetry_manifest }}'
