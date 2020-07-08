@@ -41,6 +41,7 @@
 - block:
   - name: Deploy an instance of STF
     include_tasks: deploy_stf.yml
+
   - name: Validate system is operational
     shell: ./validate_deployment.sh
     args:
@@ -48,6 +49,6 @@
     register: validate_deployment
 
   - debug:
-    var: validate_deployment.stdout_lines
+      var: validate_deployment.stdout_lines
 
   when: __deploy_stf | bool
