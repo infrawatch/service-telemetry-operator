@@ -11,5 +11,7 @@ after_script:
   - echo Final State; echo
   - oc get pods
   - echo
+  - cd working/smart-gateway ; git reset --hard HEAD
+  - cd working/smart-gateway-operator ; git reset --hard HEAD
   - ./deploy/containerlogs.sh
   - ./deploy/remove_stf.sh
