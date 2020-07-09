@@ -4,6 +4,8 @@
   set_fact:
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ working_namespace | default('service-telemetry') }}"
+
+- name: Set default image paths when skipping local builds
     sg_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway:latest
     sgo_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway-operator:latest
     sto_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/service-telemetry-operator:latest
