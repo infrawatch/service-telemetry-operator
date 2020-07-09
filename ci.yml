@@ -4,7 +4,9 @@ global:
     OCP_PROJECT: __commit__
     THIS_BRANCH: __branch__
 script:
+  - echo "Working with project ${OCP_PROJECT}"
   - oc new-project "${OCP_PROJECT}"
+  - echo ansible-playbook --extra-vars working_namespace="${OCP_PROJECT}" --extra-vars working_branch="${THIS_BRANCH}" build/run-ci.yaml
   - ansible-playbook --extra-vars working_namespace="${OCP_PROJECT}" --extra-vars working_branch="${THIS_BRANCH}" build/run-ci.yaml
   - ./tests/smoketest/smoketest.sh
 after_script:
