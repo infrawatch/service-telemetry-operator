@@ -7,14 +7,12 @@
         repo: https://github.com/infrawatch/smart-gateway-operator
         dest: working/smart-gateway-operator
         version: "{{ sgo_branch | default(branch, true) }}"
-        force: yes
   rescue:
     - name: Get master branch because same-named doesn't exist
       git:
         repo: https://github.com/infrawatch/smart-gateway-operator
         dest: working/smart-gateway-operator
         version: master
-        force: yes
 
 - name: Get Smart Gateway
   block:
@@ -23,12 +21,10 @@
         repo: https://github.com/infrawatch/smart-gateway
         dest: working/smart-gateway
         version: "{{ sg_branch | default(branch, true) }}"
-        force: yes
   rescue:
     - name: Get master branch because same-named doesn't exist
       git:
         repo: https://github.com/infrawatch/smart-gateway
         dest: working/smart-gateway
         version: master
-        force: yes
 
