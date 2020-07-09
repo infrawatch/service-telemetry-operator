@@ -1,0 +1,4 @@
+---
+- name: Wait for Service Telemetry Operator to be Succeeded
+  shell: |
+    while ! oc get csv | grep service-telemetry-operator | grep Succeeded; do echo "waiting for Service Telemetry Operator..."; sleep 3; done

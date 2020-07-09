@@ -2,11 +2,11 @@
 # clone our other repositories into this repo
 - name: Get Smart Gateway Operator
   block:
-    - name: Try cloning same-named branch
+    - name: Try cloning same-named branch or override branch
       git:
         repo: https://github.com/infrawatch/smart-gateway-operator
         dest: working/smart-gateway-operator
-        version: "{{ branch }}"
+        version: "{{ sgo_branch | default(branch, true) }}"
   rescue:
     - name: Get master branch because same-named doesn't exist
       git:
@@ -16,11 +16,11 @@
 
 - name: Get Smart Gateway
   block:
-    - name: Try cloning same-named branch
+    - name: Try cloning same-named branch or override branch
       git:
         repo: https://github.com/infrawatch/smart-gateway
         dest: working/smart-gateway
-        version: "{{ branch }}"
+        version: "{{ sg_branch | default(branch, true) }}"
   rescue:
     - name: Get master branch because same-named doesn't exist
       git:

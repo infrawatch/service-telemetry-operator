@@ -1,0 +1,37 @@
+---
+tripleo_heat_templates:
+    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/qdr-edge-only.yaml
+    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/collectd-write-qdr.yaml
+    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/ceilometer-write-qdr.yaml
+
+custom_templates:
+    parameter_defaults:
+        CeilometerQdrPublishEvents: true
+
+        CollectdAmqpInstances:
+            notify:
+                notify: true
+                format: JSON
+                presettle: false
+            telemetry:
+                format: JSON
+                presettle: false
+
+        CollectdDefaultPlugins:
+            - cpu
+            - df
+            - load
+            - connectivity
+            - intel_rdt
+            - ipmi
+            - procevent
+
+        MetricsQdrSSLProfiles:
+            - name: sslProfile
+
+        MetricsQdrConnectors:
+            - host: <<AMQP_HOST>>
+              port: <<AMQP_PORT>>
+              role: edge
+              verifyHostname: false
+              sslProfile: sslProfile

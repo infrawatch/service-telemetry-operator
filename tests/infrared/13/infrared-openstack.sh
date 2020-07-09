@@ -5,77 +5,120 @@ set -e
 #  VIRTHOST=my.big.hypervisor.net
 #  ./infrared-openstack.sh
 
-VIRTHOST=${VIRTHOST:-my.big.hypervisor.net}
-AMQP_HOST=${AMQP_HOST:-$(oc get route -l application=qdr-white -o jsonpath='{.items[0].spec.host}')}
+VIRTHOST=${VIRTHOST:-localhost}
+AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
+AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
-NTP_SERVER="${NTP_SERVER:-10.35.255.6}"
+NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
 
-VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://127.0.0.1/my_image_location/}"
-if [ "${VM_IMAGE_URL_PATH}" = "http://127.0.0.1/my_image_location/" -a -z "${VM_IMAGE}" ]; then
-    echo "Please provide a VM_IMAGE_URL_PATH or VM_IMAGE"
-    exit 1
-fi
+VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-7.8/compose/Server/x86_64/images}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
-VM_IMAGE="${VM_IMAGE:-${VM_IMAGE_URL_PATH}/rhel-guest-image-7.7-261.x86_64.qcow2}"
-OSP_BUILD="${OSP_BUILD:-7.7-latest}"
+VM_IMAGE="${VM_IMAGE:-rhel-guest-image-7.8-41.x86_64.qcow2}"
+VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
-infrared virsh \
-    -vv \
-    -o outputs/cleanup.yml \
-    --host-address "${VIRTHOST}" \
-    --host-key "${SSH_KEY}" \
-    --cleanup yes
+OSP_BUILD="${OSP_BUILD:-7.8-passed_phase2}"
+OSP_VERSION="${OSP_VERSION:-13}"
+OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
+OSP_MIRROR="${OSP_MIRROR:-rdu2}"
+OSP_REGISTRY_MIRROR="${OSP_REGISTRY_MIRROR:-registry-proxy.engineering.redhat.com}"
+LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
-infrared virsh \
-    -vvv \
-    -o outputs/provision.yml \
-    --topology-nodes undercloud:1,controller:1,compute:1 \
-    --host-address "${VIRTHOST}" \
-    --host-key "${SSH_KEY}" \
-    --image-url "${VM_IMAGE}" \
-    --host-memory-overcommit True \
-    -e override.controller.cpu=8 \
-    -e override.controller.memory=16384
+TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 
-infrared tripleo-undercloud \
-    -vv \
-    -o outputs/undercloud-install.yml \
-    --mirror rdu2 \
-    --version 13 \
-    --build "${OSP_BUILD}" \
-    --registry-mirror docker-registry.engineering.redhat.com \
-    --registry-undercloud-skip no
+ir_run_cleanup() {
+  infrared virsh \
+      -vv \
+      -o outputs/cleanup.yml \
+      --disk-pool "${LIBVIRT_DISKPOOL}" \
+      --host-address "${VIRTHOST}" \
+      --host-key "${SSH_KEY}" \
+      --cleanup yes
+}
 
-infrared tripleo-undercloud -vv \
-   -o outputs/images_settings.yml \
-   --images-task rpm \
-   --build "${OSP_BUILD}" \
-   --images-update no
+ir_run_provision() {
+  infrared virsh \
+      -vvv \
+      -o outputs/provision.yml \
+      --disk-pool "${LIBVIRT_DISKPOOL}" \
+      --topology-nodes "${OSP_TOPOLOGY}" \
+      --host-address "${VIRTHOST}" \
+      --host-key "${SSH_KEY}" \
+      --image-url "${VM_IMAGE_LOCATION}" \
+      --host-memory-overcommit True \
+      -e override.controller.cpu=8 \
+      -e override.controller.memory=32768 \
+      --serial-files True
+}
 
-sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" metrics-collectd-qdr.yaml.template > outputs/metrics-collectd-qdr.yaml
+ir_create_undercloud() {
+  infrared tripleo-undercloud \
+      -vv \
+      -o outputs/undercloud-install.yml \
+      --mirror "${OSP_MIRROR}" \
+      --version "${OSP_VERSION}" \
+      --build "${OSP_BUILD}" \
+      --images-task rpm \
+      --images-update no \
+      --registry-mirror "${OSP_REGISTRY_MIRROR}" \
+      --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
+      --config-options DEFAULT.undercloud_timezone=UTC \
+      --config-options DEFAULT.container_insecure_registries=registry-proxy.engineering.redhat.com
+}
 
-infrared tripleo-overcloud \
-    -vv \
-    -o outputs/overcloud-install.yml \
-    --version 13 \
-    --deployment-files virt \
-    --overcloud-debug yes \
-    --network-backend vxlan \
-    --network-protocol ipv4 \
-    --storage-backend lvm \
-    --storage-external no \
-    --overcloud-ssl no \
-    --tls-everywhere no \
-    --network-dvr false \
-    --network-lbaas false \
-    --vbmc-force true \
-    --introspect yes \
-    --tagging yes \
-    --deploy yes \
-    --public-network yes \
-    --public-subnet default_subnet \
-    --ntp-server "${NTP_SERVER}" \
-    --containers yes \
-    --registry-mirror docker-registry.engineering.redhat.com \
-    --overcloud-templates outputs/metrics-collectd-qdr.yaml \
-    --registry-undercloud-skip no
+ir_image_sync_undercloud() {
+  infrared tripleo-undercloud \
+      -o outputs/undercloud-image-sync.yml \
+      --images-task rpm \
+      --build "${OSP_BUILD}" \
+      --images-update no
+}
+
+stf_create_config() {
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" stf-connectors.yaml.template > outputs/stf-connectors.yaml
+}
+
+ir_create_overcloud() {
+  infrared tripleo-overcloud \
+      -vv \
+      -o outputs/overcloud-install.yml \
+      --version "${OSP_VERSION}" \
+      --deployment-files virt \
+      --overcloud-debug yes \
+      --network-backend vlan \
+      --network-protocol ipv4 \
+      --storage-backend ceph \
+      --storage-external no \
+      --overcloud-ssl no \
+      --introspect yes \
+      --tagging yes \
+      --deploy yes \
+      --ntp-server "${NTP_SERVER}" \
+      --registry-mirror "${OSP_REGISTRY_MIRROR}" \
+      --overcloud-templates outputs/stf-connectors.yaml \
+      --containers yes
+}
+
+ir_run_tempest() {
+  infrared tempest \
+      -vv \
+      -o outputs/test.yml \
+      --openstack-installer tripleo \
+      --openstack-version "${OSP_VERSION}" \
+      --tests smoke \
+      --setup rpm \
+      --revision=HEAD \
+      --image http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+}
+
+if ${TEMPEST_ONLY}; then
+  echo "-- Running tempest tests"
+  ir_run_tempest
+else
+  echo "-- full cloud deployment"
+  ir_run_cleanup
+  ir_run_provision
+  ir_create_undercloud
+  ir_image_sync_undercloud
+  stf_create_config
+  ir_create_overcloud
+fi
