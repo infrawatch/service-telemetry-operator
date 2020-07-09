@@ -4,13 +4,20 @@
   set_fact:
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ working_namespace | default('service-telemetry') }}"
+    sg_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway:latest
+    sgo_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway-operator:latest
+    sto_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/service-telemetry-operator:latest
 
 - block:
   - name: Setup supporting repositories
     include_tasks: clone_repos.yml
+    tags:
+      - clone
 
   - name: Setup supporting Operator subscriptions
     include_tasks: setup_base.yml
+    tags:
+      - deploy
 
   - name: Create builds and artifacts
     include_tasks: create_builds.yml
@@ -20,9 +27,13 @@
       - { name: smart-gateway, dockerfile_path: Dockerfile, image_reference_name: sg_image_path, working_build_dir: ./working/smart-gateway }
     loop_control:
       loop_var: artifact
+    tags:
+      - build
 
   - name: Setup STF using local artifacts
     include_tasks: setup_stf_local_build.yml
+    tags:
+      - deploy
 
   when: __local_build_enabled | bool
 
