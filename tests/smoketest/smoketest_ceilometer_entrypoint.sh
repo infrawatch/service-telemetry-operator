@@ -8,40 +8,23 @@ ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
 
-# Render our config template
-sed -e "s/<<CLOUDNAME>>/${CLOUDNAME}/" /etc/minimal-collectd.conf.template > /tmp/collectd.conf
 
 echo "*** [INFO] My pod is: ${POD}"
 
-echo "*** [INFO] Using this collectd.conf:"
-cat /tmp/collectd.conf
+# Run ceilometer_publisher script
+python3 /ceilometer_publish.py stf-default-interconnect:5672 driver=amqp&topic=metric driver=amqp&topic=event
 
-# Run collectd in foreground mode to generate some metrics
-/usr/sbin/collectd -C /tmp/collectd.conf -f 2>&1 | tee /tmp/collectd_output &
-
-# Wait until collectd appears to be up and running
-retries=3
-until [ $retries -eq 0 ] || grep "Initialization complete, entering read-loop" /tmp/collectd_output; do
-  retries=$((retries-1))
-  echo "*** [INFO] Sleeping for 3 seconds waiting for collectd to enter read-loop"
-  sleep 3
-done
-
-# Sleeping to collect 1m of actual metrics
-echo "*** [INFO] Sleeping for 60 seconds to collect a minute of metrics and events"
-sleep 60
+# Sleeping to produce data
+echo "*** [INFO] Sleeping for 20 seconds to produce all metrics and events"
+sleep 20
 
 echo "*** [INFO] List of metric names for debugging..."
-curl -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
+curl -s -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
 echo; echo
 
 # Checks that the metrics actually appear in prometheus
-echo "*** [INFO] Checking for recent CPU metrics..."
-curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=collectd_cpu_total{cpu="0",type="user",service="stf-default-collectd-telemetry-smartgateway",exported_instance="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
-echo; echo
-
-# The egrep exit code is the result of the test and becomes the container/pod/job exit code
-grep -E '"result":\[{"metric":{"__name__":"collectd_cpu_total","cpu":"0","endpoint":"prom-http","exported_instance":"'"${POD}"'","service":"stf-default-collectd-telemetry-smartgateway","type":"user"},"values":\[\[.+,".+"\]' /tmp/query_output
+echo "*** [INFO] Checking for recent image metrics..."
+curl -sg "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
 metrics_result=$?
 
 echo "*** [INFO] Get documents for this test from ElasticSearch..."
@@ -56,6 +39,19 @@ DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https:/
   }
 }' | python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
 
+
+echo "*** [INFO] List of indices for debugging..."
+curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_cat/indices/ceilometer_*?s=index"
+echo
+
+echo "*** [INFO] Get documents for this test from ElasticSearch..."
+ES_INDEX=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_cat/indices/ceilometer_*" | cut -d' ' -f3)
+DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/${ES_INDEX}/_search" -H 'Content-Type: application/json' -d'{
+  "query": {
+    "match_all": {}
+  }
+}' | python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
+
 echo "*** [INFO] Found ${DOCUMENT_HITS} documents"
 echo; echo
 
@@ -64,6 +60,9 @@ events_result=1
 if [ "$DOCUMENT_HITS" -gt "0" ]; then
     events_result=0
 fi
+
+echo "[INFO] Verification exit codes (0 is passing, non-zero is a failure): events=${events_result} metrics=${metrics_result}"
+echo; echo
 
 if [ "$metrics_result" = "0" ] && [ "$events_result" = "0" ]; then
     echo "*** [INFO] Testing completed with success"
