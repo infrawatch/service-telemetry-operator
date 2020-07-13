@@ -10,6 +10,8 @@
     sg_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway:latest
     sgo_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway-operator:latest
     sto_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/service-telemetry-operator:latest
+    sg_core_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/sg-core:latest
+    sg_bridge_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/sg-bridge:latest
 
 - block:
   - name: Setup supporting repositories
@@ -28,6 +30,8 @@
       - { name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: ../ }
       - { name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: ./working/smart-gateway-operator }
       - { name: smart-gateway, dockerfile_path: Dockerfile, image_reference_name: sg_image_path, working_build_dir: ./working/smart-gateway }
+      - { name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: ./working/sg-core }
+      - { name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: ./working/sg-bridge }
     loop_control:
       loop_var: artifact
     tags:
