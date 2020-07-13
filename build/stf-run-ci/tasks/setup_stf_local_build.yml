@@ -1,0 +1,79 @@
+---
+# TODO: not super pretty but it seems to work for now. Would be a bit cleaner
+# perhaps if we imported a semver function of some sort.
+
+- name: Get latest CSV for Smart Gateway Operator
+  shell: |
+    ls -1v --hide=*.yaml working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | tail -1
+  register: sgo_current_csv
+
+- name: Get latest CSV for Service Telemetry Operator
+  shell: |
+    ls -1v --hide=*.yaml ../deploy/olm-catalog/service-telemetry-operator/ | tail -1
+  register: sto_current_csv
+
+# --- Smart Gateway Operator ---
+
+- name: Load Smart Gateway Operator RBAC
+  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }}
+  loop:
+    - service_account.yaml
+    - role.yaml
+    - role_binding.yaml
+    - olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smartgateway.infra.watch_smartgateways_crd.yaml
+
+# TODO: I'm sorry this is pretty messy. There is probably an Ansible module
+# that would make this a bit cleaner to read. Likely start with lineinfile or a
+# filter that could parse the contents inline via lookup to the k8s module
+
+- name: Copy SGO CSV to working directory
+  command: cp working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml working/
+
+- name: Replace SG image path in SGO CSV
+  replace:
+    path: working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: '(\s+)value: quay\.io/infrawatch/smart-gateway\:.+$'
+    replace: '\1value: {{ sg_image_path }}'
+
+- name: Replace SGO image path in SGO CSV
+  replace:
+    path: working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: '(\s+)image: quay\.io/infrawatch/smart-gateway-operator\:.+$'
+    replace: '\1image: {{ sgo_image_path }}'
+
+- name: Replace namespace in SGO CSV
+  replace:
+    path: working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: 'placeholder'
+    replace: '{{ namespace }}'
+
+- name: Load Smart Gateway Operator CSV
+  shell: oc apply -f working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
+
+# --- Service Telemetry Operator ---
+
+- name: Copy STO CSV to working directory
+  command: cp ../deploy/olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml working/
+
+- name: Replace SG image path in STO CSV
+  replace:
+    path: working/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: '(\s+)image: quay\.io/infrawatch/service-telemetry-operator\:.+$'
+    replace: '\1image: {{ sto_image_path }}'
+
+- name: Replace namespace in STO CSV
+  replace:
+    path: working/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: 'placeholder'
+    replace: '{{ namespace }}'
+
+- name: Load Service Telemetry Operator RBAC
+  command: oc apply -f ../deploy/{{ item }}
+  loop:
+    - service_account.yaml
+    - role.yaml
+    - role_binding.yaml
+    - olm-catalog/service-telemetry-operator/{{ sto_current_csv.stdout }}/infra.watch_servicetelemetrys_crd.yaml
+
+- name: Load Service Telemetry Operator CSV
+  shell: oc apply -f working/service-telemetry-operator.v{{ sto_current_csv.stdout }}.clusterserviceversion.yaml
