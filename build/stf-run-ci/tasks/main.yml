@@ -5,29 +5,68 @@
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ working_namespace | default('service-telemetry') }}"
 
-- name: Setup supporting repositories
-  include_tasks: clone_repos.yml
+- name: Set default image paths for local builds
+  set_fact:
+    sg_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway:latest
+    sgo_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/smart-gateway-operator:latest
+    sto_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/service-telemetry-operator:latest
+    sg_core_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/sg-core:latest
+    sg_bridge_image_path: image-registry.openshift-image-registry.svc:5000/{{ namespace }}/sg-bridge:latest
 
-- name: Setup supporting Operator subscriptions
-  include_tasks: setup_base.yml
+- block:
+  - name: Setup supporting repositories
+    include_tasks: clone_repos.yml
+    tags:
+      - clone
 
-- name: Create builds and artifacts
-  include_tasks: create_builds.yml
-  loop:
-    - { name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: ../ }
-    - { name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: ./working/smart-gateway-operator }
-    - { name: smart-gateway, dockerfile_path: Dockerfile, image_reference_name: sg_image_path, working_build_dir: ./working/smart-gateway }
-  loop_control:
-    loop_var: artifact
+  - name: Setup supporting Operator subscriptions
+    include_tasks: setup_base.yml
+    tags:
+      - deploy
 
-- name: Deploy STF using local artifacts
-  include_tasks: deploy_stf.yml
+  - name: Create builds and artifacts
+    include_tasks: create_builds.yml
+    loop:
+      - { name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: ../ }
+      - { name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: ./working/smart-gateway-operator }
+      - { name: smart-gateway, dockerfile_path: Dockerfile, image_reference_name: sg_image_path, working_build_dir: ./working/smart-gateway }
+      - { name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: ./working/sg-core }
+      - { name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: ./working/sg-bridge }
+    loop_control:
+      loop_var: artifact
+    tags:
+      - build
 
-- name: Validate system is operational
-  shell: ./validate_deployment.sh
-  args:
-    executable: /bin/bash
-  register: validate_deployment
+  - name: Setup STF using local artifacts
+    include_tasks: setup_stf_local_build.yml
+    tags:
+      - deploy
 
-- debug:
-    var: validate_deployment.stdout_lines
+  when: __local_build_enabled | bool
+
+- block:
+  - name: Setup supporting Operator subscriptions
+    include_tasks: setup_base.yml
+
+  - name: Setup Service Telemetry Framework from application registry
+    include_tasks: setup_stf.yml
+
+  when: not __local_build_enabled | bool
+
+- name: Pre-flight checks
+  include_tasks: preflight_checks.yml
+
+- block:
+  - name: Deploy an instance of STF
+    include_tasks: deploy_stf.yml
+
+  - name: Validate system is operational
+    shell: ./validate_deployment.sh
+    args:
+      executable: /bin/bash
+    register: validate_deployment
+
+  - debug:
+      var: validate_deployment.stdout_lines
+
+  when: __deploy_stf | bool
