@@ -4,7 +4,7 @@ metadata:
   name: '{{ meta.name }}-{{ agent.name|lower }}-telemetry'
   namespace: '{{ meta.namespace }}'
 spec:
-  amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/{{ agent.channel }}'
+  amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ agent.channel }}'
   amqpDataSource: '{{ agent.name|lower }}'
   debug: false
   serviceType: 'metrics'

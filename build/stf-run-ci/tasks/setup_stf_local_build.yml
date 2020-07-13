@@ -29,11 +29,23 @@
 - name: Copy SGO CSV to working directory
   command: cp working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/{{ sgo_current_csv.stdout }}/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml working/
 
-- name: Replace SG image path in SGO CSV
+- name: Replace SG (legacy) image path in SGO CSV
   replace:
     path: working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
     regexp: '(\s+)value: quay\.io/infrawatch/smart-gateway\:.+$'
     replace: '\1value: {{ sg_image_path }}'
+
+- name: Replace SG core image path in SGO CSV
+  replace:
+    path: working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: '(\s+)value: quay\.io/infrawatch/sg-core\:.+$'
+    replace: '\1value: {{ sg_core_image_path }}'
+
+- name: Replace SG bridge image path in SGO CSV
+  replace:
+    path: working/smart-gateway-operator.v{{ sgo_current_csv.stdout }}.clusterserviceversion.yaml
+    regexp: '(\s+)value: quay\.io/infrawatch/sg-bridge\:.+$'
+    replace: '\1value: {{ sg_bridge_image_path }}'
 
 - name: Replace SGO image path in SGO CSV
   replace:

@@ -1,5 +1,8 @@
 ---
 # clone our other repositories into this repo
+# NOTE: since you can't loop against blocks (and we're using them for failure #
+#       recovery when the request branch doesn't exist) we have to define each
+#       of these separately rather than using a loop.
 - name: Get Smart Gateway Operator
   block:
     - name: Try cloning same-named branch or override branch
@@ -14,7 +17,7 @@
         dest: working/smart-gateway-operator
         version: master
 
-- name: Get Smart Gateway
+- name: Get Smart Gateway (legacy)
   block:
     - name: Try cloning same-named branch or override branch
       git:
@@ -28,3 +31,30 @@
         dest: working/smart-gateway
         version: master
 
+- name: Get sg-core
+  block:
+    - name: Try cloning same-named branch or override branch
+      git:
+        repo: https://github.com/infrawatch/sg-core
+        dest: working/sg-core
+        version: "{{ sg_core_branch | default(branch, true) }}"
+  rescue:
+    - name: Get master branch because same-named doesn't exist
+      git:
+        repo: https://github.com/infrawatch/sg-core
+        dest: working/sg-core
+        version: master
+
+- name: Get sg-bridge
+  block:
+    - name: Try cloning same-named branch or override branch
+      git:
+        repo: https://github.com/infrawatch/sg-bridge
+        dest: working/sg-bridge
+        version: "{{ sg_bridge_branch | default(branch, true) }}"
+  rescue:
+    - name: Get master branch because same-named doesn't exist
+      git:
+        repo: https://github.com/infrawatch/sg-bridge
+        dest: working/sg-bridge
+        version: master
