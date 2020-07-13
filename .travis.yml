@@ -7,7 +7,7 @@ language: python
 git:
   depth: 1
 install:
-- pip install operator-courier
+- pip install operator-courier==2.1.7
 - pip install ansible-lint
 script:
 - operator-courier verify --ui_validate_io deploy/olm-catalog/service-telemetry-operator
