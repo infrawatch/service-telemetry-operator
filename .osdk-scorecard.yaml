@@ -1,7 +1,7 @@
 scorecard:
   version: v1alpha2
   output: text
-  bundle: deploy/olm-catalog/service-telemetry-operator/1.0.3/metadata
+  bundle: deploy/olm-catalog/service-telemetry-operator/bundle/metadata
   plugins:
     - basic:
         cr-manifest:
