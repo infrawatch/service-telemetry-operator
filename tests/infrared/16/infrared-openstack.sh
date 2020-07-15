@@ -16,7 +16,7 @@ VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-8/
 VM_IMAGE="${VM_IMAGE:-rhel-guest-image-8.2-290.x86_64.qcow2}"
 VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
-OSP_BUILD="${OSP_BUILD:-RHOS-16.1-RHEL-8-20200625.n.0}"
+OSP_BUILD="${OSP_BUILD:-passed_phase2}"
 OSP_VERSION="${OSP_VERSION:-16.1}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
