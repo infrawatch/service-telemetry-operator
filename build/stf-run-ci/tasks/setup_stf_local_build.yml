@@ -4,12 +4,12 @@
 
 - name: Get latest CSV for Smart Gateway Operator
   shell: |
-    ls -1v --hide=*.yaml working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | tail -1
+    ls -1v --hide=bundle --hide=*.yaml working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/ | tail -1
   register: sgo_current_csv
 
 - name: Get latest CSV for Service Telemetry Operator
   shell: |
-    ls -1v --hide=*.yaml ../deploy/olm-catalog/service-telemetry-operator/ | tail -1
+    ls -1v --hide=bundle --hide=*.yaml ../deploy/olm-catalog/service-telemetry-operator/ | tail -1
   register: sto_current_csv
 
 # --- Smart Gateway Operator ---
