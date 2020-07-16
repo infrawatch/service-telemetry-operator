@@ -2,10 +2,13 @@
 - name: Create BuildConfig and ImageStream
   shell: oc new-build --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
 
+- name: Kill first build since it will always fail (triggered on BuildConfig creation)
+  shell: sleep 10 ; oc delete build {{ artifact.name }}-1
+
 - name: Kick off build
   block:
     - name: Start local image build
-      command: oc start-build {{ artifact.name }} --wait --from-dir "{{ artifact.working_build_dir }}"
+      command: oc start-build {{ artifact.name }} --wait --follow --from-dir "{{ artifact.working_build_dir }}"
       register: build_name
   always:
     - name: Describe local image build (results)
