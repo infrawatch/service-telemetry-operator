@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promxy-config
+data:
+  config.yaml: |
+    ##
+    ## Regular prometheus configuration
+    ##
+    global:
+      evaluation_interval: 5s
+      external_labels:
+        source: promxy
+
+    # remote_write configuration is used by promxy as its local Appender, meaning all
+    # metrics promxy would "write" (not export) would be sent to this. Examples
+    # of this include: recording rules, metrics on alerting rules, etc.
+    # remote_write:
+    #   - url: http://localhost:8083/receive
+
+    ##
+    ### Promxy configuration
+    ##
+    promxy:
+      server_groups:
+      - static_configs:
+        - targets:
+          - prometheus-stf-default-0.prometheus-operated:9090
+          - prometheus-stf-default-1.prometheus-operated:9090
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: promxy
+  name: promxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: promxy
+  template:
+    metadata:
+      labels:
+        app: promxy
+    spec:
+      serviceAccountName: prometheus-k8s
+      containers:
+      - args:
+        - "--config=/etc/promxy/config.yaml"
+        - "--web.enable-lifecycle"
+        - "--log-level=trace"
+        env:
+          - name: ROLE
+            value: "1"
+        command:
+        - "/bin/promxy"
+        image: quay.io/jacksontj/promxy:latest
+        imagePullPolicy: Always
+        name: promxy
+        ports:
+        - containerPort: 8082
+          name: web
+        volumeMounts:
+        - mountPath: "/etc/promxy/"
+          name: promxy-config
+          readOnly: true
+      # container to reload configs on configmap change
+      - args:
+        - "--volume-dir=/etc/promxy"
+        - "--webhook-url=http://localhost:8082/-/reload"
+        image: jimmidyson/configmap-reload:v0.1
+        name: promxy-server-configmap-reload
+        volumeMounts:
+        - mountPath: "/etc/promxy/"
+          name: promxy-config
+          readOnly: true
+      volumes:
+      - configMap:
+          name: promxy-config
+        name: promxy-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: promxy
+spec:
+  ports:
+  - name: web
+    port: 8082
+    protocol: TCP
+    targetPort: web
+  selector:
+    app: promxy
+  type: ClusterIP
