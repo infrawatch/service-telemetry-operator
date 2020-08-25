@@ -32,6 +32,7 @@ rules:
   - monitoring.coreos.com
   - elasticsearch.k8s.elastic.co
   - certmanager.k8s.io
+  - integreatly.org
   resources:
   - '*'
   verbs:

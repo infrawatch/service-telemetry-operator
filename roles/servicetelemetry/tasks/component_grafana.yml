@@ -1,5 +1,3 @@
-# Check if Grafana CSV is installed
-
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
@@ -15,5 +13,17 @@
       '{{ grafana_manifest }}'
 
 # Lookup existing datasources
+- block:
+  - name: Set default Prometheus datasource
+    set_fact:
+      grafana_ds_prometheus_manifest: "{{ lookup('template', './manifest_grafana_ds_prometheus.j2') | from_yaml }}"
+    when: grafana_ds_prometheus_manifest is not defined
 
-# Create additional datasources
+  - name: Create the Prometheus datasource
+    k8s:
+      definition:
+        '{{ grafana_ds_prometheus_manifest }}'
+  when: metrics_enabled
+
+# Create additional datasources. This is where ElasticSearch datasources could
+# go but we probably want users to specify the list of databases we need
