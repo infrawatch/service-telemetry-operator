@@ -1,0 +1,19 @@
+# Check if Grafana CSV is installed
+
+- name: Lookup template
+  debug:
+    msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
+
+- name: Set default Grafana manifest
+  set_fact:
+    grafana_manifest: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
+  when: grafana_manifest is not defined
+
+- name: Create an instance of Grafana
+  k8s:
+    definition:
+      '{{ grafana_manifest }}'
+
+# Lookup existing datasources
+
+# Create additional datasources
