@@ -4,6 +4,7 @@ metrics_enabled: true
 events_enabled: false
 high_availability_enabled: false
 storage_ephemeral_enabled: false
+graphing_enabled: false
 
 # default values
 prometheus_storage_class: ""
@@ -23,4 +24,16 @@ elastic_user: elastic
 qdr_deployment_size: 1
 
 smartgateway_servicemonitor_spec_endpoints_interval: 10s
+
+graphing_spec_ingress_enabled: false
+graphing_spec_config_security_admin_password: secret
+graphing_spec_config_security_admin_user: root
+graphing_spec_config_auth_disable_signout_menu: false
+
+# These variables are outside of the defaults. Their values will be
+# auto-detected by the role and are not meant to be set by the user. However,
+# for debugging purposes you can change these.
+
+is_k8s: false
+is_openshift: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

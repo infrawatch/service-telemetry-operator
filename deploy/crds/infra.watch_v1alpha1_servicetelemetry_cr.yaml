@@ -7,4 +7,5 @@ spec:
   eventsEnabled: false
   highAvailabilityEnabled: false
   storageEphemeralEnabled: false
+  graphingEnabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
