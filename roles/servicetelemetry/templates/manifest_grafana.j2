@@ -8,7 +8,7 @@ spec:
     enabled: {{ graphing_spec_ingress_enabled }}
   config:
     auth:
-      disable_signout_menu: true
+      disable_signout_menu: {{ graphing_spec_config_auth_disable_signout_menu }}
     auth.anonymous:
       enabled: true
     log:
