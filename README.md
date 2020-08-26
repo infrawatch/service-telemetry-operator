@@ -35,6 +35,7 @@ loaded for you.
 * elasticsearchSecretManifest
 * interconnectManifest
 * elasticsearchManifest
+* grafanaManifest
 * smartgatewayCollectdMetricsManifest
 * smartgatewayCollectdEventsManifest
 * smartgatewayCeilometerEventsManifest
