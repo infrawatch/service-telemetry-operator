@@ -11,8 +11,8 @@ spec:
   debug: false
   elasticUrl: 'https://elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local:9200'
   useBasicAuth: true
-  elasticUser: '{{ elastic_user }}'
-  elasticPass: '{{ elastic_pass }}'
+  elasticUser: '{{ elastic_user | default('elastic') }}'
+  elasticPass: '{{ elastic_pass | default('') }}'
   useTls: true
   tlsClientCert: /config/certs/tls.crt
   tlsClientKey: /config/certs/tls.key

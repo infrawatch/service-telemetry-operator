@@ -60,36 +60,48 @@ spec:
         version: v1
       specDescriptors:
       - description: Whether to enable collection and storage components for metrics
-        displayName: Metrics Enabled
-        path: metricsEnabled
+        displayName: Metrics
+        path: metrics
+      - description: Enable metrics components
+        displayName: Enabled
+        path: metrics.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Whether to enable collection and storage components for events
-        displayName: Events Enabled
-        path: eventsEnabled
+        displayName: Events
+        path: events
+      - description: Enable events components
+        displayName: Enabled
+        path: events.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Whether to enable high availability for Service Telemetry components
-        displayName: High Availability Enabled
-        path: highAvailabilityEnabled
+        displayName: High Availability
+        path: highAvailability
+      - description: Enable high availability
+        displayName: Enabled
+        path: highAvailability.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Whether to enable ephemeral storage for development environments
+      - description: Storage configuration
+        displayName: Storage
+        path: storage
+      - description: Ephemeral storage configuration
+        displayName: Ephemeral Storage
+        path: storage.ephemeral
+      - description: Enable ephemeral storage support
         displayName: Ephemeral Storage Enabled
-        path: storageEphemeralEnabled
+        path: storage.ephemeral.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Whether to enable graphing components
-        displayName: Graphing Enabled
-        path: graphingEnabled
+        displayName: Graphing
+        path: graphing
+      - description: Enable graphing support
+        displayName: Enabled
+        path: graphing.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Size of PV request for Prometheus storage. Add your unit to the
-          end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
-        displayName: Prometheus Storage Size
-        path: prometheusPvcStorageRequest
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:text
       statusDescriptors:
       - description: Conditions provided by deployment
         displayName: Conditions

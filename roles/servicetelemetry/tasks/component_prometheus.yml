@@ -9,6 +9,7 @@
 
 - name: Create an instance of Prometheus
   k8s:
+    merge_type: merge
     definition:
       '{{ prometheus_manifest }}'
 

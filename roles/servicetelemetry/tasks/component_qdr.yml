@@ -9,7 +9,7 @@
         namespace: '{{ meta.namespace }}'
       spec:
         deploymentPlan:
-          size: {{ qdr_deployment_size }}
+          size: {{ servicetelemetry_vars.transports.qdr.deployment_size }}
           role: interior
           livenessPort: 8888
           placement: AntiAffinity

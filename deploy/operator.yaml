@@ -19,14 +19,14 @@ spec:
           - /usr/local/bin/ao-logs
           - /tmp/ansible-operator/runner
           - stdout
-          image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+          image: image-registry.openshift-image-registry.svc:5000/service-telemetry/service-telemetry-operator:latest
           imagePullPolicy: Always
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
             readOnly: true
         - name: operator
-          image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+          image: image-registry.openshift-image-registry.svc:5000/service-telemetry/service-telemetry-operator:latest
           imagePullPolicy: Always
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner

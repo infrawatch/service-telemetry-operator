@@ -11,10 +11,35 @@ metadata:
             "name": "stf-default"
           },
           "spec": {
-            "eventsEnabled": false,
-            "highAvailabilityEnabled": false,
-            "metricsEnabled": true,
-            "storageEphemeralEnabled": false
+            "backends": {
+              "events": {
+                "elasticsearch": {
+                  "enabled": false
+                }
+              },
+              "metrics": {
+                "prometheus": {
+                  "enabled": true
+                }
+              }
+            },
+            "clouds": [
+              {
+                "events": {
+                  "enabled": false
+                },
+                "metrics": {
+                  "enabled": true
+                },
+                "name": "stf-default"
+              }
+            ],
+            "graphing": {
+              "enabled": true
+            },
+            "highAvailability": {
+              "enabled": false
+            }
           }
         }
       ]
@@ -28,7 +53,7 @@ metadata:
       Service Telemetry platform for telco grade monitoring.
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.0.3
+  name: service-telemetry-operator.v1.1.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -137,7 +162,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+                image: image-registry.openshift-image-registry.svc:5000/service-telemetry/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -158,7 +183,7 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+                image: image-registry.openshift-image-registry.svc:5000/service-telemetry/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -199,6 +224,7 @@ spec:
           - monitoring.coreos.com
           - elasticsearch.k8s.elastic.co
           - certmanager.k8s.io
+          - integreatly.org
           resources:
           - '*'
           verbs:
@@ -265,4 +291,4 @@ spec:
   minKubeVersion: 1.14.0
   provider:
     name: Red Hat
-  version: 1.0.3
+  version: 1.1.0
