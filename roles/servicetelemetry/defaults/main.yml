@@ -5,6 +5,7 @@ events_enabled: false
 high_availability_enabled: false
 storage_ephemeral_enabled: false
 graphing_enabled: false
+snmp_traps_enabled: false
 
 # default values
 prometheus_storage_class: ""
@@ -36,4 +37,7 @@ graphing_spec_config_auth_disable_signout_menu: false
 
 is_k8s: false
 is_openshift: false
+
+# snmp traps values
+snmp_trap_host: "192.168.24.254"
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

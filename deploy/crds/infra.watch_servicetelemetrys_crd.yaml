@@ -50,6 +50,8 @@ spec:
               type: boolean
             graphingEnabled:
               description: Whether the Service Telemetry Operator should deploy a graphing components and setup available datasources
+            snmpTrapsEnabled:
+              description: Deploy container to send snmp traps
               type: boolean
             prometheusStorageClass:
               description: Storage class name used for Prometheus PVC
