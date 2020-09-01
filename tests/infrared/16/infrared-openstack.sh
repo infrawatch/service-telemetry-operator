@@ -99,6 +99,10 @@ ir_run_tempest() {
       --image http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 }
 
+ir_expose_ui() {
+  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard 
+}
+
 if ${TEMPEST_ONLY}; then
   echo "-- Running tempest tests"
   ir_run_tempest
@@ -109,4 +113,5 @@ else
   ir_create_undercloud
   stf_create_config
   ir_create_overcloud
+  ir_expose_ui
 fi
