@@ -31,9 +31,12 @@
 - name: Adjust defaults for HA
   when: high_availability_enabled
   set_fact:
+    alertmanager_deployment_size: 2
     elasticsearch_node_count: 3
     elasticsearch_redundancy_policy: FullRedundancy
+    prometheus_deployment_size: 2
     qdr_deployment_size: 2
+    smartgateway_deployment_size: 2
 
 - name: Create QDR instance
   include_tasks: component_qdr.yml

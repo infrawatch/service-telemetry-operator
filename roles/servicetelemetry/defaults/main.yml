@@ -7,11 +7,13 @@ storage_ephemeral_enabled: false
 graphing_enabled: false
 
 # default values
+prometheus_deployment_size: 1
 prometheus_storage_class: ""
 prometheus_storage_resources: {}
 prometheus_storage_selector: {}
 prometheus_pvc_storage_request: 20G
 
+alertmanager_deployment_size: 1
 alertmanager_storage_class: ""
 alertmanager_storage_resources: {}
 alertmanager_storage_selector: {}
@@ -23,6 +25,7 @@ elastic_user: elastic
 
 qdr_deployment_size: 1
 
+smartgateway_deployment_size: 1
 smartgateway_servicemonitor_spec_endpoints_interval: 10s
 
 graphing_spec_ingress_enabled: false
