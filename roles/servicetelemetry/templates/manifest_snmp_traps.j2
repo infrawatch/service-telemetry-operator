@@ -1,16 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snmp-webhook
+  name: '{{ meta.name }}-snmp-webhook'
+  namespace: '{{ meta.namespace }}'
 spec:
   selector:
     matchLabels:
-      app: snmp-webhook
+      app: '{{ meta.name }}-snmp-webhook'
   replicas: 1
   template:
     metadata:
       labels:
-        app: snmp-webhook
+        app: '{{ meta.name }}-snmp-webhook'
     spec:
       containers:
         - name: prometheus-webhook-snmp
@@ -30,10 +31,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus-webhook-snmp
+  name: '{{ meta.name}}-prometheus-webhook-snmp'
+  namespace: '{{ meta.namespace }}'
 spec:
   selector:
-    app: snmp-webhook
+    app: '{{ meta.name }}-snmp-webhook'
   ports:
     - protocol: TCP
       port: 9099
