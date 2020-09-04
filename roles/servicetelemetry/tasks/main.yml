@@ -49,3 +49,7 @@
 - name: Create Grafana instance
   include_tasks: component_grafana.yml
   when: graphing_enabled
+
+- name: Create SNMP traps instance
+  include_tasks: component_snmp_traps.yml
+  when: snmp_traps_enabled

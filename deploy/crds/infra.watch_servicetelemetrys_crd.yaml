@@ -53,6 +53,9 @@ spec:
             snmpTrapsEnabled:
               description: Deploy container to send snmp traps
               type: boolean
+            snmpTrapsTarget:
+              description: Target address for SNMP traps to send to
+              type: string
             prometheusStorageClass:
               description: Storage class name used for Prometheus PVC
               type: string
