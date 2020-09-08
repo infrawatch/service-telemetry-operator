@@ -4,7 +4,7 @@ metadata:
   name: '{{ meta.name }}-{{ agent.name|lower }}-notification'
   namespace: '{{ meta.namespace }}'
 spec:
-  size: {{smartgateway_deployment_size}}
+  size: {{ smartgateway_deployment_size }}
   amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5672/{{ agent.channel }}'
   amqpDataSource: '{{ agent.name|lower }}'
   serviceType: 'events'
