@@ -1,3 +1,5 @@
+# DO NOT MERGE
+
 # service-telemetry-operator
 
 Umbrella Operator to instantiate all required components for Service Telemetry
