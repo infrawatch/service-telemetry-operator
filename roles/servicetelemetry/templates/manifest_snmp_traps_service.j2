@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ meta.name}}-prometheus-webhook-snmp'
+  namespace: '{{ meta.namespace }}'
+spec:
+  selector:
+    app: '{{ meta.name }}-snmp-webhook'
+  ports:
+    - protocol: TCP
+      port: 9099
+      targetPort: 9099

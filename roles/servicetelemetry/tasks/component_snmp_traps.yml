@@ -1,15 +1,28 @@
-- name: Lookup template
+- name: Lookup template - Deployment
   debug:
-    msg: "{{ lookup('template', './manifest_snmp_traps.j2') | from_yaml }}"
+    msg: "{{ lookup('template', './manifest_snmp_traps_deploy.j2') | from_yaml }}"
 
-- name: set default snmp traps manifest
+- name: Set default snmp traps manifest
   set_fact:
-    snmp_traps_manifest: "{{ lookup('template', './manifest_snmp_traps.j2') | from_yaml }}"
+    snmp_traps_manifest_deploy: "{{ lookup('template', './manifest_snmp_traps_deploy.j2') | from_yaml }}"
   when: snmp_traps_manifest is not defined
 
-- name: create an instance of snmp webhook
+- name: Create an instance of snmp webhook
   k8s:
     definition:
-      '{{ snmp_traps_manifest }}'
+      '{{ snmp_traps_manifest_deploy }}'
 
-# todo: manipulate alertmanager config to add snmp traps
+
+- name: Lookup template - Service
+  debug:
+    msg: "{{ lookup('template', './manifest_snmp_traps_service.j2') | from_yaml }}"
+
+- name: Set default snmp traps manifest - Service
+  set_fact:
+    snmp_traps_manifest_service: "{{ lookup('template', './manifest_snmp_traps_service.j2') | from_yaml }}"
+  when: snmp_traps_manifest is not defined
+
+- name: Create an instance of snmp webhook
+  k8s:
+    definition:
+      '{{ snmp_traps_manifest_service }}'
