@@ -103,6 +103,9 @@ ir_expose_ui() {
   infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard 
 }
 
+ir_run_workload() {
+    infrared cloud-config --deployment-files virt --tasks launch_workload
+
 if ${TEMPEST_ONLY}; then
   echo "-- Running tempest tests"
   ir_run_tempest
@@ -114,4 +117,5 @@ else
   stf_create_config
   ir_create_overcloud
   ir_expose_ui
+  ir_run_workload
 fi
