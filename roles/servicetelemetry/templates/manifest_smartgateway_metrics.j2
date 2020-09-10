@@ -8,6 +8,10 @@ spec:
   amqpDataSource: '{{ agent.name|lower }}'
   debug: false
   serviceType: 'metrics'
-  size: {% if agent.name == 'collectd' %} {{ smartgateway_deployment_size }} {% else %} 1 {% endif %}
+{% if agent.name == "collectd" %}
+  size: {{ smartgateway_deployment_size }}
+{% else %}
+  size: 1
+{% endif %}
   prefetch: 15000
   useTimestamp: true
