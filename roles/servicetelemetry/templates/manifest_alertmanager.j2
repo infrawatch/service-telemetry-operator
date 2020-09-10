@@ -6,7 +6,7 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
 spec:
-  replicas: 1
+  replicas: {{ alertmanager_deployment_size }}
   serviceAccountName: prometheus-k8s
   serviceMonitorSelector:
     matchLabels:

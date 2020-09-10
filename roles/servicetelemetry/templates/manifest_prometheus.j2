@@ -6,7 +6,7 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
 spec:
-  replicas: 1
+  replicas: {{ prometheus_deployment_size }}
   ruleSelector: {}
   securityContext: {}
   serviceAccountName: prometheus-k8s
