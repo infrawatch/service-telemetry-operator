@@ -15,6 +15,8 @@ metadata:
             "graphingEnabled": false,
             "highAvailabilityEnabled": false,
             "metricsEnabled": true,
+            "snmpTrapsEnabled": false,
+            "snmpTrapsTarget": "192.168.24.254",
             "storageEphemeralEnabled": false
           }
         }
