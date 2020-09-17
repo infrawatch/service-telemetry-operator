@@ -14,7 +14,7 @@
 
 - name: Set default snmp traps service manifest
   set_fact:
-    snmp_traps_manifest_deploy: "{{ lookup('template', './manifest_snmp_traps_service.j2') | from_yaml }}"
+    snmp_traps_service_manifest: "{{ lookup('template', './manifest_snmp_traps_service.j2') | from_yaml }}"
   when: snmp_traps_service_manifest is not defined
 
 - name: Create an instance of snmp webhook service
