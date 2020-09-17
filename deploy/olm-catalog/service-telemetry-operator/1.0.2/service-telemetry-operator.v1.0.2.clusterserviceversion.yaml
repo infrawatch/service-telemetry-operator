@@ -12,8 +12,11 @@ metadata:
           },
           "spec": {
             "eventsEnabled": false,
+            "graphingEnabled": false,
             "highAvailabilityEnabled": false,
             "metricsEnabled": true,
+            "snmpTrapsEnabled": false,
+            "snmpTrapsTarget": "192.168.24.254",
             "storageEphemeralEnabled": false
           }
         }
@@ -137,7 +140,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.2
+                image: quay.io/infrawatch/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -158,7 +161,7 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.2
+                image: quay.io/infrawatch/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -199,6 +202,7 @@ spec:
           - monitoring.coreos.com
           - elasticsearch.k8s.elastic.co
           - certmanager.k8s.io
+          - integreatly.org
           resources:
           - '*'
           verbs:
