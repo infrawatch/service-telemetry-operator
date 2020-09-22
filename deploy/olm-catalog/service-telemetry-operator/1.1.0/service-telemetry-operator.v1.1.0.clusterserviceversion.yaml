@@ -86,6 +86,11 @@ spec:
         path: graphingEnabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Whether to deploy snmp webhooks
+        displayName: SNMP Webhook
+        path: snmpTrapsEnabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Size of PV request for Prometheus storage. Add your unit to the
           end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
         displayName: Prometheus Storage Size
