@@ -7,5 +7,5 @@ LABEL operators.operatorframework.io.bundle.package.v1=service-telemetry-operato
 LABEL operators.operatorframework.io.bundle.channels.v1=stable
 LABEL operators.operatorframework.io.bundle.channel.default.v1=stable
 
-COPY /*.yaml /manifests/
-COPY /metadata/annotations.yaml /metadata/annotations.yaml
+COPY deploy/olm-catalog/service-telemetry-operator/manifests /manifests/
+COPY deploy/olm-catalog/service-telemetry-operator/metadata/annotations.yaml /metadata/annotations.yaml
