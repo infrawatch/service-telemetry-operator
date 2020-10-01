@@ -21,14 +21,14 @@ metadata:
     capabilities: Basic Install
     categories: Monitoring
     certified: "false"
-    containerImage: quay.io/infrawatch/service-telemetry-operator:v1.0.2
+    containerImage: quay.io/infrawatch/service-telemetry-operator:v1.0.3
     createdAt: "2020-01-10T21:30:00Z"
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.0.2
+  name: service-telemetry-operator.v1.0.3
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -137,7 +137,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.2
+                image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -158,7 +158,7 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.2
+                image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -265,5 +265,4 @@ spec:
   minKubeVersion: 1.14.0
   provider:
     name: Red Hat
-  replaces: service-telemetry-operator.v1.0.1
-  version: 1.0.2
+  version: 1.0.3
