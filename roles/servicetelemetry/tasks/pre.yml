@@ -24,21 +24,23 @@
   - not is_openshift
   - not is_k8s
 
-- name: Adjust alerting.alertmanager.deployment_size defaults for HA
-  set_fact:
-    servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'alerting':{'alertmanager':{'deployment_size': 2}}}, recursive=True) }}"
+- name: Adjust defaults when highAvailability.enabled is true
+  block:
+  - name: Adjust alerting.alertmanager.deployment_size defaults for HA
+    set_fact:
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'alerting':{'alertmanager':{'deployment_size': 2}}}, recursive=True) }}"
 
-- name: Adjust backends.metrics.prometheus.deployment_size defaults for HA
-  set_fact:
-    servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'metrics':{'prometheus':{'deployment_size': 2}}}}, recursive=True) }}"
+  - name: Adjust backends.metrics.prometheus.deployment_size defaults for HA
+    set_fact:
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'metrics':{'prometheus':{'deployment_size': 2}}}}, recursive=True) }}"
 
-- name: Adjust backends.events.elasticsearch.node_code defaults for HA
-  set_fact:
-    servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'events':{'elasticsearch':{'node_count': 3}}}}, recursive=True) }}"
+  - name: Adjust backends.events.elasticsearch.node_code defaults for HA
+    set_fact:
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'events':{'elasticsearch':{'node_count': 3}}}}, recursive=True) }}"
 
-- name: Adjust transports.qdr.deployment_size defaults for HA
-  set_fact:
-    servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'deployment_size': 2}}}, recursive=True) }}"
+  - name: Adjust transports.qdr.deployment_size defaults for HA
+    set_fact:
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'deployment_size': 2}}}, recursive=True) }}"
   when: servicetelemetry_vars.high_availability.enabled
 
 - name: Print some debug information

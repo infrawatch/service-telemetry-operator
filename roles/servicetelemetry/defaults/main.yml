@@ -1,5 +1,8 @@
 ---
 servicetelemetry_defaults:
+  high_availability:
+    enabled: false
+
   alerting:
     enabled: true
     alertmanager:
@@ -64,8 +67,6 @@ servicetelemetry_defaults:
           - collector_type: ceilometer
             subscription_address: anycast/ceilometer/event.sample
 
-  high_availability:
-    enabled: false
 
 # These variables are outside of the defaults. Their values will be
 # auto-detected by the role and are not meant to be set by the user. However,

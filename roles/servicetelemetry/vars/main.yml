@@ -1,6 +1,12 @@
 ---
 # vars file for servicetelemetry
 servicetelemetry_vars:
+  high_availability: |
+    {%- if high_availability is defined and high_availability is iterable -%}
+    {{ servicetelemetry_defaults.high_availability | combine((high_availability | stripnone), recursive=True) }}
+    {%- else -%}
+    {{ servicetelemetry_defaults.high_availability }}
+    {%- endif -%}
   alerting: |
     {%- if alerting is defined and alerting is iterable -%}
     {{ servicetelemetry_defaults.alerting | combine((alerting | stripnone), recursive=True) }}
@@ -31,10 +37,3 @@ servicetelemetry_vars:
     {%- else -%}
     {{ servicetelemetry_defaults.clouds }}
     {%- endif -%}
-  high_availability: |
-    {%- if high_availability is defined and high_availability is iterable -%}
-    {{ servicetelemetry_defaults.high_availability | combine((high_availability | stripnone), recursive=True) }}
-    {%- else -%}
-    {{ servicetelemetry_defaults.high_availability }}
-    {%- endif -%}
-
