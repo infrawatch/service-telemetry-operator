@@ -14,10 +14,4 @@ spec:
     enabled: false
   graphing:
     enabled: true
-  clouds:
-    - name: stf-default
-      metrics:
-        enabled: true
-      events:
-        enabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

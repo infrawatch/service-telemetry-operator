@@ -23,17 +23,6 @@ metadata:
                 }
               }
             },
-            "clouds": [
-              {
-                "events": {
-                  "enabled": false
-                },
-                "metrics": {
-                  "enabled": true
-                },
-                "name": "stf-default"
-              }
-            ],
             "graphing": {
               "enabled": true
             },
@@ -83,32 +72,38 @@ spec:
         name: ""
         version: v1
       specDescriptors:
+      - description: Metrics Backends
+        displayName: Metrics Backends
+        path: backends.metrics
       - description: Whether to enable collection and storage components for metrics
         displayName: Metrics Enabled
-        path: metricsEnabled
+        path: backends.metrics.prometheus.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Events Backends
+        displayName: Events Backends
+        path: backends.events
       - description: Whether to enable collection and storage components for events
         displayName: Events Enabled
-        path: eventsEnabled
+        path: backends.events.elasticsearch.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: High Availability
+        displayName: High Availability
+        path: highAvailability
       - description: Whether to enable high availability for Service Telemetry components
         displayName: High Availability Enabled
-        path: highAvailabilityEnabled
+        path: highAvailability.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Whether to enable ephemeral storage for development environments
-        displayName: Ephemeral Storage Enabled
-        path: storageEphemeralEnabled
+      - description: Graphing
+        displayName: Graphing
+        path: graphing
+      - description: Enable graphing components and dashboard creation
+        displayName: Enable Graphing
+        path: graphing.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Size of PV request for Prometheus storage. Add your unit to the
-          end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
-        displayName: Prometheus Storage Size
-        path: prometheusPvcStorageRequest
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:text
       statusDescriptors:
       - description: Conditions provided by deployment
         displayName: Conditions
@@ -287,8 +282,8 @@ spec:
   maintainers:
   - email: support@redhat.com
     name: Red Hat (CloudOps)
-  maturity: alpha
-  minKubeVersion: 1.14.0
+  maturity: beta
+  minKubeVersion: 1.18.0
   provider:
     name: Red Hat
   version: 1.1.0
