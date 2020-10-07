@@ -12,7 +12,11 @@
   loop_control:
     loop_var: this_collector
     label: "{{ this_collector.collector_type }}"
-  when: this_cloud.metrics is defined and this_cloud.metrics.collectors is defined and this_cloud.metrics.collectors is iterable
+  when:
+  - backends.metrics.prometheus.enabled
+  - this_cloud.metrics is defined
+  - this_cloud.metrics.collectors is defined
+  - this_cloud.metrics.collectors is iterable
 
 - name: Events Smart Gateway deployment
   block:
@@ -38,4 +42,8 @@
     loop_control:
       loop_var: this_collector
       label: "{{ this_collector.collector_type }}"
-  when: this_cloud.events is defined and this_cloud.events.collectors is defined and this_cloud.events is iterable
+    when:
+    - backends.events.elasticsearch.enabled
+    - this_cloud.events is defined
+    - this_cloud.events.collectors is defined
+    - this_cloud.events is iterable
