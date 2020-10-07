@@ -41,6 +41,10 @@
   - name: Adjust transports.qdr.deployment_size defaults for HA
     set_fact:
       servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'deployment_size': 2}}}, recursive=True) }}"
+
+  - name: Set collectd Smart Gateway deployment size
+    set_fact:
+      smartgateway_deployment_size: 2
   when: servicetelemetry_vars.high_availability.enabled
 
 - name: Print some debug information
@@ -51,3 +55,32 @@
       {{ servicetelemetry_vars | to_nice_yaml }}
   debug:
     msg: "{{ msg.split('\n') }}"
+
+- name: Initialize Smart Gateway list
+  set_fact:
+    smartgateway_list: []
+
+- name: Get current Smart Gateways loaded
+  k8s_info:
+    api_version: smartgateway.infra.watch/v2alpha1
+    kind: SmartGateway
+    namespace: "{{ meta.namespace }}"
+  register: smartgateways_loaded
+
+- set_fact:
+    _ephemeral_storage_enabled: true
+  when:
+    - servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "ephemeral"
+    - servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral"
+
+- name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
+  k8s_status:
+    api_version: infra.watch/v1alpha1
+    kind: ServiceTelemetry
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      ephemeralStorageEnabled:
+        status: "{{ _ephemeral_storage_enabled }}"
+        lastTransitionTime: "{{ ansible_date_time.iso8601 }}"
+        message: Ephemeral storage in use. Data loss when storage components are updated.

@@ -49,6 +49,9 @@ spec:
                         strategy:
                           description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
                           type: string
+                          enum:
+                            - ephemeral
+                            - persistent
                         persistent:
                           properties:
                             storageClass:
@@ -92,6 +95,9 @@ spec:
                             strategy:
                               description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
                               type: string
+                              enum:
+                                - ephemeral
+                                - persistent
                             persistent:
                               description: Persistent storage configuration for Prometheus
                               properties:
@@ -171,6 +177,9 @@ spec:
                       type: string
                   type: object
               type: object
+            cloudsRemoveOnMissing:
+              description: If cloud object is missing from list on subsequent runs then delete the corresponding SmartGateway object. Default is 'true'.
+              type: boolean
             clouds:
               description: A list of cloud objects
               items:
@@ -181,9 +190,6 @@ spec:
                   metrics:
                     description: Metrics related configuration for this cloud object.
                     properties:
-                      enabled:
-                        description: Enable metrics collection for this cloud object.
-                        type: boolean
                       collectors:
                         description: List of available metrics collectors for this cloud object
                         items:
@@ -200,9 +206,6 @@ spec:
                   events:
                     description: Events related configuration for this cloud object.
                     properties:
-                      enabled:
-                        description: Enable events collection for this cloud object.
-                        type: boolean
                       collectors:
                         description: List of available events collectors for this cloud object.
                         items:
@@ -210,6 +213,9 @@ spec:
                             collectorType:
                               description: Set the collector type, value of 'ceilometer' or 'collectd'.
                               type: string
+                              enum:
+                                - ceilometer
+                                - collectd
                             subscriptionAddress:
                               description: Address to subscribe on the data transport to receive notifications.
                               type: string

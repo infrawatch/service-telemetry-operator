@@ -18,3 +18,6 @@ galaxy_info:
   - servicetelemetry
 
 dependencies: []
+
+collections:
+- operator_sdk.util

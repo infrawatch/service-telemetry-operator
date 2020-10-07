@@ -1,0 +1,41 @@
+- name: Cloud collector setup
+  debug:
+    msg: |
+      Working on cloud {{ this_cloud }} to setup metrics and events Smart Gateways
+
+- name: Deploy Metrics Smart Gateway instance for each collector
+  vars:
+    data_type: 'metrics'
+    manifest: './manifest_smartgateway_metrics.j2'
+  include_tasks: base_smartgateway.yml
+  loop: "{{ this_cloud.metrics.collectors }}"
+  loop_control:
+    loop_var: this_collector
+    label: "{{ this_collector.collector_type }}"
+  when: this_cloud.metrics is defined and this_cloud.metrics.collectors is defined and this_cloud.metrics.collectors is iterable
+
+- name: Events Smart Gateway deployment
+  block:
+  - name: Lookup ElasticSearch BasicAuth
+    k8s_info:
+      api_version: v1
+      kind: Secret
+      namespace: '{{ meta.namespace }}'
+      name: 'elasticsearch-es-elastic-user'
+    register: elasticsearch_es_elastic_user
+
+  - name: Filter out ElasticSearch password for BasicAuth
+    set_fact:
+      elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[].data.elastic') | b64decode }}"
+    no_log: true
+
+  - name: Deploy Events Smart Gateway instance for each collector
+    vars:
+      data_type: 'events'
+      manifest: './manifest_smartgateway_events.j2'
+    include_tasks: base_smartgateway.yml
+    loop: "{{ this_cloud.events.collectors }}"
+    loop_control:
+      loop_var: this_collector
+      label: "{{ this_collector.collector_type }}"
+  when: this_cloud.events is defined and this_cloud.events.collectors is defined and this_cloud.events is iterable

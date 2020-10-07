@@ -1,4 +1,7 @@
 ---
+# remove SmartGateway object when cloud no longer in current `clouds` object list.
+clouds_remove_on_missing: true
+
 servicetelemetry_defaults:
   high_availability:
     enabled: false
@@ -50,17 +53,17 @@ servicetelemetry_defaults:
       admin_user: root
       disable_signout_menu: false
 
+  # 'clouds' object is not partially updatable like other objects. If 'clouds'
+  # object is defined then the default is overwritten.
   clouds:
-    - name: stf-default
+    - name: cloud-default
       metrics:
-        enabled: true
         collectors:
           - collector_type: collectd
             subscription_address: collectd/telemetry
           - collector_type: ceilometer
             subscription_address: anycast/ceilometer/metering.sample
       events:
-        enabled: false
         collectors:
           - collector_type: collectd
             subscription_address: collectd/notify
@@ -74,5 +77,9 @@ servicetelemetry_defaults:
 
 is_k8s: false
 is_openshift: false
+_ephemeral_storage_enabled: false
+
+# set default smartgateway deployment size. You should not modify this.
+smartgateway_deployment_size: 1
 
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

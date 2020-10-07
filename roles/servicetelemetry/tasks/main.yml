@@ -33,26 +33,24 @@
   include_tasks: component_alertmanager.yml
   when: servicetelemetry_vars.alerting.enabled
 
-# --> clouds
-- name: Loop through cloud instances to setup transport receivers
-  debug:
-    var: item
-  loop: "{{ servicetelemetry_vars.clouds }}"
-
-#- name: Create Smart Gateway instance
-#  include_tasks: component_events_smartgateway.yml
-## create Smart Gateway instance
-#- name: Create Smart Gateway instance
-#  include_tasks: component_metrics_smartgateway.yml
-#
-## create Service Monitor instance
-#- name: Create Service Monitor instance
-#  include_tasks: component_servicemonitor.yml
-#
-
 # --> graphing
 - name: Deploy graphing
   block:
   - name: Create Grafana instance
     include_tasks: component_grafana.yml
   when: servicetelemetry_vars.graphing.enabled
+
+# --> clouds
+- name: Get data about clouds
+  debug:
+    var: servicetelemetry_vars.clouds
+
+- name: Loop through cloud instances to setup transport receivers
+  include_tasks: component_clouds.yml
+  loop: "{{ servicetelemetry_vars.clouds }}"
+  loop_control:
+    loop_var: this_cloud
+
+# Post deployment tasks
+- name: Post-setup
+  include_tasks: post.yml

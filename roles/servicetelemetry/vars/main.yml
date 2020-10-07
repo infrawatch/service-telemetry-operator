@@ -32,8 +32,8 @@ servicetelemetry_vars:
     {{ servicetelemetry_defaults.graphing }}
     {%- endif -%}
   clouds: |
-    {%- if clouds is defined and clouds is iterable -%}
-    {{ servicetelemetry_defaults.clouds | combine((clouds | stripnone), recursive=True) }}
-    {%- else -%}
+    {%- if clouds is not defined -%}
     {{ servicetelemetry_defaults.clouds }}
+    {%- else -%}
+    {{ clouds }}
     {%- endif -%}
