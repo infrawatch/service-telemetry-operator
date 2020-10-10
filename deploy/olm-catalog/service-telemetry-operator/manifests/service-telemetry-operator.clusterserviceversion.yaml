@@ -61,6 +61,132 @@ spec:
         version: v1
       - kind: ServiceTelemetrys
         name: servicetelemetrys.infra.watch
+        version: v1beta1
+      - kind: ReplicaSets
+        name: ""
+        version: v1
+      - kind: Deployments
+        name: ""
+        version: v1
+      - kind: Services
+        name: ""
+        version: v1
+      specDescriptors:
+      - description: Metrics Backends
+        displayName: Metrics Backends
+        path: backends.metrics
+      - description: Whether to enable collection and storage components for metrics
+        displayName: Metrics Enabled
+        path: backends.metrics.prometheus.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Events Backends
+        displayName: Events Backends
+        path: backends.events
+      - description: Whether to enable collection and storage components for events
+        displayName: Events Enabled
+        path: backends.events.elasticsearch.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: High Availability
+        displayName: High Availability
+        path: highAvailability
+      - description: Whether to enable high availability for Service Telemetry components
+        displayName: High Availability Enabled
+        path: highAvailability.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Graphing
+        displayName: Graphing
+        path: graphing
+      - description: Enable graphing components and dashboard creation
+        displayName: Enable Graphing
+        path: graphing.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      statusDescriptors:
+      - description: Conditions provided by deployment
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      version: v1beta1
+    - description: Represents an instance of the Service Telemetry Framework
+      displayName: STF Cluster
+      kind: ServiceTelemetry
+      name: servicetelemetrys.infra.watch
+      resources:
+      - kind: Pods
+        name: ""
+        version: v1
+      - kind: ConfigMaps
+        name: ""
+        version: v1
+      - kind: ServiceTelemetrys
+        name: servicetelemetrys.infra.watch
+        version: v1alpha1
+      - kind: ReplicaSets
+        name: ""
+        version: v1
+      - kind: Deployments
+        name: ""
+        version: v1
+      - kind: Services
+        name: ""
+        version: v1
+      specDescriptors:
+      - description: Metrics Backends
+        displayName: Metrics Backends
+        path: backends.metrics
+      - description: Whether to enable collection and storage components for metrics
+        displayName: Metrics Enabled
+        path: backends.metrics.prometheus.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Events Backends
+        displayName: Events Backends
+        path: backends.events
+      - description: Whether to enable collection and storage components for events
+        displayName: Events Enabled
+        path: backends.events.elasticsearch.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: High Availability
+        displayName: High Availability
+        path: highAvailability
+      - description: Whether to enable high availability for Service Telemetry components
+        displayName: High Availability Enabled
+        path: highAvailability.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Graphing
+        displayName: Graphing
+        path: graphing
+      - description: Enable graphing components and dashboard creation
+        displayName: Enable Graphing
+        path: graphing.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      statusDescriptors:
+      - description: Conditions provided by deployment
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      version: v1alpha1
+    - description: Represents an instance of the Service Telemetry Framework
+      displayName: STF Cluster
+      kind: ServiceTelemetry
+      name: servicetelemetrys.infra.watch
+      resources:
+      - kind: Pods
+        name: ""
+        version: v1
+      - kind: ConfigMaps
+        name: ""
+        version: v1
+      - kind: ServiceTelemetrys
+        name: servicetelemetrys.infra.watch
         version: v1alpha1
       - kind: ReplicaSets
         name: ""
