@@ -16,7 +16,7 @@ servicetelemetry_defaults:
           storage_class: ""
           storage_resources: {}
           storage_selector: {}
-          pvc_stroage_request: 20G
+          pvc_storage_request: 20G
 
   backends:
     metrics:
@@ -37,7 +37,6 @@ servicetelemetry_defaults:
         storage:
           strategy: ephemeral
           persistent:
-            enabled: true
             pvc_storage_request: 20Gi
 
   transports:

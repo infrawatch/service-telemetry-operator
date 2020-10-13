@@ -2,9 +2,31 @@
 - debug:
     msg: INSTALLING SERVICE TELEMETRY
 
+- name: Check for v1alpha1 ServiceTelemetry objects
+  include_tasks: _migrate_v1alpha1_v1beta1.yml
+  when:
+    metrics_enabled is defined or
+    events_enabled is defined or
+    high_availability_enabled is defined or
+    storage_ephemeral_enabled is defined or
+    graphing_enabled is defined or
+    prometheus_storage_class is defined or
+    prometheus_storage_resources is defined or
+    prometheus_storage_selector is defined or
+    prometheus_pvc_storage_request is defined or
+    alertmanager_storage_class is defined or
+    alertmanager_storage_resources is defined or
+    alertmanager_storage_selector is defined or
+    alertmanager_pvc_storage_request is defined
+
 # Default setup and platform querying
 - name: Pre-setup
   include_tasks: pre.yml
+
+- name: Temporary failure
+  fail:
+    msg: |
+      Just want to return here after validations
 
 # --> qdr
 - name: Create QDR instance

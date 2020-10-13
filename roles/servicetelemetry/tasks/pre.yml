@@ -70,8 +70,9 @@
 - set_fact:
     _ephemeral_storage_enabled: true
   when:
-    - servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "ephemeral"
-    - servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral"
+    - servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "ephemeral" or
+      servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" or
+      servicetelemetry_vars.alerting.alertmanager.storage.strategy == "ephemeral"
 
 - name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
   k8s_status:
