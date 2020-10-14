@@ -1,7 +1,7 @@
 apiVersion: smartgateway.infra.watch/v2alpha1
 kind: SmartGateway
 metadata:
-  name: '{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event'
+  name: '{{ this_smartgateway }}'
   namespace: '{{ meta.namespace }}'
 spec:
   size: {{ smartgateway_deployment_size }}
