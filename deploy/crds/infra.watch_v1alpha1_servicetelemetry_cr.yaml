@@ -3,15 +3,7 @@ kind: ServiceTelemetry
 metadata:
   name: stf-default
 spec:
-  backends:
-    metrics:
-      prometheus:
-        enabled: true
-    events:
-      elasticsearch:
-        enabled: false
-  highAvailability:
-    enabled: false
-  graphing:
-    enabled: true
+  metricsEnabled: true
+  eventsEnabled: false
+  graphingEnabled: true
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

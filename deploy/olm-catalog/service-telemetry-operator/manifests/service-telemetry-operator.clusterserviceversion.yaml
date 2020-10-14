@@ -11,6 +11,18 @@ metadata:
             "name": "stf-default"
           },
           "spec": {
+            "eventsEnabled": false,
+            "graphingEnabled": true,
+            "metricsEnabled": true
+          }
+        },
+        {
+          "apiVersion": "infra.watch/v1beta1",
+          "kind": "ServiceTelemetry",
+          "metadata": {
+            "name": "stf-default"
+          },
+          "spec": {
             "backends": {
               "events": {
                 "elasticsearch": {
@@ -25,9 +37,6 @@ metadata:
             },
             "graphing": {
               "enabled": true
-            },
-            "highAvailability": {
-              "enabled": false
             }
           }
         }
