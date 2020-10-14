@@ -23,11 +23,6 @@
 - name: Pre-setup
   include_tasks: pre.yml
 
-- name: Temporary failure
-  fail:
-    msg: |
-      Just want to return here after validations
-
 # --> qdr
 - name: Create QDR instance
   include_tasks: component_qdr.yml

@@ -1,8 +1,10 @@
-- set_fact:
+- name: Build events SmartGateway name
+  set_fact:
     this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type }}-notification"
   when: data_type == "events"
 
-- set_fact:
+- name: Build metrics SmartGateway name
+  set_fact:
     this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type }}-telemetry"
   when: data_type == "metrics"
 

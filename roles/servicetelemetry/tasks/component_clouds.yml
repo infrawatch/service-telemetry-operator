@@ -13,7 +13,7 @@
     loop_var: this_collector
     label: "{{ this_collector.collector_type }}"
   when:
-  - backends.metrics.prometheus.enabled
+  - servicetelemetry_vars.backends.metrics.prometheus.enabled
   - this_cloud.metrics is defined
   - this_cloud.metrics.collectors is defined
   - this_cloud.metrics.collectors is iterable
@@ -43,7 +43,7 @@
       loop_var: this_collector
       label: "{{ this_collector.collector_type }}"
     when:
-    - backends.events.elasticsearch.enabled
+    - servicetelemetry_vars.backends.events.elasticsearch.enabled
     - this_cloud.events is defined
     - this_cloud.events.collectors is defined
     - this_cloud.events is iterable

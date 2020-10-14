@@ -1,6 +1,6 @@
 - name: WARNING Please migrate your v1alpha1 ServiceTelemetry object to v1beta1
   fail:
-    msg: "[WARNING] ServiceTelemetry/v1alpha1 is deprecated and support will be removed in a future version of Service Telemetry Framework. Please migrate your ServiceTelemetry object to v1beta1 or later."
+    msg: "[WARNING] ServiceTelemetry/v1alpha1 is deprecated and support will be removed in a future version of Service Telemetry Framework. Please migrate your ServiceTelemetry object to v1beta1 or later." # noqa 204
   ignore_errors: True
 
 - name: metricsEnabled
@@ -39,7 +39,8 @@
 
 - name: storageEphemeralEnabled set previous default of 'false' if not overridden.
   block:
-    - vars:
+    - name: Warning and variable setup
+      vars:
         msg: |
           [WARNING] Setting storageEphemeralEnabled to v1alpha1 default of 'false'. Default in v1beta1 is 'true'.
                     In a future release of Service Telemetry Framework this functionality will be removed.
@@ -60,11 +61,11 @@
   when: storage_ephemeral_enabled is defined
   vars:
     var_combiner:
+      alerting:
+        alertmanager:
+          storage:
+            strategy: '{{ "ephemeral" if storage_ephemeral_enabled else "persistent" }}'
       backends:
-        alerting:
-          alertmanager:
-            storage:
-              strategy: '{{ "ephemeral" if storage_ephemeral_enabled else "persistent" }}'
         metrics:
           prometheus:
             storage:

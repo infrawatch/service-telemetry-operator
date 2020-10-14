@@ -28,19 +28,19 @@
   block:
   - name: Adjust alerting.alertmanager.deployment_size defaults for HA
     set_fact:
-      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'alerting':{'alertmanager':{'deployment_size': 2}}}, recursive=True) }}"
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'alerting':{'alertmanager':{'deployment_size': 2}}}, recursive=True) }}" # noqa 206
 
   - name: Adjust backends.metrics.prometheus.deployment_size defaults for HA
     set_fact:
-      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'metrics':{'prometheus':{'deployment_size': 2}}}}, recursive=True) }}"
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'metrics':{'prometheus':{'deployment_size': 2}}}}, recursive=True) }}" # noqa 206
 
   - name: Adjust backends.events.elasticsearch.node_code defaults for HA
     set_fact:
-      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'events':{'elasticsearch':{'node_count': 3}}}}, recursive=True) }}"
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'backends':{'events':{'elasticsearch':{'node_count': 3}}}}, recursive=True) }}" # noqa 206
 
   - name: Adjust transports.qdr.deployment_size defaults for HA
     set_fact:
-      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'deployment_size': 2}}}, recursive=True) }}"
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'deployment_size': 2}}}, recursive=True) }}" # noqa 206
 
   - name: Set collectd Smart Gateway deployment size
     set_fact:
@@ -67,7 +67,8 @@
     namespace: "{{ meta.namespace }}"
   register: smartgateways_loaded
 
-- set_fact:
+- name: Set ephemeral_storage_enabled to true when storage strategy is ephemeral
+  set_fact:
     _ephemeral_storage_enabled: true
   when:
     - servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "ephemeral" or
@@ -75,7 +76,7 @@
       servicetelemetry_vars.alerting.alertmanager.storage.strategy == "ephemeral"
 
 - name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
-  k8s_status:
+  operator_sdk.util.k8s_status:
     api_version: infra.watch/v1alpha1
     kind: ServiceTelemetry
     name: "{{ meta.name }}"

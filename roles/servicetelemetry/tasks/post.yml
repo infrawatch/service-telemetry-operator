@@ -1,10 +1,12 @@
 ---
 - name: Remove old Smart Gateways that are no longer in the clouds list
   block:
-  - set_fact:
+  - name: Initialize smartgateway_loaded_list
+    set_fact:
       smartgateway_loaded_list: []
 
-  - set_fact:
+  - name: Append SmartGateway metadata.name to smartgateway_loaded_list
+    set_fact:
       smartgateway_loaded_list: "{{ smartgateway_loaded_list }} + ['{{ item.metadata.name }}']"
     loop: "{{ smartgateways_loaded.resources }}"
     loop_control:
