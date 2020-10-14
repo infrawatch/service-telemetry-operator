@@ -75,6 +75,9 @@ spec:
                       enabled:
                         description: Enable Prometheus as a storage backend for metrics
                         type: boolean
+                      scrapeInterval:
+                        description: How often Prometheus should be configured to scrape this endpoint. Value in seconds.
+                        type: string
                       storage:
                         description: Metrics storage configuration for Prometheus
                         properties:
