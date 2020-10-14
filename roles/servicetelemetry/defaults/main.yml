@@ -56,7 +56,7 @@ servicetelemetry_defaults:
   # 'clouds' object is not partially updatable like other objects. If 'clouds'
   # object is defined then the default is overwritten.
   clouds:
-    - name: cloud-default
+    - name: cloud1
       metrics:
         collectors:
           - collector_type: collectd

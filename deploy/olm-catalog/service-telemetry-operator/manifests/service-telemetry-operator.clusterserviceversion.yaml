@@ -349,6 +349,7 @@ spec:
   - email: support@redhat.com
     name: Red Hat (CloudOps)
   maturity: beta
+  replaces: service-telemetry-operator.v1.0.3
   minKubeVersion: 1.18.0
   provider:
     name: Red Hat

@@ -1,11 +1,11 @@
 - name: Build events SmartGateway name
   set_fact:
-    this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type }}-notification"
+    this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event"
   when: data_type == "events"
 
 - name: Build metrics SmartGateway name
   set_fact:
-    this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type }}-telemetry"
+    this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-meter"
   when: data_type == "metrics"
 
 - name: Append Smart Gateway to list of SGs
