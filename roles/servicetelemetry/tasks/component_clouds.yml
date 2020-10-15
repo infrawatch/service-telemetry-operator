@@ -7,6 +7,7 @@
   vars:
     data_type: 'metrics'
     manifest: './manifest_smartgateway_metrics.j2'
+    this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-meter"
   include_tasks: base_smartgateway.yml
   loop: "{{ this_cloud.metrics.collectors }}"
   loop_control:
@@ -37,6 +38,7 @@
     vars:
       data_type: 'events'
       manifest: './manifest_smartgateway_events.j2'
+      this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event"
     include_tasks: base_smartgateway.yml
     loop: "{{ this_cloud.events.collectors }}"
     loop_control:
