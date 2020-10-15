@@ -16,7 +16,7 @@ LoadPlugin amqp1
     Address "collectd"
     <Instance "telemetry">
         Format JSON
-        PreSettle true
+        PreSettle false
     </Instance>
     <Instance "notify">
         Format JSON

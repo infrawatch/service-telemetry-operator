@@ -25,8 +25,8 @@ data:
       server_groups:
       - static_configs:
         - targets:
-          - prometheus-stf-default-0.prometheus-operated:9090
-          - prometheus-stf-default-1.prometheus-operated:9090
+          - prometheus-default-0.prometheus-operated:9090
+          - prometheus-default-1.prometheus-operated:9090
 
 ---
 apiVersion: extensions/v1beta1

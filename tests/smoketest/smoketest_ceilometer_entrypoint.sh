@@ -24,11 +24,12 @@ echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent image metrics..."
-echo "curl -g \"${PROMETHEUS}/api/v1/query?\" --data-urlencode 'query=ceilometer_image_size'"
-curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size'
 
+echo "[DEBUG] Running the curl command to return a query"
 curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
+echo "[DEBUG] Query returned"
 metrics_result=$?
+echo "[DEBUG] Set metrics_result to $metrics_result"
 
 echo "*** [INFO] Get documents for this test from ElasticSearch..."
 DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{

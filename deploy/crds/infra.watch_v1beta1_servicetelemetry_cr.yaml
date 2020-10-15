@@ -1,7 +1,7 @@
 apiVersion: infra.watch/v1beta1
 kind: ServiceTelemetry
 metadata:
-  name: stf-default
+  name: default
 spec:
   backends:
     metrics:
