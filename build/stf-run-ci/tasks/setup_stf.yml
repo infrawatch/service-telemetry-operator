@@ -23,12 +23,12 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
-        name: servicetelemetry-operator-stable-infrawatch-operators-openshift-marketplace
+        name: service-telemetry-operator-stable-infrawatch-operators-openshift-marketplace
         namespace: "{{ namespace }}"
       spec:
         channel: stable
         installPlanApproval: Automatic
-        name: servicetelemetry-operator
+        name: service-telemetry-operator
         source: infrawatch-operators
         sourceNamespace: openshift-marketplace
   when: service_telemetry_operator_subscription_manifest is not defined

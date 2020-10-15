@@ -37,7 +37,7 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 # Trying to find a less brittle test than a timeout
-JOB_TIMEOUT=300s
+JOB_TIMEOUT=600s
 for NAME in "${CLOUDNAMES[@]}"; do
     echo "*** [INFO] Waiting on job/stf-smoketest-${NAME}..."
     oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/stf-smoketest-${NAME}"
@@ -60,14 +60,14 @@ done
 echo
 
 echo "*** [INFO] Logs from qdr..."
-oc logs "$(oc get pod -l application=stf-default-interconnect -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l application=default-interconnect -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from smart gateways..."
-oc logs "$(oc get pod -l "smart-gateway=stf-default-collectd-telemetry" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "smart-gateway=stf-default-collectd-notification" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "smart-gateway=stf-default-ceilometer-telemetry" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "smart-gateway=stf-default-ceilometer-notification" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-event" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
@@ -75,7 +75,7 @@ oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].meta
 echo
 
 echo "*** [INFO] Logs from prometheus..."
-oc logs "$(oc get pod -l prometheus=stf-default -o jsonpath='{.items[0].metadata.name}')" -c prometheus
+oc logs "$(oc get pod -l prometheus=default -o jsonpath='{.items[0].metadata.name}')" -c prometheus
 echo
 
 echo "*** [INFO] Logs from elasticsearch..."

@@ -3,16 +3,25 @@
 - name: Create default ServiceTelemetry manifest
   set_fact:
     service_telemetry_manifest: |
-      apiVersion: infra.watch/v1alpha1
+      apiVersion: infra.watch/v1beta1
       kind: ServiceTelemetry
       metadata:
-        name: stf-default
+        name: default
         namespace: "{{ namespace }}"
       spec:
-        eventsEnabled: {{ __service_telemetry_events_enabled }}
-        highAvailabilityEnabled: {{ __service_telemetry_high_availability_enabled }}
-        metricsEnabled: {{ __service_telemetry_metrics_enabled }}
-        storageEphemeralEnabled: {{ __service_telemetry_storage_ephemeral_enabled }}
+        backends:
+          events:
+            elasticsearch:
+              enabled: {{ __service_telemetry_events_enabled }}
+              storage:
+                strategy: {{ __service_telemetry_storage_ephemeral_enabled }}
+          metrics:
+            prometheus:
+              enabled: {{ __service_telemetry_metrics_enabled }}
+              storage:
+                strategy: {{ __service_telemetry_storage_ephemeral_enabled }}
+        highAvailability:
+          enabled: {{ __service_telemetry_high_availability_enabled }}
   when: service_telemetry_manifest is not defined
 
 - name: Create ServiceTelemetry instance

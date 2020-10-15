@@ -12,7 +12,7 @@ POD=$(hostname)
 echo "*** [INFO] My pod is: ${POD}"
 
 # Run ceilometer_publisher script
-python3 /ceilometer_publish.py stf-default-interconnect:5672 driver=amqp&topic=metric driver=amqp&topic=event
+python3 /ceilometer_publish.py default-interconnect:5672 driver=amqp&topic=metric driver=amqp&topic=event
 
 # Sleeping to produce data
 echo "*** [INFO] Sleeping for 20 seconds to produce all metrics and events"
@@ -24,7 +24,10 @@ echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent image metrics..."
-curl -sg "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
+echo "curl -g \"${PROMETHEUS}/api/v1/query?\" --data-urlencode 'query=ceilometer_image_size'"
+curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size'
+
+curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
 metrics_result=$?
 
 echo "*** [INFO] Get documents for this test from ElasticSearch..."
