@@ -81,37 +81,92 @@ spec:
         name: ""
         version: v1
       specDescriptors:
-      - description: Metrics Backends
-        displayName: Metrics Backends
-        path: backends.metrics
-      - description: Whether to enable collection and storage components for metrics
-        displayName: Metrics Enabled
+      - description: Enable Prometheus for metrics backend.
+        displayName: Prometheus enabled
         path: backends.metrics.prometheus.enabled
         x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends'
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Events Backends
-        displayName: Events Backends
-        path: backends.events
-      - description: Whether to enable collection and storage components for events
-        displayName: Events Enabled
+      - description: Enable ElasticSearch for events backend. Requires subscribing to Elastic Cloud on Kubernetes (ECK) Operator.
+        displayName: ElasticSearch enabled
         path: backends.events.elasticsearch.enabled
         x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends'
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: High Availability
-        displayName: High Availability
-        path: highAvailability
+      - description: Alertmanager storage strategy. Choose ephemeral or persistent. Persistent storage requires a supporting backend.
+        displayName: Alertmanager storage strategy
+        path: alerting.alertmanager.storage.strategy
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:ephemeral'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:persistent'
+      - description: Prometheus storage strategy. Choose ephemeral or persistent. Persistent storage requires a supporting backend.
+        displayName: Prometheus storage strategy
+        path: backends.metrics.prometheus.storage.strategy
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:ephemeral'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:persistent'
+      - description: ElasticSearch storage strategy. Choose ephemeral or persistent. Persistent storage requires a supporting backend.
+        displayName: ElasticSearch storage strategy
+        path: backends.events.elasticsearch.storage.strategy
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:ephemeral'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:persistent'
       - description: Whether to enable high availability for Service Telemetry components
         displayName: High Availability Enabled
         path: highAvailability.enabled
         x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:High Availability'
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Graphing
-        displayName: Graphing
-        path: graphing
       - description: Enable graphing components and dashboard creation
         displayName: Enable Graphing
         path: graphing.enabled
         x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Disable signout menu in Grafana
+        displayName: Disable Grafana Signout Menu
+        path: graphing.grafana.disableSignoutMenu
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable ingress access to Grafana
+        displayName: Enable Grafana Ingress Route
+        path: graphing.grafana.ingressEnabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Set Grafana admin username
+        displayName: Grafana Admin Username
+        path: graphing.grafana.adminUser
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Set Grafana admin password
+        displayName: Grafana Admin Password
+        path: graphing.grafana.adminPassword
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:password
+      - description: Enable Alerting via Alertmanager
+        displayName: Enable Alerting
+        path: alerting.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable QDR Transport via AMQ Interconnect
+        displayName: Enable QDR Transport
+        path: transports.qdr.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Transports'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Remove clouds not listed in the clouds object? This will delete Smart Gateways not associated with a cloud.
+        displayName: Remove Undefined Clouds
+        path: cloudsRemoveOnMissing
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Clouds'
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
       - description: Conditions provided by deployment
@@ -119,9 +174,15 @@ spec:
         path: conditions
         x-descriptors:
         - urn:alm:descriptor:io.kubernetes.conditions
+      - description: Ephemeral storage used?
+        displayName: Ephemeral storage used?
+        path: ephemeralStorageEnabled.status
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Ephemeral storage status'
+        - urn:alm:descriptor:text
       version: v1beta1
-    - description: Represents an instance of the Service Telemetry Framework
-      displayName: STF Cluster
+    - description: Represents an instance of the Service Telemetry Framework (Deprecated v1alpha1)
+      displayName: STF Cluster (deprecated)
       kind: ServiceTelemetry
       name: servicetelemetrys.infra.watch
       resources:

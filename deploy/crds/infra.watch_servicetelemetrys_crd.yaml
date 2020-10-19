@@ -234,6 +234,16 @@ spec:
                   type: string
               type: object
             type: array
+          ephemeralStorageEnabled:
+            description: Whether ephemeral storage is enabled and a warning should be provided
+            properties:
+              lastTransitionTime:
+                type: string
+              message:
+                type: string
+              status:
+                type: boolean
+            type: object
         type: object
   - name: v1alpha1
     served: true
