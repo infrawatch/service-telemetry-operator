@@ -1,6 +1,6 @@
 galaxy_info:
   role_name: servicetelemetry
-  author: Leif Madsen <leif@redhat.com>
+  author: Leif Madsen <leif+servicetelemetryoperator@redhat.com>
   description: Service Telemetry Framework Umbrella Operator
   company: Red Hat, Inc.
   license: Apache
