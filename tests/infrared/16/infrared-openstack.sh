@@ -109,6 +109,7 @@ ir_expose_ui() {
 
 ir_run_workload() {
     infrared cloud-config --deployment-files virt --tasks launch_workload
+}
 
 if ${TEMPEST_ONLY}; then
   echo "-- Running tempest tests"
