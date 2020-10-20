@@ -24,7 +24,7 @@ LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 
-PREFIX="{PREFIX:-osp}"
+PREFIX="${PREFIX:-osp}"
 
 ir_run_cleanup() {
   infrared virsh \
