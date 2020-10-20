@@ -5,5 +5,5 @@ metadata:
 spec:
   metricsEnabled: true
   eventsEnabled: false
-  graphingEnabled: true
+  graphingEnabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
