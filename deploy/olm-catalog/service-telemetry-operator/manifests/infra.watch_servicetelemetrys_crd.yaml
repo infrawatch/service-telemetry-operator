@@ -5,88 +5,294 @@ metadata:
 spec:
   group: infra.watch
   names:
-    kind: ServiceTelemetry
-    listKind: ServiceTelemetryList
     plural: servicetelemetrys
     singular: servicetelemetry
+    kind: ServiceTelemetry
+    listKind: ServiceTelemetryList
+    shortNames:
+    - stf
   scope: Namespaced
-  version: v1alpha1
+  version: v1beta1
   subresources:
     status: {}
   versions:
-  - name: v1alpha1
+  - name: v1beta1
     served: true
     storage: true
-  validation:
-    openAPIV3Schema:
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          description: Metadata definition for the ServiceTelemetry object
-          type: object
-        spec:
-          description: Specification of the desired behavior of the Service Telemetry Operator.
-          properties:
-            metricsEnabled:
-              description: Whether the Service Telemetry Operator should enable components related to metrics collection and storage.
-              type: boolean
-            eventsEnabled:
-              description: Whether the Service Telemetry Operator should enable components related to events collection and storage.
-              type: boolean
-            highAvailabilityEnabled:
-              description: Whether to deploy the services in HA mode.
-              type: boolean
-            storageEphemeralEnabled:
-              description: Request ephemeral storage (non-persistent, development use only) in the storage backends such as Prometheus and ElasticSearch.
-              type: boolean
-            prometheusStorageClass:
-              description: Storage class name used for Prometheus PVC
-              type: string
-            prometheusStorageResources:
-              description: Storage resource definition for Prometheus
-              type: string
-            prometheusStorageSelector:
-              description: Storage selector definition for Prometheus
-              type: string
-            prometheusPvcStorageRequest:
-              description: PVC storage requested size for Prometheus
-              type: string
-            alertmanagerStorageClass:
-              description: Storage class name used for Alertmanager PVC
-              type: string
-            alertmanagerStorageResources:
-              description: Storage resource definition for Alertmanager
-              type: string
-            alertmanagerStorageSelector:
-              description: Storage selector definition for Alertmanager
-              type: string
-            alertmanagerPvcStorageRequest:
-              description: PVC storage requested size for Alertmanager
-              type: string
-        status:
-          description: Status results of an instance of Service Telemetry
-          properties:
-            conditions:
-              description: The resulting conditions when a Service Telemetry is instantiated
-              items:
+    schema:
+      openAPIV3Schema:
+        properties:
+          alerting:
+            properties:
+              enabled:
+                description: Whether to enable alerting functionality
+                type: boolean
+              alertmanager:
+                description: Alertmanager configuration
                 properties:
-                  status:
+                  storage:
+                    properties:
+                      strategy:
+                        description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
+                        type: string
+                        enum:
+                          - ephemeral
+                          - persistent
+                      persistent:
+                        properties:
+                          storageClass:
+                            description: Storage class name used for Alertmanager PVC
+                            type: string
+                          storageResources:
+                            description: Storage resource definition for Alertmanager
+                            type: string
+                          storageSelector:
+                            description: Storage selector definition for Alertmanager
+                            type: string
+                          pvcStorageRequest:
+                            description: PVC storage requested size for Alertmanager
+                            type: string
+                        type: object
+                    type: object
+                type: object
+            type: object
+          highAvailability:
+            description: High availability related configuration
+            properties:
+              enabled:
+                description: Enable high availability globally for Service Telemetry
+                type: boolean
+            type: object
+          backends:
+            description: Backend storage configuration
+            properties:
+              metrics:
+                description: Metrics related backend configuration.
+                properties:
+                  prometheus:
+                    description: Metrics storage backend Prometheus
+                    properties:
+                      enabled:
+                        description: Enable Prometheus as a storage backend for metrics
+                        type: boolean
+                      storage:
+                        description: Metrics storage configuration for Prometheus
+                        properties:
+                          strategy:
+                            description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
+                            type: string
+                            enum:
+                              - ephemeral
+                              - persistent
+                          persistent:
+                            description: Persistent storage configuration for Prometheus
+                            properties:
+                              storageClass:
+                                description: Storage class name used for Prometheus PVC
+                                type: string
+                              storageResources:
+                                description: Storage resource definition for Prometheus
+                                type: string
+                              storageSelector:
+                                description: Storage selector definition for Prometheus
+                                type: string
+                              pvcStorageRequest:
+                                description: PVC storage requested size for Prometheus
+                                type: string
+                            type: object
+                        type: object
+                    type: object
+                type: object
+              events:
+                description: Events related backend configuration.
+                properties:
+                  elasticsearch:
+                    description: Events storage backend ElasticSearch
+                    properties:
+                      enabled:
+                        description: Enable ElasticSearch as a storage backend for events
+                        type: boolean
+                      nodeCount:
+                        description: Elasticsearch node count
+                        type: string
+                      storage:
+                        description: Events storage configuration for ElasticSearch
+                        properties:
+                          strategy:
+                            description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
+                            type: string
+                          persistent:
+                            description: Persistent storage configuration for ElasticSearch
+                            properties:
+                              pvcStorageRequest:
+                                description: How much storage space to request in the PVC
+                                type: string
+                            type: object
+                        type: object
+                    type: object
+                type: object
+            type: object
+          transports:
+            description: Data transport configuration
+            properties:
+              qdr:
+                description: QDR configuration for data transport
+                properties:
+                  enabled:
+                    description: Enable QDR data transort
+                    type: boolean
+                type: object
+            type: object
+          graphing:
+            description: Graphing configuration
+            properties:
+              enabled:
+                description: Whether the Service Telemetry Operator should deploy a graphing components and setup available datasources. If enabled will use default graphing components.
+                type: boolean
+              grafana:
+                description: Grafana related configuration
+                properties:
+                  disableSignoutMenu:
+                    description: Whether to disable the Grafana signout menu
+                    type: boolean
+                  ingressEnabled:
+                    description: Enable ingress access to Grafana
+                    type: boolean
+                  adminPassword:
+                    description: Grafana admin password
                     type: string
-                  type:
-                    type: string
-                  reason:
-                    type: string
-                  lastTransitionTime:
+                  adminUser:
+                    description: Grafana admin user
                     type: string
                 type: object
-              type: array
-          type: object
+            type: object
+          cloudsRemoveOnMissing:
+            description: If cloud object is missing from list on subsequent runs then delete the corresponding SmartGateway object. Default is 'true'.
+            type: boolean
+          clouds:
+            description: A list of cloud objects
+            items:
+              properties:
+                name:
+                  description: Name of the cloud object
+                  type: string
+                metrics:
+                  description: Metrics related configuration for this cloud object.
+                  properties:
+                    collectors:
+                      description: List of available metrics collectors for this cloud object
+                      items:
+                        properties:
+                          collectorType:
+                            description: Set the collector type, value of 'ceilometer' or 'collectd'.
+                            type: string
+                          subscriptionAddress:
+                            description: Address to subscribe on the data transport to receive telemetry.
+                            type: string
+                        type: object
+                      type: array
+                  type: object
+                events:
+                  description: Events related configuration for this cloud object.
+                  properties:
+                    collectors:
+                      description: List of available events collectors for this cloud object.
+                      items:
+                        properties:
+                          collectorType:
+                            description: Set the collector type, value of 'ceilometer' or 'collectd'.
+                            type: string
+                            enum:
+                              - ceilometer
+                              - collectd
+                          subscriptionAddress:
+                            description: Address to subscribe on the data transport to receive notifications.
+                            type: string
+                        type: object
+                      type: array
+                  type: object
+              type: object
+            type: array
+        type: object
+      status:
+        description: Status results of an instance of Service Telemetry
+        properties:
+          conditions:
+            description: The resulting conditions when a Service Telemetry is instantiated
+            items:
+              properties:
+                status:
+                  type: string
+                type:
+                  type: string
+                reason:
+                  type: string
+                lastTransitionTime:
+                  type: string
+              type: object
+            type: array
+        type: object
+  - name: v1alpha1
+    served: true
+    schema:
+      openAPIV3Schema:
+        description: Specification of the desired behavior of the Service Telemetry Operator.
+        properties:
+          metricsEnabled:
+            description: Whether the Service Telemetry Operator should enable components related to metrics collection and storage.
+            type: boolean
+          eventsEnabled:
+            description: Whether the Service Telemetry Operator should enable components related to events collection and storage.
+            type: boolean
+          highAvailabilityEnabled:
+            description: Whether to deploy the services in HA mode.
+            type: boolean
+          storageEphemeralEnabled:
+            description: Request ephemeral storage (non-persistent, development use only) in the storage backends such as Prometheus and ElasticSearch.
+            type: boolean
+          graphingEnabled:
+            description: Whether the Service Telemetry Operator should deploy a graphing components and setup available datasources
+            type: boolean
+          prometheusStorageClass:
+            description: Storage class name used for Prometheus PVC
+            type: string
+          prometheusStorageResources:
+            description: Storage resource definition for Prometheus
+            type: string
+          prometheusStorageSelector:
+            description: Storage selector definition for Prometheus
+            type: string
+          prometheusPvcStorageRequest:
+            description: PVC storage requested size for Prometheus
+            type: string
+          alertmanagerStorageClass:
+            description: Storage class name used for Alertmanager PVC
+            type: string
+          alertmanagerStorageResources:
+            description: Storage resource definition for Alertmanager
+            type: string
+          alertmanagerStorageSelector:
+            description: Storage selector definition for Alertmanager
+            type: string
+          alertmanagerPvcStorageRequest:
+            description: PVC storage requested size for Alertmanager
+            type: string
+        type: object
+      status:
+        description: Status results of an instance of Service Telemetry
+        properties:
+          conditions:
+            description: The resulting conditions when a Service Telemetry is instantiated
+            items:
+              properties:
+                status:
+                  type: string
+                type:
+                  type: string
+                reason:
+                  type: string
+                lastTransitionTime:
+                  type: string
+              type: object
+            type: array
+        type: object

@@ -12,23 +12,46 @@ metadata:
           },
           "spec": {
             "eventsEnabled": false,
-            "highAvailabilityEnabled": false,
-            "metricsEnabled": true,
-            "storageEphemeralEnabled": false
+            "graphingEnabled": true,
+            "metricsEnabled": true
+          }
+        },
+        {
+          "apiVersion": "infra.watch/v1beta1",
+          "kind": "ServiceTelemetry",
+          "metadata": {
+            "name": "stf-default"
+          },
+          "spec": {
+            "backends": {
+              "events": {
+                "elasticsearch": {
+                  "enabled": false
+                }
+              },
+              "metrics": {
+                "prometheus": {
+                  "enabled": true
+                }
+              }
+            },
+            "graphing": {
+              "enabled": true
+            }
           }
         }
       ]
     capabilities: Basic Install
     categories: Monitoring
     certified: "false"
-    containerImage: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+    containerImage: quay.io/infrawatch/service-telemetry-operator:v1.1.0
     createdAt: "2020-01-10T21:30:00Z"
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.0.3
+  name: service-telemetry-operator.v1.1.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -36,6 +59,130 @@ spec:
     owned:
     - description: Represents an instance of the Service Telemetry Framework
       displayName: STF Cluster
+      kind: ServiceTelemetry
+      name: servicetelemetrys.infra.watch
+      resources:
+      - kind: Pods
+        name: ""
+        version: v1
+      - kind: ConfigMaps
+        name: ""
+        version: v1
+      - kind: ServiceTelemetrys
+        name: servicetelemetrys.infra.watch
+        version: v1beta1
+      - kind: ReplicaSets
+        name: ""
+        version: v1
+      - kind: Deployments
+        name: ""
+        version: v1
+      - kind: Services
+        name: ""
+        version: v1
+      specDescriptors:
+      - description: Enable Prometheus for metrics backend.
+        displayName: Prometheus enabled
+        path: backends.metrics.prometheus.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable ElasticSearch for events backend. Requires subscribing to Elastic Cloud on Kubernetes (ECK) Operator.
+        displayName: ElasticSearch enabled
+        path: backends.events.elasticsearch.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Alertmanager storage strategy. Choose ephemeral or persistent. Persistent storage requires a supporting backend.
+        displayName: Alertmanager storage strategy
+        path: alerting.alertmanager.storage.strategy
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:ephemeral'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:persistent'
+      - description: Prometheus storage strategy. Choose ephemeral or persistent. Persistent storage requires a supporting backend.
+        displayName: Prometheus storage strategy
+        path: backends.metrics.prometheus.storage.strategy
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:ephemeral'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:persistent'
+      - description: ElasticSearch storage strategy. Choose ephemeral or persistent. Persistent storage requires a supporting backend.
+        displayName: ElasticSearch storage strategy
+        path: backends.events.elasticsearch.storage.strategy
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:ephemeral'
+        - 'urn:alm:descriptor:com.tectonic.ui:select:persistent'
+      - description: Whether to enable high availability for Service Telemetry components
+        displayName: High Availability Enabled
+        path: highAvailability.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:High Availability'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable graphing components and dashboard creation
+        displayName: Enable Graphing
+        path: graphing.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Disable signout menu in Grafana
+        displayName: Disable Grafana Signout Menu
+        path: graphing.grafana.disableSignoutMenu
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable ingress access to Grafana
+        displayName: Enable Grafana Ingress Route
+        path: graphing.grafana.ingressEnabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Set Grafana admin username
+        displayName: Grafana Admin Username
+        path: graphing.grafana.adminUser
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Set Grafana admin password
+        displayName: Grafana Admin Password
+        path: graphing.grafana.adminPassword
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing'
+        - urn:alm:descriptor:com.tectonic.ui:password
+      - description: Enable Alerting via Alertmanager
+        displayName: Enable Alerting
+        path: alerting.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable QDR Transport via AMQ Interconnect
+        displayName: Enable QDR Transport
+        path: transports.qdr.enabled
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Transports'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Remove clouds not listed in the clouds object? This will delete Smart Gateways not associated with a cloud.
+        displayName: Remove Undefined Clouds
+        path: cloudsRemoveOnMissing
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Clouds'
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      statusDescriptors:
+      - description: Conditions provided by deployment
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      - description: Ephemeral storage used?
+        displayName: Ephemeral storage used?
+        path: ephemeralStorageEnabled.status
+        x-descriptors:
+        - 'urn:alm:descriptor:com.tectonic.ui:fieldGroup:Ephemeral storage status'
+        - urn:alm:descriptor:text
+      version: v1beta1
+    - description: Represents an instance of the Service Telemetry Framework (Deprecated v1alpha1)
+      displayName: STF Cluster (deprecated)
       kind: ServiceTelemetry
       name: servicetelemetrys.infra.watch
       resources:
@@ -137,7 +284,7 @@ spec:
                 - /usr/local/bin/ao-logs
                 - /tmp/ansible-operator/runner
                 - stdout
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+                image: image-registry.openshift-image-registry.svc:5000/service-telemetry/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: ansible
                 resources: {}
@@ -158,7 +305,7 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/infrawatch/service-telemetry-operator:v1.0.3
+                image: image-registry.openshift-image-registry.svc:5000/service-telemetry/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -199,6 +346,7 @@ spec:
           - monitoring.coreos.com
           - elasticsearch.k8s.elastic.co
           - certmanager.k8s.io
+          - integreatly.org
           resources:
           - '*'
           verbs:
@@ -261,8 +409,9 @@ spec:
   maintainers:
   - email: support@redhat.com
     name: Red Hat (CloudOps)
-  maturity: alpha
-  minKubeVersion: 1.14.0
+  maturity: beta
+  replaces: service-telemetry-operator.v1.0.3
+  minKubeVersion: 1.18.0
   provider:
     name: Red Hat
-  version: 1.0.3
+  version: 1.1.0

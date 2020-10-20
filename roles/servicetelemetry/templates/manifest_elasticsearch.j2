@@ -15,7 +15,7 @@ spec:
         node.ingest: true
         node.master: true
         node.store.allow_mmap: true
-      count: {{ elasticsearch_node_count }}
+      count: {{ servicetelemetry_vars.backends.events.elasticsearch.node_count }}
       name: default
       podTemplate:
         metadata:
@@ -31,11 +31,12 @@ spec:
                 requests:
                   cpu: '1'
                   memory: 4Gi
-{% if storage_ephemeral_enabled %}
+{% if servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" %}
           volumes:
             - emptyDir: {}
               name: elasticsearch-data
-{% else %}
+{% endif %}
+{% if servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "persistent" %}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -44,5 +45,5 @@ spec:
               - ReadWriteOnce
             resources:
               requests:
-                storage: {{ elasticsearch_pvc_storage_request }}
+                storage: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.pvc_storage_request }}
 {% endif %}

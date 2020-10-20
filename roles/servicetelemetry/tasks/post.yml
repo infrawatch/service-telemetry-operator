@@ -1,0 +1,27 @@
+---
+- name: Remove old Smart Gateways that are no longer in the clouds list
+  block:
+  - name: Initialize smartgateway_loaded_list
+    set_fact:
+      smartgateway_loaded_list: []
+
+  - name: Append SmartGateway metadata.name to smartgateway_loaded_list
+    set_fact:
+      smartgateway_loaded_list: "{{ smartgateway_loaded_list }} + ['{{ item.metadata.name }}']"
+    loop: "{{ smartgateways_loaded.resources }}"
+    loop_control:
+      label: "{{ item.metadata.name }}"
+
+  - debug:
+      msg: |
+        {{ smartgateway_loaded_list | difference(smartgateway_list)  }}
+
+  - name: Remove unlisted Smart Gateway
+    k8s:
+      api_version: v2alpha1
+      kind: SmartGateway
+      name: "{{ item }}"
+      namespace: "{{ meta.namespace }}"
+      state: absent
+    loop: "{{ smartgateway_loaded_list | difference(smartgateway_list) }}"
+  when: clouds_remove_on_missing | bool

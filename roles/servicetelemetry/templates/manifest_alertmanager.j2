@@ -6,19 +6,19 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
 spec:
-  replicas: {{ alertmanager_deployment_size }}
+  replicas: {{ servicetelemetry_vars.alerting.alertmanager.deployment_size }}
   serviceAccountName: prometheus-k8s
   serviceMonitorSelector:
     matchLabels:
       app: smart-gateway
-{% if not storage_ephemeral_enabled %}
+{% if servicetelemetry_vars.alerting.alertmanager.storage.strategy == "persistent" %}
   storage:
-    class: {{ alertmanager_storage_class }}
-    resources: {{ alertmanager_storage_resources }}
-    selector: {{ alertmanager_storage_selector }}
+    class: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_class }}
+    resources: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_resources }}
+    selector: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_selector }}
     volumeClaimTemplate:
       spec:
         resources:
           requests:
-            storage: {{ alertmanager_pvc_storage_request }}
+            storage: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.pvc_storage_request }}
 {% endif %}

@@ -1,0 +1,15 @@
+apiVersion: infra.watch/v1beta1
+kind: ServiceTelemetry
+metadata:
+  name: default
+spec:
+  backends:
+    metrics:
+      prometheus:
+        enabled: true
+    events:
+      elasticsearch:
+        enabled: false
+  graphing:
+    enabled: true
+# vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

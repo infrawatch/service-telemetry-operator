@@ -5,15 +5,14 @@
 
 # Configure these
 OPERATOR_NAME=${OPERATOR_NAME:-service-telemetry-operator}
-CSV_VERSION=${CSV_VERSION:-1.1.0}
 IMAGE_BUILDER=${IMAGE_BUILDER:-podman}
 IMAGE_BUILD_ARGS=${IMAGE_BUILD_ARGS:-''}
 IMAGE_TAG=${IMAGE_TAG:-latest}
-REQUIRED_OPERATOR_SDK_VERSION=${REQUIRED_OPERATOR_SDK_VERSION:-v0.15.2}
-SERVICE_TELEMETRY_SUBSCRIPTION=${SERVICE_TELEMETRY_SUBSCRIPTION:-servicetelemetry-operator-stable-infrawatch-operators-openshift-marketplace}
+REQUIRED_OPERATOR_SDK_VERSION=${REQUIRED_OPERATOR_SDK_VERSION:-v0.19.4}
+SERVICE_TELEMETRY_SUBSCRIPTION=${SERVICE_TELEMETRY_SUBSCRIPTION:-service-telemetry-operator-stable-infrawatch-operators-openshift-marketplace}
 
 # Automatic
-CSV_FILE=${CSV_FILE:-"deploy/olm-catalog/${OPERATOR_NAME}/${CSV_VERSION}/${OPERATOR_NAME}.v${CSV_VERSION}.clusterserviceversion.yaml"}
+CSV_FILE=${CSV_FILE:-"deploy/olm-catalog/${OPERATOR_NAME}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"}
 
 # Vars below here are for LOCAL DEV ONLY
 #

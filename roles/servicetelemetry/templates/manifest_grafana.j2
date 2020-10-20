@@ -5,18 +5,18 @@ metadata:
   namespace: {{ meta.namespace }}
 spec:
   ingress:
-    enabled: {{ graphing_spec_ingress_enabled }}
+    enabled: {{ servicetelemetry_vars.graphing.grafana.ingress_enabled }}
   config:
     auth:
-      disable_signout_menu: {{ graphing_spec_config_auth_disable_signout_menu }}
+      disable_signout_menu: {{ servicetelemetry_vars.graphing.grafana.disable_signout_menu }}
     auth.anonymous:
       enabled: true
     log:
       level: warn
       mode: console
     security:
-      admin_password: {{ graphing_spec_config_security_admin_password }}
-      admin_user: {{ graphing_spec_config_security_admin_user }}
+      admin_password: {{ servicetelemetry_vars.graphing.grafana.admin_password }}
+      admin_user: {{ servicetelemetry_vars.graphing.grafana.admin_user }}
   dashboardLabelSelector:
     - matchExpressions:
         - key: app
