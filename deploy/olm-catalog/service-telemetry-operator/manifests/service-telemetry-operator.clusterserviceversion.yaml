@@ -106,6 +106,31 @@ spec:
         name: servicemonitors.monitoring.coreos.com
         version: v1
       specDescriptors:
+      - description: Alerting configuration
+        displayName: Alerting Configuration
+        path: alerting
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Backends configuration
+        displayName: Backends Configuration
+        path: backends
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Graphing configuration
+        displayName: Graphing Configuration
+        path: graphing
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: highAvailability configuration
+        displayName: High Availability Configuration
+        path: highAvailability
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Transports configuration
+        displayName: Transports Configuration
+        path: transports
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Enable Prometheus for metrics backend.
         displayName: Prometheus enabled
         path: backends.metrics.prometheus.enabled
@@ -203,7 +228,7 @@ spec:
         displayName: Conditions
         path: conditions
         x-descriptors:
-        - urn:alm:descriptor:io.kubernetes.conditions
+        - urn:alm:descriptor:io.kubernetes:conditions
       - description: Ephemeral storage used?
         displayName: Ephemeral storage used?
         path: ephemeralStorageEnabled.status
@@ -267,7 +292,7 @@ spec:
         displayName: Conditions
         path: conditions
         x-descriptors:
-        - urn:alm:descriptor:io.kubernetes.conditions
+        - urn:alm:descriptor:io.kubernetes:conditions
       version: v1alpha1
     required:
     - description: A declaration of a required Certificate
