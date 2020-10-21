@@ -53,7 +53,7 @@
         sourceType: grpc
         image: quay.io/operator-framework/upstream-community-operators:latest
         displayName: OperatorHub.io Operators
-        publisher: OperatorHub.iok
+        publisher: OperatorHub.io
 
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
   k8s:
@@ -99,4 +99,3 @@
         name: prometheus
         source: operatorhubio-operators
         sourceNamespace: openshift-marketplace
-        startingCSV: prometheusoperator.0.37.0

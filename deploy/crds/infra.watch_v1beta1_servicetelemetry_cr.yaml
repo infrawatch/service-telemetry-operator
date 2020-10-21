@@ -3,13 +3,26 @@ kind: ServiceTelemetry
 metadata:
   name: default
 spec:
+  alerting:
+    enabled: true
+    alertmanager:
+      storage:
+        strategy: ephemeral
   backends:
     metrics:
       prometheus:
         enabled: true
+        storage:
+          strategy: ephemeral
     events:
       elasticsearch:
         enabled: false
+        strategy: ephemeral
   graphing:
     enabled: true
+  transports:
+    qdr:
+      enabled: true
+  highAvailability:
+    enabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
