@@ -9,6 +9,7 @@
 
 - name: Create an instance of Grafana
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
     definition:
       '{{ grafana_manifest }}'
 
@@ -21,6 +22,7 @@
 
   - name: Create the Prometheus datasource
     k8s:
+      state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
       definition:
         '{{ grafana_ds_prometheus_manifest }}'
   when: servicetelemetry_vars.backends.metrics.prometheus.enabled

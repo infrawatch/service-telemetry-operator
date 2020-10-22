@@ -32,5 +32,6 @@
 
 - name: Create ServiceMonitor to scrape Smart Gateway
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
       '{{ servicemonitor_manifest }}'

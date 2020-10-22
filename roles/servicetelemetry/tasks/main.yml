@@ -30,7 +30,6 @@
 # --> backends.metrics
 - name: Create Prometheus instance
   include_tasks: component_prometheus.yml
-  when: servicetelemetry_vars.backends.metrics.prometheus.enabled
 
 # create Service Monitor instance
 - name: Create Service Monitor instance
@@ -47,19 +46,16 @@
 
   - name: Setup ElasticSearch
     include_tasks: component_elasticsearch.yml
-  when: servicetelemetry_vars.backends.events.elasticsearch.enabled
 
 # --> alerting
 - name: Create Alertmanager instance
   include_tasks: component_alertmanager.yml
-  when: servicetelemetry_vars.alerting.enabled
 
 # --> graphing
 - name: Deploy graphing
   block:
   - name: Create Grafana instance
     include_tasks: component_grafana.yml
-  when: servicetelemetry_vars.graphing.enabled
 
 # --> clouds
 - name: Get data about clouds
