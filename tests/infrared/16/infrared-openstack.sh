@@ -24,6 +24,8 @@ LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 
+PREFIX="${PREFIX:-osp}"
+
 ir_run_cleanup() {
   infrared virsh \
       -vv \
@@ -31,7 +33,8 @@ ir_run_cleanup() {
       --disk-pool "${LIBVIRT_DISKPOOL}" \
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
-      --cleanup yes
+      --cleanup yes \
+      --prefix "${PREFIX}"
 }
 
 ir_run_provision() {
@@ -46,7 +49,8 @@ ir_run_provision() {
       --host-memory-overcommit True \
       -e override.controller.cpu=8 \
       -e override.controller.memory=32768 \
-      --serial-files True
+      --serial-files True \
+      --prefix "${PREFIX}"
 }
 
 ir_create_undercloud() {
@@ -99,6 +103,14 @@ ir_run_tempest() {
       --image http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 }
 
+ir_expose_ui() {
+  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard 
+}
+
+ir_run_workload() {
+    infrared cloud-config --deployment-files virt --tasks launch_workload
+}
+
 if ${TEMPEST_ONLY}; then
   echo "-- Running tempest tests"
   ir_run_tempest
@@ -109,4 +121,6 @@ else
   ir_create_undercloud
   stf_create_config
   ir_create_overcloud
+  ir_expose_ui
+  ir_run_workload
 fi

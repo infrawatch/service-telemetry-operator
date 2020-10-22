@@ -187,7 +187,7 @@ spec:
           annotations:
             summary: load longterm (warning)
           expr: >-
-            collectd_load_longterm > 0.7 and collectd_load_longterm < 0.9
+            (collectd_load_longterm / collectd_cpu_count) > 0.7 and (collectd_load_longterm / collectd_cpu_count) < 0.9
           for: 10m
         - alert: load longterm
           labels:
@@ -195,7 +195,7 @@ spec:
           annotations:
             summary: load longterm (critical)
           expr: >-
-            collectd_load_longterm >= 0.9
+            (collectd_load_longterm / collectd_cpu_count) >= 0.9
           for: 10m
         - alert: load midterm
           labels:
@@ -203,7 +203,7 @@ spec:
           annotations:
             summary: load midterm (warning)
           expr: >-
-            collectd_load_midterm > 0.7 and collectd_load_midterm < 0.9
+            (collectd_load_midterm / collectd_cpu_count) > 0.7 and (collectd_load_midterm / collectd_cpu_count) < 0.9
           for: 10m
         - alert: load midterm
           labels:
@@ -211,7 +211,7 @@ spec:
           annotations:
             summary: load midterm (critical)
           expr: >-
-            collectd_load_midterm >= 0.9
+            (collectd_load_midterm / collectd_cpu_count) >= 0.9
           for: 10m
         - alert: load shortterm
           labels:
@@ -219,7 +219,7 @@ spec:
           annotations:
             summary: load shortterm (warning)
           expr: >-
-            collectd_load_shortterm > 0.7 and collectd_load_shortterm < 0.9
+            (collectd_load_shortterm / collectd_cpu_count) > 0.7 and (collectd_load_shortterm / collectd_cpu_count) < 0.9
           for: 10m
         - alert: load shortterm
           labels:
@@ -227,7 +227,7 @@ spec:
           annotations:
             summary: load shortterm (critical)
           expr: >-
-            collectd_load_shortterm >= 0.9
+            (collectd_load_shortterm / collectd_cpu_count) >= 0.9
           for: 10m
         - alert: memory low
           labels:

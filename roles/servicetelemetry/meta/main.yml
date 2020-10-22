@@ -1,9 +1,10 @@
 galaxy_info:
-  author: Leif Madsen <leif@redhat.com>
+  role_name: servicetelemetry
+  author: Leif Madsen <leif+servicetelemetryoperator@redhat.com>
   description: Service Telemetry Framework Umbrella Operator
   company: Red Hat, Inc.
   license: Apache
-  min_ansible_version: 2.7
+  min_ansible_version: 2.9
 
   platforms:
   - name: RHEL
@@ -18,3 +19,6 @@ galaxy_info:
   - servicetelemetry
 
 dependencies: []
+
+collections:
+- operator_sdk.util

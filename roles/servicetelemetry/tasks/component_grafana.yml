@@ -23,7 +23,7 @@
     k8s:
       definition:
         '{{ grafana_ds_prometheus_manifest }}'
-  when: metrics_enabled
+  when: servicetelemetry_vars.backends.metrics.prometheus.enabled
 
 # Create additional datasources. This is where ElasticSearch datasources could
 # go but we probably want users to specify the list of databases we need

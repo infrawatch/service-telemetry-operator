@@ -1,19 +1,21 @@
 ---
 - name: Set default InfraWatch OperatorSource manifest
   set_fact:
-    infrawatch_operator_source_manifest: |
-      apiVersion: operators.coreos.com/v1
-      kind: OperatorSource
+    infrawatch_catalog_source_manifest: |
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
       metadata:
         name: infrawatch-operators
         namespace: openshift-marketplace
       spec:
-        type: appregistry
-        endpoint: https://quay.io/cnr
-        registryNamespace: infrawatch
         displayName: InfraWatch Operators
-        publisher: Red Hat (CloudOps)
-  when: infrawatch_operator_source_manifest is not defined
+        image: quay.io/infrawatch-operators/infrawatch-catalog:latest
+        publisher: InfraWatch
+        sourceType: grpc
+        updateStrategy:
+          registryPoll:
+            interval: 30m
+  when: infrawatch_catalog_source_manifest is not defined
 
 - name: Set default Service Telemetry Operator Subscription manifest
   set_fact:
@@ -21,12 +23,12 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
-        name: servicetelemetry-operator-stable-infrawatch-operators-openshift-marketplace
+        name: service-telemetry-operator-stable-infrawatch-operators-openshift-marketplace
         namespace: "{{ namespace }}"
       spec:
         channel: stable
         installPlanApproval: Automatic
-        name: servicetelemetry-operator
+        name: service-telemetry-operator
         source: infrawatch-operators
         sourceNamespace: openshift-marketplace
   when: service_telemetry_operator_subscription_manifest is not defined
@@ -39,4 +41,4 @@
 - name: Enable InfraWatch application registry
   k8s:
     definition:
-      '{{ infrawatch_operator_source_manifest }}'
+      '{{ infrawatch_catalog_source_manifest }}'

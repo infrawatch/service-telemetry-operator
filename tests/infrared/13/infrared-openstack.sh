@@ -25,6 +25,8 @@ LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 
+PREFIX="{PREFIX:-osp}"
+
 ir_run_cleanup() {
   infrared virsh \
       -vv \
@@ -32,7 +34,8 @@ ir_run_cleanup() {
       --disk-pool "${LIBVIRT_DISKPOOL}" \
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
-      --cleanup yes
+      --cleanup yes \
+      --prefix "${PREFIX}"
 }
 
 ir_run_provision() {
@@ -47,7 +50,8 @@ ir_run_provision() {
       --host-memory-overcommit True \
       -e override.controller.cpu=8 \
       -e override.controller.memory=32768 \
-      --serial-files True
+      --serial-files True \
+      --prefix "${PREFIX}"
 }
 
 ir_create_undercloud() {

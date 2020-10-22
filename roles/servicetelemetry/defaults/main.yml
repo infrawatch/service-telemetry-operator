@@ -1,35 +1,76 @@
 ---
-# set default enablement
-metrics_enabled: true
-events_enabled: false
-high_availability_enabled: false
-storage_ephemeral_enabled: false
-graphing_enabled: false
+# remove SmartGateway object when cloud no longer in current `clouds` object list.
+clouds_remove_on_missing: true
 snmp_traps_enabled: false
 
-# default values
-prometheus_storage_class: ""
-prometheus_storage_resources: {}
-prometheus_storage_selector: {}
-prometheus_pvc_storage_request: 20G
+servicetelemetry_defaults:
+  high_availability:
+    enabled: false
 
-alertmanager_storage_class: ""
-alertmanager_storage_resources: {}
-alertmanager_storage_selector: {}
-alertmanager_pvc_storage_request: 20G
+  alerting:
+    enabled: true
+    alertmanager:
+      deployment_size: 1
+      storage:
+        strategy: ephemeral
+        persistent:
+          storage_class: ""
+          storage_resources: {}
+          storage_selector: {}
+          pvc_storage_request: 20G
 
-elasticsearch_node_count: 1
-elasticsearch_pvc_storage_request: 20Gi
-elastic_user: elastic
+  backends:
+    metrics:
+      prometheus:
+        enabled: true
+        deployment_size: 1
+        scrape_interval: 10s
+        storage:
+          strategy: ephemeral
+          persistent:
+            storage_class: ""
+            storage_resources: {}
+            storage_selector: {}
+            pvc_storage_request: 20G
+    events:
+      elasticsearch:
+        enabled: false
+        node_count: 1
+        storage:
+          strategy: ephemeral
+          persistent:
+            pvc_storage_request: 20Gi
 
-qdr_deployment_size: 1
+  transports:
+    qdr:
+      enabled: true
+      deployment_size: 1
 
-smartgateway_servicemonitor_spec_endpoints_interval: 10s
+  graphing:
+    enabled: false
+    grafana:
+      ingress_enabled: false
+      admin_password: secret
+      admin_user: root
+      disable_signout_menu: false
 
-graphing_spec_ingress_enabled: false
-graphing_spec_config_security_admin_password: secret
-graphing_spec_config_security_admin_user: root
-graphing_spec_config_auth_disable_signout_menu: false
+  # 'clouds' object is not partially updatable like other objects. If 'clouds'
+  # object is defined then the default is overwritten.
+  clouds:
+    - name: cloud1
+      metrics:
+        collectors:
+          - collector_type: collectd
+            subscription_address: collectd/telemetry
+          - collector_type: ceilometer
+            subscription_address: anycast/ceilometer/metering.sample
+      events:
+        collectors:
+          - collector_type: collectd
+            subscription_address: collectd/notify
+          - collector_type: ceilometer
+            subscription_address: anycast/ceilometer/event.sample
+
 
 # These variables are outside of the defaults. Their values will be
 # auto-detected by the role and are not meant to be set by the user. However,
@@ -40,4 +81,8 @@ is_openshift: false
 
 # snmp traps values
 snmp_traps_target: "192.168.24.254"
+_ephemeral_storage_enabled: false
+
+# set default smartgateway deployment size. You should not modify this.
+smartgateway_deployment_size: 1
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

@@ -17,10 +17,10 @@
 - name: Create OperatorGroup
   k8s:
     definition:
-      apiVersion: operators.coreos.com/v1alpha2
+      apiVersion: operators.coreos.com/v1
       kind: OperatorGroup
       metadata:
-        name: service-telemetry-og
+        name: service-telemetry-operator-group
         namespace: "{{ namespace }}"
       spec:
         targetNamespaces:
@@ -40,7 +40,6 @@
         name: amq7-cert-manager
         source: redhat-operators
         sourceNamespace: openshift-marketplace
-        startingCSV: amq7-cert-manager.v1.0.0
 
 - name: Enable OperatorHub.io for Elastic Cloud on Kubernetes
   k8s:
@@ -54,7 +53,7 @@
         sourceType: grpc
         image: quay.io/operator-framework/upstream-community-operators:latest
         displayName: OperatorHub.io Operators
-        publisher: OperatorHub.iok
+        publisher: OperatorHub.io
 
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
   k8s:
@@ -70,7 +69,6 @@
         name: elastic-cloud-eck
         source: operatorhubio-operators
         sourceNamespace: openshift-marketplace
-        startingCSV: elastic-cloud-eck.v1.1.2
 
 - name: Subscribe to AMQ Interconnect Operator
   k8s:
@@ -86,7 +84,6 @@
         name: amq7-interconnect-operator
         source: redhat-operators
         sourceNamespace: openshift-marketplace
-        startingCSV: amq7-interconnect-operator.v1.2.0
 
 - name: Subscribe to Prometheus Operator
   k8s:
@@ -102,4 +99,3 @@
         name: prometheus
         source: operatorhubio-operators
         sourceNamespace: openshift-marketplace
-        startingCSV: prometheusoperator.0.37.0
