@@ -7,20 +7,36 @@ spec:
     enabled: true
     alertmanager:
       storage:
-        strategy: ephemeral
+        strategy: persistent
+        persistent:
+          storageResources: {}
+          storageSelector: {}
+          pvcStorageRequest: 20G
   backends:
     metrics:
       prometheus:
         enabled: true
+        scrapeInterval: 10s
         storage:
-          strategy: ephemeral
+          strategy: persistent
+          persistent:
+            storageResources: {}
+            storageSelector: {}
+            pvcStorageRequest: 20G
     events:
       elasticsearch:
         enabled: false
         storage:
-          strategy: ephemeral
+          strategy: persistent
+          persistent:
+            pvcStorageRequest: 20G
   graphing:
-    enabled: true
+    enabled: false
+    grafana:
+      ingressEnabled: false
+      adminPassword: secret
+      adminUser: root
+      disableSignoutMenu: false
   transports:
     qdr:
       enabled: true
