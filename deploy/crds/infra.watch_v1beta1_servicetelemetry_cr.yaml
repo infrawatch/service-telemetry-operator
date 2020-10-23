@@ -29,7 +29,7 @@ spec:
         storage:
           strategy: persistent
           persistent:
-            pvcStorageRequest: 20G
+            pvcStorageRequest: 20Gi
   graphing:
     enabled: false
     grafana:
