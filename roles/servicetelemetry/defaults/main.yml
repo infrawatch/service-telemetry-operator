@@ -1,6 +1,6 @@
 ---
 # remove SmartGateway object when cloud no longer in current `clouds` object list.
-clouds_remove_on_missing: true
+clouds_remove_on_missing: false
 
 servicetelemetry_defaults:
   high_availability:
@@ -11,7 +11,7 @@ servicetelemetry_defaults:
     alertmanager:
       deployment_size: 1
       storage:
-        strategy: ephemeral
+        strategy: persistent
         persistent:
           storage_class: ""
           storage_resources: {}
@@ -25,7 +25,7 @@ servicetelemetry_defaults:
         deployment_size: 1
         scrape_interval: 10s
         storage:
-          strategy: ephemeral
+          strategy: persistent
           persistent:
             storage_class: ""
             storage_resources: {}
@@ -36,7 +36,7 @@ servicetelemetry_defaults:
         enabled: false
         node_count: 1
         storage:
-          strategy: ephemeral
+          strategy: persistent
           persistent:
             pvc_storage_request: 20Gi
 
