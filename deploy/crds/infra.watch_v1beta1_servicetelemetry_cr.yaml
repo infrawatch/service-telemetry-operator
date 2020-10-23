@@ -17,7 +17,8 @@ spec:
     events:
       elasticsearch:
         enabled: false
-        strategy: ephemeral
+        storage:
+          strategy: ephemeral
   graphing:
     enabled: true
   transports:

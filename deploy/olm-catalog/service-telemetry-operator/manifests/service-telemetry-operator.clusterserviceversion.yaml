@@ -35,7 +35,9 @@ metadata:
               "events": {
                 "elasticsearch": {
                   "enabled": false,
-                  "strategy": "ephemeral"
+                  "storage": {
+                    "strategy": "ephemeral"
+                  }
                 }
               },
               "metrics": {
