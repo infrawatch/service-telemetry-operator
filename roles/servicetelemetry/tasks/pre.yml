@@ -94,4 +94,6 @@
         status: "{{ _ephemeral_storage_enabled }}"
         lastTransitionTime: "{{ ansible_date_time.iso8601 }}"
         message: Ephemeral storage in use. Data loss when storage components are updated.
-  when: (_stf_object.resources[0].status.ephemeralStorageEnabled is defined) and (_stf_object.resources[0].status.ephemeralStorageEnabled.status != _ephemeral_storage_enabled)
+  when:
+    (_stf_object.resources[0].status.ephemeralStorageEnabled is defined) and
+    (_stf_object.resources[0].status.ephemeralStorageEnabled.status != _ephemeral_storage_enabled)
