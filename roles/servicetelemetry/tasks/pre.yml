@@ -75,6 +75,14 @@
       servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" or
       servicetelemetry_vars.alerting.alertmanager.storage.strategy == "ephemeral"
 
+- name: Get current ephemeralStorageEnabled status
+  k8s_info:
+    api_version: infra.watch/v1alpha1
+    kind: ServiceTelemetry
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: _stf_object
+
 - name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
   operator_sdk.util.k8s_status:
     api_version: infra.watch/v1alpha1
@@ -86,3 +94,4 @@
         status: "{{ _ephemeral_storage_enabled }}"
         lastTransitionTime: "{{ ansible_date_time.iso8601 }}"
         message: Ephemeral storage in use. Data loss when storage components are updated.
+  when: (_stf_object.resources[0].status.ephemeralStorageEnabled is defined) and (_stf_object.resources[0].status.ephemeralStorageEnabled.status != _ephemeral_storage_enabled)
