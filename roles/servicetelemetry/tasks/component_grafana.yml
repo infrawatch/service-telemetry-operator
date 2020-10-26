@@ -12,6 +12,7 @@
     state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
     definition:
       '{{ grafana_manifest }}'
+  when: servicetelemetry_vars.graphing.enabled
 
 # Lookup existing datasources
 - block:
