@@ -26,7 +26,7 @@
       state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
       definition:
         '{{ grafana_ds_prometheus_manifest }}'
-  when: servicetelemetry_vars.backends.metrics.prometheus.enabled
+  when: servicetelemetry_vars.graphing.enabled and servicetelemetry_vars.backends.metrics.prometheus.enabled
 
 # Create additional datasources. This is where ElasticSearch datasources could
 # go but we probably want users to specify the list of databases we need
