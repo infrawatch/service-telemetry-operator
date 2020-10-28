@@ -9,5 +9,6 @@
 
 - name: Create an instance of ElasticSearch
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.events.elasticsearch.enabled else "absent" }}'
     definition:
       '{{ elasticsearch_manifest }}'

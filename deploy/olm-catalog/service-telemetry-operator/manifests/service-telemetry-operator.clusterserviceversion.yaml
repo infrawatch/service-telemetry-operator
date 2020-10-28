@@ -31,7 +31,12 @@ metadata:
             "alerting": {
               "alertmanager": {
                 "storage": {
-                  "strategy": "ephemeral"
+                  "persistent": {
+                    "pvcStorageRequest": "20G",
+                    "storageResources": {},
+                    "storageSelector": {}
+                  },
+                  "strategy": "persistent"
                 }
               },
               "enabled": true
@@ -40,20 +45,37 @@ metadata:
               "events": {
                 "elasticsearch": {
                   "enabled": false,
-                  "strategy": "ephemeral"
+                  "storage": {
+                    "persistent": {
+                      "pvcStorageRequest": "20G"
+                    },
+                    "strategy": "persistent"
+                  }
                 }
               },
               "metrics": {
                 "prometheus": {
                   "enabled": true,
+                  "scrapeInterval": "10s",
                   "storage": {
-                    "strategy": "ephemeral"
+                    "persistent": {
+                      "pvcStorageRequest": "20G",
+                      "storageResources": {},
+                      "storageSelector": {}
+                    },
+                    "strategy": "persistent"
                   }
                 }
               }
             },
             "graphing": {
-              "enabled": true
+              "enabled": false,
+              "grafana": {
+                "adminPassword": "secret",
+                "adminUser": "root",
+                "disableSignoutMenu": false,
+                "ingressEnabled": false
+              }
             },
             "highAvailability": {
               "enabled": false
@@ -142,6 +164,52 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Prometheus scrape interval. Custom values can be specified via
+          YAML configuration.
+        displayName: Prometheus scrape interval
+        path: backends.metrics.prometheus.scrapeInterval
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:select:10s
+        - urn:alm:descriptor:com.tectonic.ui:select:30s
+        - urn:alm:descriptor:com.tectonic.ui:select:60s
+        - urn:alm:descriptor:com.tectonic.ui:select:120s
+      - description: Prometheus storage strategy. Choose ephemeral or persistent.
+          Persistent storage requires a supporting backend.
+        displayName: Prometheus storage strategy
+        path: backends.metrics.prometheus.storage.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
+        - urn:alm:descriptor:com.tectonic.ui:select:persistent
+      - description: Storage class configuration for Prometheus persistent storage
+        displayName: Prometheus storage class
+        path: backends.metrics.prometheus.storage.persistent.storageClass
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.metrics.prometheus.storage.strategy:persistent
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+      - description: Storage resources configuration for Prometheus persistent storage
+        displayName: Prometheus storage resources
+        path: backends.metrics.prometheus.storage.persistent.storageResources
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.metrics.prometheus.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Storage selector configuration for Prometheus persistent storage
+        displayName: Prometheus storage selector
+        path: backends.metrics.prometheus.storage.persistent.storageSelector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.metrics.prometheus.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: PVC requested size for Prometheus persistent storage
+        displayName: Prometheus PVC requested size
+        path: backends.metrics.prometheus.storage.persistent.pvcStorageRequest
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.metrics.prometheus.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
       - description: Enable ElasticSearch for events backend. Requires subscribing
           to Elastic Cloud on Kubernetes (ECK) Operator.
         displayName: ElasticSearch enabled
@@ -149,36 +217,21 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Alertmanager storage strategy. Choose ephemeral or persistent.
-          Persistent storage requires a supporting backend.
-        displayName: Alertmanager storage strategy
-        path: alerting.alertmanager.storage.strategy
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage
-        - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
-        - urn:alm:descriptor:com.tectonic.ui:select:persistent
-      - description: Prometheus storage strategy. Choose ephemeral or persistent.
-          Persistent storage requires a supporting backend.
-        displayName: Prometheus storage strategy
-        path: backends.metrics.prometheus.storage.strategy
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage
-        - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
-        - urn:alm:descriptor:com.tectonic.ui:select:persistent
       - description: ElasticSearch storage strategy. Choose ephemeral or persistent.
           Persistent storage requires a supporting backend.
         displayName: ElasticSearch storage strategy
         path: backends.events.elasticsearch.storage.strategy
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Storage
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
         - urn:alm:descriptor:com.tectonic.ui:select:persistent
-      - description: Whether to enable high availability for Service Telemetry components
-        displayName: High Availability Enabled
-        path: highAvailability.enabled
+      - description: PVC requested size for ElasticSearch persistent storage
+        displayName: ElasticSearch PVC requested size
+        path: backends.events.elasticsearch.storage.persistent.pvcStorageRequest
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:High Availability
-        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.events.elasticsearch.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
       - description: Enable graphing components and dashboard creation
         displayName: Enable Graphing
         path: graphing.enabled
@@ -190,24 +243,28 @@ spec:
         path: graphing.grafana.disableSignoutMenu
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:graphing.enabled:true
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Enable ingress access to Grafana
         displayName: Enable Grafana Ingress Route
         path: graphing.grafana.ingressEnabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:graphing.enabled:true
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: Set Grafana admin username
         displayName: Grafana Admin Username
         path: graphing.grafana.adminUser
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:graphing.enabled:true
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Set Grafana admin password
         displayName: Grafana Admin Password
         path: graphing.grafana.adminPassword
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:graphing.enabled:true
         - urn:alm:descriptor:com.tectonic.ui:password
       - description: Enable Alerting via Alertmanager
         displayName: Enable Alerting
@@ -215,6 +272,42 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Alertmanager storage strategy. Choose ephemeral or persistent.
+          Persistent storage requires a supporting backend.
+        displayName: Alertmanager storage strategy
+        path: alerting.alertmanager.storage.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
+        - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
+        - urn:alm:descriptor:com.tectonic.ui:select:persistent
+      - description: Storage class configuration for Alertmanager persistent storage
+        displayName: Alertmanager storage class
+        path: alerting.alertmanager.storage.persistent.storageClass
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+      - description: Storage resources configuration for Alertmanager persistent storage
+        displayName: Alertmanager storage resources
+        path: alerting.alertmanager.storage.persistent.storageResources
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Storage selector configuration for Alertmanager persistent storage
+        displayName: Alertmanager storage selector
+        path: alerting.alertmanager.storage.persistent.storageSelector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: PVC requested size for Alertmanager persistent storage
+        displayName: Alertmanager PVC requested size
+        path: alerting.alertmanager.storage.persistent.pvcStorageRequest
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
       - description: Enable QDR Transport via AMQ Interconnect
         displayName: Enable QDR Transport
         path: transports.qdr.enabled
@@ -226,8 +319,18 @@ spec:
         displayName: Remove Undefined Clouds
         path: cloudsRemoveOnMissing
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Clouds
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Whether to enable high availability for Service Telemetry components.
+          Enabling high availability will increase the number of running components
+          and can significantly increase the resources utilized by STF.
+        displayName: High Availability Enabled
+        path: highAvailability.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:advanced
       - description: Whether to deploy snmp webhooks
         displayName: SNMP Webhook
         path: snmpTrapsEnabled
