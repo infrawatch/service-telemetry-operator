@@ -9,17 +9,20 @@
         name: default
         namespace: "{{ namespace }}"
       spec:
+        alerting:
+          alertmanager:
+            storage:
+              strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
         backends:
           events:
             elasticsearch:
               enabled: {{ __service_telemetry_events_enabled }}
               storage:
-                strategy: {{ __service_telemetry_storage_ephemeral_enabled }}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}
               storage:
-                strategy: {{ __service_telemetry_storage_ephemeral_enabled }}
+                strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
         highAvailability:
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when: service_telemetry_manifest is not defined
