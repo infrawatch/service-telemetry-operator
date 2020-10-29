@@ -30,6 +30,18 @@ spec:
               alertmanager:
                 description: Alertmanager configuration
                 properties:
+                  receivers:
+                    properties:
+                      snmpTraps:
+                        properties:
+                          enabled:
+                            description: Deploy container to send snmp traps
+                            type: boolean
+                          target:
+                            description: Target address for SNMP traps to send to
+                            type: string
+                        type: object
+                    type: object
                   storage:
                     properties:
                       strategy:

@@ -17,6 +17,10 @@ servicetelemetry_defaults:
           storage_resources: {}
           storage_selector: {}
           pvc_storage_request: 20G
+      receivers:
+        snmp_traps:
+          enabled: false
+          target: 192.168.24.254
 
   backends:
     metrics:
@@ -77,9 +81,9 @@ servicetelemetry_defaults:
 
 is_k8s: false
 is_openshift: false
+
 _ephemeral_storage_enabled: false
 
 # set default smartgateway deployment size. You should not modify this.
 smartgateway_deployment_size: 1
-
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:

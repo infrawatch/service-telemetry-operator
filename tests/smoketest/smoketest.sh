@@ -36,6 +36,14 @@ for NAME in "${CLOUDNAMES[@]}"; do
     oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
 done
 
+echo "*** [INFO] Triggering an alertmanager notification..."
+oc run curl --generator=run-pod/v1 --image=radial/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-service-telemetry.apps-crc.testing/api/v1/alerts
+# it takes some time to get the alert delivered, continuing with other tests
+
+oc delete pod curl
+
+
+
 # Trying to find a less brittle test than a timeout
 JOB_TIMEOUT=300s
 for NAME in "${CLOUDNAMES[@]}"; do
@@ -43,6 +51,10 @@ for NAME in "${CLOUDNAMES[@]}"; do
     oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/stf-smoketest-${NAME}"
     RET=$((RET || $?)) # Accumulate exit codes
 done
+
+# check alert status for in snmp webhook
+trapoutput=`oc logs $(oc get pod -l "app=stf-default-snmp-webhook" -o jsonpath='{.items[0].metadata.name}') | grep 'Sending SNMP trap'`
+RET=$((RET || $?)) # Accumulate exit codes
 
 echo "*** [INFO] Showing oc get all..."
 oc get all
@@ -81,6 +93,10 @@ echo
 
 echo "*** [INFO] Logs from elasticsearch..."
 oc logs "$(oc get pod -l common.k8s.elastic.co/type=elasticsearch -o jsonpath='{.items[0].metadata.name}')"
+echo
+
+echo "*** [INFO] Logs from snmp webhook..."
+oc logs "$(oc get pod -l app=stf-default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 if [ $RET -eq 0 ]; then

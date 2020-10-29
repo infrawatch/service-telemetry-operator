@@ -7,27 +7,13 @@
     alertmanager_manifest: "{{ lookup('template', './manifest_alertmanager.j2') | from_yaml }}"
   when: alertmanager_manifest is not defined
 
+- name: Lookup alertmanager configuration template
+  debug:
+    msg: "{{ lookup('template', './manifest_alertmanager_config.j2') | from_yaml }}"
+
 - name: Set default Alertmanager configuration manifest
   set_fact:
-    alertmanager_config_manifest: |
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: 'alertmanager-{{ meta.name }}'
-        namespace: '{{ meta.namespace }}'
-      type: Opaque
-      stringData:
-        alertmanager.yaml: |-
-          global:
-            resolve_timeout: 5m
-          route:
-            group_by: ['job']
-            group_wait: 30s
-            group_interval: 5m
-            repeat_interval: 12h
-            receiver: 'null'
-          receivers:
-          - name: 'null'
+    alertmanager_config_manifest: "{{ lookup('template', './manifest_alertmanager_config.j2') | from_yaml }}"
   when: alertmanager_config_manifest is not defined
 
 - name: Create an Alertmanager configuration secret
@@ -41,4 +27,13 @@
     state: '{{ "present" if servicetelemetry_vars.alerting.enabled else "absent" }}'
     definition:
       '{{ alertmanager_manifest }}'
+
+# TODO: expand the management of alertmanager receivers and move this functionality to a common location
+# --> SNMP traps
+- name: Create SNMP traps instance
+  include_tasks: component_snmp_traps.yml
+  when:
+    servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.enabled and
+    servicetelemetry_vars.alerting.enabled
+
 # TODO: Create route to access Alertmanager (conditional, default off)

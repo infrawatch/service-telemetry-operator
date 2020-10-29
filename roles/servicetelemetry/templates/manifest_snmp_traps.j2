@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ meta.name }}-snmp-webhook'
+  namespace: '{{ meta.namespace }}'
+spec:
+  selector:
+    matchLabels:
+      app: '{{ meta.name }}-snmp-webhook'
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: '{{ meta.name }}-snmp-webhook'
+    spec:
+      containers:
+        - name: 'prometheus-webhook-snmp'
+          image: '{{ prometheus_webhook_snmp_container_image_path }}'
+          ports:
+            - containerPort: 9099
+          env:
+            - name: SNMP_COMMUNITY
+              value: public
+            - name: SNMP_RETRIES
+              value: "1"
+            - name: SNMP_HOST
+              value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.target }}"
+            - name: SNMP_PORT
+              value: "162"

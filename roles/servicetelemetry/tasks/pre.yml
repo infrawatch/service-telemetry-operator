@@ -24,6 +24,10 @@
   - not is_openshift
   - not is_k8s
 
+- name: "Set supporting container image paths"
+  set_fact:
+    prometheus_webhook_snmp_container_image_path: "{{ lookup('env', 'PROMETHEUS_WEBHOOK_SNMP_IMAGE') | default('quay.io/infrawatch/prometheus-webhook-snmp:latest', true) }}" # noqa 204
+
 - name: Adjust defaults when highAvailability.enabled is true
   block:
   - name: Adjust alerting.alertmanager.deployment_size defaults for HA

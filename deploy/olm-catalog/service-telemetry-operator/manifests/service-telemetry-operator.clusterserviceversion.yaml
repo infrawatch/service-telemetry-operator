@@ -31,6 +31,12 @@ metadata:
                     "storageResources": {},
                     "storageSelector": {}
                   },
+                  "receivers": {
+                    "snmpTraps": {
+                      "enabled": false,
+                      "target": "192.168.24.254"
+                    }
+                  },
                   "strategy": "persistent"
                 }
               },
@@ -42,7 +48,7 @@ metadata:
                   "enabled": false,
                   "storage": {
                     "persistent": {
-                      "pvcStorageRequest": "20G"
+                      "pvcStorageRequest": "20Gi"
                     },
                     "strategy": "persistent"
                   }
@@ -302,6 +308,18 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Whether to deploy snmp webhooks
+        displayName: Alertmanager SNMP Webhook
+        path: alerting.alertmanager.receivers.snmpTraps.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Target for sending SNMP traps
+        displayName: Alertmanager SNMP Target
+        path: alerting.alertmanager.receivers.snmpTraps.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Enable QDR Transport via AMQ Interconnect
         displayName: Enable QDR Transport
