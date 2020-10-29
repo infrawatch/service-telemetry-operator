@@ -18,6 +18,7 @@
             elasticsearch:
               enabled: {{ __service_telemetry_events_enabled }}
               storage:
+                strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}
