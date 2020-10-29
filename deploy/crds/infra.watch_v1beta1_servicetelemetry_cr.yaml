@@ -12,6 +12,10 @@ spec:
           storageResources: {}
           storageSelector: {}
           pvcStorageRequest: 20G
+        receivers:
+          snmpTraps:
+            enabled: false
+            target: 192.168.24.254
   backends:
     metrics:
       prometheus:

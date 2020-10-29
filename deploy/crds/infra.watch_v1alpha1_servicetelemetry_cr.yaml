@@ -6,6 +6,4 @@ spec:
   metricsEnabled: true
   eventsEnabled: false
   graphingEnabled: false
-  snmpTrapsEnabled: false
-  snmpTrapsTarget: 192.168.24.254
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
