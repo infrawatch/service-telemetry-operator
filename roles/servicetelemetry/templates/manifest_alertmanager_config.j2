@@ -13,13 +13,13 @@ stringData:
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
-{% if snmp_traps_enabled %}
+{% if servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.enabled %}
       receiver: 'snmp_wh'
 {% else %}
       receiver: 'null'
 {% endif %}
     receivers:
-{% if snmp_traps_enabled %}
+{% if servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.enabled %}
     - name: 'snmp_wh'
       webhook_configs:
          - url: 'http://{{ meta.name }}-prometheus-webhook-snmp:9099'

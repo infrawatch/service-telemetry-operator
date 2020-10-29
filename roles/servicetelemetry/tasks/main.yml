@@ -68,10 +68,6 @@
   loop_control:
     loop_var: this_cloud
 
-- name: Create SNMP traps instance
-  include_tasks: component_snmp_traps.yml
-  when: snmp_traps_enabled
-
     # Post deployment tasks
 - name: Post-setup
   include_tasks: post.yml

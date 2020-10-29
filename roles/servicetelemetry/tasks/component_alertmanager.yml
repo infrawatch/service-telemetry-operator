@@ -27,4 +27,13 @@
     state: '{{ "present" if servicetelemetry_vars.alerting.enabled else "absent" }}'
     definition:
       '{{ alertmanager_manifest }}'
+
+# TODO: expand the management of alertmanager receivers and move this functionality to a common location
+# --> SNMP traps
+- name: Create SNMP traps instance
+  include_tasks: component_snmp_traps.yml
+  when:
+    servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.enabled and
+    servicetelemetry_vars.alerting.enabled
+
 # TODO: Create route to access Alertmanager (conditional, default off)
