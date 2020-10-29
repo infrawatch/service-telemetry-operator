@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: 'prometheus-webhook-snmp'
-          image: 'quay.io/infrawatch/prometheus-webhook-snmp:latest'
+          image: '{{ prometheus_webhook_snmp_container_image_path }}'
           ports:
             - containerPort: 9099
           env:
