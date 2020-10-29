@@ -68,6 +68,6 @@
   loop_control:
     loop_var: this_cloud
 
-    # Post deployment tasks
+# Post deployment tasks
 - name: Post-setup
   include_tasks: post.yml
