@@ -4,7 +4,6 @@ set -e
 # Usage:
 #  VIRTHOST=my.big.hypervisor.net
 #  ./infrared-openstack.sh
-
 VIRTHOST=${VIRTHOST:-localhost}
 AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
@@ -47,8 +46,8 @@ ir_run_provision() {
       --host-key "${SSH_KEY}" \
       --image-url "${VM_IMAGE_LOCATION}" \
       --host-memory-overcommit True \
-      -e override.controller.cpu=8 \
-      -e override.controller.memory=32768 \
+      -e override.controller.cpu=4 \
+      -e override.controller.memory=16384 \
       --serial-files True \
       --prefix "${PREFIX}"
 }
@@ -104,7 +103,7 @@ ir_run_tempest() {
 }
 
 ir_expose_ui() {
-  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard 
+  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard
 }
 
 ir_run_workload() {
@@ -121,6 +120,5 @@ else
   ir_create_undercloud
   stf_create_config
   ir_create_overcloud
-  ir_expose_ui
-  ir_run_workload
+  # ir_expose_ui
 fi
