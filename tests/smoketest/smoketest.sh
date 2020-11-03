@@ -53,7 +53,7 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 # check alert status for in snmp webhook
-trapoutput=`oc logs $(oc get pod -l "app=stf-default-snmp-webhook" -o jsonpath='{.items[0].metadata.name}') | grep 'Sending SNMP trap'`
+trapoutput=$(oc logs --selector 'app=default-snmp-webhook' | grep 'Sending SNMP trap')
 RET=$((RET || $?)) # Accumulate exit codes
 
 echo "*** [INFO] Showing oc get all..."
@@ -96,7 +96,7 @@ oc logs "$(oc get pod -l common.k8s.elastic.co/type=elasticsearch -o jsonpath='{
 echo
 
 echo "*** [INFO] Logs from snmp webhook..."
-oc logs "$(oc get pod -l app=stf-default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 if [ $RET -eq 0 ]; then
