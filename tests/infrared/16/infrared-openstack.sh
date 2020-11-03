@@ -20,10 +20,10 @@ OSP_VERSION="${OSP_VERSION:-16.1}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
+ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
-
-PREFIX="${PREFIX:-osp}"
+RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
 
 ir_run_cleanup() {
   infrared virsh \
@@ -32,8 +32,7 @@ ir_run_cleanup() {
       --disk-pool "${LIBVIRT_DISKPOOL}" \
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
-      --cleanup yes \
-      --prefix "${PREFIX}"
+      --cleanup yes
 }
 
 ir_run_provision() {
@@ -48,8 +47,7 @@ ir_run_provision() {
       --host-memory-overcommit True \
       -e override.controller.cpu=4 \
       -e override.controller.memory=16384 \
-      --serial-files True \
-      --prefix "${PREFIX}"
+      --serial-files True
 }
 
 ir_create_undercloud() {
@@ -66,7 +64,7 @@ ir_create_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" stf-connectors.yaml.template > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 ir_create_overcloud() {
@@ -120,5 +118,9 @@ else
   ir_create_undercloud
   stf_create_config
   ir_create_overcloud
-  # ir_expose_ui
+  ir_expose_ui
+fi
+
+if ${RUN_WORKLOAD}; then
+  ir_run_workload
 fi
