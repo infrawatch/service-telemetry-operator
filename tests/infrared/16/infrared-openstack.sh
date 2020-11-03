@@ -4,7 +4,6 @@ set -e
 # Usage:
 #  VIRTHOST=my.big.hypervisor.net
 #  ./infrared-openstack.sh
-
 VIRTHOST=${VIRTHOST:-localhost}
 AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
@@ -21,10 +20,10 @@ OSP_VERSION="${OSP_VERSION:-16.1}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
+ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
-
-PREFIX="${PREFIX:-osp}"
+RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
 
 ir_run_cleanup() {
   infrared virsh \
@@ -33,8 +32,7 @@ ir_run_cleanup() {
       --disk-pool "${LIBVIRT_DISKPOOL}" \
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
-      --cleanup yes \
-      --prefix "${PREFIX}"
+      --cleanup yes
 }
 
 ir_run_provision() {
@@ -47,10 +45,9 @@ ir_run_provision() {
       --host-key "${SSH_KEY}" \
       --image-url "${VM_IMAGE_LOCATION}" \
       --host-memory-overcommit True \
-      -e override.controller.cpu=8 \
-      -e override.controller.memory=32768 \
-      --serial-files True \
-      --prefix "${PREFIX}"
+      -e override.controller.cpu=4 \
+      -e override.controller.memory=16384 \
+      --serial-files True
 }
 
 ir_create_undercloud() {
@@ -67,7 +64,7 @@ ir_create_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" stf-connectors.yaml.template > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 ir_create_overcloud() {
@@ -104,7 +101,7 @@ ir_run_tempest() {
 }
 
 ir_expose_ui() {
-  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard 
+  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard
 }
 
 ir_run_workload() {
@@ -122,5 +119,8 @@ else
   stf_create_config
   ir_create_overcloud
   ir_expose_ui
+fi
+
+if ${RUN_WORKLOAD}; then
   ir_run_workload
 fi
