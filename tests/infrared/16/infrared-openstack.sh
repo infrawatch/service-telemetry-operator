@@ -4,7 +4,6 @@ set -e
 # Usage:
 #  VIRTHOST=my.big.hypervisor.net
 #  ./infrared-openstack.sh
-
 VIRTHOST=${VIRTHOST:-localhost}
 AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
