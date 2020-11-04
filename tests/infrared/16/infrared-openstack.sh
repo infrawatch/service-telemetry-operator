@@ -24,6 +24,7 @@ ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
+ENABLE_STF_CONNECTORS="${ENABLE_STF_CONNECTORS:-true}"
 
 ir_run_cleanup() {
   infrared virsh \
@@ -116,11 +117,16 @@ else
   ir_run_cleanup
   ir_run_provision
   ir_create_undercloud
-  stf_create_config
+  if ${ENABLE_STF_CONNECTORS}; then
+    stf_create_config
+  else
+    touch outputs/stf-connectors.yaml
+  fi
   ir_create_overcloud
   ir_expose_ui
+  if ${RUN_WORKLOAD}; then
+    ir_run_workload
+  fi
 fi
 
-if ${RUN_WORKLOAD}; then
-  ir_run_workload
-fi
+
