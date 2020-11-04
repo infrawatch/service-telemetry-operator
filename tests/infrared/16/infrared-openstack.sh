@@ -121,6 +121,7 @@ else
     stf_create_config
   else
     touch outputs/stf-connectors.yaml
+    truncate --size 0 outputs/stf-connectors.yaml
   fi
   ir_create_overcloud
   ir_expose_ui
