@@ -5,4 +5,5 @@ oc new-project "${OCP_PROJECT}"
 ansible-playbook \
     --extra-vars namespace="${OCP_PROJECT}" \
     --extra-vars __local_build_enabled=false \
+    --extra-vars __service_telemetry_snmptraps_enabled=true \
     ${REL}/../build/run-ci.yaml

@@ -13,6 +13,9 @@
           alertmanager:
             storage:
               strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
+            receivers:
+              snmpTraps:
+                enabled: {{ __service_telemetry_snmptraps_enabled }}
         backends:
           events:
             elasticsearch:
@@ -27,6 +30,10 @@
         highAvailability:
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when: service_telemetry_manifest is not defined
+
+- name: Show ServiceTelemetry manifest
+  debug:
+    var: service_telemetry_manifest | from_yaml
 
 - name: Create ServiceTelemetry instance
   k8s:
