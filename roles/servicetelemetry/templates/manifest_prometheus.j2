@@ -22,12 +22,11 @@ spec:
 {% endif %}
 {% if servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "persistent" %}
   storage:
-    class: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_class | quote }}
-    resources: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_resources }}
-    selector: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_selector }}
     volumeClaimTemplate:
       spec:
         resources:
           requests:
             storage: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.pvc_storage_request }}
+        selector: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_selector }}
+        storageClassName: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_class }}
 {% endif %}

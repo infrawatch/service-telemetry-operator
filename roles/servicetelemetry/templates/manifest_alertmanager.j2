@@ -13,12 +13,11 @@ spec:
       app: smart-gateway
 {% if servicetelemetry_vars.alerting.alertmanager.storage.strategy == "persistent" %}
   storage:
-    class: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_class }}
-    resources: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_resources }}
-    selector: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_selector }}
     volumeClaimTemplate:
       spec:
         resources:
           requests:
             storage: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.pvc_storage_request }}
+        selector: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_selector }}
+        storageClassName: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_class }}
 {% endif %}

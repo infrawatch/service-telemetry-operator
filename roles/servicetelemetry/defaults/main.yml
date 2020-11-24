@@ -14,7 +14,6 @@ servicetelemetry_defaults:
         strategy: persistent
         persistent:
           storage_class: ""
-          storage_resources: {}
           storage_selector: {}
           pvc_storage_request: 20G
       receivers:
@@ -32,7 +31,6 @@ servicetelemetry_defaults:
           strategy: persistent
           persistent:
             storage_class: ""
-            storage_resources: {}
             storage_selector: {}
             pvc_storage_request: 20G
     events:
@@ -42,7 +40,9 @@ servicetelemetry_defaults:
         storage:
           strategy: persistent
           persistent:
-            pvc_storage_request: 20Gi
+            storage_class: ""
+            storage_selector: {}
+            pvc_storage_request: 20G
 
   transports:
     qdr:
