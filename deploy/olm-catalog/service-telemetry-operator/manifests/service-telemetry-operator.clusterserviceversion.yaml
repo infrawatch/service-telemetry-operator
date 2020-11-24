@@ -47,7 +47,7 @@ metadata:
                   "enabled": false,
                   "storage": {
                     "persistent": {
-                      "pvcStorageRequest": "20G",
+                      "pvcStorageRequest": "20Gi",
                       "storageSelector": {}
                     },
                     "strategy": "persistent"

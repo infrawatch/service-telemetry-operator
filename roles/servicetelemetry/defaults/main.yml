@@ -42,7 +42,7 @@ servicetelemetry_defaults:
           persistent:
             storage_class: ""
             storage_selector: {}
-            pvc_storage_request: 20G
+            pvc_storage_request: 20Gi
 
   transports:
     qdr:
