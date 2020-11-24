@@ -49,9 +49,6 @@ spec:
                             description: Storage class name used for Alertmanager
                               PVC
                             type: string
-                          storageResources:
-                            description: Storage resource definition for Alertmanager
-                            type: string
                           storageSelector:
                             description: Storage selector definition for Alertmanager
                             type: string
@@ -95,6 +92,13 @@ spec:
                                 description: How much storage space to request in
                                   the PVC
                                 type: string
+                              storageClass:
+                                description: Storage class name used for ElasticSearch
+                                  PVC
+                                type: string
+                              storageSelector:
+                                description: Storage selector definition for ElasticSearch
+                                type: string
                             type: object
                           strategy:
                             description: Storage strategy. One of 'ephemeral' or 'persistent'.
@@ -128,9 +132,6 @@ spec:
                               storageClass:
                                 description: Storage class name used for Prometheus
                                   PVC
-                                type: string
-                              storageResources:
-                                description: Storage resource definition for Prometheus
                                 type: string
                               storageSelector:
                                 description: Storage selector definition for Prometheus

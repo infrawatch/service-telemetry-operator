@@ -28,7 +28,6 @@ metadata:
                 "storage": {
                   "persistent": {
                     "pvcStorageRequest": "20G",
-                    "storageResources": {},
                     "storageSelector": {}
                   },
                   "receivers": {
@@ -48,7 +47,8 @@ metadata:
                   "enabled": false,
                   "storage": {
                     "persistent": {
-                      "pvcStorageRequest": "20Gi"
+                      "pvcStorageRequest": "20G",
+                      "storageSelector": {}
                     },
                     "strategy": "persistent"
                   }
@@ -61,7 +61,6 @@ metadata:
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20G",
-                      "storageResources": {},
                       "storageSelector": {}
                     },
                     "strategy": "persistent"
@@ -101,7 +100,7 @@ metadata:
     operators.operatorframework.io/project_layout: ansible
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.1.0
+  name: service-telemetry-operator.v1.1.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -190,13 +189,6 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.metrics.prometheus.storage.strategy:persistent
         - urn:alm:descriptor:io.kubernetes:StorageClass
-      - description: Storage resources configuration for Prometheus persistent storage
-        displayName: Prometheus storage resources
-        path: backends.metrics.prometheus.storage.persistent.storageResources
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.metrics.prometheus.storage.strategy:persistent
-        - urn:alm:descriptor:com.tectonic.ui:text
       - description: Storage selector configuration for Prometheus persistent storage
         displayName: Prometheus storage selector
         path: backends.metrics.prometheus.storage.persistent.storageSelector
@@ -226,6 +218,20 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
         - urn:alm:descriptor:com.tectonic.ui:select:persistent
+      - description: Storage class configuration for ElasticSearch persistent storage
+        displayName: ElasticSearch storage class
+        path: backends.events.elasticsearch.storage.persistent.storageClass
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.events.elasticsearch.storage.strategy:persistent
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+      - description: Storage selector configuration for ElasticSearch persistent storage
+        displayName: ElasticSearch storage selector
+        path: backends.events.elasticsearch.storage.persistent.storageSelector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backends.events.elasticsearch.storage.strategy:persistent
+        - urn:alm:descriptor:com.tectonic.ui:text
       - description: PVC requested size for ElasticSearch persistent storage
         displayName: ElasticSearch PVC requested size
         path: backends.events.elasticsearch.storage.persistent.pvcStorageRequest
@@ -288,13 +294,6 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
         - urn:alm:descriptor:io.kubernetes:StorageClass
-      - description: Storage resources configuration for Alertmanager persistent storage
-        displayName: Alertmanager storage resources
-        path: alerting.alertmanager.storage.persistent.storageResources
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Alerting
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:alerting.alertmanager.storage.strategy:persistent
-        - urn:alm:descriptor:com.tectonic.ui:text
       - description: Storage selector configuration for Alertmanager persistent storage
         displayName: Alertmanager storage selector
         path: alerting.alertmanager.storage.persistent.storageSelector
@@ -482,6 +481,8 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
+                - name: PROMETHEUS_WEBHOOK_SNMP_IMAGE
+                  value: quay.io/infrawatch/prometheus-webhook-snmp:latest
                 image: quay.io/infrawatch/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: operator
@@ -590,5 +591,5 @@ spec:
   minKubeVersion: 1.18.0
   provider:
     name: Red Hat
-  replaces: service-telemetry-operator.v1.0.3
-  version: 1.1.0
+  replaces: service-telemetry-operator.v1.1.0
+  version: 1.1.1
