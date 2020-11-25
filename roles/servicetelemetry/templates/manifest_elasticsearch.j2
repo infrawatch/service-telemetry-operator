@@ -46,4 +46,10 @@ spec:
             resources:
               requests:
                 storage: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.pvc_storage_request }}
+{% if servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_selector %}
+            selector: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_selector }}
+{% endif %}
+{% if servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_class | length %}
+            storageClassName: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_class }}
+{% endif %}
 {% endif %}

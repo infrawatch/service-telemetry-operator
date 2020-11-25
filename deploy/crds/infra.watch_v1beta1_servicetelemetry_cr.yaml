@@ -9,7 +9,6 @@ spec:
       storage:
         strategy: persistent
         persistent:
-          storageResources: {}
           storageSelector: {}
           pvcStorageRequest: 20G
         receivers:
@@ -24,7 +23,6 @@ spec:
         storage:
           strategy: persistent
           persistent:
-            storageResources: {}
             storageSelector: {}
             pvcStorageRequest: 20G
     events:
@@ -33,6 +31,7 @@ spec:
         storage:
           strategy: persistent
           persistent:
+            storageSelector: {}
             pvcStorageRequest: 20Gi
   graphing:
     enabled: false
