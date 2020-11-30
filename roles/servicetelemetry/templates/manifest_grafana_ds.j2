@@ -1,0 +1,51 @@
+apiVersion: integreatly.org/v1alpha1
+kind: GrafanaDataSource
+metadata:
+  name: {{ meta.name }}-ds-prometheus
+  namespace: {{ meta.namespace }}
+spec:
+  datasources:
+{% if servicetelemetry_vars.backends.metrics.prometheus.enabled %}
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        timeInterval: 5s
+      name: STFPrometheus
+      type: prometheus
+      url: 'http://prometheus-operated:9090'
+      version: 1
+{% endif %}
+
+{% if servicetelemetry_vars.backends.events.elasticsearch.enabled %}
+    - name: es_collectd
+      access: proxy
+      editable: true
+      isDefault: false
+      url: 'https://elasticsearch-es-http:9200'
+      type: elasticsearch
+      basicAuth: true
+      basicAuthUser: elastic
+      basicAuthPassword: {{ elasticsearch_pass }}
+      database: collectd_*
+      jsonData:
+        tlsSkipVerify: true
+        timeField: startsAt
+        esVersion: 70
+
+    - name: es_ceilometer
+      access: proxy
+      editable: true
+      isDefault: false
+      url: 'https://elasticsearch-es-http:9200'
+      type: elasticsearch
+      basicAuth: true
+      basicAuthUser: elastic
+      basicAuthPassword: {{ elasticsearch_pass }}
+      database: ceilometer_*
+      jsonData:
+        tlsSkipVerify: true
+        timeField: startsAt
+        esVersion: 70
+{% endif %}
+  name: {{ meta.name }}-ds-prometheus.yaml
