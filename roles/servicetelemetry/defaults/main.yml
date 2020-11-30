@@ -35,7 +35,7 @@ servicetelemetry_defaults:
             pvc_storage_request: 20G
     events:
       elasticsearch:
-        enabled: false
+        enabled: true
         node_count: 1
         storage:
           strategy: persistent
@@ -50,7 +50,7 @@ servicetelemetry_defaults:
       deployment_size: 1
 
   graphing:
-    enabled: false
+    enabled: true
     grafana:
       ingress_enabled: false
       admin_password: secret
