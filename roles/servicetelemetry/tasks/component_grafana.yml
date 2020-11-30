@@ -25,7 +25,7 @@
         name: elasticsearch-es-elastic-user
         namespace: service-telemetry
       register: es_secret
-    
+
     - name: Decode elasticsearch password
       set_fact:
         elasticsearch_pass: '{{ es_secret.resources[0].data.elastic | b64decode }}'
