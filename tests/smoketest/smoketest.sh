@@ -45,7 +45,7 @@ oc delete pod curl
 
 
 # Trying to find a less brittle test than a timeout
-JOB_TIMEOUT=300s
+JOB_TIMEOUT=500s
 for NAME in "${CLOUDNAMES[@]}"; do
     echo "*** [INFO] Waiting on job/stf-smoketest-${NAME}..."
     oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/stf-smoketest-${NAME}"

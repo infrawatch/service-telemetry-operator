@@ -16,17 +16,29 @@
 
 # Lookup existing datasources
 - block:
-  - name: Set default Prometheus datasource
-    set_fact:
-      grafana_ds_prometheus_manifest: "{{ lookup('template', './manifest_grafana_ds_prometheus.j2') | from_yaml }}"
-    when: grafana_ds_prometheus_manifest is not defined
 
-  - name: Create the Prometheus datasource
+  - block:
+    - name: Retrieve elastic search secret
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: elasticsearch-es-elastic-user
+        namespace: service-telemetry
+      register: es_secret
+
+    - name: Decode elasticsearch password
+      set_fact:
+        elasticsearch_pass: '{{ es_secret.resources[0].data.elastic | b64decode }}'
+    when: servicetelemetry_vars.backends.events.elasticsearch.enabled
+
+  - name: Set datasources
+    set_fact:
+      ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
+    when: ds_manifest is not defined
+
+  - name: Create the datasources
     k8s:
       state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
       definition:
-        '{{ grafana_ds_prometheus_manifest }}'
-  when: servicetelemetry_vars.graphing.enabled and servicetelemetry_vars.backends.metrics.prometheus.enabled
-
-# Create additional datasources. This is where ElasticSearch datasources could
-# go but we probably want users to specify the list of databases we need
+        '{{ ds_manifest }}'
+  when: servicetelemetry_vars.graphing.enabled
