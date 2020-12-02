@@ -52,7 +52,8 @@ for NAME in "${CLOUDNAMES[@]}"; do
     RET=$((RET || $?)) # Accumulate exit codes
 done
 
-# check alert status for in snmp webhook
+# check alert status for in snmp webhook - wait for longer if still not available
+timeout 1m bash -c "until oc logs --selector 'app=default-snmp-webhook' | grep 'Sending SNMP trap'; do sleep 10; done"
 trapoutput=$(oc logs --selector 'app=default-snmp-webhook' | grep 'Sending SNMP trap')
 RET=$((RET || $?)) # Accumulate exit codes
 
