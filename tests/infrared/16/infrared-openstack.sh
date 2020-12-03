@@ -21,6 +21,7 @@ OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
+OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
@@ -61,6 +62,7 @@ ir_create_undercloud() {
       --images-task rpm \
       --images-update no \
       --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --config-options DEFAULT.undercloud_timezone=UTC
 }
 
@@ -86,6 +88,7 @@ ir_create_overcloud() {
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
       --overcloud-templates outputs/stf-connectors.yaml \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
 
