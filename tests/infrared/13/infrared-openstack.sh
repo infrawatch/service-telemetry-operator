@@ -23,8 +23,10 @@ OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 OSP_REGISTRY_MIRROR="${OSP_REGISTRY_MIRROR:-registry-proxy.engineering.redhat.com}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
+OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
+ENABLE_STF_CONNECTORS="${ENABLE_STF_CONNECTORS:-true}"
 
 ir_run_cleanup() {
   infrared virsh \
@@ -62,6 +64,7 @@ ir_create_undercloud() {
       --images-update no \
       --registry-mirror "${OSP_REGISTRY_MIRROR}" \
       --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --config-options DEFAULT.undercloud_timezone=UTC \
       --config-options DEFAULT.container_insecure_registries=registry-proxy.engineering.redhat.com
 }
@@ -95,6 +98,7 @@ ir_create_overcloud() {
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
       --registry-mirror "${OSP_REGISTRY_MIRROR}" \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --overcloud-templates outputs/stf-connectors.yaml \
       --containers yes
 }
