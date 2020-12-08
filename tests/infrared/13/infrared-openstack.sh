@@ -11,12 +11,12 @@ AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
 
-VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-7.8/compose/Server/x86_64/images}"
+VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-7.9/compose/Server/x86_64/images}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
-VM_IMAGE="${VM_IMAGE:-rhel-guest-image-7.8-41.x86_64.qcow2}"
+VM_IMAGE="${VM_IMAGE:-rhel-guest-image-7.9-30.x86_64.qcow2}"
 VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
-OSP_BUILD="${OSP_BUILD:-7.8-passed_phase2}"
+OSP_BUILD="${OSP_BUILD:-7.9-passed_phase2}"
 OSP_VERSION="${OSP_VERSION:-13}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
@@ -25,8 +25,6 @@ LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 
-PREFIX="{PREFIX:-osp}"
-
 ir_run_cleanup() {
   infrared virsh \
       -vv \
@@ -34,8 +32,7 @@ ir_run_cleanup() {
       --disk-pool "${LIBVIRT_DISKPOOL}" \
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
-      --cleanup yes \
-      --prefix "${PREFIX}"
+      --cleanup yes
 }
 
 ir_run_provision() {
@@ -50,8 +47,7 @@ ir_run_provision() {
       --host-memory-overcommit True \
       -e override.controller.cpu=8 \
       -e override.controller.memory=32768 \
-      --serial-files True \
-      --prefix "${PREFIX}"
+      --serial-files True
 }
 
 ir_create_undercloud() {
