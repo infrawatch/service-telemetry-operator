@@ -22,6 +22,7 @@ OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 OSP_REGISTRY_MIRROR="${OSP_REGISTRY_MIRROR:-registry-proxy.engineering.redhat.com}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
+ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 
@@ -74,7 +75,7 @@ ir_image_sync_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" stf-connectors.yaml.template > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 ir_create_overcloud() {
@@ -119,6 +120,11 @@ else
   ir_run_provision
   ir_create_undercloud
   ir_image_sync_undercloud
-  stf_create_config
+  if ${ENABLE_STF_CONNECTORS}; then
+    stf_create_config
+  else
+    touch outputs/stf-connectors.yaml
+    truncate --size 0 outputs/stf-connectors.yaml
+  fi
   ir_create_overcloud
 fi
