@@ -21,6 +21,8 @@ custom_templates:
         ManagePolling: true
         ManagePipeline: true
         NotificationDriver: 'messagingv2'
+        CollectdEnableLibpodstats: true
+        CollectdSensubilityTransport: amqp1
         CeilometerQdrEventsConfig:
             driver: amqp
             topic: event

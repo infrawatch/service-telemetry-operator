@@ -26,8 +26,8 @@ custom_templates:
         GnocchiBackend: 'rbd'
         GnocchiRbdPoolName: 'metrics'
 
-        EventPipelinePublishers: ['gnocchi://?filter_project=service&archive_policy=low']
-        MetricPipelinePublishers: ['gnocchi://?filter_project=service&archive_policy=low']
+        EventPipelinePublishers: ['gnocchi://?filter_project=service&archive_policy=high']
+        PipelinePublishers: ['gnocchi://?filter_project=service&archive_policy=high']
         CeilometerQdrPublishEvents: true
         CeilometerQdrPublishMetrics: true
         CeilometerEnablePanko: false

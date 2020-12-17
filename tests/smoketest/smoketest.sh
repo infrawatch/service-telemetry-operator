@@ -37,22 +37,20 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-oc run curl --generator=run-pod/v1 --image=radial/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-service-telemetry.apps-crc.testing/api/v1/alerts
+oc run curl --generator=run-pod/v1 --image=radial/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-operated:9093/api/v1/alerts
 # it takes some time to get the alert delivered, continuing with other tests
-
-oc delete pod curl
 
 
 
 # Trying to find a less brittle test than a timeout
-JOB_TIMEOUT=300s
+JOB_TIMEOUT=500s
 for NAME in "${CLOUDNAMES[@]}"; do
     echo "*** [INFO] Waiting on job/stf-smoketest-${NAME}..."
     oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/stf-smoketest-${NAME}"
     RET=$((RET || $?)) # Accumulate exit codes
 done
 
-# check alert status for in snmp webhook
+oc delete pod curl
 trapoutput=$(oc logs --selector 'app=default-snmp-webhook' | grep 'Sending SNMP trap')
 RET=$((RET || $?)) # Accumulate exit codes
 
