@@ -1,0 +1,58 @@
+name: CI
+on: push
+
+jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install operator_sdk.util dependency for Ansible role linting
+        run: ansible-galaxy collection install operator_sdk.util
+
+      - name: Install ansible-lint
+        run: pip install ansible-lint
+
+      - name: Lint Ansible roles/servicetelemetry/ directory
+        run: ${HOME}/.local/bin/ansible-lint roles/servicetelemetry
+# TODO: requires a bunch of work on our bash scripts, or finesse
+#      - name: Run Super-Linter
+#        uses: github/super-linter@v3
+#        env:
+#          DEFAULT_BRANCH: master
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-check:
+    name: Build check
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Verify image builds
+        run: docker build --tag infrawatch/service-telemetry-operator:latest --file build/Dockerfile .
+
+  bundle-check:
+    name: Bundle check
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get operator-sdk image
+        run: curl --output operator-sdk -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk-$RELEASE_VERSION-x86_64-linux-gnu
+        env:
+          RELEASE_VERSION: v0.19.4
+
+      - name: Make operator-sdk executable
+        run: chmod +x operator-sdk
+
+      - name: Move operator-sdk binary
+        run: sudo mv operator-sdk /usr/local/bin
+
+      - name: Check bundle validation
+        run: operator-sdk bundle validate --verbose ./deploy/olm-catalog/service-telemetry-operator
