@@ -1,37 +1,69 @@
 ---
-tripleo_heat_templates:
-    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/qdr-edge-only.yaml
-    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/collectd-write-qdr.yaml
-    - /usr/share/openstack-tripleo-heat-templates/environments/metrics/ceilometer-write-qdr.yaml
-
 custom_templates:
+    resource_registry:
+        OS::TripleO::Services::Collectd: /usr/share/openstack-tripleo-heat-templates/docker/services/metrics/collectd.yaml
+        OS::TripleO::Services::MetricsQdr: /usr/share/openstack-tripleo-heat-templates/docker/services/metrics/qdr.yaml
+        OS::TripleO::Services::CeilometerAgentCentral: /usr/share/openstack-tripleo-heat-templates/docker/services/ceilometer-agent-central.yaml
+        OS::TripleO::Services::CeilometerAgentNotification: /usr/share/openstack-tripleo-heat-templates/docker/services/ceilometer-agent-notification.yaml
+        OS::TripleO::Services::CeilometerAgentIpmi: /usr/share/openstack-tripleo-heat-templates/docker/services/ceilometer-agent-ipmi.yaml
+        OS::TripleO::Services::ComputeCeilometerAgent: /usr/share/openstack-tripleo-heat-templates/docker/services/ceilometer-agent-compute.yaml
+        OS::TripleO::Services::Redis: /usr/share/openstack-tripleo-heat-templates/docker/services/pacemaker/database/redis.yaml
+
     parameter_defaults:
+        EventPipelinePublishers: []
+        CeilometerEnablePanko: false
         CeilometerQdrPublishEvents: true
-
+        CeilometerQdrEventsConfig:
+            driver: amqp
+            topic: <<CLOUD_NAME>>-event
         CollectdAmqpInstances:
-            notify:
+            <<CLOUD_NAME>>-notify:
+                format: JSON
                 notify: true
+                presettle: false
+            <<CLOUD_NAME>>-telemetry:
                 format: JSON
                 presettle: false
-            telemetry:
-                format: JSON
-                presettle: false
-
+        CollectdAmqpInterval: 5
+        CollectdConnectionType: amqp1
         CollectdDefaultPlugins:
-            - cpu
-            - df
-            - load
-            - connectivity
-            - intel_rdt
-            - ipmi
-            - procevent
-
-        MetricsQdrSSLProfiles:
-            - name: sslProfile
-
+        - cpu
+        - df
+        - disk
+        - hugepages
+        - interface
+        - load
+        - memory
+        - processes
+        - unixsock
+        - uptime
+        - connectivity
+        - intel_rdt
+        - ipmi
+        - procevent
+        CollectdDefaultPollingInterval: 5
+        MetricsQdrAddresses:
+        -   distribution: multicast
+            prefix: collectd
+        -   distribution: multicast
+            prefix: anycast/ceilometer
         MetricsQdrConnectors:
-            - host: <<AMQP_HOST>>
-              port: <<AMQP_PORT>>
-              role: edge
-              verifyHostname: false
-              sslProfile: sslProfile
+        -   host: <<AMQP_HOST>>
+            port: <<AMQP_PORT>>
+            role: edge
+            sslProfile: sslProfile
+            verifyHostname: false
+        MetricsQdrSSLProfiles:
+        -   name: sslProfile
+        ExtraConfig:
+            collectd::plugin::cpu::reportbycpu: true
+            collectd::plugin::cpu::reportbystate: true
+            collectd::plugin::cpu::reportnumcpu: false
+            collectd::plugin::cpu::valuespercentage: true
+            collectd::plugin::df::ignoreselected: true
+            collectd::plugin::df::reportbydevice: true
+            collectd::plugin::df::fstypes: ['xfs']
+            collectd::plugin::load::reportrelative: true
+            collectd::plugin::virt::connection: "qemu:///system"
+            collectd::plugin::virt::extra_stats: "cpu_util disk disk_err pcpu job_stats_background perf vcpupin"
+            collectd::plugin::virt::hostname_format: "hostname"

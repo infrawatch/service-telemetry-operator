@@ -6,10 +6,11 @@ set -e
 #  ./infrared-openstack.sh
 
 VIRTHOST=${VIRTHOST:-localhost}
-AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
+AMQP_HOST=${AMQP_HOST:-default-interconnect-5671-service-telemetry.apps.stf.cloudops.psi.redhat.com}
 AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
+CLOUD_NAME="${CLOUD_NAME:-sample}"
 
 VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-7.9/compose/Server/x86_64/images}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
@@ -78,7 +79,7 @@ ir_image_sync_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 ir_create_overcloud() {
