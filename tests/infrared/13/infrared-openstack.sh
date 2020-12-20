@@ -48,8 +48,8 @@ ir_run_provision() {
       --host-key "${SSH_KEY}" \
       --image-url "${VM_IMAGE_LOCATION}" \
       --host-memory-overcommit True \
-      -e override.controller.cpu=8 \
-      -e override.controller.memory=32768 \
+      -e override.controller.cpu=4 \
+      -e override.controller.memory=16384 \
       --serial-files True
 }
 
@@ -98,8 +98,8 @@ ir_create_overcloud() {
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
       --registry-mirror "${OSP_REGISTRY_MIRROR}" \
-      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --overcloud-templates outputs/stf-connectors.yaml \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
 
