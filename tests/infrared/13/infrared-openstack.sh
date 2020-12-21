@@ -67,7 +67,7 @@ ir_create_undercloud() {
       --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --config-options DEFAULT.undercloud_timezone=UTC \
-      --config-options DEFAULT.container_insecure_registries=registry-proxy.engineering.redhat.com
+      --config-options DEFAULT.container_insecure_registries="${OSP_REGISTRY_MIRROR}"
 }
 
 ir_image_sync_undercloud() {
@@ -75,6 +75,7 @@ ir_image_sync_undercloud() {
       -o outputs/undercloud-image-sync.yml \
       --images-task rpm \
       --build "${OSP_BUILD}" \
+      --mirror "${OSP_REGISTRY_MIRROR}" \
       --images-update no
 }
 
@@ -98,7 +99,6 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --registry-mirror "${OSP_REGISTRY_MIRROR}" \
       --overcloud-templates outputs/stf-connectors.yaml \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
