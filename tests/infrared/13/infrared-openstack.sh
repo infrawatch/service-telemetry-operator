@@ -6,7 +6,7 @@ set -e
 #  ./infrared-openstack.sh
 
 VIRTHOST=${VIRTHOST:-localhost}
-AMQP_HOST=${AMQP_HOST:-default-interconnect-5671-service-telemetry.apps.stf.cloudops.psi.redhat.com}
+AMQP_HOST=${AMQP_HOST:-default-interconnect-5671-service-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
