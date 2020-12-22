@@ -13,38 +13,42 @@ custom_templates:
         OS::TripleO::Services::Redis: /usr/share/openstack-tripleo-heat-templates/deployment/database/redis-pacemaker-puppet.yaml
 
     parameter_defaults:
+        EnableSTF: true
+
         EventPipelinePublishers: []
         MetricPipelinePublishers: []
-        CeilometerQdrPublishEvents: true
-        CeilometerQdrPublishMetrics: true
-        CeilometerEnablePanko: false
         ManagePolling: true
         ManagePipeline: true
         NotificationDriver: 'messagingv2'
-        CollectdEnableLibpodstats: true
-        CollectdSensubilityTransport: amqp1
+        CeilometerQdrPublishEvents: true
+        CeilometerQdrPublishMetrics: true
+        CeilometerEnablePanko: false
         CeilometerQdrEventsConfig:
             driver: amqp
-            topic: event
+            topic: <<CLOUD_NAME>>-event
         CeilometerQdrMetricsConfig:
             driver: amqp
-            topic: metering
+            topic: <<CLOUD_NAME>>-metering
 
         CollectdEnableSensubility: true
+        CollectdEnableLibpodstats: true
+        CollectdSensubilityTransport: amqp1
+        CollectdSensubilityResultsChannel: collectd/<<CLOUD_NAME>>-notify
         CollectdSensubilityLogLevel: DEBUG
         CollectdAmqpInstances:
-            notify:
+            <<CLOUD_NAME>>-notify:
                 format: JSON
                 notify: true
                 presettle: false
-            telemetry:
+            <<CLOUD_NAME>>-telemetry:
                 format: JSON
                 presettle: false
-        CollectdAmqpInterval: 5
         CollectdConnectionType: amqp1
+        CollectdAmqpInterval: 5
         CollectdDefaultPollingInterval: 5
 
-        EnableSTF: true
+        CollectdExtraPlugins:
+        - vmem
 
         MetricsQdrAddresses:
         -   distribution: multicast
@@ -82,9 +86,6 @@ custom_templates:
                - ceph-osd.13
                - ceph-osd.14
                - ceph-osd.15
-
-        CollectdExtraPlugins:
-        - vmem
 
         MetricsQdrConnectors:
             - host: <<AMQP_HOST>>

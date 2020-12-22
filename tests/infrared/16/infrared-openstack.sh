@@ -9,6 +9,7 @@ AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.
 AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
+CLOUD_NAME="${CLOUD_NAME:-sample}"
 
 VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.2.0/compose/BaseOS/x86_64/images/}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
@@ -67,7 +68,7 @@ ir_create_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 ir_create_overcloud() {
@@ -112,11 +113,18 @@ ir_run_workload() {
     infrared cloud-config --deployment-files virt --tasks launch_workload
 }
 
-if ${TEMPEST_ONLY}; then
+time if ${TEMPEST_ONLY}; then
   echo "-- Running tempest tests"
   ir_run_tempest
 else
   echo "-- full cloud deployment"
+  echo ">> Cloud name: ${CLOUD_NAME}"
+  echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
+  echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> OSP version: ${OSP_VERSION}"
+  echo ">> OSP build: ${OSP_BUILD}"
+  echo ">> OSP topology: ${OSP_TOPOLOGY}"
+
   ir_run_cleanup
   ir_run_provision
   ir_create_undercloud
@@ -131,6 +139,14 @@ else
   if ${RUN_WORKLOAD}; then
     ir_run_workload
   fi
+
+  echo "-- deployment completed"
+  echo ">> Cloud name: ${CLOUD_NAME}"
+  echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
+  echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> OSP version: ${OSP_VERSION}"
+  echo ">> OSP build: ${OSP_BUILD}"
+  echo ">> OSP topology: ${OSP_TOPOLOGY}"
 fi
 
 
