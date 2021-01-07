@@ -482,6 +482,8 @@ spec:
                   value: service-telemetry-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
+                - name: PROMETHEUS_WEBHOOK_SNMP_IMAGE
+                  value: quay.io/infrawatch/prometheus-webhook-snmp:latest
                 image: quay.io/infrawatch/service-telemetry-operator:latest
                 imagePullPolicy: Always
                 name: operator
