@@ -100,7 +100,7 @@ metadata:
     operators.operatorframework.io/project_layout: ansible
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat, Inc.
-  name: service-telemetry-operator.v1.1.1
+  name: service-telemetry-operator.v1.2.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -592,4 +592,4 @@ spec:
   provider:
     name: Red Hat
   replaces: service-telemetry-operator.v1.1.0
-  version: 1.1.1
+  version: 1.2.0
