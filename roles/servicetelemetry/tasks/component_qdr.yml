@@ -44,7 +44,7 @@
             sslProfile: inter-router
         listeners:
           - port: 5672
-          - expose: true
+          - expose: {{ servicetelemetry_vars.transports.qdr.web.enabled }}
             http: true
             port: 8672
         sslProfiles:

@@ -82,7 +82,10 @@ metadata:
             },
             "transports": {
               "qdr": {
-                "enabled": true
+                "enabled": true,
+                "web": {
+                  "enabled": false
+                }
               }
             }
           }
@@ -323,6 +326,12 @@ spec:
       - description: Enable QDR Transport via AMQ Interconnect
         displayName: Enable QDR Transport
         path: transports.qdr.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Transports
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable QDR web interface for AMQ Interconnect
+        displayName: Enable QDR web interface
+        path: transports.qdr.web.enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Transports
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
