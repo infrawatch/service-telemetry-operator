@@ -156,6 +156,13 @@ spec:
                   enabled:
                     description: Enable QDR data transort
                     type: boolean
+                  web:
+                    description: QDR web configuration
+                    properties:
+                      enabled:
+                        description: Enable web interface for QDR
+                        type: boolean
+                    type: object
                 type: object
             type: object
           graphing:

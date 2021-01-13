@@ -48,6 +48,8 @@ servicetelemetry_defaults:
     qdr:
       enabled: true
       deployment_size: 1
+      web:
+        enabled: false
 
   graphing:
     enabled: false
