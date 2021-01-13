@@ -22,6 +22,7 @@ spec:
         scrapeInterval: 10s
         storage:
           strategy: persistent
+          retention: 24h
           persistent:
             storageSelector: {}
             pvcStorageRequest: 20G
