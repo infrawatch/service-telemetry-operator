@@ -63,6 +63,7 @@ metadata:
                       "pvcStorageRequest": "20G",
                       "storageSelector": {}
                     },
+                    "retention": "24h",
                     "strategy": "persistent"
                   }
                 }
@@ -185,6 +186,18 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:select:ephemeral
         - urn:alm:descriptor:com.tectonic.ui:select:persistent
+      - description: Retention time period for Prometheus data storage.
+        displayName: Prometheus retention time period.
+        path: backends.metrics.prometheus.storage.retention
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
+        - urn:alm:descriptor:com.tectonic.ui:select:12h
+        - urn:alm:descriptor:com.tectonic.ui:select:24h
+        - urn:alm:descriptor:com.tectonic.ui:select:3d
+        - urn:alm:descriptor:com.tectonic.ui:select:7d
+        - urn:alm:descriptor:com.tectonic.ui:select:14d
+        - urn:alm:descriptor:com.tectonic.ui:select:30d
+        - urn:alm:descriptor:com.tectonic.ui:select:60d
       - description: Storage class configuration for Prometheus persistent storage
         displayName: Prometheus storage class
         path: backends.metrics.prometheus.storage.persistent.storageClass
