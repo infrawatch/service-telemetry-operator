@@ -22,6 +22,7 @@ choose to override:
 | ------------------------------                  | ------------ | --------- | ------------------------------------                                                                  |
 | `__deploy_stf`                                  | {true,false} | true      | Whether to deploy an instance of STF                                                                  |
 | `__local_build_enabled`                         | {true,false} | true      | Whether to deploySTF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch` |
+| `prometheus_webhook_snmp_branch`                | <git_branch> | master    | Which Prometheus Webhook SNMP git branch to checkout                                                  |
 | `sgo_branch`                                    | <git_branch> | master    | Which Smart Gateway Operator git branch to checkout                                                   |
 | `sg_branch`                                     | <git_branch> | master    | Which Smart Gateway git branch to checkout                                                            |
 | `sg_core_branch`                                | <git_branch> | master    | Which Smart Gateway Core git branch to checkout                                                       |
