@@ -103,7 +103,7 @@ metadata:
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
     repository: https://github.com/infrawatch/service-telemetry-operator
-    support: Red Hat, Inc.
+    support: Red Hat
   name: service-telemetry-operator.v1.2.0
   namespace: placeholder
 spec:
@@ -608,7 +608,7 @@ spec:
     url: https://infrawatch.github.io/documentation
   maintainers:
   - email: support@redhat.com
-    name: Red Hat (CloudOps)
+    name: Red Hat
   maturity: beta
   minKubeVersion: 1.18.0
   provider:
