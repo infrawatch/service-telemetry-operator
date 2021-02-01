@@ -56,8 +56,14 @@
 - name: Replace SG image path in STO CSV
   replace:
     path: working/service-telemetry-operator.clusterserviceversion.yaml
-    regexp: '(\s+)image: image-registry\.openshift-image-registry\.svc\:5000/service-telemetry/service-telemetry-operator\:.+$'
+    regexp: '(\s+)image: quay\.io/infrawatch/service-telemetry-operator\:.+$'
     replace: '\1image: {{ sto_image_path }}'
+
+- name: Replace prometheus-webhook-snmp image path in STO CSV
+  replace:
+    path: working/service-telemetry-operator.clusterserviceversion.yaml
+    regexp: '(\s+)image: quay\.io/infrawatch/prometheus-webhook-snmp\:.+$'
+    replace: '\1image: {{ prometheus_webhook_snmp_image_path }}'
 
 - name: Replace namespace in STO CSV
   replace:
