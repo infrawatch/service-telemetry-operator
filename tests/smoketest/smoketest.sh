@@ -74,8 +74,8 @@ oc logs "$(oc get pod -l application=default-interconnect -o jsonpath='{.items[0
 echo
 
 echo "*** [INFO] Logs from smart gateways..."
-oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -c bridge -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -c smart-gateway -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -o jsonpath='{.items[0].metadata.name}')" -c bridge
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -o jsonpath='{.items[0].metadata.name}')" -c smart-gateway
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-event" -o jsonpath='{.items[0].metadata.name}')"
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='{.items[0].metadata.name}')"
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')"
