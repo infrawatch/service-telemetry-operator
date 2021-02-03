@@ -31,7 +31,7 @@
 
   - name: Filter out ElasticSearch password for BasicAuth
     set_fact:
-      elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[].data.elastic') | b64decode }}"
+      elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[0].data.elastic') | b64decode }}"
     no_log: true
 
   - name: Deploy Events Smart Gateway instance for each collector
