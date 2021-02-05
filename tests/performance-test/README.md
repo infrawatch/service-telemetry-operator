@@ -2,8 +2,11 @@ Ensure STF is installed with metrics and graphing enable and make sure an instan
 
 Create resources
 ```
-oc create -f deploy/datasource.yaml \
-    -f deploy/qdr-servicemonitor.yml \
+OCP_PASS=$(oc get secret -n openshift-monitoring grafana-datasources -ojsonpath='{.data.prometheus\.yaml}' | base64 -d | jq -r .datasources[0].basicAuthPassword)
+
+sed "s/OCP_PASS/$OC_PASS/" deploy/datasource.yaml | oc create -f -
+
+oc create -f deploy/qdr-servicemonitor.yml \
     -f dashboards/perftest-dashboard.yaml
 ```
 
