@@ -102,12 +102,12 @@ check_resources(){
         esac
     fi
 
-    if ! GRAF_HOST=$(oc get routes --field-selector metadata.name=grafana -o jsonpath="{.items[0].spec.host}") 2> /dev/null; then
+    if ! GRAF_HOST=$(oc get routes --field-selector metadata.name=grafana-route -o jsonpath="{.items[0].spec.host}") 2> /dev/null; then
         echo "Error: cannot find Grafana instance in cluster. Has it been deployed?" 1>&2
         exit 1
     fi
 
-    local datasources=$(curl --silent -X GET "http://${GRAF_HOST}/api/datasources")
+    local datasources=$(curl -sk -X GET "https://root:secret@${GRAF_HOST}/api/datasources")
     if ! echo $datasources | grep -q "OCPPrometheus"; then
         echo "Error: unable to find Grafana datasource OCPPrometheus"
         exit 1
@@ -118,14 +118,14 @@ check_resources(){
         exit 1
     fi
 
-    if ! echo $datasources | grep -q "STFElasticsearch"; then
-        echo "Error: unable to find Grafana datasource STFElasticsearch"
-        exit 1
-    fi
+    # if ! echo $datasources | grep -q "STFElasticsearch"; then
+    #     echo "Error: unable to find Grafana datasource STFElasticsearch"
+    #     exit 1
+    # fi
 }
 
-ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
-ES_POD='elasticsearch-es-default-0'
+#ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
+#ES_POD='elasticsearch-es-default-0'
 
 # Delete recorded events in Elastic Search
 delete_es_events(){
@@ -206,15 +206,15 @@ else
 fi
 
 # Test groundwork - order matters
-check_resources
-delete_es_events
-make_qdr_edge_router
+# check_resources
+#delete_es_events
+#make_qdr_edge_router
 
 SUCCESS_RATIO=0.00
-post_ratio_to_es
+#post_ratio_to_es
 
 # Test procedure
-STAGE="ROUTER"
+STAGE="TARGET"
 while true; do
     case $STAGE in
         "ROUTER")
@@ -234,12 +234,12 @@ while true; do
             fi
         ;;
         "TARGET")
-            TARGETS=$(oc exec prometheus-stf-default-0 -c prometheus -- wget -qO - http://localhost:9090/api/v1/targets)
+            TARGETS=$(oc exec prometheus-default-0 -c prometheus -- wget -qO - http://localhost:9090/api/v1/targets)
             QDRWHITE=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"stf-default-interconnect"' || true)
-            QDRTEST=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"qdr-test"' || true)
+            #QDRTEST=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"qdr-test"' || true)
             PROM=$(echo "$TARGETS" | grep -o '"__meta_kubernetes_service_name":"prometheus-operated"' || true)
 
-            if [ -z "$QDRWHITE" ] || [ -z "$QDRTEST" ] || [ -z "$PROM" ]; then
+            if [ -z "$QDRWHITE" ] || [ -z "$PROM" ]; then
                 printf "%s" "Waiting for new targets to be recognized by Prometheus Operator"; ellipse
                 sleep 1
             else
@@ -275,16 +275,16 @@ while true; do
             NUM_COLLECTD_EVENTS=$(wc -l /tmp/events.json | awk '{ print $1 }')
 
             # get number of events seen by elasticsearch
-            get_es_event_count
+            #get_es_event_count
 
             # calulate success ratio
-            SUCCESS_RATIO=$(( ES_EVENT_RECV_COUNT / NUM_COLLECTD_EVENTS)).$(( (ES_EVENT_RECV_COUNT * 100 / NUM_COLLECTD_EVENTS) % 100 ))
+            #SUCCESS_RATIO=$(( ES_EVENT_RECV_COUNT / NUM_COLLECTD_EVENTS)).$(( (ES_EVENT_RECV_COUNT * 100 / NUM_COLLECTD_EVENTS) % 100 ))
 
             # DEBUG and TESTING - DELETE
-            echo "EVENTS generated: $NUM_COLLECTD_EVENTS, recieved by Elastic Search: $ES_EVENT_RECV_COUNT, success rate: $SUCCESS_RATIO"
+            # echo "EVENTS generated: $NUM_COLLECTD_EVENTS, recieved by Elastic Search: $ES_EVENT_RECV_COUNT, success rate: $SUCCESS_RATIO"
 
             printf "\n*** Posting events results to Elastic Search ***\n"
-            post_ratio_to_es
+#            post_ratio_to_es
 
             break
         ;;
