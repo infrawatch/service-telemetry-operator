@@ -1,8 +1,0 @@
----
-- hosts: localhost
-  vars:
-    meta:
-      namespace: service-telemetry
-      name: sto
-  roles:
-    - 'roles/servicetelemetry'
