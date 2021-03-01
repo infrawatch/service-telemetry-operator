@@ -26,10 +26,10 @@
         name: smart-gateway-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: latest
+        channel: stable-1.2
         installPlanApproval: Automatic
         name: smart-gateway-operator
-        source: infrawatch-operators
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
   when: smart_gateway_operator_subscription_manifest is not defined
 
@@ -42,10 +42,10 @@
         name: service-telemetry-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: latest
+        channel: stable-1.2
         installPlanApproval: Automatic
         name: service-telemetry-operator
-        source: infrawatch-operators
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
   when: service_telemetry_operator_subscription_manifest is not defined
 
