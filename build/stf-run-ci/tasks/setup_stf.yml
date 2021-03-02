@@ -29,7 +29,7 @@
         channel: stable-1.2
         installPlanApproval: Automatic
         name: smart-gateway-operator
-        source: redhat-operators
+        source: infrawatch-operators
         sourceNamespace: openshift-marketplace
   when: smart_gateway_operator_subscription_manifest is not defined
 
@@ -45,7 +45,7 @@
         channel: stable-1.2
         installPlanApproval: Automatic
         name: service-telemetry-operator
-        source: redhat-operators
+        source: infrawatch-operators
         sourceNamespace: openshift-marketplace
   when: service_telemetry_operator_subscription_manifest is not defined
 
