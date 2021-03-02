@@ -1,0 +1,25 @@
+apiVersion: integreatly.org/v1alpha1
+kind: GrafanaDataSource
+metadata:
+  name: performance-test-datasource
+  namespace: service-telemetry
+spec:
+  datasources:
+    - name: OCPPrometheus
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
+      database: ""
+      basicAuth: true
+      basicAuthUser: "internal"
+      basicAuthPassword: OCP_PASS
+      withCredentials: false
+      isDefault: false
+      jsonData:
+        tlsSkipVerify: true
+        timeInterval: "1s"
+      secureJsonData: {}
+      version: 3
+      editable: true
+  name: performance-test-datasources

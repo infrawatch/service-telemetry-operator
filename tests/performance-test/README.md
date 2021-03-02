@@ -1,59 +1,18 @@
-# STF Performance Test
+Ensure STF is installed with metrics and graphing enable and make sure an instance of Grafana is running in the STF namespace
 
-## Introduction
+Create resources
+```
+OCP_PASS=$(oc get secret -n openshift-monitoring grafana-datasources -ojsonpath='{.data.prometheus\.yaml}' | base64 -d | jq -r .datasources[0].basicAuthPassword)
 
-The performance test provides an automated environment in which to to run stress
-tests on STF. Collectd-tg or telemetry-bench are used to simulate extensive
-metrics data to pump through STF. Results of testing can be analyzed in a
-grafana dashboard.
+sed "s/OCP_PASS/$OC_PASS/" deploy/datasource.yaml | oc create -f -
 
-Two additional pods are deployed by the performance test: one that hosts a
-grafana instance and one that executes the testing logic.
-
-![A Performance Test Dashboard](images/dashboard.png)
-
-## Environment
-
-* openshift v4.2.7
-
-## Setup
-
-STF must already be deployed including the default ServiceTelemetry example CR.
-A quick way to do this is using the `quickstart.sh` script in
-`service-telemetry-operator/deploy/` directory to run STF.
-
- Here is an example of how to do that in crc:
-
- ```shell
-crc start
-eval $(crc oc-env)
-cd service-telemetry-operator/deploy/; ./quickstart.sh
+oc create -f deploy/qdr-servicemonitor.yml \
+    -f dashboards/perftest-dashboard.yaml
 ```
 
-## Deploying Grafana
-
-Ensure that all of the STF pods are already marked running with `oc get pods`.
-Next, launch the grafana instance for test results gathering. This only needs
-to be done once:
-
-```shell
-cd service-telemetry-operator/tests/performance-test/grafana
-./grafana-launcher.sh
+Run Test
+```
+./run.sh -c 10000000
 ```
 
-The grafana launcher script will output a URL that can be used to log into the
-dashboard. This Grafana instance has all authentication disabled - if, in the
-future, the performance test should report to an authenticated grafana instance,
-the test scripts must be modified.
-
-## Launching the test
-
-Once the Grafana instance is running, launch the performance test OpenShift job:
-
-```shell
-./performance-test.sh
-```
-
-Monitor the performance test status by watching the job with
-`oc get job -l app=stf-performance-test -w`. Logs can be viewed with
-`oc logs stf-perftest-<NUM>-runner-<ID> -f`
+View results in the grafana dashboard
