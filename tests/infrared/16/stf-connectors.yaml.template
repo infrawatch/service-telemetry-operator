@@ -67,7 +67,6 @@ custom_templates:
             ceilometer::agent::polling::polling_interval: 5
             ceilometer::agent::polling::polling_meters:
             - cpu
-            - cpu_util
             - cpu_l3_cache
             - disk.*
             - ip.*
