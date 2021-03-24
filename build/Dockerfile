@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/ansible-operator:v0.16.0
+FROM quay.io/openshift/origin-ansible-operator:v4.6
 
 COPY watches.yaml ${HOME}/watches.yaml
 COPY roles/ ${HOME}/roles/
