@@ -17,20 +17,6 @@
         dest: working/smart-gateway-operator
         version: master
 
-- name: Get Smart Gateway (legacy)
-  block:
-    - name: Try cloning same-named branch or override branch
-      git:
-        repo: https://github.com/infrawatch/smart-gateway
-        dest: working/smart-gateway
-        version: "{{ sg_branch | default(branch, true) }}"
-  rescue:
-    - name: Get master branch because same-named doesn't exist
-      git:
-        repo: https://github.com/infrawatch/smart-gateway
-        dest: working/smart-gateway
-        version: master
-
 - name: Get sg-core
   block:
     - name: Try cloning same-named branch or override branch

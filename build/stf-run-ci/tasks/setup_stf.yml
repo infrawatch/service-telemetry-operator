@@ -59,7 +59,7 @@
     definition:
       '{{ service_telemetry_operator_subscription_manifest }}'
 
-- name: Enable InfraWatch application registry
+- name: Enable InfraWatch Catalog Source
   k8s:
     definition:
       '{{ infrawatch_catalog_source_manifest }}'
