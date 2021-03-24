@@ -12,7 +12,8 @@
     loop_control:
       label: "{{ item.metadata.name }}"
 
-  - debug:
+  - name: Show difference between requested and existing Smart Gateway object list
+    debug:
       msg: |
         {{ smartgateway_loaded_list | difference(smartgateway_list)  }}
 
