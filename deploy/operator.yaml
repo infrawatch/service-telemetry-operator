@@ -14,7 +14,7 @@ spec:
     spec:
       serviceAccountName: service-telemetry-operator
       containers:
-        - name: service-telemetry-operator
+        - name: operator
           image: quay.io/infrawatch/service-telemetry-operator:latest
           imagePullPolicy: Always
           volumeMounts:

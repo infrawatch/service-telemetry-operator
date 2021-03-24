@@ -6,9 +6,9 @@ LABEL operators.operatorframework.io.bundle.metadata.v1=metadata/
 LABEL operators.operatorframework.io.bundle.package.v1=service-telemetry-operator
 LABEL operators.operatorframework.io.bundle.channels.v1=unstable
 LABEL operators.operatorframework.io.bundle.channel.default.v1=unstable
-LABEL operators.operatorframework.io.metrics.project_layout=ansible
 LABEL operators.operatorframework.io.metrics.mediatype.v1=metrics+v1
 LABEL operators.operatorframework.io.metrics.builder=operator-sdk-v0.19.4
+LABEL operators.operatorframework.io.metrics.project_layout=ansible
 
 COPY deploy/olm-catalog/service-telemetry-operator/manifests /manifests/
 COPY deploy/olm-catalog/service-telemetry-operator/metadata /metadata/
