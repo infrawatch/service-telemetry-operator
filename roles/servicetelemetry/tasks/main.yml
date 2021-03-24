@@ -1,5 +1,6 @@
 ---
-- debug:
+- name: Installing service telemetry
+  debug:
     msg: INSTALLING SERVICE TELEMETRY
 
 - name: Check for v1alpha1 ServiceTelemetry objects
