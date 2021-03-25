@@ -15,12 +15,6 @@
 - name: Copy SGO CSV to working directory
   command: cp working/smart-gateway-operator/deploy/olm-catalog/smart-gateway-operator/manifests/smart-gateway-operator.clusterserviceversion.yaml working/
 
-- name: Replace SG (legacy) image path in SGO CSV
-  replace:
-    path: working/smart-gateway-operator.clusterserviceversion.yaml
-    regexp: '(\s+)value: quay\.io/infrawatch/smart-gateway\:.+$'
-    replace: '\1value: {{ sg_image_path }}'
-
 - name: Replace SG core image path in SGO CSV
   replace:
     path: working/smart-gateway-operator.clusterserviceversion.yaml
@@ -53,7 +47,7 @@
 - name: Copy STO CSV to working directory
   command: cp ../deploy/olm-catalog/service-telemetry-operator/manifests/service-telemetry-operator.clusterserviceversion.yaml working/
 
-- name: Replace SG image path in STO CSV
+- name: Replace SGO image path in STO CSV
   replace:
     path: working/service-telemetry-operator.clusterserviceversion.yaml
     regexp: '(\s+)image: quay\.io/infrawatch/service-telemetry-operator\:.+$'
