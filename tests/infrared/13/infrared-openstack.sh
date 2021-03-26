@@ -121,6 +121,13 @@ if ${TEMPEST_ONLY}; then
   ir_run_tempest
 else
   echo "-- full cloud deployment"
+  echo ">> Cloud name: ${CLOUD_NAME}"
+  echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
+  echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> OSP version: ${OSP_VERSION}"
+  echo ">> OSP build: ${OSP_BUILD}"
+  echo ">> OSP topology: ${OSP_TOPOLOGY}"
+
   ir_run_cleanup
   ir_run_provision
   ir_create_undercloud
@@ -132,4 +139,12 @@ else
     truncate --size 0 outputs/stf-connectors.yaml
   fi
   ir_create_overcloud
+
+  echo "-- deployment completed"
+  echo ">> Cloud name: ${CLOUD_NAME}"
+  echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
+  echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> OSP version: ${OSP_VERSION}"
+  echo ">> OSP build: ${OSP_BUILD}"
+  echo ">> OSP topology: ${OSP_TOPOLOGY}"
 fi
