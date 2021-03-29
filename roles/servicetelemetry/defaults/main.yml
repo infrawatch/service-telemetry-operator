@@ -68,14 +68,18 @@ servicetelemetry_defaults:
         collectors:
           - collector_type: collectd
             subscription_address: collectd/telemetry
+            debugEnabled: false
           - collector_type: ceilometer
             subscription_address: anycast/ceilometer/metering.sample
+            debugEnabled: false
       events:
         collectors:
           - collector_type: collectd
             subscription_address: collectd/notify
+            debugEnabled: false
           - collector_type: ceilometer
             subscription_address: anycast/ceilometer/event.sample
+            debugEnabled: false
 
 
 # These variables are outside of the defaults. Their values will be

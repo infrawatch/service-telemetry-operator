@@ -217,6 +217,9 @@ spec:
                           subscriptionAddress:
                             description: Address to subscribe on the data transport to receive telemetry.
                             type: string
+                          debugEnabled:
+                            description: Enable console debugging. Default is 'false'.
+                            type: boolean
                         type: object
                       type: array
                   type: object
@@ -236,6 +239,9 @@ spec:
                           subscriptionAddress:
                             description: Address to subscribe on the data transport to receive notifications.
                             type: string
+                          debugEnabled:
+                            description: Enable console debugging. Default is 'false'.
+                            type: boolean
                         type: object
                       type: array
                   type: object

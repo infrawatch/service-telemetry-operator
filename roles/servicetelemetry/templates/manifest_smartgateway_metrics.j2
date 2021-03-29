@@ -6,7 +6,7 @@ metadata:
 spec:
   amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}'
   amqpDataSource: '{{ this_collector.collector_type }}'
-  debug: false
+  debug: {{ this_collector.debug_enabled }}
   serviceType: 'metrics'
 {% if this_collector.collector_type == "collectd" %}
   size: {{ smartgateway_deployment_size }}
