@@ -82,6 +82,8 @@ custom_templates:
             - volume.*
 
             collectd::plugin::cpu::reportbycpu: true
+            collectd::plugin::cpu::reportbystate: true
+            collectd::plugin::cpu::valuespercentage: true
             collectd::plugin::vmem::verbose: true
             collectd::plugin::amqp1::send_queue_limit: 50
             collectd::plugin::virt::hostname_format: name uuid hostname
