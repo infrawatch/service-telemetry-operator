@@ -9,10 +9,10 @@ require adjustment for specific deployments.
 Besides `alerts.yaml` alarms from openstack.rules, it includes:
  - ceph.rules: 
      * ceph osd down
-     * ceph full (warning and critical) alarms
+     * ceph full (warning and critical)
  - virtual.rules:
-     * high cpu virtual (warning and critical
-     * memory low virtual (warning and critical
+     * high cpu virtual (warning and critical)
+     * memory low virtual (warning and critical)
      * error packets rx/tx virtual
      * dropped packers rx/tx virtual
  - availability.rules:
