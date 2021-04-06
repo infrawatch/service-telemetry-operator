@@ -92,7 +92,6 @@ custom_templates:
                - ceph-osd.12
                - ceph-osd.13
                - ceph-osd.14
-               - ceph-osd.15
 
         CollectdExtraPlugins:
         - vmem
