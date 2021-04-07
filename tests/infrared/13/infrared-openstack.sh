@@ -6,10 +6,11 @@ set -e
 #  ./infrared-openstack.sh
 
 VIRTHOST=${VIRTHOST:-localhost}
-AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
+AMQP_HOST=${AMQP_HOST:-default-interconnect-5671-service-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
+CLOUD_NAME="${CLOUD_NAME:-sample}"
 
 VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-7.9/compose/Server/x86_64/images}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
@@ -23,8 +24,10 @@ OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 OSP_REGISTRY_MIRROR="${OSP_REGISTRY_MIRROR:-registry-proxy.engineering.redhat.com}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
+OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
+ENABLE_STF_CONNECTORS="${ENABLE_STF_CONNECTORS:-true}"
 
 ir_run_cleanup() {
   infrared virsh \
@@ -46,8 +49,8 @@ ir_run_provision() {
       --host-key "${SSH_KEY}" \
       --image-url "${VM_IMAGE_LOCATION}" \
       --host-memory-overcommit True \
-      -e override.controller.cpu=8 \
-      -e override.controller.memory=32768 \
+      -e override.controller.cpu=4 \
+      -e override.controller.memory=16384 \
       --serial-files True
 }
 
@@ -62,8 +65,9 @@ ir_create_undercloud() {
       --images-update no \
       --registry-mirror "${OSP_REGISTRY_MIRROR}" \
       --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --config-options DEFAULT.undercloud_timezone=UTC \
-      --config-options DEFAULT.container_insecure_registries=registry-proxy.engineering.redhat.com
+      --config-options DEFAULT.container_insecure_registries="${OSP_REGISTRY_MIRROR}"
 }
 
 ir_image_sync_undercloud() {
@@ -71,11 +75,12 @@ ir_image_sync_undercloud() {
       -o outputs/undercloud-image-sync.yml \
       --images-task rpm \
       --build "${OSP_BUILD}" \
+      --mirror "${OSP_REGISTRY_MIRROR}" \
       --images-update no
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 ir_create_overcloud() {
@@ -94,8 +99,8 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --registry-mirror "${OSP_REGISTRY_MIRROR}" \
-      --overcloud-templates outputs/stf-connectors.yaml \
+      --overcloud-templates ceilometer-write-qdr-edge-only,collectd-write-qdr-edge-only,outputs/stf-connectors.yaml \
+      --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
 
@@ -116,6 +121,13 @@ if ${TEMPEST_ONLY}; then
   ir_run_tempest
 else
   echo "-- full cloud deployment"
+  echo ">> Cloud name: ${CLOUD_NAME}"
+  echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
+  echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> OSP version: ${OSP_VERSION}"
+  echo ">> OSP build: ${OSP_BUILD}"
+  echo ">> OSP topology: ${OSP_TOPOLOGY}"
+
   ir_run_cleanup
   ir_run_provision
   ir_create_undercloud
@@ -127,4 +139,12 @@ else
     truncate --size 0 outputs/stf-connectors.yaml
   fi
   ir_create_overcloud
+
+  echo "-- deployment completed"
+  echo ">> Cloud name: ${CLOUD_NAME}"
+  echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
+  echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> OSP version: ${OSP_VERSION}"
+  echo ">> OSP build: ${OSP_BUILD}"
+  echo ">> OSP topology: ${OSP_TOPOLOGY}"
 fi
