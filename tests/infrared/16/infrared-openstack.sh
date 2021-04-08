@@ -21,12 +21,14 @@ OSP_VERSION="${OSP_VERSION:-16.1}"
 OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
-ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
+STF_ENVIRONMENT_TEMPLATE="${STF_ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
+GNOCCHI_ENVIRONMENT_TEMPLATE="${GNOCCHI_ENVIRONMENT_TEMPLATE:-gnocchi-connectors.yaml.template}"
 OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
 ENABLE_STF_CONNECTORS="${ENABLE_STF_CONNECTORS:-true}"
+ENABLE_GNOCCHI_CONNECTORS="${ENABLE_GNOCCHI_CONNECTORS:-true}"
 
 ir_run_cleanup() {
   infrared virsh \
@@ -68,7 +70,11 @@ ir_create_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/" ${STF_ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+}
+
+gnocchi_create_config() {
+  cat ${GNOCCHI_ENVIRONMENT_TEMPLATE} > outputs/gnocchi-connectors.yaml
 }
 
 ir_create_overcloud() {
@@ -88,7 +94,7 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --overcloud-templates outputs/stf-connectors.yaml \
+      --overcloud-templates outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
@@ -106,11 +112,14 @@ ir_run_tempest() {
 }
 
 ir_expose_ui() {
-  infrared cloud-config --deployment-files virt --tasks create_external_network,forward_overcloud_dashboard
+  infrared cloud-config --external-dhcp True \
+                        --external-shared True \
+                        --deployment-files virt \
+                        --tasks create_external_network,forward_overcloud_dashboard
 }
 
 ir_run_workload() {
-    infrared cloud-config --deployment-files virt --tasks launch_workload
+  infrared cloud-config --deployment-files virt --tasks launch_workload
 }
 
 time if ${TEMPEST_ONLY}; then
@@ -121,6 +130,7 @@ else
   echo ">> Cloud name: ${CLOUD_NAME}"
   echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
   echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> Gnocchi enabled: ${ENABLE_GNOCCHI_CONNECTORS}"
   echo ">> OSP version: ${OSP_VERSION}"
   echo ">> OSP build: ${OSP_BUILD}"
   echo ">> OSP topology: ${OSP_TOPOLOGY}"
@@ -134,6 +144,13 @@ else
     touch outputs/stf-connectors.yaml
     truncate --size 0 outputs/stf-connectors.yaml
   fi
+  if ${ENABLE_GNOCCHI_CONNECTORS}; then
+    gnocchi_create_config
+  else
+    touch outputs/gnocchi-connectors.yaml
+    truncate --size 0 outputs/gnocchi-connectors.yaml
+  fi
+  
   ir_create_overcloud
   ir_expose_ui
   if ${RUN_WORKLOAD}; then
@@ -144,9 +161,8 @@ else
   echo ">> Cloud name: ${CLOUD_NAME}"
   echo ">> Overcloud domain: ${OVERCLOUD_DOMAIN}"
   echo ">> STF enabled: ${ENABLE_STF_CONNECTORS}"
+  echo ">> Gnocchi enabled: ${ENABLE_GNOCCHI_CONNECTORS}"
   echo ">> OSP version: ${OSP_VERSION}"
   echo ">> OSP build: ${OSP_BUILD}"
   echo ">> OSP topology: ${OSP_TOPOLOGY}"
 fi
-
-
