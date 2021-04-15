@@ -1,3 +1,5 @@
 watches.local
 .venv
 build/working/
+bundle.Dockerfile
+deploy/olm-catalog/service-telemetry-operator/Dockerfile

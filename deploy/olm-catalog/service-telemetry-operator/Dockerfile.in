@@ -1,0 +1,28 @@
+FROM scratch
+
+COPY ./manifests /manifests/
+COPY ./metadata /metadata/
+
+LABEL operators.operatorframework.io.bundle.mediatype.v1=registry+v1
+LABEL operators.operatorframework.io.bundle.manifests.v1=manifests/
+LABEL operators.operatorframework.io.bundle.metadata.v1=metadata/
+LABEL operators.operatorframework.io.bundle.package.v1=service-telemetry-operator
+LABEL operators.operatorframework.io.bundle.channels.v1=unstable
+LABEL operators.operatorframework.io.bundle.channel.default.v1=unstable
+LABEL operators.operatorframework.io.metrics.mediatype.v1=metrics+v1
+LABEL operators.operatorframework.io.metrics.builder=operator-sdk-v0.19.4
+LABEL operators.operatorframework.io.metrics.project_layout=ansible
+LABEL com.redhat.delivery.operator.bundle=true
+LABEL com.redhat.openshift.versions="v4.5-v4.6"
+LABEL com.redhat.delivery.backport=true
+
+LABEL com.redhat.component="service-telemetry-operator-bundle-container" \
+      name="stf/service-telemetry-operator-bundle" \
+      version="<<OPERATOR_VERSION>>" \
+      summary="service-telemetry-operator-bundle" \
+      License="ASL 2.0" \
+      io.openshift.expose-services="" \
+      io.openshift.tags="monitoring,telemetry,faulting,serviceassurance" \
+      io.k8s.display-name="service-telemetry-operator-bundle" \
+      maintainer="['leif+service-telemetry-operator@redhat.com']" \
+      description="service-telemetry-operator-bundle"
