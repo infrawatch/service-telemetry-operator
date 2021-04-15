@@ -15,7 +15,7 @@ spec:
       serviceAccountName: service-telemetry-operator
       containers:
         - name: operator
-          image: quay.io/infrawatch/service-telemetry-operator:latest
+          image: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
           imagePullPolicy: Always
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
@@ -34,7 +34,7 @@ spec:
             - name: ANSIBLE_GATHERING
               value: explicit
             - name: RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE
-              value: quay.io/infrawatch/prometheus-webhook-snmp:latest
+              value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
       volumes:
         - name: runner
           emptyDir: {}
