@@ -17,6 +17,7 @@ CREATED_DATE=${CREATED_DATE:-$(date +'%Y-%m-%dT%H:%M:%SZ')}
 RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP=${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP:-quay.io/infrawatch/prometheus-webhook-snmp}
 RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG=${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG:-latest}
 BUNDLE_PATH=${BUNDLE_PATH:-deploy/olm-catalog/service-telemetry-operator}
+OPERATOR_BUNDLE_IMAGE=${OPERATOR_BUNDLE_IMAGE:-"quay.io/infrawatch-operators/${OPERATOR_NAME}-bundle"}
 
 # Automatic
 CSV_FILE=${CSV_FILE:-"deploy/olm-catalog/${OPERATOR_NAME}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"}

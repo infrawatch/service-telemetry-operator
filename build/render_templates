@@ -34,7 +34,7 @@ generate_bundle() {
 
     pushd "${REL}/../"
     echo "operator-sdk generate bundle --manifests --metadata --version ${OPERATOR_VERSION} --deploy-dir deploy/ --crds-dir deploy/crds/ --output-dir ${WORKING_DIR}"
-    operator-sdk generate bundle --manifests --metadata --version "${OPERATOR_VERSION}" --deploy-dir deploy/ --crds-dir deploy/crds/ --output-dir "${WORKING_DIR}"
+    operator-sdk generate bundle --channels unstable --default-channel unstable --manifests --metadata --version "${OPERATOR_VERSION}" --output-dir "${WORKING_DIR}"
     popd
 
     echo "---- Replacing variables in generated manifest"
@@ -44,8 +44,8 @@ generate_bundle() {
 
 build_bundle() {
     echo "-- Build bundle"
-    docker build -t "${OPERATOR_IMAGE}:${OPERATOR_VERSION}" -f "${WORKING_DIR}/Dockerfile" "${WORKING_DIR}"
-    echo "---- Bundle build completed for ${OPERATOR_IMAGE}:${OPERATOR_VERSION}"
+    docker build -t "${OPERATOR_BUNDLE_IMAGE}:${OPERATOR_VERSION}" -f "${WORKING_DIR}/Dockerfile" "${WORKING_DIR}"
+    echo "---- Bundle build completed for ${OPERATOR_BUNDLE_IMAGE}:${OPERATOR_VERSION}"
 }
 
 
