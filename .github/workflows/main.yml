@@ -57,5 +57,11 @@ jobs:
       - name: Move operator-sdk binary
         run: sudo mv operator-sdk /usr/local/bin
 
+      - name: Create working directory
+        run: mkdir /tmp/bundle
+
+      - name: Generate bundle
+        run: WORKING_DIR=/tmp/bundle ./build/generate_bundle.sh
+
       - name: Check bundle validation
-        run: operator-sdk bundle validate --verbose ./deploy/olm-catalog/service-telemetry-operator
+        run: operator-sdk bundle validate --verbose /tmp/bundle

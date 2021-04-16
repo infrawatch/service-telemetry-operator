@@ -50,6 +50,6 @@ echo "## Begin bundle creation"
 generate_version
 create_working_dir
 generate_dockerfile
-generate_bundle
+#generate_bundle
 build_bundle_instructions
 echo "## End Bundle creation"
