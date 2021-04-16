@@ -6,6 +6,7 @@
 #
 set -e
 source "$(dirname "$0")/metadata.sh"
+source "$(dirname "$0")/ocp_metadata.sh"
 
 if [ "${IMAGE_BUILDER}" = "podman" ]; then
     REG_EXTRAFLAGS="--tls-verify=false"

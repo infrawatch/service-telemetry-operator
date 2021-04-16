@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-REL=$(dirname "$0"); source "${REL}/metadata.sh"
+REL=$(dirname "$0"); source "${REL}/metadata.sh"; source "${REL}/ocp_metadata.sh"
 
 oc create imagestream "${OPERATOR_NAME}" || true
 
