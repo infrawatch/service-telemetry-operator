@@ -18,7 +18,7 @@ LABEL com.redhat.delivery.backport=true
 
 LABEL com.redhat.component="service-telemetry-operator-bundle-container" \
       name="stf/service-telemetry-operator-bundle" \
-      version="<<OPERATOR_VERSION>>" \
+      version="<<OPERATOR_BUNDLE_VERSION>>" \
       summary="service-telemetry-operator-bundle" \
       License="ASL 2.0" \
       io.openshift.expose-services="" \
