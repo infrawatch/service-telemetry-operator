@@ -95,17 +95,17 @@ metadata:
     capabilities: Basic Install
     categories: Monitoring
     certified: "false"
-    containerImage: quay.io/infrawatch/service-telemetry-operator:latest
-    createdAt: "2020-01-10T21:30:00Z"
+    containerImage: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
+    createdAt: <<CREATED_DATE>>
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
-    olm.skipRelease: '>=1.1.0 <1.3.0'
+    olm.skipRelease: '>=1.1.0 <<<OPERATOR_VERSION>>'
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
     repository: https://github.com/infrawatch/service-telemetry-operator
     support: Red Hat
-  name: service-telemetry-operator.v1.3.0
+  name: service-telemetry-operator.v1.99.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -493,8 +493,8 @@ spec:
                 - name: ANSIBLE_GATHERING
                   value: explicit
                 - name: RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE
-                  value: quay.io/infrawatch/prometheus-webhook-snmp:latest
-                image: quay.io/infrawatch/service-telemetry-operator:latest
+                  value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
+                image: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
                 imagePullPolicy: Always
                 name: operator
                 resources: {}
@@ -602,4 +602,4 @@ spec:
   minKubeVersion: 1.18.0
   provider:
     name: Red Hat
-  version: 1.3.0
+  version: 1.99.0
