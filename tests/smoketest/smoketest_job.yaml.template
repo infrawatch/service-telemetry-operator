@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: smoketest-collectd
-        image: tripleomaster/centos-binary-collectd:current-tripleo-rdo
+        image: quay.io/tripleomaster/openstack-collectd:current-tripleo
         command:
         - /smoketest_collectd_entrypoint.sh
         env:
@@ -30,7 +30,7 @@ spec:
           mountPath: /smoketest_collectd_entrypoint.sh
           subPath: smoketest_collectd_entrypoint.sh
       - name: smoketest-ceilometer
-        image: tripleomaster/centos-binary-ceilometer-notification:current-tripleo-rdo
+        image: quay.io/tripleomaster/openstack-ceilometer-notification:current-tripleo
         command:
         - /smoketest_ceilometer_entrypoint.sh
         env:
