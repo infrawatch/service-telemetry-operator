@@ -1,47 +1,47 @@
 ---
-#- name: Create BuildConfig and ImageStream
-#  shell: oc new-build --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
-#
-#- name: Kill first build since it will always fail (triggered on BuildConfig creation)
-#  shell: sleep 10 ; oc delete build {{ artifact.name }}-1
-#
-#- name: Kick off build
-#  block:
-#    - name: Start local image build
-#      command: oc start-build {{ artifact.name }} --wait --from-dir "{{ artifact.working_build_dir }}"
-#      register: build_name
-#  always:
-#    - name: Describe local image build (results)
-#      command: oc describe build {{ artifact.name }}
-#      register: build_describe
-#
-#    - debug:
-#        var: build_describe.stdout_lines
-#
-#- debug:
-#    var: build_name
-#
-#- name: Set current build name
-#  set_fact:
-#    this_build_name: "{{ build_name['stdout'].split(' ')[0].split('/')[1] }}"
-#
-#- debug:
-#    var: this_build_name
-#
-#- name: Get artifact path
-#  k8s_info:
-#    api_version: build.openshift.io/v1
-#    kind: Build
-#    name: "{{ this_build_name }}"
-#    namespace: "{{ namespace }}"
-#  register: image_reference
-#
-#- debug:
-#    var: image_reference.resources[0].status.outputDockerImageReference
-#
-#- name: Set unique image reference for this artifact
-#  set_fact:
-#    "{{ artifact.image_reference_name }}": "{{ image_reference.resources[0].status.outputDockerImageReference }}"
-#
-#- debug:
-#    var: "{{ artifact.image_reference_name }}"
+- name: Create BuildConfig and ImageStream
+  shell: oc new-build --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
+
+- name: Kill first build since it will always fail (triggered on BuildConfig creation)
+  shell: sleep 10 ; oc delete build {{ artifact.name }}-1
+
+- name: Kick off build
+  block:
+    - name: Start local image build
+      command: oc start-build {{ artifact.name }} --wait --from-dir "{{ artifact.working_build_dir }}"
+      register: build_name
+  always:
+    - name: Describe local image build (results)
+      command: oc describe build {{ artifact.name }}
+      register: build_describe
+
+    - debug:
+        var: build_describe.stdout_lines
+
+- debug:
+    var: build_name
+
+- name: Set current build name
+  set_fact:
+    this_build_name: "{{ build_name['stdout'].split(' ')[0].split('/')[1] }}"
+
+- debug:
+    var: this_build_name
+
+- name: Get artifact path
+  k8s_info:
+    api_version: build.openshift.io/v1
+    kind: Build
+    name: "{{ this_build_name }}"
+    namespace: "{{ namespace }}"
+  register: image_reference
+
+- debug:
+    var: image_reference.resources[0].status.outputDockerImageReference
+
+- name: Set unique image reference for this artifact
+  set_fact:
+    "{{ artifact.image_reference_name }}": "{{ image_reference.resources[0].status.outputDockerImageReference }}"
+
+- debug:
+    var: "{{ artifact.image_reference_name }}"
