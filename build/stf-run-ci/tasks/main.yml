@@ -7,11 +7,11 @@
 
 - name: Set default image paths for local builds
   set_fact:
-    sgo_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator"
-    sto_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator"
-    sg_core_image_path: "{{ __internal_registry_path }}/{{ namespace }}/sg-core"
-    sg_bridge_image_path: "{{ __internal_registry_path }}/{{ namespace }}/sg-bridge"
-    prometheus_webhook_snmp_image_path: "{{ __internal_registry_path }}/{{ namespace }}/prometheus-webhook-snmp"
+    sgo_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator:{{ sgo_image_tag }}"
+    sto_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator:{{ sto_image_tag }}"
+    sg_core_image_path: "{{ __internal_registry_path }}/{{ namespace }}/sg-core:{{ sg_core_image_tag }}"
+    sg_bridge_image_path: "{{ __internal_registry_path }}/{{ namespace }}/sg-bridge:{{ sg_bridge_image_tag }}"
+    prometheus_webhook_snmp_image_path: "{{ __internal_registry_path }}/{{ namespace }}/prometheus-webhook-snmp:{{ prometheus_webhook_snmp_image_tag }}"
 
 - block:
   - name: Setup supporting repositories
