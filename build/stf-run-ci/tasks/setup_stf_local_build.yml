@@ -6,12 +6,12 @@
     chdir: working/smart-gateway-operator/build
     cmd: |
       WORKING_DIR="{{ playbook_dir }}/working/smart-gateway-operator-bundle" \
-      RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path.split(':')[:-1] | join(':') | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path.split(':')[:-1] | join(':') | quote }} \
-      RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path.split(':')[-1] | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path.split(':')[-1] | quote }} \
-      OPERATOR_IMAGE={{ sgo_image_path.split(':')[:-1] | join(':') | quote }} \
-      OPERATOR_TAG={{ sgo_image_path.split(':')[-1] | quote }} \
+      RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
+      RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
+      RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
+      RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
+      OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
+      OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
       ./generate_bundle.sh
   register: generate_bundle_sgo
 
@@ -42,10 +42,10 @@
     chdir: "{{ playbook_dir }}"
     cmd: |
       WORKING_DIR="{{ playbook_dir }}/working/service-telemetry-operator-bundle" \
-      RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path.split(':')[:-1] | join(':') | quote }} \
-      RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path.split(':')[-1] | quote }} \
-      OPERATOR_IMAGE={{ sto_image_path.split(':')[:-1] | join(':') | quote }} \
-      OPERATOR_TAG={{ sto_image_path.split(':')[-1] | quote }} \
+      RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
+      RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
+      OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
+      OPERATOR_TAG={{ sto_image_path | parse_tag | quote }} \
       ./generate_bundle.sh
 
 - name: Load Service Telemetry Operator RBAC
