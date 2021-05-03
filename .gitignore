@@ -2,3 +2,4 @@ watches.local
 .venv
 build/working/
 bundle.Dockerfile
+build/stf-run-ci/filter_plugins/__pycache__/
