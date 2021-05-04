@@ -38,6 +38,9 @@ ir_run_cleanup() {
       --host-address "${VIRTHOST}" \
       --host-key "${SSH_KEY}" \
       --cleanup yes
+
+  echo "*** If you just want to clean up the environment now is your chance to Ctrl+C ***"
+  sleep 10
 }
 
 ir_run_provision() {
