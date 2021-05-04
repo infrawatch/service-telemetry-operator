@@ -81,6 +81,11 @@ custom_templates:
             - storage.*
             - volume.*
 
+            collectd::plugin::memcached::instances:
+              local:
+                host: "%{hiera('fqdn_canonical')}
+                port: 11211
+
             collectd::plugin::cpu::reportbycpu: true
             collectd::plugin::cpu::reportbystate: true
             collectd::plugin::cpu::valuespercentage: true
