@@ -150,7 +150,7 @@ else
     touch outputs/gnocchi-connectors.yaml
     truncate --size 0 outputs/gnocchi-connectors.yaml
   fi
-  
+
   ir_create_overcloud
   ir_expose_ui
   if ${RUN_WORKLOAD}; then
