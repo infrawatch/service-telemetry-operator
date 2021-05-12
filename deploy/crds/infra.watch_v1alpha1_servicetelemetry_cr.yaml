@@ -1,9 +1,0 @@
-apiVersion: infra.watch/v1alpha1
-kind: ServiceTelemetry
-metadata:
-  name: default
-spec:
-  metricsEnabled: true
-  eventsEnabled: false
-  graphingEnabled: false
-# vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
