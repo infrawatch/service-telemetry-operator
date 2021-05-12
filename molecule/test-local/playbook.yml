@@ -24,7 +24,7 @@
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
     pull_policy: Never
     REPLACE_IMAGE: infra.watch/service-telemetry-operator:testing
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/infra.watch_v1alpha1_servicetelemetry_cr.yaml'])) | from_yaml }}"
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/infra.watch_v1beta1_servicetelemetry_cr.yaml'])) | from_yaml }}"
   tasks:
   - block:
     - name: Delete the Operator Deployment
@@ -54,7 +54,7 @@
         namespace: '{{ namespace }}'
         definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
 
-    - name: Create the infra.watch/v1alpha1.ServiceTelemetry
+    - name: Create the infra.watch/v1beta1.ServiceTelemetry
       k8s:
         state: present
         namespace: '{{ namespace }}'

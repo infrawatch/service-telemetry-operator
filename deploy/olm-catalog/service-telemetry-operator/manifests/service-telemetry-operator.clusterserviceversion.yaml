@@ -5,18 +5,6 @@ metadata:
     alm-examples: |-
       [
         {
-          "apiVersion": "infra.watch/v1alpha1",
-          "kind": "ServiceTelemetry",
-          "metadata": {
-            "name": "default"
-          },
-          "spec": {
-            "eventsEnabled": false,
-            "graphingEnabled": false,
-            "metricsEnabled": true
-          }
-        },
-        {
           "apiVersion": "infra.watch/v1beta1",
           "kind": "ServiceTelemetry",
           "metadata": {
@@ -379,64 +367,6 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Ephemeral storage status
         - urn:alm:descriptor:text
       version: v1beta1
-    - description: Represents an instance of the Service Telemetry Framework (Deprecated
-        v1alpha1)
-      displayName: STF Cluster (deprecated)
-      kind: ServiceTelemetry
-      name: servicetelemetrys.infra.watch
-      resources:
-      - kind: Pods
-        name: ""
-        version: v1
-      - kind: ConfigMaps
-        name: ""
-        version: v1
-      - kind: ServiceTelemetrys
-        name: servicetelemetrys.infra.watch
-        version: v1alpha1
-      - kind: ReplicaSets
-        name: ""
-        version: v1
-      - kind: Deployments
-        name: ""
-        version: v1
-      - kind: Services
-        name: ""
-        version: v1
-      specDescriptors:
-      - description: Whether to enable collection and storage components for metrics
-        displayName: Metrics Enabled
-        path: metricsEnabled
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Whether to enable collection and storage components for events
-        displayName: Events Enabled
-        path: eventsEnabled
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Whether to enable high availability for Service Telemetry components
-        displayName: High Availability Enabled
-        path: highAvailabilityEnabled
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Whether to enable ephemeral storage for development environments
-        displayName: Ephemeral Storage Enabled
-        path: storageEphemeralEnabled
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Size of PV request for Prometheus storage. Add your unit to the
-          end (i.e. M (Megabytes), G (Gigabytes), etc) such as "20G".
-        displayName: Prometheus Storage Size
-        path: prometheusPvcStorageRequest
-        x-descriptors:
-        - urn:alm:descriptor:tectonic.ui:text
-      statusDescriptors:
-      - description: Conditions provided by deployment
-        displayName: Conditions
-        path: conditions
-        x-descriptors:
-        - urn:alm:descriptor:io.kubernetes:conditions
-      version: v1alpha1
     required:
     - description: A declaration of a required Certificate
       displayName: AMQ Certificate Manager
