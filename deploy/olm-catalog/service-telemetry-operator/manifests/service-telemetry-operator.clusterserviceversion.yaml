@@ -387,7 +387,7 @@ spec:
       displayName: Smart Gateway
       kind: SmartGateway
       name: smartgateways.smartgateway.infra.watch
-      version: v2alpha1
+      version: v2
   description: Service Telemetry Operator for monitoring clouds
   displayName: Service Telemetry Operator
   icon:

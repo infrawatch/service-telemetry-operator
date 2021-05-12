@@ -1,16 +1,39 @@
-apiVersion: smartgateway.infra.watch/v2alpha1
+apiVersion: smartgateway.infra.watch/v2
 kind: SmartGateway
 metadata:
   name: '{{ this_smartgateway }}'
   namespace: '{{ meta.namespace }}'
 spec:
-  amqpUrl: '{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}'
-  amqpDataSource: '{{ this_collector.collector_type }}'
-  debug: {{ this_collector.debug_enabled | default(false) }}
-  serviceType: 'metrics'
-{% if this_collector.collector_type == "collectd" %}
+{% if this_collector.debug_enabled is defined and this_collector.debug_enabled %}
+  logLevel: "debug"
+{% else %}
+  logLevel: "info"
+{% endif %}
+  handleErrors: true
+{% if this_collector.collector_type is defined and this_collector.collector_type == "collectd" %}
   size: {{ smartgateway_deployment_size }}
 {% else %}
   size: 1
 {% endif %}
-  useTimestamp: true
+  applications:
+  - config: |
+      host: 0.0.0.0
+      port: 8081
+      withtimestamp: true
+    name: prometheus
+  bridge:
+    amqpUrl: amqp://{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}
+  services:
+  - name: {{ this_smartgateway }}
+    ports:
+    - name: prom-http
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  transports:
+  - config: |
+      path: /tmp/smartgateway
+    handlers:
+    - config: ""
+      name: {{ this_collector.collector_type }}-metrics
+    name: socket
