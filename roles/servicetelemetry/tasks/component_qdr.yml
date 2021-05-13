@@ -43,7 +43,6 @@
             saslMechanisms: EXTERNAL
             sslProfile: inter-router
         listeners:
-          - port: 5672
           - expose: {{ servicetelemetry_vars.transports.qdr.web.enabled }}
             http: true
             port: 8672
