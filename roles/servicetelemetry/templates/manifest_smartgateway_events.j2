@@ -13,8 +13,8 @@ spec:
   size: {{ smartgateway_deployment_size }}
   applications:
   - config: |
-      hostUrl: https://elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local:9200
-      useTls: true
+      hostURL: https://elasticsearch-es-http.{{ meta.namespace }}.svc.cluster.local:9200
+      useTLS: true
       tlsClientCert: /config/certs/tls.crt
       tlsClientKey: /config/certs/tls.key
       tlsCaCert: /config/certs/ca.crt
