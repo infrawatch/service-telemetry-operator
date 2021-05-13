@@ -37,7 +37,7 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-oc run curl --generator=run-pod/v1 --image=quay.io/infrawatch/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-operated:9093/api/v1/alerts
+oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-operated:9093/api/v1/alerts
 # it takes some time to get the alert delivered, continuing with other tests
 
 
@@ -75,14 +75,17 @@ echo
 
 echo "*** [INFO] Logs from smart gateways..."
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -o jsonpath='{.items[0].metadata.name}')" -c bridge
-oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -o jsonpath='{.items[0].metadata.name}')" -c smart-gateway
-oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-event" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='{.items[0].metadata.name}')"
-oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')"
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-meter" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-event" -o jsonpath='{.items[0].metadata.name}')" -c bridge
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-coll-event" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='{.items[0].metadata.name}')" -c bridge
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')" -c bridge
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
-oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].metadata.name}')" -c ansible
+oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Logs from prometheus..."
