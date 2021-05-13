@@ -12,7 +12,7 @@ __service_telemetry_events_enabled: true
 __service_telemetry_high_availability_enabled: false
 __service_telemetry_metrics_enabled: true
 __service_telemetry_storage_ephemeral_enabled: false
-__service_telemetry_snmptraps_enabled: false
+__service_telemetry_snmptraps_enabled: true
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 
 sgo_image_tag: latest
