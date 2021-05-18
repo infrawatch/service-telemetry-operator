@@ -89,6 +89,7 @@ metadata:
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
     olm.skipRelease: '>=1.1.0 <<<OPERATOR_BUNDLE_VERSION>>'
+    operatorframework.io/suggested-namespace: service-telemetry
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
     repository: https://github.com/infrawatch/service-telemetry-operator
