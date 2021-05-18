@@ -10,11 +10,7 @@ spec:
   logLevel: "info"
 {% endif %}
   handleErrors: true
-{% if this_collector.collector_type is defined and this_collector.collector_type == "collectd" %}
   size: {{ smartgateway_deployment_size }}
-{% else %}
-  size: 1
-{% endif %}
   applications:
   - config: |
       host: 0.0.0.0
