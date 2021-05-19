@@ -15,7 +15,7 @@ spec:
   - config: |
       host: 0.0.0.0
       port: 8081
-      withtimestamp: true
+      withTimeStamp: true
     name: prometheus
   bridge:
     amqpUrl: amqp://{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}
