@@ -19,7 +19,7 @@
 
   - name: Remove unlisted Smart Gateway
     k8s:
-      api_version: v2alpha1
+      api_version: v2
       kind: SmartGateway
       name: "{{ item }}"
       namespace: "{{ meta.namespace }}"

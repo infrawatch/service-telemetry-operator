@@ -275,4 +275,5 @@ spec:
             status:
               type: boolean
           type: object
+        type: object
       type: object
