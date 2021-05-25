@@ -115,5 +115,5 @@
         channel: beta
         installPlanApproval: Automatic
         name: prometheus
-        source: operatorhubio-operators
+        source: community-operators
         sourceNamespace: openshift-marketplace
