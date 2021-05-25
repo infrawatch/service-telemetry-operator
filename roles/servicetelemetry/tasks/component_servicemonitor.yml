@@ -24,6 +24,9 @@
               - action: labeldrop
                 regex: job
                 sourcelabels: []
+              - action: labeldrop
+                regex: publisher
+                sourcelabels: []
             port: prom-http
         selector:
           matchLabels:
