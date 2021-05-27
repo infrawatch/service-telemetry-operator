@@ -21,16 +21,16 @@ create_working_dir() {
 
 generate_dockerfile() {
     echo "-- Generate Dockerfile for bundle"
-    sed -E "s/<<OPERATOR_BUNDLE_VERSION>>/${OPERATOR_BUNDLE_VERSION}/g" "${REL}/../${BUNDLE_PATH}/Dockerfile.in" > "${WORKING_DIR}/Dockerfile"
+    sed -E "s#<<OPERATOR_BUNDLE_VERSION>>#${OPERATOR_BUNDLE_VERSION}#g;s#<<BUNDLE_CHANNELS>>#${BUNDLE_CHANNELS}#g;s#<<BUNDLE_DEFAULT_CHANNEL>>#${BUNDLE_DEFAULT_CHANNEL}#g" "${REL}/../${BUNDLE_PATH}/Dockerfile.in" > "${WORKING_DIR}/Dockerfile"
     echo "---- Generated Dockerfile complete"
 }
 
 generate_bundle() {
     echo "-- Generate bundle"
-    REPLACE_REGEX="s#<<CREATED_DATE>>#${CREATED_DATE}#g;s#<<OPERATOR_IMAGE>>#${OPERATOR_IMAGE}#g;s#<<OPERATOR_TAG>>#${OPERATOR_TAG}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG}#g;s#<<OPERATOR_BUNDLE_VERSION>>#${OPERATOR_BUNDLE_VERSION}#g;s#1.99.0#${OPERATOR_BUNDLE_VERSION}#g"
+    REPLACE_REGEX="s#<<CREATED_DATE>>#${CREATED_DATE}#g;s#<<OPERATOR_IMAGE>>#${OPERATOR_IMAGE}#g;s#<<OPERATOR_TAG>>#${OPERATOR_TAG}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG}#g;s#<<OPERATOR_BUNDLE_VERSION>>#${OPERATOR_BUNDLE_VERSION}#g;s#1.99.0#${OPERATOR_BUNDLE_VERSION}#g;s#<<OPERATOR_DOCUMENTATION_URL>>#${OPERATOR_DOCUMENTATION_URL}#g;s#<<BUNDLE_OLM_SKIP_RELEASE_LOWER_BOUND>>#${BUNDLE_OLM_SKIP_RELEASE_LOWER_BOUND}#g"
 
     pushd "${REL}/../"
-    operator-sdk generate bundle --channels unstable --default-channel unstable --manifests --metadata --version "${OPERATOR_BUNDLE_VERSION}" --output-dir "${WORKING_DIR}"
+    operator-sdk generate bundle --channels ${BUNDLE_CHANNELS} --default-channel ${BUNDLE_DEFAULT_CHANNEL} --manifests --metadata --version "${OPERATOR_BUNDLE_VERSION}" --output-dir "${WORKING_DIR}"
     popd
 
     echo "---- Replacing variables in generated manifest"
