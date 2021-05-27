@@ -88,7 +88,7 @@ metadata:
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
-    olm.skipRelease: '>=1.1.0 <<<OPERATOR_BUNDLE_VERSION>>'
+    olm.skipRelease: '>=<<BUNDLE_OLM_SKIP_RELEASE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
     operatorframework.io/suggested-namespace: service-telemetry
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
@@ -525,7 +525,7 @@ spec:
   - name: Source Code
     url: https://github.com/infrawatch/service-telemetry-operator
   - name: Documentation
-    url: https://infrawatch.github.io/documentation
+    url: <<OPERATOR_DOCUMENTATION_URL>>
   maintainers:
   - email: support@redhat.com
     name: Red Hat
