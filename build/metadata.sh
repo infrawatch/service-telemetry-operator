@@ -4,7 +4,7 @@
 #
 
 # Configure these
-OPERATOR_SDK=${OPERATOR_SDK:-operator-sdkt }
+OPERATOR_SDK=${OPERATOR_SDK:-operator-sdk}
 OPERATOR_NAME=${OPERATOR_NAME:-service-telemetry-operator}
 IMAGE_BUILDER=${IMAGE_BUILDER:-podman}
 IMAGE_BUILD_ARGS=${IMAGE_BUILD_ARGS:-''}
