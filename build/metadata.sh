@@ -4,6 +4,7 @@
 #
 
 # Configure these
+OPERATOR_SDK=${OPERATOR_SDK:-operator-sdkt }
 OPERATOR_NAME=${OPERATOR_NAME:-service-telemetry-operator}
 IMAGE_BUILDER=${IMAGE_BUILDER:-podman}
 IMAGE_BUILD_ARGS=${IMAGE_BUILD_ARGS:-''}
@@ -25,5 +26,3 @@ OPERATOR_BUNDLE_IMAGE=${OPERATOR_BUNDLE_IMAGE:-"quay.io/infrawatch-operators/${O
 
 # Automatic
 CSV_FILE=${CSV_FILE:-"deploy/olm-catalog/${OPERATOR_NAME}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"}
-
-
