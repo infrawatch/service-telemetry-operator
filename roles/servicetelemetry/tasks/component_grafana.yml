@@ -35,7 +35,7 @@
     k8s:
       api_version: integreatly.org/v1alpha1
       name: '{{ meta.name }}-ds-datasource'
-      kind: GrafanaDatasource
+      kind: GrafanaDataSource
       namespace: '{{ meta.namespace }}'
       state: absent
 
