@@ -23,13 +23,21 @@
         api_version: v1
         kind: Secret
         name: elasticsearch-es-elastic-user
-        namespace: service-telemetry
+        namespace: '{{ meta.namespace }}'
       register: es_secret
 
     - name: Decode elasticsearch password
       set_fact:
         elasticsearch_pass: '{{ es_secret.resources[0].data.elastic | b64decode }}'
     when: servicetelemetry_vars.backends.events.elasticsearch.enabled
+
+  - name: Remove legacy datasources
+    k8s:
+      api_version: integreatly.org/v1alpha1
+      name: '{{ meta.name }}-ds-prometheus'
+      kind: GrafanaDataSource
+      namespace: '{{ meta.namespace }}'
+      state: absent
 
   - name: Set datasources
     set_fact:
