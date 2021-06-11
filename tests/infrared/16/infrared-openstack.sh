@@ -25,6 +25,11 @@ STF_ENVIRONMENT_TEMPLATE="${STF_ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.templa
 GNOCCHI_ENVIRONMENT_TEMPLATE="${GNOCCHI_ENVIRONMENT_TEMPLATE:-gnocchi-connectors.yaml.template}"
 OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
+CONTROLLER_CPU=${CONTROLLER_CPU:-4}
+CONTROLLER_MEMORY=${CONTROLLER_MEMORY:-16384}
+COMPUTE_CPU=${COMPUTE_CPU:-4}
+COMPUTE_MEMORY=${COMPUTE_MEMORY:-8192}
+
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
 ENABLE_STF_CONNECTORS="${ENABLE_STF_CONNECTORS:-true}"
@@ -53,8 +58,10 @@ ir_run_provision() {
       --host-key "${SSH_KEY}" \
       --image-url "${VM_IMAGE_LOCATION}" \
       --host-memory-overcommit True \
-      -e override.controller.cpu=4 \
-      -e override.controller.memory=16384 \
+      -e override.controller.cpu="${CONTROLLER_CPU}" \
+      -e override.controller.memory="${CONTROLLER_MEMORY}" \
+      -e override.compute.cpu="${COMPUTE_CPU}" \
+      -e override.compute.memory="${COMPUTE_MEMORY}" \
       --serial-files True
 }
 
@@ -97,7 +104,7 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --overcloud-templates outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml \
+      --overcloud-templates ceilometer-write-qdr-edge-only,collectd-write-qdr-edge-only,outputs/enable-stf.yaml,outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
