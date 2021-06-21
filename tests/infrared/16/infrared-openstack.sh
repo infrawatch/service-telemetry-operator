@@ -23,6 +23,7 @@ OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 STF_ENVIRONMENT_TEMPLATE="${STF_ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
 GNOCCHI_ENVIRONMENT_TEMPLATE="${GNOCCHI_ENVIRONMENT_TEMPLATE:-gnocchi-connectors.yaml.template}"
+ENABLE_STF_ENVIRONMENT_TEMPLATE="${ENABLE_STF_ENVIRONMENT_TEMPLATE:-enable-stf.yaml.template}"
 OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
 CONTROLLER_CPU=${CONTROLLER_CPU:-4}
@@ -85,6 +86,10 @@ stf_create_config() {
 
 gnocchi_create_config() {
   cat ${GNOCCHI_ENVIRONMENT_TEMPLATE} > outputs/gnocchi-connectors.yaml
+}
+
+enable_stf_create_config() {
+  cat ${ENABLE_STF_ENVIRONMENT_TEMPLATE} > outputs/enable-stf.yaml
 }
 
 ir_create_overcloud() {
