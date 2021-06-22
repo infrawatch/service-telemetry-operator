@@ -155,6 +155,7 @@ else
   ir_create_undercloud
   if ${ENABLE_STF_CONNECTORS}; then
     stf_create_config
+    enable_stf_create_config
   else
     touch outputs/stf-connectors.yaml
     truncate --size 0 outputs/stf-connectors.yaml
