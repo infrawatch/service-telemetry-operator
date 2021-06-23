@@ -159,6 +159,8 @@ else
   else
     touch outputs/stf-connectors.yaml
     truncate --size 0 outputs/stf-connectors.yaml
+    touch outputs/enable-stf.yaml
+    truncate --size 0 outputs/enable-stf.yaml
   fi
   if ${ENABLE_GNOCCHI_CONNECTORS}; then
     gnocchi_create_config

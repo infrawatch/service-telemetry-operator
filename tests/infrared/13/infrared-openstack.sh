@@ -24,8 +24,9 @@ OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 OSP_REGISTRY_MIRROR="${OSP_REGISTRY_MIRROR:-registry-proxy.engineering.redhat.com}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 ENVIRONMENT_TEMPLATE="${ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
+ENABLE_STF_ENVIRONMENT_TEMPLATE="${ENABLE_STF_ENVIRONMENT_TEMPLATE:-enable-stf.yaml.template}"
 OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
-
+CA_CERT_FILE_CONTENT="${CA_CERT_FILE_CONTENT:-}"
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 ENABLE_STF_CONNECTORS="${ENABLE_STF_CONNECTORS:-true}"
 
@@ -80,7 +81,11 @@ ir_image_sync_undercloud() {
 }
 
 stf_create_config() {
-  sed -e "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+    sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+}
+
+enable_stf_create_config() {
+  cat ${ENABLE_STF_ENVIRONMENT_TEMPLATE} > outputs/enable-stf.yaml
 }
 
 ir_create_overcloud() {
@@ -99,7 +104,7 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --overcloud-templates ceilometer-write-qdr-edge-only,collectd-write-qdr-edge-only,outputs/stf-connectors.yaml \
+      --overcloud-templates ceilometer-write-qdr-edge-only,collectd-write-qdr-edge-only,outputs/enable-stf.yaml,outputs/stf-connectors.yaml \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
@@ -115,6 +120,11 @@ ir_run_tempest() {
       --revision=HEAD \
       --image http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 }
+
+if [ -z "${CA_CERT_FILE_CONTENT}" ]; then
+    echo "CA_CERT_FILE_CONTENT must be set and passed to the deployment, or QDR will fail to connect."
+    exit 1
+fi
 
 if ${TEMPEST_ONLY}; then
   echo "-- Running tempest tests"
@@ -134,9 +144,12 @@ else
   ir_image_sync_undercloud
   if ${ENABLE_STF_CONNECTORS}; then
     stf_create_config
+    enable_stf_create_config
   else
     touch outputs/stf-connectors.yaml
     truncate --size 0 outputs/stf-connectors.yaml
+    touch outputs/enable-stf.yaml
+    truncate --size 0 outputs/enable-stf.yaml
   fi
   ir_create_overcloud
 
@@ -148,3 +161,4 @@ else
   echo ">> OSP build: ${OSP_BUILD}"
   echo ">> OSP topology: ${OSP_TOPOLOGY}"
 fi
+# vim: set shiftwidth=4 tabstop=4 expandtab:
