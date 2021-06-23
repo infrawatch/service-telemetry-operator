@@ -81,7 +81,7 @@ ir_image_sync_undercloud() {
 }
 
 stf_create_config() {
-    sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 enable_stf_create_config() {
