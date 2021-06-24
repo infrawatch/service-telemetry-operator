@@ -2,7 +2,7 @@ The Jenkins agent pod is used to run all Jenkins pipelines for the Service Telem
 
 # Build in OpenShift
 ```bash
-oc new-build jenkins-agent . --to=jenkins-agent:latest
+oc new-build jenkins-agent --binary=true --to=jenkins-agent:latest
 oc start-build jenkins-agent --from-dir .
 ```
 The will be available in-cluster at the address: `image-registry.openshift-image-registry.svc:5000/<NAMESPACE>/jenkins-agent:latest`
