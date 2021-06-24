@@ -49,7 +49,7 @@
       ./generate_bundle.sh
 
 - name: Load Service Telemetry Operator RBAC
-  command: oc apply -f ../deploy/{{ item }} "{{ namespace }}"
+  command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
   loop:
     - service_account.yaml
     - role.yaml
@@ -63,4 +63,4 @@
     replace: '{{ namespace }}'
 
 - name: Load Service Telemetry Operator CSV
-  shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml "{{ namespace }}"
+  shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
