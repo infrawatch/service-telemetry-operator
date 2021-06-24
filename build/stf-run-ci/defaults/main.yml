@@ -20,3 +20,4 @@ sto_image_tag: latest
 sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
+namespace: service-telemetry
