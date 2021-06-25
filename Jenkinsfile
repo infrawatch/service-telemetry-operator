@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def namespace = env.BUILD_TAG
+def namespace = env.BUILD_TAG.toLowerCase()
 
 podTemplate(containers: [
     containerTemplate(
