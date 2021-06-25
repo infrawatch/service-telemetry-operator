@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+OCP_PROJECT=${OCP_PROJECT:-service-telemetry}
+oc project "$OCP_PROJECT"
+
 # Play the (automated!) waiting game
 echo -e "\n* [info] Waiting for QDR deployment to complete\n"
 until timeout 300 oc rollout status deployment.apps/default-interconnect; do sleep 3; done
