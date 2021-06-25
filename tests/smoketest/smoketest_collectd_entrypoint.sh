@@ -28,8 +28,8 @@ until [ $retries -eq 0 ] || grep "Initialization complete, entering read-loop" /
 done
 
 # Sleeping to collect 1m of actual metrics
-echo "*** [INFO] Sleeping for 60 seconds to collect a minute of metrics and events"
-sleep 60
+echo "*** [INFO] Sleeping for 30 seconds to collect 30s of metrics and events"
+sleep 30
 
 echo "*** [INFO] List of metric names for debugging..."
 curl -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-OCP_PROJECT=${OCP_PROJECT:-service-telemetry}
-oc project "$OCP_PROJECT"
+if [ -n ${OCP_PROJECT+x} ]; then
+    oc project $OCP_PROJECT
+fi
 
 # Play the (automated!) waiting game
 echo -e "\n* [info] Waiting for QDR deployment to complete\n"

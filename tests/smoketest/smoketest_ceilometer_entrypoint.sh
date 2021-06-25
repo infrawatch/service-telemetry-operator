@@ -12,7 +12,7 @@ POD=$(hostname)
 echo "*** [INFO] My pod is: ${POD}"
 
 # Run ceilometer_publisher script
-python3 /ceilometer_publish.py default-interconnect:5672 driver=amqp&topic=metric driver=amqp&topic=event
+python3 /ceilometer_publish.py default-interconnect:5671 driver=amqp&topic=metric driver=amqp&topic=event
 
 # Sleeping to produce data
 echo "*** [INFO] Sleeping for 20 seconds to produce all metrics and events"
