@@ -1,7 +1,7 @@
 ---
 # --- Smart Gateway Operator ---
 - name: Load Smart Gateway Operator RBAC
-  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }}
+  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
   loop:
     - service_account.yaml
     - role.yaml
@@ -46,7 +46,7 @@
     replace: '{{ namespace }}'
 
 - name: Load Smart Gateway Operator CSV
-  shell: oc apply -f working/smart-gateway-operator.clusterserviceversion.yaml
+  shell: oc apply -f working/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # --- Service Telemetry Operator ---
 
@@ -66,7 +66,7 @@
     replace: '{{ namespace }}'
 
 - name: Load Service Telemetry Operator RBAC
-  command: oc apply -f ../deploy/{{ item }}
+  command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
   loop:
     - service_account.yaml
     - role.yaml
@@ -74,4 +74,4 @@
     - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
 
 - name: Load Service Telemetry Operator CSV
-  shell: oc apply -f working/service-telemetry-operator.clusterserviceversion.yaml
+  shell: oc apply -f working/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
