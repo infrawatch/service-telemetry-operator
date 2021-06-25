@@ -14,6 +14,7 @@
 # Generate an array of cloud names to use
 NUMCLOUDS=${1:-1}
 CLOUDNAMES=()
+OCP_PROJECT=${OCP_PROJECT:-service-telemetry}
 for ((i=1; i<=NUMCLOUDS; i++)); do
   NAME="smoke${i}"
   CLOUDNAMES+=(${NAME})
