@@ -20,7 +20,7 @@
     var: generate_bundle_sgo.stdout_lines
 
 - name: Load Smart Gateway Operator RBAC
-  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }}
+  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
   loop:
     - service_account.yaml
     - role.yaml
@@ -34,7 +34,7 @@
     replace: '{{ namespace }}'
 
 - name: Load Smart Gateway Operator CSV
-  shell: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml
+  shell: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # --- Service Telemetry Operator ---
 - name: Generate Service Telemetry Operator CSV
@@ -49,7 +49,7 @@
       ./generate_bundle.sh
 
 - name: Load Service Telemetry Operator RBAC
-  command: oc apply -f ../deploy/{{ item }}
+  command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
   loop:
     - service_account.yaml
     - role.yaml
@@ -63,4 +63,4 @@
     replace: '{{ namespace }}'
 
 - name: Load Service Telemetry Operator CSV
-  shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml
+  shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
