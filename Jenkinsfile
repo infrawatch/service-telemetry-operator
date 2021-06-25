@@ -1,6 +1,8 @@
 #!/usr/bin/env groovy
 
-def namespace = env.BUILD_TAG.toLowerCase()
+// can't just use BUILD_TAG because qdr operator limits name of resources to 60 chars
+def namespace = env.JOB_BASE_NAME + '-' + env.BUILD_NUMBER
+namespace = namespace.toLowerCase()
 
 podTemplate(containers: [
     containerTemplate(
