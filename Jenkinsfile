@@ -13,7 +13,7 @@ podTemplate(containers: [
         args: 'infinity',
         alwaysPullImage: true
     )],
-    serviceAccount: 'jenkins-cloudops'
+    serviceAccount: 'jenkins-operator-cloudops'
 
 ) {
     node(POD_LABEL) {
