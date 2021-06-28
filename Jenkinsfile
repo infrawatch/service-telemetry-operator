@@ -6,6 +6,7 @@ namespace = namespace.toLowerCase()
 
 podTemplate(containers: [
     containerTemplate(
+        cloud: 'openshift',
         name: 'exec',
         image: 'image-registry.openshift-image-registry.svc:5000/ci/jenkins-agent:latest',
         command: 'sleep',
