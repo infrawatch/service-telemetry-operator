@@ -36,7 +36,7 @@
         namespace: openshift-marketplace
       spec:
         displayName: Red Hat STF Operators
-        image: quay.io/redhat-operators-stf/stf-catalog:v4.6
+        image: quay.io/redhat-operators-stf/stf-catalog:stable
         publisher: Red Hat
         sourceType: grpc
         updateStrategy:
