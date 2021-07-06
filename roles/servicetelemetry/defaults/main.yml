@@ -73,7 +73,7 @@ servicetelemetry_defaults:
             subscription_address: anycast/ceilometer/metering.sample
             debug_enabled: false
           - collector_type: sensubility
-            subscription_address: sensubility/metrics
+            subscription_address: sensubility/telemetry
             debug_enabled: false
       events:
         collectors:
