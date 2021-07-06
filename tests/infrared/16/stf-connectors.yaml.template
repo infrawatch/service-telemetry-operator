@@ -32,7 +32,7 @@ custom_templates:
                 format: JSON
                 presettle: false
 
-        CollectdSensubilityResultsChannel: collectd/<<CLOUD_NAME>>-notify
+        CollectdSensubilityResultsChannel: sensubility/<<CLOUD_NAME>>-telemetry
 
         # --- below here, extended configuration for environment beyond what is documented in stable-1.3
         CollectdSensubilityLogLevel: DEBUG
