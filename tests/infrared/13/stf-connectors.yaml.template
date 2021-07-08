@@ -3,6 +3,10 @@ tripleo_heat_templates:
     []
 
 custom_templates:
+    # don't load collectd-write-qdr.yaml when using multi-cloud and instead load collectd service directly
+    resource_registry:
+        OS::TripleO::Services::Collectd: /usr/share/openstack-triple-heat-templates/deployment/metrics/collectd-container-puppet.yaml
+
     # set parameter defaults to match stable-1.3 documentation
     parameter_defaults:
         CeilometerQdrEventsConfig:
