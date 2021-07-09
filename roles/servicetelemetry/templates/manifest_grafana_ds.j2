@@ -30,7 +30,7 @@ spec:
       database: collectd_*
       jsonData:
         tlsSkipVerify: true
-        timeField: startsAt
+        timeField: generated
         esVersion: 70
 
     - name: es_ceilometer
@@ -45,7 +45,7 @@ spec:
       database: ceilometer_*
       jsonData:
         tlsSkipVerify: true
-        timeField: payload.generated
+        timeField: generated
         esVersion: 70
 {% endif %}
   name: {{ meta.name }}-ds-stf.yaml
