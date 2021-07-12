@@ -20,9 +20,9 @@ custom_templates:
         ManagePolling: true
         ManagePipeline: true
 
-        # required to set valid parameter due to typo in ceilometer-write-qdr.yaml
-        # and will be resolved in a future release
+        # enable Ceilometer metrics and events
         CeilometerQdrPublishMetrics: true
+        CeilometerQdrPublishEvents: true
 
         # enable collection of API status
         CollectdEnableSensubility: true
