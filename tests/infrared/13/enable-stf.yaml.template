@@ -43,6 +43,13 @@ custom_templates:
         CollectdExtraPlugins:
         - vmem
 
+        # set standard prefixes for where metrics and events are published to QDR
+        MetricsQdrAddresses:
+        - prefix: 'collectd'
+          distribution: multicast
+        - prefix: 'anycast/ceilometer'
+          distribution: multicast
+
         ExtraConfig:
             ceilometer::agent::polling::polling_interval: 30
             ceilometer::agent::polling::polling_meters:
