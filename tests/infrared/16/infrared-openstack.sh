@@ -109,7 +109,7 @@ ir_create_overcloud() {
       --tagging yes \
       --deploy yes \
       --ntp-server "${NTP_SERVER}" \
-      --overcloud-templates ceilometer-write-qdr-edge-only,collectd-write-qdr-edge-only,outputs/enable-stf.yaml,outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml \
+      --overcloud-templates ceilometer-write-qdr-edge-only,outputs/enable-stf.yaml,outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes
 }
