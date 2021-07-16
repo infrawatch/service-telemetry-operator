@@ -81,5 +81,5 @@ custom_templates:
             # rather than host IP, ensuring metrics in the dashboard remain uniform
             collectd::plugin::memcached::instances:
               local:
-                host: "%{hiera(fqdn_canonical)}"
+                host: "%{hiera('fqdn_canonical')}"
                 port: 11211
