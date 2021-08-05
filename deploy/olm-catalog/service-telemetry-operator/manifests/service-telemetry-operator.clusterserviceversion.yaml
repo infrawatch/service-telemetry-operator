@@ -59,7 +59,7 @@ metadata:
               "logs": {
                 "loki": {
                   "enabled": false,
-                  "size": "1.extra-small",
+                  "flavor": "1.extra-small",
                   "replicationFactor": 1,
                   "storage": {
                     "objectStorageSecret": "test",
@@ -382,11 +382,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Loki size.
-          Choose size of the loki deployment. This determines
+      - description: Loki flavor.
+          Choose flavor of the loki deployment. This determines
           how much resources each loki microservice has.
-        displayName: Loki size
-        path: backends.logs.loki.size
+        displayName: Loki flavor
+        path: backends.logs.loki.flavor
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:select:1x.extra-small
