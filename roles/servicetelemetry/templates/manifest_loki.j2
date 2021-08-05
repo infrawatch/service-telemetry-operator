@@ -4,7 +4,7 @@ metadata:
   name: lokistack
   namespace: '{{ meta.namespace }}'
 spec:
-  size: {{ servicetelemetry_vars.backends.logs.loki.size }}
+  size: {{ servicetelemetry_vars.backends.logs.loki.flavor }}
   replicationFactor: {{ servicetelemetry_vars.backends.logs.loki.replication_factor }}
   storage:
     secret:

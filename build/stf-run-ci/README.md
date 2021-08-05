@@ -35,7 +35,7 @@ choose to override:
 | `__service_telemetry_logs_enabled`              | {true,false}    | false                                            | Whether to enable logs support in ServiceTelemetry                                                    |
 | `__internal_registry_path`                      | <registry_path> | image-registry.openshift-image-registry.svc:5000 | Path to internal registry for image path                                                              |
 | `__deploy_minio_enabled`                        | {true,false}    | false                                            | Whether to deploy minio while deploying loki-operator for logging development purposes                |
-| `__loki_skip_tls_verify`                        | {true,false}    | false                                            | Whether to skip tls verify for Loki S3 connection                                                     |
+| `__loki_skip_tls_verify`                        | {true,false}    | false                                            | Whether to skip TLS verify for Loki S3 connection                                                     |
 
 
 Example Playbook

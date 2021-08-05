@@ -50,7 +50,7 @@
 
     # TLS verifycation support doesn't seem to be implemented in the operator yet
   - block:
-    - name: Prepare for skip Loki tls patch
+    - name: Prepare for skip Loki TLS patch
       replace:
         path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
         regexp: "\ \ \ \ insecure: false\n
@@ -58,7 +58,7 @@
 \ \ \ \ \ insecure_skip_verify: true"
         replace: ""
 
-    - name: Skip Loki tls veryfication
+    - name: Skip Loki TLS veryfication
       replace:
         path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
         regexp: "\ \ \ \ s3forcepathstyle: true"
