@@ -39,3 +39,4 @@
   k8s:
     definition:
       '{{ service_telemetry_manifest }}'
+
