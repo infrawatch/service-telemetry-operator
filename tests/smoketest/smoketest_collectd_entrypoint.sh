@@ -28,9 +28,6 @@ until [ $retries -eq 0 ] || grep "Initialization complete, entering read-loop" /
   sleep 3
 done
 
-# run collectd sensubility
-collectd-sensubility -log /dev/stdout -debug &
-
 # Sleeping to collect 1m of actual metrics
 echo "*** [INFO] Sleeping for 30 seconds to collect 30s of metrics and events"
 sleep 30
@@ -48,17 +45,6 @@ echo; echo
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code
 grep -E '"result":\[{"metric":{"__name__":"collectd_cpu_total","endpoint":"prom-http","host":"'"${POD}"'","plugin_instance":"0","service":"default-cloud1-coll-meter-smartgateway","type_instance":"user"},"values":\[\[.+,".+"\]' /tmp/query_output
 metrics_result=$?
-echo; echo
-
-# Checks that the metrics actually appear in prometheus
-echo "*** [INFO] Checking for recent healthcheck metrics..."
-curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=sensubility_container_health_status{container="sg-core",service="default-cloud1-sens-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
-echo; echo
-
-# The egrep exit code is the result of the test and becomes the container/pod/job exit code
-echo "*** [INFO] Checking for returned healthcheck metrics..."
-grep -E '"result":\[{"metric":{"__name__":"sensubility_container_health_status","container":"sg-core","endpoint":"prom-http","host":"'"${POD}"'","process":"smoketest-svc","service":"default-cloud1-sens-meter"},"values":\[\[.+,".+"\]' /tmp/query_output
-metrics_result=$((metrics_result || $?))
 echo; echo
 
 echo "*** [INFO] Get documents for this test from ElasticSearch..."
