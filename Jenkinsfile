@@ -34,7 +34,7 @@ spec:
   transports:
     qdr:
       enabled: true
-      deployment_size: 1
+      deploymentSize: 1
       web:
         enabled: false
   elasticsearch_manifest: |
@@ -109,6 +109,7 @@ podTemplate(containers: [
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         ansiColor('xterm') {
                             ansiblePlaybook(
+                                // use the playbook to build the containers but don't run CI
                                 playbook: 'build/run-ci.yaml',
                                 colorized: true,
                                 extraVars: [
@@ -142,9 +143,9 @@ podTemplate(containers: [
                 stage('Cleanup') {
                     openshift.withCluster(){
                         openshift.selector("project/${namespace}").delete()
-                        if ( stages_failed ) { currentBuild.result = 'FAILUR' }
+                        if ( stages_failed ) { currentBuild.result = 'FAILURE' }
                     }
-                    if ( stages_failed ) { curreentBuild.result = 'FAILURE' }
+                    if ( stages_failed ) { currentBuild.result = 'FAILURE' }
                 }
             }
         }
