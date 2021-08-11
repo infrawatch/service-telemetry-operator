@@ -92,7 +92,8 @@ oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
-oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].metadata.name}')" -c ansible echo
+oc logs "$(oc get pod -l app=smart-gateway-operator -o jsonpath='{.items[0].metadata.name}')" -c ansible
+echo
 
 echo "*** [INFO] Logs from prometheus..."
 oc logs "$(oc get pod -l prometheus=default -o jsonpath='{.items[0].metadata.name}')" -c prometheus
