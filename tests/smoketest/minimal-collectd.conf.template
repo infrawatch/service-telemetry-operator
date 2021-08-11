@@ -45,8 +45,3 @@ LoadPlugin threshold
   </Plugin>
 </Plugin>
 
-#LoadPlugin exec
-#<Plugin exec>
-#  Exec "collectd:collectd" "collectd-sensubility" "-log" "/dev/null"
-#</Plugin>
-
