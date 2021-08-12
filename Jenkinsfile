@@ -34,7 +34,7 @@ spec:
   transports:
     qdr:
       enabled: true
-      deployment_size: 1
+      deploymentSize: 1
       web:
         enabled: false
   elasticsearch_manifest: |
@@ -97,7 +97,7 @@ podTemplate(containers: [
                     }
                 }
                 stage ('Create project') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         openshift.withCluster(){
                             openshift.newProject(namespace)
@@ -105,10 +105,11 @@ podTemplate(containers: [
                     }
                 }
                 stage('Build STF Containers') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         ansiColor('xterm') {
                             ansiblePlaybook(
+                                // use the playbook to build the containers but don't run CI
                                 playbook: 'build/run-ci.yaml',
                                 colorized: true,
                                 extraVars: [
@@ -123,28 +124,30 @@ podTemplate(containers: [
                     }
                 }
                 stage('Deploy STF Object') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         openshift.withCluster() {
                             openshift.withProject(namespace) {
-                                openshift.create(stf_resource)
-                                sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
+                                timeout(time: 300, unit: 'SECONDS') {
+                                    openshift.create(stf_resource)
+                                    sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
+                                }
                             }
                         }
                     }
                 }
                 stage('Run Smoketest') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         sh "OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh"
                     }
                 }
                 stage('Cleanup') {
                     openshift.withCluster(){
                         openshift.selector("project/${namespace}").delete()
-                        if ( stages_failed ) { currentBuild.result = 'FAILUR' }
+                        if ( stages_failed ) { currentBuild.result = 'FAILURE' }
                     }
-                    if ( stages_failed ) { curreentBuild.result = 'FAILURE' }
+                    if ( stages_failed ) { currentBuild.result = 'FAILURE' }
                 }
             }
         }
