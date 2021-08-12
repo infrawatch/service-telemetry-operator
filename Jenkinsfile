@@ -97,7 +97,7 @@ podTemplate(containers: [
                     }
                 }
                 stage ('Create project') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         openshift.withCluster(){
                             openshift.newProject(namespace)
@@ -105,7 +105,7 @@ podTemplate(containers: [
                     }
                 }
                 stage('Build STF Containers') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         ansiColor('xterm') {
                             ansiblePlaybook(
@@ -124,19 +124,21 @@ podTemplate(containers: [
                     }
                 }
                 stage('Deploy STF Object') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         openshift.withCluster() {
                             openshift.withProject(namespace) {
-                                openshift.create(stf_resource)
-                                sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
+                                timeout(time: 300, unit: 'SECONDS') {
+                                    openshift.create(stf_resource)
+                                    sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
+                                }
                             }
                         }
                     }
                 }
                 stage('Run Smoketest') {
-                    if ( currentBuild.result == 'FAILURE' ) { stages_failed = true; return; }
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    if ( currentBuild.result != null ) { stages_failed = true; return; }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         sh "OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh"
                     }
                 }
