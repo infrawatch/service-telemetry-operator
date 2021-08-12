@@ -6,15 +6,18 @@
 #   * oc tools pointing at your STF instance
 #   * gnu sed
 #
-# Usage: NUMCLOUDS=<num clouds> OCP_PROJECT=<project> ./smoketest.sh [NUMCLOUDS]
+# Usage: CLEANUP=<bool> NUMCLOUDS=<num clouds> OCP_PROJECT=<project> ./smoketest.sh
 #
+# CLEANUP - cleanup smoketest resources once test finishes (default: true)
 # NUMCLOUDS - how many clouds to simulate (that number of smart gateways and
 # OCP_PROJECT - namespace you wish to use. Defaults to current
 # collectd pods will be created)
 
 # Generate an array of cloud names to use
-NUMCLOUDS=${1:-1}
+NUMCLOUDS=${NUMCLOUDS:-1}
 CLOUDNAMES=()
+
+CLEANUP=${CLEANUP:-true}
 
 for ((i=1; i<=NUMCLOUDS; i++)); do
   NAME="smoke${i}"
@@ -108,7 +111,9 @@ oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metada
 echo
 
 echo "*** [INFO] Cleanup resources..."
-oc delete job/stf-smoketest-${NAME}
+if $CLEANUP; then
+    oc delete job/stf-smoketest-${NAME}
+fi
 echo
 
 if [ $SNMP_WBHOOK_POD -eq 0 ]; then
