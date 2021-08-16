@@ -47,7 +47,7 @@ servicetelemetry_defaults:
     logs:
       loki:
         enabled: false
-        node_count: 1
+        replication_factor: 1
         storage:
           object_storage_secret: ""
           storage_class: ""
