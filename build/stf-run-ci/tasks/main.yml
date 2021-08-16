@@ -48,7 +48,7 @@
     tags:
       - deploy
 
-    # TLS verifycation support doesn't seem to be implemented in the operator yet
+    # TLS verification support doesn't seem to be implemented in the operator yet
   - block:
     - name: Prepare for skip Loki TLS patch
       replace:
@@ -58,7 +58,7 @@
 \ \ \ \ \ insecure_skip_verify: true"
         replace: ""
 
-    - name: Skip Loki TLS veryfication
+    - name: Skip Loki TLS verification
       replace:
         path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
         regexp: "\ \ \ \ s3forcepathstyle: true"
