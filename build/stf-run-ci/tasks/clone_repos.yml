@@ -59,6 +59,9 @@
         dest: working/prometheus-webhook-snmp
         version: master
 
+# Branches for Loki Operator don't work the same as with other repositories.
+# We don't have write access to the upstream repository to create our own
+# branches there.
 - name: Get Loki Operator
   block:
     - name: Try cloning same-named branch or override branch
