@@ -31,7 +31,7 @@
             loki:
               enabled: {{ __service_telemetry_logs_enabled }}
               replicationFactor: 1
-              size: 1x.extra-small
+              flavor: 1x.extra-small
               storage:
                 objectStorageSecret: test
                 storageClass: standard
