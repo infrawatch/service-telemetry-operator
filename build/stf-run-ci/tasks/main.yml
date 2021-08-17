@@ -20,8 +20,14 @@
     nodes: "{{ lookup('k8s', kind='nodes') }}"
 
 - name: Find out if we are using crc
-  set_fact:
-    is_crc: "{{ True if 'crc' in nodes[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
+  block:
+    - name: Try finding out for cluster with more than 1 node
+      set_fact:
+        is_crc: "{{ True if 'crc' in nodes[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
+  rescue:
+    - name: Try finding out for cluster with only 1 node
+      set_fact:
+        is_crc: "{{ True if 'crc' in nodes.metadata.labels[\"kubernetes.io/hostname\"] else False }}"
 
 - name: Clear out existing CRDs so we don't conflict or fail merge
   k8s:
