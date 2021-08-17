@@ -41,7 +41,7 @@
       - clone
 
   - name: Get new operator sdk
-    command: ./get_new_operator_sdk.sh
+    command: ./get_new_operator_sdk.sh "{{ new_operator_sdk_version }}"
 
   - name: Setup supporting Operator subscriptions
     include_tasks: setup_base.yml

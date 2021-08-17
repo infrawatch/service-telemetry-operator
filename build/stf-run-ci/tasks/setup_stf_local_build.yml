@@ -90,7 +90,7 @@
     target: bundle
     params:
         REGISTRY_ORG: infrawatch
-        OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-v1.5.0"
+        OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
 
 - name: Replace namespace in loki-operator CSV
   replace:
@@ -146,7 +146,7 @@
     target: deploy
     params:
         REGISTRY_ORG: infrawatch
-        OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-v1.5.0"
+        OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
 
 - name: Load Loki Operator bundle manifests
   command: oc apply -f working/loki-operator/bundle/manifests/{{ item }} -n "{{ namespace }}"

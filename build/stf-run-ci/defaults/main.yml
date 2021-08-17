@@ -25,6 +25,7 @@ sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
 loki_operator_image_tag: latest
+new_operator_sdk_version: v1.5.0
 namespace: service-telemetry
 
 # used when building images to default to correct version branch for STF subcomponents per STF version
