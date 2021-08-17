@@ -76,79 +76,66 @@ spec:
                   name: elasticsearch-data
 """
 
-podTemplate(containers: [
-    containerTemplate(
-        cloud: 'openshift',
-        name: 'exec',
-        image: 'image-registry.openshift-image-registry.svc:5000/ci/jenkins-agent:latest',
-        command: 'sleep',
-        args: 'infinity',
-        alwaysPullImage: true
-    )],
-    serviceAccount: 'jenkins-operator-cloudops'
-
-) {
-    node(POD_LABEL) {
-        container('exec') {
-            dir('service-telemetry-operator') {
-                stage ('Clone Upstream') {
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        checkout scm
+node('ocp-agent') {
+    container('exec') {
+        dir('service-telemetry-operator') {
+            stage ('Clone Upstream') {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    checkout scm
+                }
+            }
+            stage ('Create project') {
+                if ( currentBuild.result != null ) { stages_failed = true; return; }
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    openshift.withCluster(){
+                        openshift.newProject(namespace)
                     }
                 }
-                stage ('Create project') {
-                    if ( currentBuild.result != null ) { stages_failed = true; return; }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        openshift.withCluster(){
-                            openshift.newProject(namespace)
-                        }
+            }
+            stage('Build STF Containers') {
+                if ( currentBuild.result != null ) { stages_failed = true; return; }
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    ansiColor('xterm') {
+                        ansiblePlaybook(
+                            // use the playbook to build the containers but don't run CI
+                            playbook: 'build/run-ci.yaml',
+                            colorized: true,
+                            extraVars: [
+                                "namespace": namespace,
+                                "__deploy_stf": "false",
+                                "__local_build_enabled": "true",
+                                "__service_telemetry_snmptraps_enabled": "true",
+                                "__service_telemetry_storage_ephemeral_enabled": "true"
+                            ]
+                        )
                     }
                 }
-                stage('Build STF Containers') {
-                    if ( currentBuild.result != null ) { stages_failed = true; return; }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        ansiColor('xterm') {
-                            ansiblePlaybook(
-                                // use the playbook to build the containers but don't run CI
-                                playbook: 'build/run-ci.yaml',
-                                colorized: true,
-                                extraVars: [
-                                    "namespace": namespace,
-                                    "__deploy_stf": "false",
-                                    "__local_build_enabled": "true",
-                                    "__service_telemetry_snmptraps_enabled": "true",
-                                    "__service_telemetry_storage_ephemeral_enabled": "true"
-                                ]
-                            )
-                        }
-                    }
-                }
-                stage('Deploy STF Object') {
-                    if ( currentBuild.result != null ) { stages_failed = true; return; }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        openshift.withCluster() {
-                            openshift.withProject(namespace) {
-                                timeout(time: 300, unit: 'SECONDS') {
-                                    openshift.create(stf_resource)
-                                    sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
-                                }
+            }
+            stage('Deploy STF Object') {
+                if ( currentBuild.result != null ) { stages_failed = true; return; }
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    openshift.withCluster() {
+                        openshift.withProject(namespace) {
+                            timeout(time: 300, unit: 'SECONDS') {
+                                openshift.create(stf_resource)
+                                sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
                             }
                         }
                     }
                 }
-                stage('Run Smoketest') {
-                    if ( currentBuild.result != null ) { stages_failed = true; return; }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        sh "OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh"
-                    }
+            }
+            stage('Run Smoketest') {
+                if ( currentBuild.result != null ) { stages_failed = true; return; }
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    sh "OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh"
                 }
-                stage('Cleanup') {
-                    openshift.withCluster(){
-                        openshift.selector("project/${namespace}").delete()
-                        if ( stages_failed ) { currentBuild.result = 'FAILURE' }
-                    }
+            }
+            stage('Cleanup') {
+                openshift.withCluster(){
+                    openshift.selector("project/${namespace}").delete()
                     if ( stages_failed ) { currentBuild.result = 'FAILURE' }
                 }
+                if ( stages_failed ) { currentBuild.result = 'FAILURE' }
             }
         }
     }
