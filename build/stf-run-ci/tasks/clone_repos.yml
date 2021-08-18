@@ -5,13 +5,13 @@
 #       of these separately rather than using a loop.
 - name: Get Smart Gateway Operator
   block:
-    - name: Try cloning same-named branch or override branch
+    - name: Try cloning same-named branch or override branch from specified repository
       git:
-        repo: https://github.com/infrawatch/smart-gateway-operator
+        repo: "{{ sgo_repository }}"
         dest: working/smart-gateway-operator
         version: "{{ sgo_branch | default(branch, true) }}"
   rescue:
-    - name: "Get {{ version_branches.sgo }} branch because same-named doesn't exist"
+    - name: "Get {{ version_branches.sgo }} upstream branch because specified branch or repository doesn't exist"
       git:
         repo: https://github.com/infrawatch/smart-gateway-operator
         dest: working/smart-gateway-operator
@@ -19,13 +19,13 @@
 
 - name: Get sg-core
   block:
-    - name: Try cloning same-named branch or override branch
+    - name: Try cloning same-named branch or override branch from specified repository
       git:
-        repo: https://github.com/infrawatch/sg-core
+        repo: "{{ sg_core_repository }}"
         dest: working/sg-core
         version: "{{ sg_core_branch | default(branch, true) }}"
   rescue:
-    - name: "Get {{ version_branches.sg_core }} branch because same-named doesn't exist"
+    - name: "Get {{ version_branches.sg_core }} upstream branch because specified branch or repository doesn't exist"
       git:
         repo: https://github.com/infrawatch/sg-core
         dest: working/sg-core
@@ -33,13 +33,13 @@
 
 - name: Get sg-bridge
   block:
-    - name: Try cloning same-named branch or override branch
+    - name: Try cloning same-named branch or override branch from specified repository
       git:
-        repo: https://github.com/infrawatch/sg-bridge
+        repo: "{{ sg_bridge_repository }}"
         dest: working/sg-bridge
         version: "{{ sg_bridge_branch | default(branch, true) }}"
   rescue:
-    - name: "Get {{ version_branches.sg_bridge }} branch because same-named doesn't exist"
+    - name: "Get {{ version_branches.sg_bridge }} upstream branch because specified branch or repository doesn't exist"
       git:
         repo: https://github.com/infrawatch/sg-bridge
         dest: working/sg-bridge
@@ -47,13 +47,13 @@
 
 - name: Get prometheus-webhook-snmp
   block:
-    - name: Try cloning same-named branch or override branch
+    - name: Try cloning same-named branch or override branch from specified repository
       git:
-        repo: https://github.com/infrawatch/prometheus-webhook-snmp
+        repo: "{{ prometheus_webhook_snmp_repository }}"
         dest: working/prometheus-webhook-snmp
         version: "{{ prometheus_webhook_snmp_branch | default(branch, true) }}"
   rescue:
-    - name: "Get {{ version_branches.prometheus_webhook_snmp }} branch because same-named doesn't exist"
+    - name: "Get {{ version_branches.prometheus_webhook_snmp }} upstream branch because specified branch or repository doesn't exist"
       git:
         repo: https://github.com/infrawatch/prometheus-webhook-snmp
         dest: working/prometheus-webhook-snmp
@@ -64,13 +64,13 @@
 # branches there.
 - name: Get Loki Operator
   block:
-    - name: Try cloning same-named branch or override branch
+    - name: Try cloning same-named branch or override branch from specified repository
       git:
-        repo: https://github.com/viaq/loki-operator
+        repo: "{{ loki_operator_repository }}"
         dest: working/loki-operator
         version: "{{ loki_operator_branch | default(branch, true) }}"
   rescue:
-    - name: "Get {{ version_branches.loki_operator }} branch because same-named doesn't exist"
+    - name: "Get {{ version_branches.loki_operator }} upstream branch because specified branch or repository doesn't exist"
       git:
         repo: https://github.com/viaq/loki-operator
         dest: working/loki-operator
