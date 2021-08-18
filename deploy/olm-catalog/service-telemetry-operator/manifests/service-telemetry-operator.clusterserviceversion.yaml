@@ -63,7 +63,7 @@ metadata:
                   "replicationFactor": 1,
                   "storage": {
                     "objectStorageSecret": "test",
-                    "storageClassName": "standard"
+                    "storageClass": "standard"
                     }
                   }
                 }
@@ -401,7 +401,7 @@ spec:
         - urn:alm:descriptor:io.kubernetes:Secret
       - description: Storage class configuration for Loki persistent storage
         displayName: Loki storage class
-        path: backends.logs.loki.storage.storageClassName
+        path: backends.logs.loki.storage.storageClass
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:io.kubernetes:StorageClass
