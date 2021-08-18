@@ -10,7 +10,7 @@ grafana dashboard.
 Two additional pods are deployed by the performance test: one that hosts a
 grafana instance and one that executes the testing logic.
 
-![A Performance Test Dashboard](images/dashboard.png)
+![A Performance Test Dashboard](../images/dashboard.png)
 
 ## Environment
 
