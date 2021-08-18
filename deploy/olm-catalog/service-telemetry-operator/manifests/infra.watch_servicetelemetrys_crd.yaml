@@ -174,7 +174,7 @@ spec:
                         objectStorageSecret:
                           description: Secret containing informaiton required for S3 object storage
                           type: string
-                        storageClassName:
+                        storageClass:
                           description: Storage class used for temporary log storage before they are forwarded to object storage or when querying.
                           type: string
                       type: object
