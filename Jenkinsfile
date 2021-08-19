@@ -105,7 +105,11 @@ node('ocp-agent') {
                                 "__deploy_stf": "false",
                                 "__local_build_enabled": "true",
                                 "__service_telemetry_snmptraps_enabled": "true",
-                                "__service_telemetry_storage_ephemeral_enabled": "true"
+                                "__service_telemetry_storage_ephemeral_enabled": "true",
+                                "sgo_branch":"stable-1.2",
+                                "sg_branch":"stable-1.2",
+                                "sg_core_branch":"stable-1.2",
+                                "sg_bridge_branch":"stable-1.2"
                             ]
                         )
                     }
