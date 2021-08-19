@@ -135,6 +135,7 @@ node('ocp-agent') {
                 }
             }
             stage('Cleanup') {
+                return;
                 openshift.withCluster(){
                     openshift.selector("project/${namespace}").delete()
                     if ( stages_failed ) { currentBuild.result = 'FAILURE' }
