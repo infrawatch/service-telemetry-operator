@@ -21,3 +21,10 @@ sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
 namespace: service-telemetry
+
+# used when building images to default to correct version branch for STF subcomponents per STF version
+version_branches:
+  sgo: master
+  sg_core: master
+  sg_bridge: master
+  prometheus_webhook_snmp: master
