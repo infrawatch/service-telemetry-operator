@@ -76,12 +76,17 @@ spec:
                   name: elasticsearch-data
 """
 
+def working_branch = "stable-1.3"
+
 node('ocp-agent') {
     container('exec') {
         dir('service-telemetry-operator') {
             stage ('Clone Upstream') {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                     checkout scm
+                    working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3', returnStdout: true).toString().trim()
+                    // ansible script needs local branch to exist, not detached HEAD
+                    sh "git checkout -b ${working_branch}"
                 }
             }
             stage ('Create project') {
@@ -105,7 +110,8 @@ node('ocp-agent') {
                                 "__deploy_stf": "false",
                                 "__local_build_enabled": "true",
                                 "__service_telemetry_snmptraps_enabled": "true",
-                                "__service_telemetry_storage_ephemeral_enabled": "true"
+                                "__service_telemetry_storage_ephemeral_enabled": "true",
+                                "working_branch":"${working_branch}"
                             ]
                         )
                     }
