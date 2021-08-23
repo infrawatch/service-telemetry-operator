@@ -8,7 +8,7 @@ ansible-playbook --extra-vars __service_telemetry_logs_enabled=true --extra-vars
 ```
 
 ## Deploy SGO + Loki with OCS for storage
-This is more production like setup. It's more resource demanding and cannot be run in crc. This assumes OCS is already deployed.
+This is more a production-like setup. It's more resource demanding and cannot be run in crc. This assumes OCS is already deployed.
 
 ### Create an object bucket claim
 ```

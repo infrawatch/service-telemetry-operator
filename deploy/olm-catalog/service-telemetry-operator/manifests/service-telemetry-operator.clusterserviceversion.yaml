@@ -367,8 +367,6 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         - urn:alm:descriptor:com.tectonic.ui:advanced
-
-
       - description: Enable Loki storage for logs backend.
         displayName: Loki enabled
         path: backends.logs.loki.enabled
