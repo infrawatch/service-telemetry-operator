@@ -6,19 +6,31 @@
 #   * oc tools pointing at your STF instance
 #   * gnu sed
 #
-# Usage: ./smoketest.sh [NUMCLOUDS]
+# Usage: CLEANUP=<bool> NUMCLOUDS=<num clouds> OCP_PROJECT=<project> ./smoketest.sh
 #
+# CLEANUP - cleanup smoketest resources once test finishes (default: true)
 # NUMCLOUDS - how many clouds to simulate (that number of smart gateways and
+# OCP_PROJECT - namespace you wish to use. Defaults to current
 # collectd pods will be created)
 
 # Generate an array of cloud names to use
-NUMCLOUDS=${1:-1}
+NUMCLOUDS=${NUMCLOUDS:-1}
 CLOUDNAMES=()
+
+CLEANUP=${CLEANUP:-true}
+
 for ((i=1; i<=NUMCLOUDS; i++)); do
   NAME="smoke${i}"
   CLOUDNAMES+=(${NAME})
 done
 REL=$(dirname "$0")
+
+if [ -z $OCP_PROJECT+x} ]; then
+    oc project $OCP_PROJECT 
+else
+    OCP_PROJECT=$(oc project -q)
+fi
+
 
 echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
@@ -37,13 +49,13 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-oc run curl --generator=run-pod/v1 --image=radial/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-operated:9093/api/v1/alerts
+oc run curl --generator=run-pod/v1 --image=quay.io/infrawatch/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-operated:9093/api/v1/alerts
 # it takes some time to get the alert delivered, continuing with other tests
 
 
 
 # Trying to find a less brittle test than a timeout
-JOB_TIMEOUT=500s
+JOB_TIMEOUT=300s
 for NAME in "${CLOUDNAMES[@]}"; do
     echo "*** [INFO] Waiting on job/stf-smoketest-${NAME}..."
     oc wait --for=condition=complete --timeout=${JOB_TIMEOUT} "job/stf-smoketest-${NAME}"
@@ -51,8 +63,9 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 oc delete pod curl
-trapoutput=$(oc logs --selector 'app=default-snmp-webhook' | grep 'Sending SNMP trap')
-RET=$((RET || $?)) # Accumulate exit codes
+SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
+trapoutput=$(oc logs $SNMP_WEBHOOK_POD | grep 'Sending SNMP trap')
+SNMP_WEBHOOK_STATUS=$?
 
 echo "*** [INFO] Showing oc get all..."
 oc get all
@@ -96,6 +109,17 @@ echo
 echo "*** [INFO] Logs from snmp webhook..."
 oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"
 echo
+
+echo "*** [INFO] Cleanup resources..."
+if $CLEANUP; then
+    oc delete job/stf-smoketest-${NAME}
+fi
+echo
+
+if [ $SNMP_WBHOOK_POD -eq 0 ]; then
+    echo "*** [FAILURE] SNMP Webhook failed"
+    exit 1
+fi
 
 if [ $RET -eq 0 ]; then
     echo "*** [SUCCESS] Smoke test job completed successfully"
