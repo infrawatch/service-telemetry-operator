@@ -42,6 +42,17 @@ metadata:
                   }
                 }
               },
+              "logs": {
+                "loki": {
+                  "enabled": false,
+                  "flavor": "1.extra-small",
+                  "replicationFactor": 1,
+                  "storage": {
+                    "objectStorageSecret": "test",
+                    "storageClass": "standard"
+                  }
+                }
+              },
               "metrics": {
                 "prometheus": {
                   "enabled": true,
@@ -53,18 +64,6 @@ metadata:
                     },
                     "retention": "24h",
                     "strategy": "persistent"
-                  }
-                }
-              },
-              "logs": {
-                "loki": {
-                  "enabled": false,
-                  "flavor": "1.extra-small",
-                  "replicationFactor": 1,
-                  "storage": {
-                    "objectStorageSecret": "test",
-                    "storageClass": "standard"
-                    }
                   }
                 }
               }
@@ -373,15 +372,14 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - description: Loki replication factor.
-          Choose how many ingesters and queriers to create.
+      - description: Loki replication factor. Choose how many ingesters and queriers
+          to create.
         displayName: Loki replication factor
         path: backends.logs.loki.replicationFactor
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Loki flavor.
-          Choose flavor of the loki deployment. This determines
+      - description: Loki flavor. Choose flavor of the loki deployment. This determines
           how much resources each loki microservice has.
         displayName: Loki flavor
         path: backends.logs.loki.flavor
@@ -438,7 +436,6 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Backends
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:advanced
-
       statusDescriptors:
       - description: Conditions provided by deployment
         displayName: Conditions
@@ -551,6 +548,7 @@ spec:
           - elasticsearch.k8s.elastic.co
           - certmanager.k8s.io
           - integreatly.org
+          - loki.openshift.io
           resources:
           - '*'
           verbs:
