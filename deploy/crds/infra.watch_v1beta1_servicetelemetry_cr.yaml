@@ -34,6 +34,15 @@ spec:
           persistent:
             storageSelector: {}
             pvcStorageRequest: 20Gi
+
+    logs:
+      loki:
+        enabled: false
+        flavor: 1.extra-small
+        replicationFactor: 1
+        storage:
+          objectStorageSecret: test
+          storageClass: standard
   graphing:
     enabled: false
     grafana:
