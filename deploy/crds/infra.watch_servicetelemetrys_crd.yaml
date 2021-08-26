@@ -159,7 +159,7 @@ spec:
                   description: Logs storage backend Loki
                   properties:
                     enabled:
-                      description: Enable Loki as a storage backend for logs
+                      description: ---TESTING ONLY--- Enable Loki as a storage backend for logs
                       type: boolean
                     replicationFactor:
                       description: Loki replication factor
