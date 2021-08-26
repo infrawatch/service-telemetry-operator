@@ -130,7 +130,7 @@
   replace:
     path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/minio/secret.yaml"
     regexp: 'default'
-    replace: 'service-telemetry'
+    replace: '{{ namespace }}'
 
 - block:
   - name: Remove minio deployment
