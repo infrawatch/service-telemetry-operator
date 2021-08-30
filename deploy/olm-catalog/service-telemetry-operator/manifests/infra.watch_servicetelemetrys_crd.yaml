@@ -319,6 +319,10 @@ spec:
                 adminUser:
                   description: Grafana admin user
                   type: string
+                baseImage:
+                  description: Path to the base container image used to instantiate
+                    a Grafana instance
+                  type: string
                 disableSignoutMenu:
                   description: Whether to disable the Grafana signout menu
                   type: boolean
