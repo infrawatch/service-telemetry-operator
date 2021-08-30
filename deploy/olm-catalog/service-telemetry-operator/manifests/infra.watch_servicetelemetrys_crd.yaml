@@ -4,6 +4,8 @@ metadata:
   creationTimestamp: null
   name: servicetelemetrys.infra.watch
 spec:
+  conversion:
+    strategy: None
   group: infra.watch
   names:
     kind: ServiceTelemetry
@@ -17,130 +19,57 @@ spec:
   - name: v1beta1
     schema:
       openAPIV3Schema:
+        description: ServiceTelemetry represents the Service Telemetry Framework resource
+          in a kubernetes cluster.
         properties:
-          alerting:
-            properties:
-              alertmanager:
-                description: Alertmanager configuration
-                properties:
-                  receivers:
-                    properties:
-                      snmpTraps:
-                        properties:
-                          enabled:
-                            description: Deploy container to send snmp traps
-                            type: boolean
-                          target:
-                            description: Target address for SNMP traps to send to
-                            type: string
-                        type: object
-                    type: object
-                  storage:
-                    properties:
-                      persistent:
-                        properties:
-                          pvcStorageRequest:
-                            description: PVC storage requested size for Alertmanager
-                            type: string
-                          storageClass:
-                            description: Storage class name used for Alertmanager
-                              PVC
-                            type: string
-                          storageSelector:
-                            description: Storage selector definition for Alertmanager
-                            type: string
-                        type: object
-                      strategy:
-                        description: Storage strategy. One of 'ephemeral' or 'persistent'.
-                          Persistent storage must be made available by the platform.
-                        enum:
-                        - ephemeral
-                        - persistent
-                        type: string
-                    type: object
-                type: object
-              enabled:
-                description: Whether to enable alerting functionality
-                type: boolean
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
             type: object
-          backends:
-            description: Backend storage configuration
+          spec:
+            description: ServiceTelemetrySpec holds the specification of an STF instance.
             properties:
-              events:
-                description: Events related backend configuration.
+              alerting:
                 properties:
-                  elasticsearch:
-                    description: Events storage backend ElasticSearch
+                  alertmanager:
+                    description: Alertmanager configuration
                     properties:
-                      enabled:
-                        description: Enable ElasticSearch as a storage backend for
-                          events
-                        type: boolean
-                      nodeCount:
-                        description: Elasticsearch node count
-                        type: string
-                      storage:
-                        description: Events storage configuration for ElasticSearch
+                      receivers:
                         properties:
-                          persistent:
-                            description: Persistent storage configuration for ElasticSearch
+                          snmpTraps:
                             properties:
-                              pvcStorageRequest:
-                                description: How much storage space to request in
-                                  the PVC
-                                type: string
-                              storageClass:
-                                description: Storage class name used for ElasticSearch
-                                  PVC
-                                type: string
-                              storageSelector:
-                                description: Storage selector definition for ElasticSearch
+                              enabled:
+                                description: Deploy container to send snmp traps
+                                type: boolean
+                              target:
+                                description: Target address for SNMP traps to send
+                                  to
                                 type: string
                             type: object
-                          strategy:
-                            description: Storage strategy. One of 'ephemeral' or 'persistent'.
-                              Persistent storage must be made available by the platform.
-                            type: string
                         type: object
-                    type: object
-                type: object
-              metrics:
-                description: Metrics related backend configuration.
-                properties:
-                  prometheus:
-                    description: Metrics storage backend Prometheus
-                    properties:
-                      enabled:
-                        description: Enable Prometheus as a storage backend for metrics
-                        type: boolean
-                      scrapeInterval:
-                        description: How often Prometheus should be configured to
-                          scrape this endpoint. Value in seconds.
-                        type: string
                       storage:
-                        description: Metrics storage configuration for Prometheus
                         properties:
                           persistent:
-                            description: Persistent storage configuration for Prometheus
                             properties:
                               pvcStorageRequest:
-                                description: PVC storage requested size for Prometheus
+                                description: PVC storage requested size for Alertmanager
                                 type: string
                               storageClass:
-                                description: Storage class name used for Prometheus
+                                description: Storage class name used for Alertmanager
                                   PVC
                                 type: string
                               storageSelector:
-                                description: Storage selector definition for Prometheus
+                                description: Storage selector definition for Alertmanager
                                 type: string
                             type: object
-                          retention:
-                            description: Time duration Prometheus shall retain data
-                              for. Default is '24h', and must match the regular expression
-                              `[0-9]+(ms|s|m|h|d|w|y)` (milliseconds seconds minutes
-                              hours days weeks years).
-                            pattern: ^[0-9]+(ms|s|m|h|d|w|y)$
-                            type: string
                           strategy:
                             description: Storage strategy. One of 'ephemeral' or 'persistent'.
                               Persistent storage must be made available by the platform.
@@ -150,121 +79,252 @@ spec:
                             type: string
                         type: object
                     type: object
+                  enabled:
+                    description: Whether to enable alerting functionality
+                    type: boolean
                 type: object
-            type: object
-          clouds:
-            description: A list of cloud objects
-            items:
-              properties:
-                events:
-                  description: Events related configuration for this cloud object.
-                  properties:
-                    collectors:
-                      description: List of available events collectors for this cloud
-                        object.
-                      items:
-                        properties:
-                          collectorType:
-                            description: Set the collector type, value of 'ceilometer'
-                              or 'collectd'.
-                            enum:
-                            - ceilometer
-                            - collectd
-                            type: string
-                          debugEnabled:
-                            description: Enable console debugging. Default is 'false'.
-                            type: boolean
-                          subscriptionAddress:
-                            description: Address to subscribe on the data transport
-                              to receive notifications.
-                            type: string
-                        type: object
-                      type: array
-                  type: object
-                metrics:
-                  description: Metrics related configuration for this cloud object.
-                  properties:
-                    collectors:
-                      description: List of available metrics collectors for this cloud
-                        object
-                      items:
-                        properties:
-                          collectorType:
-                            description: Set the collector type, value of 'ceilometer'
-                              or 'collectd'.
-                            type: string
-                          debugEnabled:
-                            description: Enable console debugging. Default is 'false'.
-                            type: boolean
-                          subscriptionAddress:
-                            description: Address to subscribe on the data transport
-                              to receive telemetry.
-                            type: string
-                        type: object
-                      type: array
-                  type: object
-                name:
-                  description: Name of the cloud object
-                  type: string
-              type: object
-            type: array
-          cloudsRemoveOnMissing:
-            description: If cloud object is missing from list on subsequent runs then
-              delete the corresponding SmartGateway object. Default is 'true'.
-            type: boolean
-          graphing:
-            description: Graphing configuration
-            properties:
-              enabled:
-                description: Whether the Service Telemetry Operator should deploy
-                  a graphing components and setup available datasources. If enabled
-                  will use default graphing components.
-                type: boolean
-              grafana:
-                description: Grafana related configuration
+              backends:
+                description: Backend storage configuration
                 properties:
-                  adminPassword:
-                    description: Grafana admin password
-                    type: string
-                  adminUser:
-                    description: Grafana admin user
-                    type: string
-                  disableSignoutMenu:
-                    description: Whether to disable the Grafana signout menu
-                    type: boolean
-                  ingressEnabled:
-                    description: Enable ingress access to Grafana
-                    type: boolean
+                  events:
+                    description: Events related backend configuration.
+                    properties:
+                      elasticsearch:
+                        description: Events storage backend ElasticSearch
+                        properties:
+                          enabled:
+                            description: Enable ElasticSearch as a storage backend
+                              for events
+                            type: boolean
+                          nodeCount:
+                            description: Elasticsearch node count
+                            type: string
+                          storage:
+                            description: Events storage configuration for ElasticSearch
+                            properties:
+                              persistent:
+                                description: Persistent storage configuration for
+                                  ElasticSearch
+                                properties:
+                                  pvcStorageRequest:
+                                    description: How much storage space to request
+                                      in the PVC
+                                    type: string
+                                  storageClass:
+                                    description: Storage class name used for ElasticSearch
+                                      PVC
+                                    type: string
+                                  storageSelector:
+                                    description: Storage selector definition for ElasticSearch
+                                    type: string
+                                type: object
+                              strategy:
+                                description: Storage strategy. One of 'ephemeral'
+                                  or 'persistent'. Persistent storage must be made
+                                  available by the platform.
+                                type: string
+                            type: object
+                        type: object
+                    type: object
+                  metrics:
+                    description: Metrics related backend configuration.
+                    properties:
+                      prometheus:
+                        description: Metrics storage backend Prometheus
+                        properties:
+                          enabled:
+                            description: Enable Prometheus as a storage backend for
+                              metrics
+                            type: boolean
+                          scrapeInterval:
+                            description: How often Prometheus should be configured
+                              to scrape this endpoint. Value in seconds.
+                            type: string
+                          storage:
+                            description: Metrics storage configuration for Prometheus
+                            properties:
+                              persistent:
+                                description: Persistent storage configuration for
+                                  Prometheus
+                                properties:
+                                  pvcStorageRequest:
+                                    description: PVC storage requested size for Prometheus
+                                    type: string
+                                  storageClass:
+                                    description: Storage class name used for Prometheus
+                                      PVC
+                                    type: string
+                                  storageSelector:
+                                    description: Storage selector definition for Prometheus
+                                    type: string
+                                type: object
+                              retention:
+                                description: Time duration Prometheus shall retain
+                                  data for. Default is '24h', and must match the regular
+                                  expression `[0-9]+(ms|s|m|h|d|w|y)` (milliseconds
+                                  seconds minutes hours days weeks years).
+                                pattern: ^[0-9]+(ms|s|m|h|d|w|y)$
+                                type: string
+                              strategy:
+                                description: Storage strategy. One of 'ephemeral'
+                                  or 'persistent'. Persistent storage must be made
+                                  available by the platform.
+                                enum:
+                                - ephemeral
+                                - persistent
+                                type: string
+                            type: object
+                        type: object
+                    type: object
                 type: object
-            type: object
-          highAvailability:
-            description: High availability related configuration
-            properties:
-              enabled:
-                description: Enable high availability globally for Service Telemetry
+              clouds:
+                description: A list of cloud objects
+                items:
+                  properties:
+                    events:
+                      description: Events related configuration for this cloud object.
+                      properties:
+                        collectors:
+                          description: List of available events collectors for this
+                            cloud object.
+                          items:
+                            properties:
+                              collectorType:
+                                description: Set the collector type, value of 'ceilometer'
+                                  or 'collectd'.
+                                enum:
+                                - ceilometer
+                                - collectd
+                                type: string
+                              debugEnabled:
+                                description: Enable console debugging. Default is
+                                  'false'.
+                                type: boolean
+                              subscriptionAddress:
+                                description: Address to subscribe on the data transport
+                                  to receive notifications.
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    metrics:
+                      description: Metrics related configuration for this cloud object.
+                      properties:
+                        collectors:
+                          description: List of available metrics collectors for this
+                            cloud object
+                          items:
+                            properties:
+                              collectorType:
+                                description: Set the collector type, value of 'ceilometer'
+                                  or 'collectd'.
+                                type: string
+                              debugEnabled:
+                                description: Enable console debugging. Default is
+                                  'false'.
+                                type: boolean
+                              subscriptionAddress:
+                                description: Address to subscribe on the data transport
+                                  to receive telemetry.
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    name:
+                      description: Name of the cloud object
+                      type: string
+                  type: object
+                type: array
+              cloudsRemoveOnMissing:
+                description: If cloud object is missing from list on subsequent runs
+                  then delete the corresponding SmartGateway object. Default is 'true'.
                 type: boolean
-            type: object
-          transports:
-            description: Data transport configuration
-            properties:
-              qdr:
-                description: QDR configuration for data transport
+              graphing:
+                description: Graphing configuration
                 properties:
                   enabled:
-                    description: Enable QDR data transort
+                    description: Whether the Service Telemetry Operator should deploy
+                      a graphing components and setup available datasources. If enabled
+                      will use default graphing components.
                     type: boolean
-                  web:
-                    description: QDR web configuration
+                  grafana:
+                    description: Grafana related configuration
                     properties:
-                      enabled:
-                        description: Enable web interface for QDR
+                      adminPassword:
+                        description: Grafana admin password
+                        type: string
+                      adminUser:
+                        description: Grafana admin user
+                        type: string
+                      disableSignoutMenu:
+                        description: Whether to disable the Grafana signout menu
+                        type: boolean
+                      ingressEnabled:
+                        description: Enable ingress access to Grafana
                         type: boolean
                     type: object
+                type: object
+              highAvailability:
+                description: High availability related configuration
+                properties:
+                  enabled:
+                    description: Enable high availability globally for Service Telemetry
+                    type: boolean
+                type: object
+              transports:
+                description: Data transport configuration
+                properties:
+                  qdr:
+                    description: QDR configuration for data transport
+                    properties:
+                      enabled:
+                        description: Enable QDR data transort
+                        type: boolean
+                      web:
+                        description: QDR web configuration
+                        properties:
+                          enabled:
+                            description: Enable web interface for QDR
+                            type: boolean
+                        type: object
+                    type: object
+                type: object
+            type: object
+          status:
+            description: Status results of an instance of Service Telemetry
+            properties:
+              conditions:
+                description: The resulting conditions when a Service Telemetry is
+                  instantiated
+                items:
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  type: object
+                type: array
+              ephemeralStorageEnabled:
+                description: Whether ephemeral storage is enabled and a warning should
+                  be provided
+                properties:
+                  lastTransitionTime:
+                    type: string
+                  message:
+                    type: string
+                  status:
+                    type: boolean
                 type: object
             type: object
         type: object
     served: true
     storage: true
+    subresources:
+      status: {}
 status:
   acceptedNames:
     kind: ""
