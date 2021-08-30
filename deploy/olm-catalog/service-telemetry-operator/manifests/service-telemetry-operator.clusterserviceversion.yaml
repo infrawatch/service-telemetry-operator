@@ -62,6 +62,7 @@ metadata:
               "grafana": {
                 "adminPassword": "secret",
                 "adminUser": "root",
+                "baseImage": "docker.io/grafana/grafana:8.1.2",
                 "disableSignoutMenu": false,
                 "ingressEnabled": false
               }
@@ -251,6 +252,13 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Set Grafana base image when instantiating an instance of Grafana
+        displayName: Grafana Base Image
+        path: graphing.grafana.baseImage
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Graphing
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:graphing.enabled:true
+        - urn:alm:descriptor:com.tectonic.ui:text
       - description: Disable signout menu in Grafana
         displayName: Disable Grafana Signout Menu
         path: graphing.grafana.disableSignoutMenu

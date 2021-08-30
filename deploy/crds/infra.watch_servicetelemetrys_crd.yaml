@@ -192,6 +192,9 @@ spec:
                 adminUser:
                   description: Grafana admin user
                   type: string
+                baseImage:
+                  description: Path to the base container image used to instantiate a Grafana instance
+                  type: string
               type: object
           type: object
         cloudsRemoveOnMissing:
