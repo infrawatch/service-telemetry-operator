@@ -34,3 +34,4 @@ version_branches:
   sg_core: master
   sg_bridge: master
   prometheus_webhook_snmp: master
+  loki_operator: master
