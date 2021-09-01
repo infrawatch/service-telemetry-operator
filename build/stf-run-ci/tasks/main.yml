@@ -81,6 +81,12 @@
       regexp: "golang:1.16"
       replace: "{{ __golang_image_path }}"
 
+  - name: Replace Loki image
+    replace:
+      path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/var.go"
+      regexp: "docker.io/grafana/loki:\\d\\.\\d\\.\\d"
+      replace: "{{ __loki_image_path }}"
+
   - name: Create builds and artifacts
     include_tasks: create_builds.yml
     loop:

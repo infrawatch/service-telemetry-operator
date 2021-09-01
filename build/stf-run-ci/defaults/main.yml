@@ -19,6 +19,7 @@ __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __deploy_minio_enabled: false
 __loki_skip_tls_verify: false
 __golang_image_path: quay.io/jwysogla/golang:latest
+__loki_image_path: quay.io/jwysogla/loki:latest
 
 sgo_image_tag: latest
 sto_image_tag: latest
