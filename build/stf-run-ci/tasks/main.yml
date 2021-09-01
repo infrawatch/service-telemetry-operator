@@ -79,7 +79,7 @@
     replace:
       path: "{{ playbook_dir }}/working/loki-operator/Dockerfile"
       regexp: "golang:1.16"
-      replace: "quay.io/jwysogla/golang:latest"
+      replace: "{{ __golang_image_path }}"
 
   - name: Create builds and artifacts
     include_tasks: create_builds.yml
