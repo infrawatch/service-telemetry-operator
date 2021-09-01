@@ -146,4 +146,3 @@ node('ocp-agent') {
         }
     }
 }
-
