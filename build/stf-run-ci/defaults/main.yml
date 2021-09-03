@@ -28,6 +28,7 @@ sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
 loki_operator_image_tag: latest
 new_operator_sdk_version: v1.5.0
+new_go_version: 1.16.3
 namespace: service-telemetry
 
 # Set a default commit hash to clone for loki-operator to freeze
