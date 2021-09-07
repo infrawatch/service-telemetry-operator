@@ -72,6 +72,18 @@
     regexp: '^.*modfile=operator-sdk.mod.*$'
     replace: ''
 
+- name: Prevent Loki Operator from replacing GOBIN
+  replace:
+    path: "{{ playbook_dir }}/working/loki-operator/.bingo/Variables.mk"
+    regexp: '^GOBIN.*$'
+    replace: 'GOBIN  ?= $(shell go env GOBIN)'
+
+- name: Prevent Loki Operator from using system golang
+  replace:
+    path: "{{ playbook_dir }}/working/loki-operator/.bingo/Variables.mk"
+    regexp: '^GO .*$'
+    replace: 'GO     ?= $(GOBIN)"/go"'
+
 - name: Prevent Loki Operator from putting authentication on /metrics
   replace:
     path: "{{ playbook_dir }}/working/loki-operator/config/overlays/openshift/kustomization.yaml"
@@ -93,6 +105,7 @@
         OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
         GOROOT: "{{ playbook_dir }}/working/go"
         GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
+        GOBIN: "{{ playbook_dir }}/working/go/bin"
 
 - name: Replace namespace in loki-operator CSV
   replace:
@@ -151,6 +164,7 @@
         OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
         GOROOT: "{{ playbook_dir }}/working/go"
         GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
+        GOBIN: "{{ playbook_dir }}/working/go/bin"
 
 - name: Load Loki Operator bundle manifests
   command: oc apply -f working/loki-operator/bundle/manifests/{{ item }} -n "{{ namespace }}"
