@@ -122,7 +122,7 @@ node('ocp-agent') {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                     openshift.withCluster() {
                         openshift.withProject(namespace) {
-                            timeout(time: 300, unit: 'SECONDS') {
+                            timeout(time: 800, unit: 'SECONDS') {
                                 openshift.create(stf_resource)
                                 sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
                             }
