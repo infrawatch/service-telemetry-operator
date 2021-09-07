@@ -92,6 +92,7 @@
         REGISTRY_ORG: infrawatch
         OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
         GOROOT: "{{ playbook_dir }}/working/go"
+        GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
 
 - name: Replace namespace in loki-operator CSV
   replace:
@@ -149,6 +150,7 @@
         REGISTRY_ORG: infrawatch
         OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
         GOROOT: "{{ playbook_dir }}/working/go"
+        GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
 
 - name: Load Loki Operator bundle manifests
   command: oc apply -f working/loki-operator/bundle/manifests/{{ item }} -n "{{ namespace }}"
