@@ -67,10 +67,10 @@ spec:
                   resources:
                     limits:
                       cpu: '2'
-                      memory: 4Gi
+                      memory: 2Gi
                     requests:
                       cpu: '1'
-                      memory: 2Gi
+                      memory: 1Gi
               volumes:
                 - emptyDir: {}
                   name: elasticsearch-data
