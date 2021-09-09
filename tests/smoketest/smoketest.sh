@@ -124,7 +124,7 @@ if $CLEANUP; then
 fi
 echo
 
-if [ $SNMP_WEBHOOK_STATUS -eq 0 ]; then
+if [ $SNMP_WEBHOOK_STATUS -ne 0 ]; then
     echo "*** [FAILURE] SNMP Webhook failed"
     exit 1
 fi
