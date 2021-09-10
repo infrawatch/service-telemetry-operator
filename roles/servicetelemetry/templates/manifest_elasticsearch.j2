@@ -1,55 +1,72 @@
-apiVersion: elasticsearch.k8s.elastic.co/v1beta1
+apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch
   namespace: '{{ meta.namespace }}'
 spec:
-  version: 7.10.2
+  auth: {}
   http:
+    service:
+      metadata: {}
+      spec: {}
     tls:
       certificate:
-        secretName: 'elasticsearch-es-cert'
+        secretName: elasticsearch-es-cert
+  monitoring:
+    logs: {}
+    metrics: {}
   nodeSets:
-    - config:
-        node.data: true
-        node.ingest: true
-        node.master: true
-        node.store.allow_mmap: true
-      count: {{ servicetelemetry_vars.backends.events.elasticsearch.node_count }}
-      name: default
-      podTemplate:
-        metadata:
-          labels:
-            tuned.openshift.io/elasticsearch: elasticsearch
-        spec:
-          containers:
-            - name: elasticsearch
-              resources:
-                limits:
-                  cpu: '2'
-                  memory: 4Gi
-                requests:
-                  cpu: '1'
-                  memory: 4Gi
-{% if servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" %}
-          volumes:
-            - emptyDir: {}
-              name: elasticsearch-data
-{% endif %}
+  - count: {{ servicetelemetry_vars.backends.events.elasticsearch.node_count }}
+    name: default
+    config:
+      node.roles:
+      - master
+      - data
+      - ingest
+      node.store.allow_mmap: true
 {% if servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "persistent" %}
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            resources:
-              requests:
-                storage: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.pvc_storage_request }}
-{% if servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_selector %}
-            selector: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_selector }}
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.pvc_storage_request }}
+{%   if servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_selector %}
+          selector: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_selector }}
+{%   endif %}
+{%   if servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_class | length %}
+          storageClassName: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_class }}
+{%   endif %}
 {% endif %}
-{% if servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_class | length %}
-            storageClassName: {{ servicetelemetry_vars.backends.events.elasticsearch.storage.persistent.storage_class }}
+    podTemplate:
+      metadata:
+        labels:
+          tuned.openshift.io/elasticsearch: elasticsearch
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+{% if servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" %}
+        volumes:
+        - emptyDir: {}
+          name: elasticsearch-data
 {% endif %}
-{% endif %}
+  transport:
+    service:
+      metadata: {}
+      spec: {}
+    tls:
+      certificate: {}
+  updateStrategy:
+    changeBudget: {}
+  version: 7.10.2
+  volumeClaimDeletePolicy: DeleteOnScaledownOnly

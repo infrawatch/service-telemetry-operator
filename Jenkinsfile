@@ -37,23 +37,25 @@ spec:
       deploymentSize: 1
       web:
         enabled: false
-  elasticsearch_manifest: |
-    apiVersion: elasticsearch.k8s.elastic.co/v1beta1
+  elasticsearchManifest: |
+    apiVersion: elasticsearch.k8s.elastic.co/v1
     kind: Elasticsearch
     metadata:
       name: elasticsearch
       namespace: $namespace
     spec:
       version: 7.10.2
+      volumeClaimDeletePolicy: DeleteOnScaledownAndClusterDeletion
       http:
         tls:
           certificate:
             secretName: 'elasticsearch-es-cert'
       nodeSets:
         - config:
-            node.data: true
-            node.ingest: true
-            node.master: true
+            node.roles:
+              - master
+              - data
+              - ingest
             node.store.allow_mmap: true
           count: 1
           name: default
@@ -67,10 +69,10 @@ spec:
                   resources:
                     limits:
                       cpu: '2'
-                      memory: 4Gi
+                      memory: 2Gi
                     requests:
                       cpu: '1'
-                      memory: 2Gi
+                      memory: 1Gi
               volumes:
                 - emptyDir: {}
                   name: elasticsearch-data
