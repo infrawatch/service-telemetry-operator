@@ -41,6 +41,8 @@ choose to override:
 | `__internal_registry_path`                      | <registry_path>  | image-registry.openshift-image-registry.svc:5000      | Path to internal registry for image path                                                              |
 | `__deploy_minio_enabled`                        | {true,false}     | false                                                 | Whether to deploy minio while deploying loki-operator for logging development purposes                |
 | `__loki_skip_tls_verify`                        | {true,false}     | false                                                 | Whether to skip TLS verify for Loki S3 connection                                                     |
+| `__golang_image_path`                           | <image_path>     | quay.io/infrawatch/golang:1.16                        | Golang image path for building the loki-operator image                                                |
+| `__loki_image_path`                             | <image_path>     | quay.io/infrawatch/loki:2.2.1                         | Loki image path for Loki microservices                                                                |
 
 
 Example Playbook
