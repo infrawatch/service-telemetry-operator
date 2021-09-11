@@ -4,6 +4,7 @@ metadata:
   name: {{ meta.name }}
   namespace: {{ meta.namespace }}
 spec:
+  baseImage: {{ servicetelemetry_vars.graphing.grafana.base_image }}
   ingress:
     enabled: {{ servicetelemetry_vars.graphing.grafana.ingress_enabled }}
   config:

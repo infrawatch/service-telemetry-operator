@@ -25,8 +25,8 @@ for ((i=1; i<=NUMCLOUDS; i++)); do
 done
 REL=$(dirname "$0")
 
-if [ -z $OCP_PROJECT+x} ]; then
-    oc project $OCP_PROJECT 
+if [ -z ${OCP_PROJECT+x} ]; then
+    oc project $OCP_PROJECT
 else
     OCP_PROJECT=$(oc project -q)
 fi
@@ -69,7 +69,7 @@ done
 
 oc delete pod curl
 SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
-trapoutput=$(oc logs $SNMP_WEBHOOK_POD | grep 'Sending SNMP trap')
+oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
 SNMP_WEBHOOK_STATUS=$?
 
 echo "*** [INFO] Showing oc get all..."
@@ -124,7 +124,7 @@ if $CLEANUP; then
 fi
 echo
 
-if [ $SNMP_WBHOOK_POD -eq 0 ]; then
+if [ $SNMP_WEBHOOK_STATUS -ne 0 ]; then
     echo "*** [FAILURE] SNMP Webhook failed"
     exit 1
 fi

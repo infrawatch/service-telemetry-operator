@@ -34,6 +34,15 @@ spec:
           persistent:
             storageSelector: {}
             pvcStorageRequest: 20Gi
+
+    logs:
+      loki:
+        enabled: false
+        flavor: 1.extra-small
+        replicationFactor: 1
+        storage:
+          objectStorageSecret: test
+          storageClass: standard
   graphing:
     enabled: false
     grafana:
@@ -41,6 +50,7 @@ spec:
       adminPassword: secret
       adminUser: root
       disableSignoutMenu: false
+      baseImage: docker.io/grafana/grafana:8.1.2
   transports:
     qdr:
       enabled: true
