@@ -90,6 +90,7 @@ metadata:
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
     olm.skipRange: '>=<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
+    "olm.properties": '[{"type": "olm.maxOpenShiftVersion", "value": "4.8"}]'
     operatorframework.io/suggested-namespace: service-telemetry
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
