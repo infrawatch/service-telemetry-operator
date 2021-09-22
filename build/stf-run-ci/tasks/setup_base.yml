@@ -26,23 +26,6 @@
         targetNamespaces:
         - "{{ namespace }}"
 
-- name: Enable AMQ Certificate Manager CatalogSource (redhat-operators-stf)
-  k8s:
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        name: redhat-operators-stf
-        namespace: openshift-marketplace
-      spec:
-        displayName: Red Hat STF Operators
-        image: quay.io/redhat-operators-stf/stf-catalog:stable
-        publisher: Red Hat
-        sourceType: grpc
-        updateStrategy:
-          registryPoll:
-            interval: 30m
-
 - name: Subscribe to AMQ Certificate Manager Operator
   k8s:
     definition:
@@ -52,12 +35,11 @@
         name: amq7-cert-manager-operator
         namespace: openshift-operators
       spec:
-        channel: alpha
+        channel: 1.x
         installPlanApproval: Automatic
         name: amq7-cert-manager-operator
-        source: redhat-operators-stf
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
-        targetNamespaces: global
 
 - name: Enable OperatorHub.io for Elastic Cloud on Kubernetes
   k8s:
@@ -69,7 +51,7 @@
         namespace: openshift-marketplace
       spec:
         sourceType: grpc
-        image: quay.io/operator-framework/upstream-community-operators:latest
+        image: quay.io/operatorhubio/catalog:latest
         displayName: OperatorHub.io Operators
         publisher: OperatorHub.io
 
@@ -79,12 +61,12 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
-        name: elastic-cloud-eck
+        name: elasticsearch-eck-operator-certified
         namespace: "{{ namespace }}"
       spec:
         channel: stable
         installPlanApproval: Automatic
-        name: elastic-cloud-eck
+        name: elasticsearch-eck-operator-certified
         source: operatorhubio-operators
         sourceNamespace: openshift-marketplace
 
@@ -97,7 +79,7 @@
         name: amq7-interconnect-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: 1.2.0
+        channel: 1.10.x
         installPlanApproval: Automatic
         name: amq7-interconnect-operator
         source: redhat-operators
