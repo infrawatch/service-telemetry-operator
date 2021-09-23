@@ -67,7 +67,7 @@
         channel: stable
         installPlanApproval: Automatic
         name: elasticsearch-eck-operator-certified
-        source: operatorhubio-operators
+        source: certified-operators
         sourceNamespace: openshift-marketplace
 
 - name: Subscribe to AMQ Interconnect Operator
