@@ -180,7 +180,9 @@ spec:
                             type: object
                           replicationFactor:
                             description: Loki replication factor
-                            type: string
+                            format: int32
+                            minimum: 1
+                            type: integer
                           storage:
                             description: Logs storage configuration for Loki
                             properties:

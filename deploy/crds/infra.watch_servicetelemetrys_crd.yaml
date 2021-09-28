@@ -176,7 +176,9 @@ spec:
                             type: boolean
                           replicationFactor:
                             description: Loki replication factor
-                            type: string
+                            format: int32
+                            minimum: 1
+                            type: integer
                           flavor:
                             description: Loki flavor
                             enum:
