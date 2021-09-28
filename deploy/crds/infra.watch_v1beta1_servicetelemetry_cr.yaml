@@ -34,7 +34,6 @@ spec:
           persistent:
             storageSelector: {}
             pvcStorageRequest: 20Gi
-
     logs:
       loki:
         enabled: false
