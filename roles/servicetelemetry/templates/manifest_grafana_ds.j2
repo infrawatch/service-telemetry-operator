@@ -11,10 +11,17 @@ spec:
       isDefault: true
       jsonData:
         timeInterval: 5s
+        tlsAuthWithCACert: true
       name: STFPrometheus
       type: prometheus
-      url: 'http://prometheus-operated:9090'
+      url: 'https://{{ meta.name }}-prometheus-proxy.service-telemetry.svc:9092'
       version: 1
+      basicAuth: true
+      basicAuthUser: internal
+      secureJsonData:
+        basicAuthPassword: '{{ prom_basicauth_passwd }}'
+        tlsCACert: |
+          {{ serving_certs_ca.resources[0].data['service-ca.crt'] | indent(10) }}
 {% endif %}
 
 {% if servicetelemetry_vars.backends.events.elasticsearch.enabled %}

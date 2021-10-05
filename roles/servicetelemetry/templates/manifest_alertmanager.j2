@@ -7,10 +7,38 @@ metadata:
   namespace: '{{ meta.namespace }}'
 spec:
   replicas: {{ servicetelemetry_vars.alerting.alertmanager.deployment_size }}
-  serviceAccountName: prometheus-k8s
+  serviceAccountName: alertmanager-stf
   serviceMonitorSelector:
     matchLabels:
       app: smart-gateway
+  listenLocal: true
+  podMetadata:
+    labels:
+      alertmanager: '{{ meta.name }}'
+  containers:
+  - name: oauth-proxy
+    image: {{ oauth_proxy_image }}
+    args:
+    - -https-address=:9095
+    - -tls-cert=/etc/tls/private/tls.crt
+    - -tls-key=/etc/tls/private/tls.key
+    - -upstream=http://localhost:9093/
+    - -cookie-secret-file=/etc/proxy/secrets/session_secret
+    - -openshift-service-account=alertmanager-stf
+    - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+    - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+    ports:
+      - containerPort: 9095
+        name: https
+        protocol: TCP
+    volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-{{ meta.name }}-alertmanager-proxy-tls
+      - mountPath: /etc/proxy/secrets
+        name: secret-{{ meta.name }}-session-secret
+  secrets:
+    - '{{ meta.name }}-alertmanager-proxy-tls'
+    - '{{ meta.name }}-session-secret'
 {% if servicetelemetry_vars.alerting.alertmanager.storage.strategy == "persistent" %}
   storage:
     volumeClaimTemplate:

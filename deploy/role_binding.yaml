@@ -1,3 +1,18 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: service-telemetry-operator
+subjects:
+- kind: ServiceAccount
+  name: service-telemetry-operator
+  namespace: service-telemetry
+roleRef:
+  kind: ClusterRole
+  name: service-telemetry-operator
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:

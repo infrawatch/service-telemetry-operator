@@ -1,3 +1,76 @@
+- name: Construct oauth redirect reference
+  set_fact:
+    prom_oauth_redir_ref:
+      kind: OAuthRedirectReference
+      apiVersion: v1
+      reference:
+        kind: Route
+        name: '{{ meta.name }}-prometheus-proxy'
+
+- name: Add oauth redirect annotation to prometheus-k8s service account
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: prometheus-k8s
+        namespace: '{{ meta.namespace }}'
+        annotations:
+          serviceaccounts.openshift.io/oauth-redirectreference.prometheus: '{{ prom_oauth_redir_ref | to_json }}'
+
+- name: Bind the local prometheus SA to prometheus cluster role
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: prometheus-k8s-{{ meta.namespace }}
+        namespace: '{{ meta.namespace }}'
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: prometheus-k8s
+      subjects:
+      - kind: ServiceAccount
+        name: prometheus-k8s
+        namespace: '{{ meta.namespace }}'
+
+- name: Check for existing prometheus htpasswd user secret
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-prometheus-htpasswd'
+  register: prometheus_htpasswd
+
+- name: Create a new prometheus password if it doesn't exist yet
+  when: prometheus_htpasswd.resources|length == 0
+  block:
+    - name: Set prometheus htpasswd
+      set_fact:
+        prom_basicauth_passwd: "{{ lookup('password', '/dev/null') }}"
+
+    - name: Create htpasswd secret  # Contains both the htpasswd version and plaintext for lookup
+      k8s:
+        definition:
+          api_version: v1
+          kind: Secret
+          metadata:
+            name: '{{ meta.name }}-prometheus-htpasswd'
+            namespace: '{{ meta.namespace }}'
+          type: Opaque
+          stringData:
+            auth: 'internal:{{ prom_basicauth_passwd | htpasswd_sha1 }}'  #SHA1 is deprecated, bcrypt is available in OCP 4.8+ only https://bugzilla.redhat.com/show_bug.cgi?id=1874322
+            password: '{{ prom_basicauth_passwd }}'
+
+    - name: Re-register new object for use in the annotation
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        namespace: '{{ meta.namespace }}'
+        name: '{{ meta.name }}-prometheus-htpasswd'
+      register: prometheus_htpasswd
+
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_prometheus.j2') | from_yaml }}"
@@ -13,4 +86,24 @@
     definition:
       '{{ prometheus_manifest }}'
 
-# TODO: Create route to access Prometheus (conditional, default off)
+- name: Set default prometheus service template
+  set_fact:
+    prometheus_service_manifest: "{{ lookup('template', './manifest_prometheus_service.j2') | from_yaml }}"
+  when: prometheus_service_manifest is not defined
+
+- name: Create service to access the prometheus proxy
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      '{{ prometheus_service_manifest }}'
+
+- name: Set default prometheus route template
+  set_fact:
+    prometheus_route_manifest: "{{ lookup('template', './manifest_prometheus_route.j2') | from_yaml }}"
+  when: prometheus_route_manifest is not defined
+
+- name: Create route to access the prometheus proxy
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      '{{ prometheus_route_manifest }}'

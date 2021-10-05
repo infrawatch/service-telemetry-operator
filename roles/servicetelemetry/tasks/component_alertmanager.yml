@@ -35,5 +35,63 @@
   when:
     servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.enabled and
     servicetelemetry_vars.alerting.enabled
+# <--
 
-# TODO: Create route to access Alertmanager (conditional, default off)
+- name: Construct oauth redirect reference
+  set_fact:
+    alertmanager_oauth_redir_ref:
+      kind: OAuthRedirectReference
+      apiVersion: v1
+      reference:
+        kind: Route
+        name: '{{ meta.name }}-alertmanager-proxy'
+
+- name: Add a service account to used by Alertmanager
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: alertmanager-stf
+        namespace: '{{ meta.namespace }}'
+        annotations:
+          serviceaccounts.openshift.io/oauth-redirectreference.alertmanager: '{{ alertmanager_oauth_redir_ref | to_json }}'
+
+- name: Bind role
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: alertmanager-stf
+        namespace: '{{ meta.namespace }}'
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: alertmanager-main
+      subjects:
+      - kind: ServiceAccount
+        name: alertmanager-stf
+        namespace: '{{ meta.namespace }}'
+
+- name: Set default alertmanager service template
+  set_fact:
+    alertmanager_service_manifest: "{{ lookup('template', './manifest_alertmanager_service.j2') | from_yaml }}"
+  when: alertmanager_service_manifest is not defined
+
+- name: Create service to access the Alertmanager proxy
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.alerting.enabled else "absent" }}'
+    definition:
+      '{{ alertmanager_service_manifest }}'
+
+- name: Set default alertmanager route template
+  set_fact:
+    alertmanager_route_manifest: "{{ lookup('template', './manifest_alertmanager_route.j2') | from_yaml }}"
+  when: alertmanager_route_manifest is not defined
+
+- name: Create route to access the Alertmanager proxy
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.alerting.enabled else "absent" }}'
+    definition:
+      '{{ alertmanager_route_manifest }}'

@@ -13,14 +13,54 @@ spec:
   serviceMonitorSelector:
     matchLabels:
       app: smart-gateway
+  listenLocal: true
+  podMetadata:
+    labels:
+      prometheus: '{{ meta.name }}'
+    annotations:
+      hash-of-entire-htpasswd-secret-to-force-restart-if-changed: {{ prometheus_htpasswd | sha1 }}
 {% if servicetelemetry_vars.alerting.enabled %}
   alerting:
     alertmanagers:
-    - name: alertmanager-operated
+    - name: '{{ meta.name }}-alertmanager-proxy'
       namespace: '{{ meta.namespace }}'
       port: web
+      scheme: https
+      tlsConfig:
+        caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
+        serverName: '{{ meta.name }}-alertmanager-proxy.service-telemetry.svc'
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 {% endif %}
   retention: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.retention }}
+  containers:
+  - name: oauth-proxy
+    image: {{ oauth_proxy_image }}
+    args:
+    - -https-address=:9092
+    - -tls-cert=/etc/tls/private/tls.crt
+    - -tls-key=/etc/tls/private/tls.key
+    - -upstream=http://localhost:9090/
+    - -htpasswd-file=/etc/proxy/htpasswd/auth
+    - -cookie-secret-file=/etc/proxy/secrets/session_secret
+    - -openshift-service-account=prometheus-k8s
+    - -openshift-sar={"resource": "namespaces", "verb": "get"}
+    ports:
+      - containerPort: 9092
+        name: https
+        protocol: TCP
+    volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-{{ meta.name }}-prometheus-proxy-tls
+      - mountPath: /etc/proxy/secrets
+        name: secret-{{ meta.name }}-session-secret
+      - mountPath: /etc/proxy/htpasswd
+        name: secret-{{ meta.name }}-prometheus-htpasswd
+  configMaps:
+    - serving-certs-ca-bundle
+  secrets:
+    - '{{ meta.name }}-prometheus-proxy-tls'
+    - '{{ meta.name }}-session-secret'
+    - '{{ meta.name }}-prometheus-htpasswd'
 {% if servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "persistent" %}
   storage:
     volumeClaimTemplate:

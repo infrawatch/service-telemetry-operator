@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: '{{ meta.name }}-prometheus-proxy'
+  namespace: '{{ meta.namespace }}'
+spec:
+  port:
+    targetPort: https
+  to:
+    kind: Service
+    name: '{{ meta.name }}-prometheus-proxy'
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: Reencrypt
