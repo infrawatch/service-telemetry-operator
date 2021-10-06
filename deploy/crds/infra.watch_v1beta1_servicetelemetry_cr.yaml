@@ -42,6 +42,27 @@ spec:
         storage:
           objectStorageSecret: test
           storageClass: standard
+  clouds:
+    - name: cloud1
+      metrics:
+        collectors:
+          - collectorType: collectd
+            subscriptionAddress: collectd/telemetry
+            debugEnabled: false
+          - collectorType: ceilometer
+            subscriptionAddress: anycast/ceilometer/metering.sample
+            debugEnabled: false
+          - collectorType: sensubility
+            subscriptionAddress: sensubility/telemetry
+            debugEnabled: false
+      events:
+        collectors:
+          - collectorType: collectd
+            subscriptionAddress: collectd/notify
+            debugEnabled: false
+          - collectorType: ceilometer
+            subscriptionAddress: anycast/ceilometer/event.sample
+            debugEnabled: false
   graphing:
     enabled: false
     grafana:
@@ -49,6 +70,7 @@ spec:
       adminPassword: secret
       adminUser: root
       disableSignoutMenu: false
+      baseImage: docker.io/grafana/grafana:8.1.5
   transports:
     qdr:
       enabled: true

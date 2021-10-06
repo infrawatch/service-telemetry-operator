@@ -68,11 +68,50 @@ metadata:
                 }
               }
             },
+            "clouds": [
+              {
+                "events": {
+                  "collectors": [
+                    {
+                      "collectorType": "collectd",
+                      "debugEnabled": false,
+                      "subscriptionAddress": "collectd/notify"
+                    },
+                    {
+                      "collectorType": "ceilometer",
+                      "debugEnabled": false,
+                      "subscriptionAddress": "anycast/ceilometer/event.sample"
+                    }
+                  ]
+                },
+                "metrics": {
+                  "collectors": [
+                    {
+                      "collectorType": "collectd",
+                      "debugEnabled": false,
+                      "subscriptionAddress": "collectd/telemetry"
+                    },
+                    {
+                      "collectorType": "ceilometer",
+                      "debugEnabled": false,
+                      "subscriptionAddress": "anycast/ceilometer/metering.sample"
+                    },
+                    {
+                      "collectorType": "sensubility",
+                      "debugEnabled": false,
+                      "subscriptionAddress": "sensubility/telemetry"
+                    }
+                  ]
+                },
+                "name": "cloud1"
+              }
+            ],
             "graphing": {
               "enabled": false,
               "grafana": {
                 "adminPassword": "secret",
                 "adminUser": "root",
+                "baseImage": "docker.io/grafana/grafana:8.1.5",
                 "disableSignoutMenu": false,
                 "ingressEnabled": false
               }
