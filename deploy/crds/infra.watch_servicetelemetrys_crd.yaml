@@ -61,8 +61,8 @@ spec:
                             description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
                             type: string
                             enum:
-                              - ephemeral
-                              - persistent
+                            - ephemeral
+                            - persistent
                           persistent:
                             properties:
                               storageClass:
@@ -107,8 +107,8 @@ spec:
                                 description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
                                 type: string
                                 enum:
-                                  - ephemeral
-                                  - persistent
+                                - ephemeral
+                                - persistent
                               retention:
                                 description: Time duration Prometheus shall retain data for. Default
                                   is '24h', and must match the regular expression `[0-9]+(ms|s|m|h|d|w|y)`
@@ -150,8 +150,8 @@ spec:
                                 description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
                                 type: string
                                 enum:
-                                  - ephemeral
-                                  - persistent
+                                - ephemeral
+                                - persistent
                               persistent:
                                 description: Persistent storage configuration for ElasticSearch
                                 properties:
@@ -290,7 +290,7 @@ spec:
                 items:
                   properties:
                     name:
-                      description: Name of the cloud object. Must be alphanumberic and a maximum length of 10 characters.
+                      description: Name of the cloud object. Must be alphanumeric and a maximum length of 10 characters.
                       type: string
                       pattern: ^[a-zA-Z0-9]{1,10}$
                     metrics:
@@ -304,9 +304,9 @@ spec:
                                 description: Set the collector type, value of 'ceilometer', 'collectd' or 'sensubility'.
                                 type: string
                                 enum:
-                                  - ceilometer
-                                  - collectd
-                                  - sensubility
+                                - ceilometer
+                                - collectd
+                                - sensubility
                               subscriptionAddress:
                                 description: Address to subscribe on the data transport to receive telemetry.
                                 type: string
@@ -327,8 +327,8 @@ spec:
                                 description: Set the collector type, value of 'ceilometer' or 'collectd'.
                                 type: string
                                 enum:
-                                  - ceilometer
-                                  - collectd
+                                - ceilometer
+                                - collectd
                               subscriptionAddress:
                                 description: Address to subscribe on the data transport to receive notifications.
                                 type: string

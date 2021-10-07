@@ -334,7 +334,7 @@ spec:
                           type: array
                       type: object
                     name:
-                      description: Name of the cloud object. Must be alphanumberic
+                      description: Name of the cloud object. Must be alphanumeric
                         and a maximum length of 10 characters.
                       pattern: ^[a-zA-Z0-9]{1,10}$
                       type: string
