@@ -290,9 +290,9 @@ spec:
                 items:
                   properties:
                     name:
-                      description: Name of the cloud object. Must be alphanumberic and a maximum length of 19 characters.
+                      description: Name of the cloud object. Must be alphanumberic and a maximum length of 10 characters.
                       type: string
-                      pattern: ^[a-zA-Z0-9]{1,19}$
+                      pattern: ^[a-zA-Z0-9]{1,10}$
                     metrics:
                       description: Metrics related configuration for this cloud object.
                       properties:
