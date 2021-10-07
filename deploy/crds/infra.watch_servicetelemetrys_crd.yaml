@@ -149,6 +149,9 @@ spec:
                               strategy:
                                 description: Storage strategy. One of 'ephemeral' or 'persistent'. Persistent storage must be made available by the platform.
                                 type: string
+                                enum:
+                                  - ephemeral
+                                  - persistent
                               persistent:
                                 description: Persistent storage configuration for ElasticSearch
                                 properties:
@@ -270,6 +273,7 @@ spec:
                       adminPassword:
                         description: Grafana admin password
                         type: string
+                        format: password
                       adminUser:
                         description: Grafana admin user
                         type: string
@@ -286,8 +290,9 @@ spec:
                 items:
                   properties:
                     name:
-                      description: Name of the cloud object
+                      description: Name of the cloud object. Must be alphanumberic and a maximum length of 19 characters.
                       type: string
+                      pattern: ^[a-zA-Z0-9]{1,19}$
                     metrics:
                       description: Metrics related configuration for this cloud object.
                       properties:
@@ -296,8 +301,12 @@ spec:
                           items:
                             properties:
                               collectorType:
-                                description: Set the collector type, value of 'ceilometer' or 'collectd'.
+                                description: Set the collector type, value of 'ceilometer', 'collectd' or 'sensubility'.
                                 type: string
+                                enum:
+                                  - ceilometer
+                                  - collectd
+                                  - sensubility
                               subscriptionAddress:
                                 description: Address to subscribe on the data transport to receive telemetry.
                                 type: string

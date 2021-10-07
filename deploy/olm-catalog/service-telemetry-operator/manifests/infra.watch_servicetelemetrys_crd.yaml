@@ -122,6 +122,9 @@ spec:
                                 description: Storage strategy. One of 'ephemeral'
                                   or 'persistent'. Persistent storage must be made
                                   available by the platform.
+                                enum:
+                                - ephemeral
+                                - persistent
                                 type: string
                             type: object
                         type: object
@@ -312,8 +315,12 @@ spec:
                           items:
                             properties:
                               collectorType:
-                                description: Set the collector type, value of 'ceilometer'
-                                  or 'collectd'.
+                                description: Set the collector type, value of 'ceilometer',
+                                  'collectd' or 'sensubility'.
+                                enum:
+                                - ceilometer
+                                - collectd
+                                - sensubility
                                 type: string
                               debugEnabled:
                                 description: Enable console debugging. Default is
@@ -327,7 +334,9 @@ spec:
                           type: array
                       type: object
                     name:
-                      description: Name of the cloud object
+                      description: Name of the cloud object. Must be alphanumberic
+                        and a maximum length of 19 characters.
+                      pattern: ^[a-zA-Z0-9]{1,19}$
                       type: string
                   type: object
                 type: array
@@ -348,6 +357,7 @@ spec:
                     properties:
                       adminPassword:
                         description: Grafana admin password
+                        format: password
                         type: string
                       adminUser:
                         description: Grafana admin user
