@@ -1,9 +1,16 @@
+- name: Clear the fact cache before looking up cluster information
+  meta: clear_facts
+
 - name: Get information about the cluster
   set_fact:
     api_groups: "{{ lookup('k8s', cluster_info='api_groups') }}"
   when:
   - not is_openshift
   - not is_k8s
+
+- name: Show existing API groups available to us
+  debug:
+    var: api_groups
 
 - name: Determine the cluster type
   set_fact:
