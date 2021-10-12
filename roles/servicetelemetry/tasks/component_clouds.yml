@@ -49,3 +49,4 @@
     - this_cloud.events is defined
     - this_cloud.events.collectors is defined
     - this_cloud.events is iterable
+  when: has_elasticsearch_api | bool
