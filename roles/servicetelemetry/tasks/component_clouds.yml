@@ -49,6 +49,11 @@
     - this_cloud.events is defined
     - this_cloud.events.collectors is defined
     - this_cloud.events is iterable
+  # TODO: it should be possible to deploy the eventing SGs when ElasticSearch
+  # is not available, but currently the template for smartgateway_events
+  # expects to have information about a local ES instance on cluster.
+  # https://github.com/infrawatch/service-telemetry-operator/issues/274
+  when: has_elasticsearch_api | bool
 
 - name: Deploy Logs Smart Gateway instance
   vars:
