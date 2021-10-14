@@ -9,7 +9,7 @@ AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.
 AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
-CLOUD_NAME="${CLOUD_NAME:-sample}"
+CLOUD_NAME="${CLOUD_NAME:-cloud1}"
 
 VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.4.0/compose/BaseOS/x86_64/images/}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
