@@ -10,15 +10,19 @@ spec:
   logLevel: "info"
 {% endif %}
   handleErrors: true
+  blockEventBus: true
   size: {{ smartgateway_deployment_size }}
   applications:
   - config: |
       connection: http://loki-distributor-http-lokistack.{{ meta.namespace }}.svc.cluster.local:3100
-      batchSize: {{ loki_batch_size | default('20') }}
-      maxWaitTime: {{ loki_max_wait_time | default('100') }}
+      batchSize: {{ loki_batch_size | default('2000') }}
+      maxWaitTime: {{ loki_max_wait_time | default('1s') }}
     name: loki
   bridge:
     amqpUrl: amqp://{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}
+    amqpBlock: true
+    socketBlock: true
+    ringBufferSize: 135048
   transports:
   - config: |
       path: /tmp/smartgateway
