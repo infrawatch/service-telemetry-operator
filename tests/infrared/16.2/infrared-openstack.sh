@@ -18,7 +18,7 @@ VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
 OSP_BUILD="${OSP_BUILD:-passed_phase2}"
 OSP_VERSION="${OSP_VERSION:-16.2}"
-OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:1}"
+OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 STF_ENVIRONMENT_TEMPLATE="${STF_ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
@@ -26,10 +26,14 @@ GNOCCHI_ENVIRONMENT_TEMPLATE="${GNOCCHI_ENVIRONMENT_TEMPLATE:-gnocchi-connectors
 ENABLE_STF_ENVIRONMENT_TEMPLATE="${ENABLE_STF_ENVIRONMENT_TEMPLATE:-enable-stf.yaml.template}"
 OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
-CONTROLLER_CPU=${CONTROLLER_CPU:-4}
-CONTROLLER_MEMORY=${CONTROLLER_MEMORY:-16384}
-COMPUTE_CPU=${COMPUTE_CPU:-4}
-COMPUTE_MEMORY=${COMPUTE_MEMORY:-8192}
+UNDERCLOUD_CPU="${UNDERCLOUD_CPU:-4}"
+UNDERCLOUD_MEMORY="${UNDERCLOUD_MEMORY:-16384}"
+CONTROLLER_CPU="${CONTROLLER_CPU:-2}"
+CONTROLLER_MEMORY="${CONTROLLER_MEMORY:-12228}"
+COMPUTE_CPU="${COMPUTE_CPU:-4}"
+COMPUTE_MEMORY="${COMPUTE_MEMORY:-12228}"
+CEPH_CPU="${CEPH_CPU:-2}"
+CEPH_MEMORY="${CEPH_MEMORY:-4096}"
 
 TEMPEST_ONLY="${TEMPEST_ONLY:-false}"
 RUN_WORKLOAD="${RUN_WORKLOAD:-false}"
@@ -60,10 +64,14 @@ ir_run_provision() {
       --image-url "${VM_IMAGE_LOCATION}" \
       --host-memory-overcommit True \
       --topology-network 3_nets \
+      -e override.undercloud.cpu="${UNDERCLOUD_CPU}" \
+      -e override.undercloud.memory="${UNDERCLOUD_MEMORY}" \
       -e override.controller.cpu="${CONTROLLER_CPU}" \
       -e override.controller.memory="${CONTROLLER_MEMORY}" \
       -e override.compute.cpu="${COMPUTE_CPU}" \
       -e override.compute.memory="${COMPUTE_MEMORY}" \
+      -e override.ceph.cpu="${CEPH_CPU}" \
+      -e override.ceph.memory="${CEPH_MEMORY}" \
       --serial-files True
 }
 
