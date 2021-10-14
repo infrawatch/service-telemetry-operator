@@ -295,8 +295,8 @@ def publish_data(metering_connection, events_connection):
 
 if __name__ == '__main__':
     qdr_connection = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1:5672'
-    metering_setting = sys.argv[2] if len(sys.argv) > 2 else 'driver=amqp&topic=metering'
-    events_setting = sys.argv[3] if len(sys.argv) > 3 else 'driver=amqp&topic=event'
+    metering_setting = sys.argv[2] if len(sys.argv) > 2 else 'driver=amqp&topic=cloud1-metering'
+    events_setting = sys.argv[3] if len(sys.argv) > 3 else 'driver=amqp&topic=cloud1-event'
 
     metering_connection = f'notifier://{qdr_connection}/?{metering_setting}'
     events_connection = f'notifier://{qdr_connection}/?{events_setting}'

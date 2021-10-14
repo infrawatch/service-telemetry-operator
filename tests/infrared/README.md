@@ -9,7 +9,6 @@ to an STF instance all on one (large) baremetal machine.
 1. Set VIRTHOST and have key based SSH access to root@$VIRTHOST
 1. Set AMQP_HOST and AMQP_PORT
 1. Run `infrared-openstack.sh` to install OSP on $VIRTHOST
-(Cry when it fails; try to pick up where it left off)
 
 ## Verification
 
