@@ -30,6 +30,7 @@ metadata:
               "enabled": false
             },
             "backends": {
+              "deploymentStrategy": "use_community",
               "events": {
                 "elasticsearch": {
                   "enabled": false,

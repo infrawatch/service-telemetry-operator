@@ -16,6 +16,7 @@ spec:
             enabled: false
             target: 192.168.24.254
   backends:
+    deploymentStrategy: use_community
     metrics:
       prometheus:
         enabled: false

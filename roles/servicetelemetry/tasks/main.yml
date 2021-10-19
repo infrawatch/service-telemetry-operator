@@ -28,7 +28,10 @@
   # create Service Monitor instance
   - name: Create Service Monitor instance
     include_tasks: component_servicemonitor.yml
-  when: has_monitoring_coreos_api
+  when:
+    - has_monitoring_coreos_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> backends.events
 - name: Check if we have elasticsearch API
@@ -47,7 +50,10 @@
 
   - name: Setup ElasticSearch
     include_tasks: component_elasticsearch.yml
-  when: has_elasticsearch_api | bool
+  when:
+    - has_elasticsearch_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> alerting
 - name: Create Alertmanager instance
@@ -61,7 +67,10 @@
 
 - name: Create Loki instance
   include_tasks: component_loki.yml
-  when: has_loki_api | bool
+  when:
+    - has_loki_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> graphing
 - name: Check if we have integreatly.org API
@@ -76,7 +85,10 @@
 # TODO
 #  - name: Create dashboards
 #    include_tasks: component_dashboards.yml
-  when: has_integreatly_api | bool
+  when:
+    - has_integreatly_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> clouds
 - name: Get data about clouds
