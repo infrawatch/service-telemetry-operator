@@ -8,44 +8,86 @@
   include_tasks: pre.yml
 
 # --> qdr
+- name: Check if we have interconnect API
+  set_fact:
+    has_interconnect_api: "{{ True if 'interconnectedcloud.github.io' in api_groups else False }}"
+
 - name: Create QDR instance
   include_tasks: component_qdr.yml
+  when: has_interconnect_api | bool
 
 # --> backends.metrics
-- name: Create Prometheus instance
-  include_tasks: component_prometheus.yml
+- name: Check if we have monitoring.coreos.com API
+  set_fact:
+    has_monitoring_coreos_api: "{{ True if 'monitoring.coreos.com' in api_groups else False }}"
 
-# create Service Monitor instance
-- name: Create Service Monitor instance
-  include_tasks: component_servicemonitor.yml
+- block:
+  - name: Create Prometheus instance
+    include_tasks: component_prometheus.yml
+
+  # create Service Monitor instance
+  - name: Create Service Monitor instance
+    include_tasks: component_servicemonitor.yml
+
+  # --> alerting
+  - name: Create Alertmanager instance
+    include_tasks: component_alertmanager.yml
+  when:
+    - has_monitoring_coreos_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> backends.events
-- name: Check if we have elasticsearch CRD
+- name: Check if we have elasticsearch API
   set_fact:
     has_elasticsearch_api: "{{ True if 'elasticsearch.k8s.elastic.co' in api_groups else False }}"
+
+- name: Check if we have certmanager.k8s.io API
+  set_fact:
+    has_certmanager_api: "{{ True if 'certmanager.k8s.io' in api_groups else False }}"
 
 - name: Deploy ElasticSearch events backend
   block:
   - name: Setup Certificates for ElasticSearch
     include_tasks: component_certificates.yml
+    when: has_certmanager_api | bool
 
   - name: Setup ElasticSearch
     include_tasks: component_elasticsearch.yml
-  when: has_elasticsearch_api | bool
-
-# --> alerting
-- name: Create Alertmanager instance
-  include_tasks: component_alertmanager.yml
+  when:
+    - has_elasticsearch_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> backends.logs
+- name: Check if we have loki API
+  set_fact:
+    has_loki_api: "{{ True if 'loki.openshift.io' in api_groups else False }}"
+
 - name: Create Loki instance
   include_tasks: component_loki.yml
+  when:
+    - has_loki_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> graphing
+- name: Check if we have integreatly.org API
+  set_fact:
+    has_integreatly_api: "{{ True if 'integreatly.org' in api_groups else False }}"
+
 - name: Deploy graphing
   block:
   - name: Create Grafana instance
     include_tasks: component_grafana.yml
+
+# TODO
+#  - name: Create dashboards
+#    include_tasks: component_dashboards.yml
+  when:
+    - has_integreatly_api | bool
+    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
+    - servicetelemetry_vars.backends.deployment_strategy != 'none'
 
 # --> clouds
 - name: Get data about clouds

@@ -3,6 +3,8 @@
 clouds_remove_on_missing: false
 
 servicetelemetry_defaults:
+  deployment_strategy: community
+
   high_availability:
     enabled: false
 
@@ -14,7 +16,7 @@ servicetelemetry_defaults:
         strategy: persistent
         persistent:
           storage_class: ""
-          storage_selector: {}
+          storage_selector: "{}"
           pvc_storage_request: 20G
       receivers:
         snmp_traps:
@@ -22,6 +24,7 @@ servicetelemetry_defaults:
           target: 192.168.24.254
 
   backends:
+    deployment_strategy: use_community
     metrics:
       prometheus:
         enabled: true
@@ -32,7 +35,7 @@ servicetelemetry_defaults:
           retention: 24h
           persistent:
             storage_class: ""
-            storage_selector: {}
+            storage_selector: "{}"
             pvc_storage_request: 20G
     events:
       elasticsearch:
@@ -42,7 +45,7 @@ servicetelemetry_defaults:
           strategy: persistent
           persistent:
             storage_class: ""
-            storage_selector: {}
+            storage_selector: "{}"
             pvc_storage_request: 20Gi
     logs:
       loki:

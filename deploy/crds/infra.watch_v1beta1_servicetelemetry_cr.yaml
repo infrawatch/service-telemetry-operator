@@ -9,13 +9,14 @@ spec:
       storage:
         strategy: persistent
         persistent:
-          storageSelector: {}
+          storageSelector: "{}"
           pvcStorageRequest: 20G
         receivers:
           snmpTraps:
             enabled: false
             target: 192.168.24.254
   backends:
+    deploymentStrategy: use_community
     metrics:
       prometheus:
         enabled: true
@@ -24,7 +25,7 @@ spec:
           strategy: persistent
           retention: 24h
           persistent:
-            storageSelector: {}
+            storageSelector: "{}"
             pvcStorageRequest: 20G
     events:
       elasticsearch:
@@ -32,12 +33,12 @@ spec:
         storage:
           strategy: persistent
           persistent:
-            storageSelector: {}
+            storageSelector: "{}"
             pvcStorageRequest: 20Gi
     logs:
       loki:
         enabled: false
-        flavor: 1.extra-small
+        flavor: 1x.extra-small
         replicationFactor: 1
         storage:
           objectStorageSecret: test

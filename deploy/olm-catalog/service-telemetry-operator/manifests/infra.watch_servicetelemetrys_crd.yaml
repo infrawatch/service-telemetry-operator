@@ -86,6 +86,19 @@ spec:
               backends:
                 description: Backend storage configuration
                 properties:
+                  deploymentStrategy:
+                    description: 'The strategy to use for backend deployment. Options
+                      are "none" (do not deploy any backends), "use_community" (community
+                      operators with administrator managed subscriptions), "use_community_sub"
+                      (community operators with managed subscriptions), and "use_openshift"
+                      enabling use of built in OpenShift monitoring components (if
+                      available). NOTE: only metrics backend is available with "use_openshift".'
+                    enum:
+                    - use_community
+                    - use_community_sub
+                    - use_openshift
+                    - none
+                    type: string
                   events:
                     description: Events related backend configuration.
                     properties:
