@@ -42,7 +42,7 @@ spec:
     - -upstream=http://localhost:3000
     - -cookie-secret-file=/etc/proxy/secrets/session_secret
     - -openshift-service-account=grafana-serviceaccount
-    - -openshift-sar={"resource": "namespaces", "verb": "get"}
+    - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
     - -openshift-ca=/etc/pki/tls/cert.pem
     - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     ports:

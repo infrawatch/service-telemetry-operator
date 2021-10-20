@@ -43,7 +43,7 @@ spec:
     - -htpasswd-file=/etc/proxy/htpasswd/auth
     - -cookie-secret-file=/etc/proxy/secrets/session_secret
     - -openshift-service-account=prometheus-k8s
-    - -openshift-sar={"resource": "namespaces", "verb": "get"}
+    - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
     ports:
       - containerPort: 9092
         name: https

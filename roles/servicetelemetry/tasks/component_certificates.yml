@@ -28,6 +28,6 @@
       metadata:
         name: '{{ meta.name }}-session-secret'
         namespace: '{{ meta.namespace }}'
-      data:
-          session_secret: "{{ lookup('password', '/dev/null') }}"
+      stringData:
+        session_secret: "{{ lookup('password', '/dev/null') }}"
   when: session_secret.resources|length == 0
