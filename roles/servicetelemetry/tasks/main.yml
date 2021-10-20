@@ -28,6 +28,10 @@
   # create Service Monitor instance
   - name: Create Service Monitor instance
     include_tasks: component_servicemonitor.yml
+
+  # --> alerting
+  - name: Create Alertmanager instance
+    include_tasks: component_alertmanager.yml
   when:
     - has_monitoring_coreos_api | bool
     - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
@@ -54,11 +58,6 @@
     - has_elasticsearch_api | bool
     - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
     - servicetelemetry_vars.backends.deployment_strategy != 'none'
-
-# --> alerting
-- name: Create Alertmanager instance
-  include_tasks: component_alertmanager.yml
-  when: has_monitoring_coreos_api
 
 # --> backends.logs
 - name: Check if we have loki API
