@@ -244,6 +244,11 @@ spec:
           - ""
           resources:
           - nodes/metrics
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
           - namespaces
           verbs:
           - get
