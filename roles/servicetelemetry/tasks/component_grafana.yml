@@ -7,6 +7,19 @@
         kind: Route
         name: 'grafana-route'
 
+- name: Create htpasswd secret for grafana admin
+  no_log: true
+  k8s:
+    definition:
+      api_version: v1
+      kind: Secret
+      metadata:
+        name: '{{ meta.name }}-grafana-htpasswd'
+        namespace: '{{ meta.namespace }}'
+      type: Opaque
+      stringData:
+        auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | htpasswd_sha1 }}'
+
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
