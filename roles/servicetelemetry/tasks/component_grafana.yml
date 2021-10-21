@@ -44,6 +44,7 @@
       register: prometheus_secret
 
     - name: Decode prometheus password
+      no_log: true
       set_fact:
         prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
 

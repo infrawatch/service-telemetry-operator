@@ -21,6 +21,7 @@
   register: session_secret
 
 - name: Create cookie secret
+  no_log: true
   k8s:
     definition:
       api_version: v1

@@ -28,7 +28,7 @@ spec:
       scheme: https
       tlsConfig:
         caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
-        serverName: '{{ meta.name }}-alertmanager-proxy.service-telemetry.svc'
+        serverName: '{{ meta.name }}-alertmanager-proxy.{{ meta.namespace }}.svc'
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 {% endif %}
   retention: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.retention }}

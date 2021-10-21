@@ -47,10 +47,12 @@
   when: prometheus_htpasswd.resources|length == 0
   block:
     - name: Set prometheus htpasswd
+      no_log: true
       set_fact:
         prom_basicauth_passwd: "{{ lookup('password', '/dev/null') }}"
 
     - name: Create htpasswd secret  # Contains both the htpasswd version and plaintext for lookup
+      no_log: true
       k8s:
         definition:
           api_version: v1
