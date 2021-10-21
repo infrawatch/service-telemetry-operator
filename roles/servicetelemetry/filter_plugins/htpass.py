@@ -9,7 +9,7 @@ class FilterModule(object):
         }
 
     def htpasswd_sha1(self, password):
-        """Convert from plaintest to htpasswd compatible SHA1
+        """Convert from plaintext to htpasswd compatible SHA1
         This filter will return a SHA1 password hash for use in htpasswd files.
         SHA1 is (highly) deprecated, but required by oauth_proxy until OCP 4.8 https://bugzilla.redhat.com/show_bug.cgi?id=1874322
         Jinja sha1 filter only outputs in hexdigest mode, but we require a base64 of the binary sha1 hash
