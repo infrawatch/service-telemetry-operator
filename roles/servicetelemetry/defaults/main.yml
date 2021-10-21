@@ -120,10 +120,11 @@ is_openshift: false
 # - Is specifying an image here sufficient or does it need downstream build automation vars?
 # - I'd prefer NOT to make this an STF option, it should ideally just always reference the local registry image
 
-# - THIS IS THE IMAGE I MOST WANT TO USE, however it gives this error
-# - 'Failed to pull image [...] Error reading manifest latest in [...]: manifest unknown: manifest unknown'
-# - See `oc get is -n openshift oauth-proxy` - it should be there? Maybe I'm missing cross-namespace pull perms?
+# - THIS IS THE IMAGE LINE I MOST WANT TO USE, however there is no 'latest' tag for this image
 # oauth_proxy_image: image-registry.openshift-image-registry.svc:5000/openshift/oauth-proxy:latest
+
+# - This line works on OCP 4.7 (v4.4 tag instead of 'latest' as I'd prefer above)
+# oauth_proxy_image: image-registry.openshift-image-registry.svc:5000/openshift/oauth-proxy:v4.4
 
 # - Downstream, this one works, but there is a big red "Red Hat strongly recommends updating to the newest image version..." (4.9) which doesn't work
 # - See https://github.com/openshift/oauth-proxy/issues/229
