@@ -27,7 +27,7 @@ metadata:
                   "strategy": "persistent"
                 }
               },
-              "enabled": false
+              "enabled": true
             },
             "backends": {
               "deploymentStrategy": "use_community",
@@ -56,7 +56,7 @@ metadata:
               },
               "metrics": {
                 "prometheus": {
-                  "enabled": false,
+                  "enabled": true,
                   "scrapeInterval": "10s",
                   "storage": {
                     "persistent": {

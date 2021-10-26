@@ -4,7 +4,7 @@ metadata:
   name: default
 spec:
   alerting:
-    enabled: false
+    enabled: true
     alertmanager:
       storage:
         strategy: persistent
@@ -19,7 +19,7 @@ spec:
     deploymentStrategy: use_community
     metrics:
       prometheus:
-        enabled: false
+        enabled: true
         scrapeInterval: 10s
         storage:
           strategy: persistent
