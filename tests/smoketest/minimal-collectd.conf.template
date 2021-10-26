@@ -14,11 +14,11 @@ LoadPlugin amqp1
     Host "default-interconnect"
     Port "5671"
     Address "collectd"
-    <Instance "telemetry">
+    <Instance "cloud1-telemetry">
         Format JSON
         PreSettle false
     </Instance>
-    <Instance "notify">
+    <Instance "cloud1-notify">
         Format JSON
         PreSettle false
         Notify true
