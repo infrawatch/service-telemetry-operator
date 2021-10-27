@@ -3,7 +3,7 @@
 clouds_remove_on_missing: false
 
 servicetelemetry_defaults:
-  deployment_strategy: community
+  deployment_strategy: use_community
 
   high_availability:
     enabled: false
