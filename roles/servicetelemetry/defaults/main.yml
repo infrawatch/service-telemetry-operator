@@ -16,7 +16,6 @@ servicetelemetry_defaults:
         strategy: persistent
         persistent:
           storage_class: ""
-          storage_selector: "{}"
           pvc_storage_request: 20G
       receivers:
         snmp_traps:
@@ -35,7 +34,6 @@ servicetelemetry_defaults:
           retention: 24h
           persistent:
             storage_class: ""
-            storage_selector: "{}"
             pvc_storage_request: 20G
     events:
       elasticsearch:
@@ -45,7 +43,6 @@ servicetelemetry_defaults:
           strategy: persistent
           persistent:
             storage_class: ""
-            storage_selector: "{}"
             pvc_storage_request: 20Gi
     logs:
       loki:

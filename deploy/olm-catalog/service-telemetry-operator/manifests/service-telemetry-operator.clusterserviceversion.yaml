@@ -15,8 +15,7 @@ metadata:
               "alertmanager": {
                 "storage": {
                   "persistent": {
-                    "pvcStorageRequest": "20G",
-                    "storageSelector": "{}"
+                    "pvcStorageRequest": "20G"
                   },
                   "receivers": {
                     "snmpTraps": {
@@ -36,8 +35,7 @@ metadata:
                   "enabled": false,
                   "storage": {
                     "persistent": {
-                      "pvcStorageRequest": "20Gi",
-                      "storageSelector": "{}"
+                      "pvcStorageRequest": "20Gi"
                     },
                     "strategy": "persistent"
                   }
@@ -60,8 +58,7 @@ metadata:
                   "scrapeInterval": "10s",
                   "storage": {
                     "persistent": {
-                      "pvcStorageRequest": "20G",
-                      "storageSelector": "{}"
+                      "pvcStorageRequest": "20G"
                     },
                     "retention": "24h",
                     "strategy": "persistent"
