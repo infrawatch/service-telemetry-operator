@@ -133,22 +133,28 @@ spec:
             severity: critical
           annotations:
             summary: disk ops write (critical)
-        - alert: high cpu
+
+        - expr: '(count by (host) (sum by (host,plugin_instance) (collectd_cpu_percent)))'
+          record: 'job:cpu:count:cpu_cores_total'
+        - expr: '(sum by (host) (collectd_cpu_percent{type_instance!="idle"}))'
+          record: 'job:cpu:rate:core_usage_percent'
+        - expr: 'job:cpu:rate:core_usage_percent / job:cpu:count:cpu_cores_total'
+          record: 'job:cpu:rate:avg_core_usage_percent'
+        - alert: job:cpu:rate:avg_core_usage_percent (warning)
           labels:
             severity: warn
           annotations:
             summary: CPU usage high (warning)
-          expr: >-
-            sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance=~"user|system"}) / sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance="idle"}) > 0.5
+          expr: 'job:cpu:rate:avg_core_usage_percent > 50 and job:cpu:rate:avg_core_usage_percent < 70'
           for: 10m
-        - alert: high cpu
+        - alert: job:cpu:rate:avg_core_usage_percent (critical)
           labels:
             severity: critical
           annotations:
             summary: CPU usage high (critical)
-          expr: >-
-            sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance=~"user|system"}) / sum without(plugin_instance,type_instance) (collectd_cpu_percent{type_instance="idle"}) > 0.7
+          expr: 'job:cpu:rate:avg_core_usage_percent >= 70'
           for: 10m
+
         - alert: inode usage
           labels:
             severity: warning
