@@ -5,7 +5,7 @@ metadata:
   namespace: '{{ meta.namespace }}'
 spec:
   port:
-    targetPort: https
+    targetPort: web
   to:
     kind: Service
     name: '{{ meta.name }}-prometheus-proxy'

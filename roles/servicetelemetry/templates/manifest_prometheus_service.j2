@@ -7,7 +7,7 @@ metadata:
     service.beta.openshift.io/serving-cert-secret-name: '{{ meta.name }}-prometheus-proxy-tls'
 spec:
   ports:
-  - name: https
+  - name: web
     port: 9092
     targetPort: https
   selector:

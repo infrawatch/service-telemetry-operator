@@ -7,6 +7,9 @@ spec:
   serviceAccount:
     annotations:
       serviceaccounts.openshift.io/oauth-redirectreference.primary: '{{ grafana_oauth_redir_ref | to_json }}'
+  deployment:
+    annotations:
+      hash-of-creds-to-force-restart-if-changed: {{ (servicetelemetry_vars.graphing.grafana.admin_user + servicetelemetry_vars.graphing.grafana.admin_password) | password_hash('sha256', (session_secret | b64encode)[:16] ) }}
   baseImage: {{ servicetelemetry_vars.graphing.grafana.base_image }}
   ingress:
     enabled: {{ servicetelemetry_vars.graphing.grafana.ingress_enabled }}
