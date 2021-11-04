@@ -9,7 +9,6 @@ spec:
       storage:
         strategy: persistent
         persistent:
-          storageSelector: {}
           pvcStorageRequest: 20G
         receivers:
           snmpTraps:
@@ -24,7 +23,6 @@ spec:
           strategy: persistent
           retention: 24h
           persistent:
-            storageSelector: {}
             pvcStorageRequest: 20G
     events:
       elasticsearch:
@@ -32,7 +30,6 @@ spec:
         storage:
           strategy: persistent
           persistent:
-            storageSelector: {}
             pvcStorageRequest: 20Gi
   graphing:
     enabled: false
