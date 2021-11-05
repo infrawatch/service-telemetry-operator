@@ -18,22 +18,22 @@ Variables
 Not all variables are listed here, but these are the most common ones you might
 choose to override:
 
-| Parameter name                                  | Values          | Default                                          | Description                                                                                           |
-| ------------------------------                  | ------------    | ---------                                        | ------------------------------------                                                                  |
-| `__deploy_stf`                                  | {true,false}    | true                                             | Whether to deploy an instance of STF                                                                  |
-| `__local_build_enabled`                         | {true,false}    | true                                             | Whether to deploySTF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch` |
-| `prometheus_webhook_snmp_branch`                | <git_branch>    | master                                           | Which Prometheus Webhook SNMP git branch to checkout                                                  |
-| `sgo_branch`                                    | <git_branch>    | master                                           | Which Smart Gateway Operator git branch to checkout                                                   |
-| `sg_branch`                                     | <git_branch>    | master                                           | Which Smart Gateway git branch to checkout                                                            |
-| `sg_core_branch`                                | <git_branch>    | master                                           | Which Smart Gateway Core git branch to checkout                                                       |
-| `sg_bridge_branch`                              | <git_branch>    | master                                           | Which Smart Gateway Bridge git branch to checkout                                                     |
-| `__service_telemetry_events_enabled`            | {true,false}    | true                                             | Whether to enable events support in ServiceTelemetry                                                  |
-| `__service_telemetry_high_availability_enabled` | {true,false}    | false                                            | Whether to enable high availability support in ServiceTelemetry                                       |
-| `__service_telemetry_metrics_enabled`           | {true,false}    | true                                             | Whether to enable metrics support in ServiceTelemetry                                                 |
-| `__service_telemetry_storage_ephemeral_enabled` | {true,false}    | false                                            | Whether to enable ephemeral storage support in ServiceTelemetry                                       |
-| `__service_telemetry_snmptraps_enabled`         | {true,false}    | true                                             | Whether to enable snmptraps delivery via Alertmanager receiver (prometheus-webhook-snmp)              |
-| `__internal_registry_path`                      | <registry_path> | image-registry.openshift-image-registry.svc:5000 | Path to internal registry for image path                                                              |
-
+| Parameter name                                         | Values          | Default                                          | Description                                                                                           |
+| ------------------------------                         | ------------    | ---------                                        | ------------------------------------                                                                  |
+| `__deploy_stf`                                         | {true,false}    | true                                             | Whether to deploy an instance of STF                                                                  |
+| `__local_build_enabled`                                | {true,false}    | true                                             | Whether to deploySTF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch` |
+| `prometheus_webhook_snmp_branch`                       | <git_branch>    | master                                           | Which Prometheus Webhook SNMP git branch to checkout                                                  |
+| `sgo_branch`                                           | <git_branch>    | master                                           | Which Smart Gateway Operator git branch to checkout                                                   |
+| `sg_branch`                                            | <git_branch>    | master                                           | Which Smart Gateway git branch to checkout                                                            |
+| `sg_core_branch`                                       | <git_branch>    | master                                           | Which Smart Gateway Core git branch to checkout                                                       |
+| `sg_bridge_branch`                                     | <git_branch>    | master                                           | Which Smart Gateway Bridge git branch to checkout                                                     |
+| `__service_telemetry_events_enabled`                   | {true,false}    | true                                             | Whether to enable events support in ServiceTelemetry                                                  |
+| `__service_telemetry_high_availability_enabled`        | {true,false}    | false                                            | Whether to enable high availability support in ServiceTelemetry                                       |
+| `__service_telemetry_metrics_enabled`                  | {true,false}    | true                                             | Whether to enable metrics support in ServiceTelemetry                                                 |
+| `__service_telemetry_storage_ephemeral_enabled`        | {true,false}    | false                                            | Whether to enable ephemeral storage support in ServiceTelemetry                                       |
+| `__service_telemetry_snmptraps_enabled`                | {true,false}    | true                                             | Whether to enable snmptraps delivery via Alertmanager receiver (prometheus-webhook-snmp)              |
+| `__service_telemetry_storage_persistent_storage_class` | <storage_class> | <undefined>                                      | Set a custom storageClass to override the default provided by OpenShift platform                      |
+| `__internal_registry_path`                             | <registry_path> | image-registry.openshift-image-registry.svc:5000 | Path to internal registry for image path                                                              |
 
 Example Playbook
 ----------------

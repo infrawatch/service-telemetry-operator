@@ -13,6 +13,10 @@
           alertmanager:
             storage:
               strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
+      {% if __service_telemetry_storage_persistent_storage_class is defined %}
+              persistent:
+                storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
+      {% endif %}
             receivers:
               snmpTraps:
                 enabled: {{ __service_telemetry_snmptraps_enabled }}
@@ -22,11 +26,19 @@
               enabled: {{ __service_telemetry_events_enabled }}
               storage:
                 strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
+      {% if __service_telemetry_storage_persistent_storage_class is defined %}
+                persistent:
+                  storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
+      {% endif %}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}
               storage:
                 strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
+      {% if __service_telemetry_storage_persistent_storage_class is defined %}
+                persistent:
+                  storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
+      {% endif %}
         highAvailability:
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when: service_telemetry_manifest is not defined
@@ -39,4 +51,3 @@
   k8s:
     definition:
       '{{ service_telemetry_manifest }}'
-
