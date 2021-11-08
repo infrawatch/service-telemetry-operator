@@ -89,6 +89,7 @@ node('ocp-agent') {
                     working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3', returnStdout: true).toString().trim()
                     // ansible script needs local branch to exist, not detached HEAD
                     sh "git checkout -b ${working_branch}"
+
                 }
             }
             stage ('Create project') {
