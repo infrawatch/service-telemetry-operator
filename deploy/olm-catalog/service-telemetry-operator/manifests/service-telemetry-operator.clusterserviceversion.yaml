@@ -16,7 +16,7 @@ metadata:
                 "storage": {
                   "persistent": {
                     "pvcStorageRequest": "20G",
-                    "storageSelector": {}
+                    "storageSelector": "{}"
                   },
                   "receivers": {
                     "snmpTraps": {
@@ -30,13 +30,14 @@ metadata:
               "enabled": true
             },
             "backends": {
+              "deploymentStrategy": "use_community",
               "events": {
                 "elasticsearch": {
                   "enabled": false,
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20Gi",
-                      "storageSelector": {}
+                      "storageSelector": "{}"
                     },
                     "strategy": "persistent"
                   }
@@ -45,7 +46,7 @@ metadata:
               "logs": {
                 "loki": {
                   "enabled": false,
-                  "flavor": "1.extra-small",
+                  "flavor": "1x.extra-small",
                   "replicationFactor": 1,
                   "storage": {
                     "objectStorageSecret": "test",
@@ -60,7 +61,7 @@ metadata:
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20G",
-                      "storageSelector": {}
+                      "storageSelector": "{}"
                     },
                     "retention": "24h",
                     "strategy": "persistent"
@@ -75,12 +76,12 @@ metadata:
                     {
                       "collectorType": "collectd",
                       "debugEnabled": false,
-                      "subscriptionAddress": "collectd/notify"
+                      "subscriptionAddress": "collectd/cloud1-notify"
                     },
                     {
                       "collectorType": "ceilometer",
                       "debugEnabled": false,
-                      "subscriptionAddress": "anycast/ceilometer/event.sample"
+                      "subscriptionAddress": "anycast/ceilometer/cloud1-event.sample"
                     }
                   ]
                 },
@@ -89,17 +90,17 @@ metadata:
                     {
                       "collectorType": "collectd",
                       "debugEnabled": false,
-                      "subscriptionAddress": "collectd/telemetry"
+                      "subscriptionAddress": "collectd/cloud1-telemetry"
                     },
                     {
                       "collectorType": "ceilometer",
                       "debugEnabled": false,
-                      "subscriptionAddress": "anycast/ceilometer/metering.sample"
+                      "subscriptionAddress": "anycast/ceilometer/cloud1-metering.sample"
                     },
                     {
                       "collectorType": "sensubility",
                       "debugEnabled": false,
-                      "subscriptionAddress": "sensubility/telemetry"
+                      "subscriptionAddress": "sensubility/cloud1-telemetry"
                     }
                   ]
                 },
@@ -179,21 +180,6 @@ spec:
         version: v1
       version: v1beta1
     required:
-    - description: A declaration of a required Certificate
-      displayName: AMQ Certificate Manager
-      kind: Certificate
-      name: certificates.certmanager.k8s.io
-      version: v1alpha1
-    - description: Creation of AMQ Interconnect routers
-      displayName: AMQ Interconnect
-      kind: Interconnect
-      name: interconnects.interconnectedcloud.github.io
-      version: v1alpha1
-    - description: Creation of Prometheus instances
-      displayName: Prometheus
-      kind: Prometheus
-      name: prometheuses.monitoring.coreos.com
-      version: v1
     - description: Creation of Smart Gateways
       displayName: Smart Gateway
       kind: SmartGateway
