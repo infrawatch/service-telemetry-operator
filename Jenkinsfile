@@ -86,11 +86,10 @@ node('ocp-agent') {
             stage ('Clone Upstream') {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                     checkout scm
-                    println "${env.BRANCH_NAME}"
 
-                    //working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3', returnStdout: true).toString().trim()
+                    working_branch = sh(script: "git ls-remote --heads origin | grep ${env.GIT_COMMIT} | cut -d / -f 3", returnStdout: true).toString().trim()
                     // ansible script needs local branch to exist, not detached HEAD
-                    sh "git checkout -b ${env.BRANCH_NAME}"
+                    sh "git checkout -b ${working_branch}"
 
                 }
             }
