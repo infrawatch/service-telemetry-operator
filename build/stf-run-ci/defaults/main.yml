@@ -14,6 +14,7 @@ __service_telemetry_metrics_enabled: true
 __service_telemetry_storage_ephemeral_enabled: false
 __service_telemetry_snmptraps_enabled: true
 __service_telemetry_logs_enabled: false
+__service_telemetry_observability_strategy: use_community
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 
 __deploy_minio_enabled: false
