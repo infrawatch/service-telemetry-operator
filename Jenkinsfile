@@ -13,6 +13,7 @@ metadata:
   name: default
   namespace: ${namespace}
 spec:
+  observabilityStrategy: use_community
   alerting:
     alertmanager:
       storage:
