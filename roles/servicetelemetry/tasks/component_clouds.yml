@@ -14,45 +14,49 @@
     loop_var: this_collector
     label: "{{ this_collector.collector_type }}"
   when:
-  - this_cloud.metrics is defined
-  - this_cloud.metrics.collectors is defined
-  - this_cloud.metrics.collectors is iterable
+    - this_cloud.metrics is defined
+    - this_cloud.metrics.collectors is defined
+    - this_cloud.metrics.collectors is iterable
 
 - name: Events Smart Gateway deployment
   block:
-  - name: Lookup ElasticSearch BasicAuth
-    k8s_info:
-      api_version: v1
-      kind: Secret
-      namespace: '{{ meta.namespace }}'
-      name: 'elasticsearch-es-elastic-user'
-    register: elasticsearch_es_elastic_user
+    - name: Lookup ElasticSearch BasicAuth
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        namespace: '{{ meta.namespace }}'
+        name: 'elasticsearch-es-elastic-user'
+      register: elasticsearch_es_elastic_user
 
-  - name: Filter out ElasticSearch password for BasicAuth
-    set_fact:
-      elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[0].data.elastic') | b64decode }}"
-    no_log: true
+    - name: Filter out ElasticSearch password for BasicAuth
+      set_fact:
+        elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[0].data.elastic') | b64decode }}"
+      no_log: true
 
-  - name: Deploy Events Smart Gateway instance for each collector
-    vars:
-      data_type: 'events'
-      manifest: './manifest_smartgateway_events.j2'
-      this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event"
-    include_tasks: base_smartgateway.yml
-    loop: "{{ this_cloud.events.collectors }}"
-    loop_control:
-      loop_var: this_collector
-      label: "{{ this_collector.collector_type }}"
-    when:
-    - servicetelemetry_vars.backends.events.elasticsearch.enabled
-    - this_cloud.events is defined
-    - this_cloud.events.collectors is defined
-    - this_cloud.events is iterable
+    - name: Deploy Events Smart Gateway instance for each collector
+      vars:
+        data_type: 'events'
+        manifest: './manifest_smartgateway_events.j2'
+        this_smartgateway: "{{ meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event"
+      include_tasks: base_smartgateway.yml
+      loop: "{{ this_cloud.events.collectors }}"
+      loop_control:
+        loop_var: this_collector
+        label: "{{ this_collector.collector_type }}"
+      when:
+        - servicetelemetry_vars.backends.events.elasticsearch.enabled
+        - servicetelemetry_vars.observability_strategy == "use_community" or servicetelemetry_vars.observability_strategy == "use_community_sub"
+        - servicetelemetry_vars.observability_strategy != "none"
+        - this_cloud.events is defined
+        - this_cloud.events.collectors is defined
+        - this_cloud.events is iterable
   # TODO: it should be possible to deploy the eventing SGs when ElasticSearch
   # is not available, but currently the template for smartgateway_events
   # expects to have information about a local ES instance on cluster.
   # https://github.com/infrawatch/service-telemetry-operator/issues/274
-  when: has_elasticsearch_api | bool
+  when:
+    - has_elasticsearch_api | bool
+    - servicetelemetry_vars.backends.events.elasticsearch.enabled
 
 - name: Deploy Logs Smart Gateway instance
   vars:
@@ -65,7 +69,7 @@
     loop_var: this_collector
     label: "{{ this_collector.collector_type }}"
   when:
-  - servicetelemetry_vars.backends.logs.loki.enabled
-  - this_cloud.logs is defined
-  - this_cloud.logs.collectors is defined
-  - this_cloud.logs is iterable
+    - servicetelemetry_vars.backends.logs.loki.enabled
+    - this_cloud.logs is defined
+    - this_cloud.logs.collectors is defined
+    - this_cloud.logs is iterable

@@ -86,19 +86,6 @@ spec:
               backends:
                 description: Backend storage configuration
                 properties:
-                  deploymentStrategy:
-                    description: 'The strategy to use for backend deployment. Options
-                      are "none" (do not deploy any backends), "use_community" (community
-                      operators with administrator managed subscriptions), "use_community_sub"
-                      (community operators with managed subscriptions), and "use_openshift"
-                      enabling use of built in OpenShift monitoring components (if
-                      available). NOTE: only metrics backend is available with "use_openshift".'
-                    enum:
-                    - use_community
-                    - use_community_sub
-                    - use_openshift
-                    - none
-                    type: string
                   events:
                     description: Events related backend configuration.
                     properties:
@@ -163,7 +150,7 @@ spec:
                                 type: string
                             type: object
                           enabled:
-                            description: '---TESTING ONLY--- Enable Loki as a storage
+                            description: '[TESTING ONLY] Enable Loki as a storage
                               backend for logs'
                             type: boolean
                           flavor:
@@ -394,6 +381,14 @@ spec:
                     description: Enable high availability globally for Service Telemetry
                     type: boolean
                 type: object
+              observabilityStrategy:
+                description: The strategy to use for observability systems. Options
+                  are "none" (do not deploy any observability components), and "use_community"
+                  (community operators with administrator managed subscriptions).
+                enum:
+                - use_community
+                - none
+                type: string
               transports:
                 description: Data transport configuration
                 properties:
