@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: service-telemetry-operator
-  namespace: service-telemetry
+  namespace: placeholder
 roleRef:
   kind: ClusterRole
   name: service-telemetry-operator

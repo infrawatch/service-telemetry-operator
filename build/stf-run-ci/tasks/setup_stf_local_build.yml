@@ -48,6 +48,12 @@
       OPERATOR_TAG={{ sto_image_path | parse_tag | quote }} \
       ./generate_bundle.sh
 
+- name: Replace namespace in STO role binding
+  replace:
+    path: "{{ playbook_dir }}/../deploy/role_binding.yaml"
+    regexp: 'placeholder'
+    replace: '{{ namespace }}'
+
 - name: Load Service Telemetry Operator RBAC
   command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
   loop:
