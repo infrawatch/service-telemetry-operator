@@ -3,7 +3,7 @@
 - name: Setup default values
   set_fact:
     branch: "{{ working_branch | default('master') }}"
-    namespace: "{{ working_namespace | default('service-telemetry') }}"
+    namespace: "{{ working_namespace | default('openstack-monitoring') }}"
 
 - name: Set default image paths for local builds
   set_fact:

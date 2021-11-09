@@ -5,7 +5,6 @@ metadata:
   labels:
     app: grafana
   name: prom2-dashboard
-  namespace: service-telemetry
 spec:
   name: prom2-dashboard.json
   json: |

@@ -9,7 +9,7 @@ validate our builds before merging changes to this repo.
 
 ## Usage
 
-1. Have `oc` pointing at your service-telemetry project and run `./smoketest.sh`
+1. Have `oc` pointing at your openstack-monitoring project and run `./smoketest.sh`
 1. Run `oc get jobs` and check the result of the stf-smoketest job
 1. (If necessary) Check the logs of the stf-smoketest pod
 

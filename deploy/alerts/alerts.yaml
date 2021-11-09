@@ -6,7 +6,6 @@ metadata:
     prometheus: stf-default
     role: alert-rules
   name: prometheus-alarm-rules
-  namespace: service-telemetry
 spec:
   groups:
     - name: ./openstack.rules

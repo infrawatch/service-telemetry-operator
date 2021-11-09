@@ -14,9 +14,9 @@ spec:
       restartPolicy: Never
       containers:
       - name: generator
-        #image: image-registry.openshift-image-registry.svc:5000/service-telemetry/generator:latest
+        #image: image-registry.openshift-image-registry.svc:5000/openstack-monitoring/generator:latest
         image: quay.io/infrawatch/generator:latest
-        command: [ '/gen', '-i','generator','SLEEP','-c',"COUNT",'-t','10','-o','5','-m','100','-a','collectd/telemetry', 'default-interconnect.service-telemetry.svc', '5672']
+        command: [ '/gen', '-i','generator','SLEEP','-c',"COUNT",'-t','10','-o','5','-m','100','-a','collectd/telemetry', 'default-interconnect', '5672']
         resources:
           limits:
             memory: "1Gi"

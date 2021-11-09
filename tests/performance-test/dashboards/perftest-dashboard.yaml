@@ -4,7 +4,6 @@ metadata:
   labels:
     app: grafana
   name: perftest-dashboard
-  namespace: service-telemetry
 spec:
   name: perftest-dashboard.json
   json: |

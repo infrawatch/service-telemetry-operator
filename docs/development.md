@@ -51,7 +51,7 @@ buildah login --tls-verify=false -u openshift -p "${TOKEN}" "${REGISTRY}"
 Create a working project for the application.
 
 ```
-oc new-project service-telemetry
+oc new-project openstack-monitoring
 ```
 
 ## Build the operator
@@ -101,7 +101,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: amq7-interconnect-operator
-  namespace: service-telemetry
+  namespace: openstack-monitoring
 spec:
   channel: 1.2.0
   installPlanApproval: Automatic
@@ -163,7 +163,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: smartgateway-operator
-  namespace: service-telemetry
+  namespace: openstack-monitoring
 spec:
   channel: stable
   installPlanApproval: Automatic
@@ -197,7 +197,7 @@ oc apply -f deploy/olm-catalog/service-telemetry-operator/${CSV_VERSION}/infra.w
 
 oc apply -f <(sed "\
     s|image: .\+/service-telemetry-operator:.\+$|image: ${INTERNAL_REGISTRY}/service-telemetry/service-telemetry-operator:latest|g;
-    s|namespace: placeholder|namespace: service-telemetry|g"\
+    s|namespace: placeholder|namespace: openstack-monitoring|g"\
     "deploy/olm-catalog/service-telemetry-operator/${CSV_VERSION}/service-telemetry-operator.v${CSV_VERSION}.clusterserviceversion.yaml")
 ```
 
