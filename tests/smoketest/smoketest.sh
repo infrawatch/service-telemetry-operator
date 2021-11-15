@@ -122,6 +122,10 @@ echo "*** [INFO] Logs from snmp webhook..."
 oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"
 echo
 
+echo "*** [INFO] Logs from alertmanager..."
+oc logs "$(oc get pod -l app=alertmanager -o jsonpath='{.items[0].metadata.name}')" -c alertmanager
+echo
+
 echo "*** [INFO] Cleanup resources..."
 if $CLEANUP; then
     oc delete "job/stf-smoketest-${NAME}"
