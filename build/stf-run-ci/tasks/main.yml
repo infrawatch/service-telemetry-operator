@@ -129,7 +129,8 @@
     include_tasks: deploy_stf.yml
 
   - name: Validate system is operational
-    shell: OCP_PROJECT="{{ namespace }}" ./validate_deployment.sh
+    shell: |
+      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" ./validate_deployment.sh
     args:
       executable: /bin/bash
     register: validate_deployment
