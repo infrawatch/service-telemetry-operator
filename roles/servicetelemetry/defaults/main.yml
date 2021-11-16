@@ -3,6 +3,8 @@
 clouds_remove_on_missing: false
 
 servicetelemetry_defaults:
+  deployment_strategy: use_community
+
   high_availability:
     enabled: false
 
@@ -14,7 +16,6 @@ servicetelemetry_defaults:
         strategy: persistent
         persistent:
           storage_class: ""
-          storage_selector: {}
           pvc_storage_request: 20G
       receivers:
         snmp_traps:
@@ -22,6 +23,7 @@ servicetelemetry_defaults:
           target: 192.168.24.254
 
   backends:
+    deployment_strategy: use_community
     metrics:
       prometheus:
         enabled: true
@@ -32,7 +34,6 @@ servicetelemetry_defaults:
           retention: 24h
           persistent:
             storage_class: ""
-            storage_selector: {}
             pvc_storage_request: 20G
     events:
       elasticsearch:
@@ -42,7 +43,6 @@ servicetelemetry_defaults:
           strategy: persistent
           persistent:
             storage_class: ""
-            storage_selector: {}
             pvc_storage_request: 20Gi
     logs:
       loki:
@@ -86,26 +86,26 @@ servicetelemetry_defaults:
       metrics:
         collectors:
           - collector_type: collectd
-            subscription_address: collectd/telemetry
+            subscription_address: collectd/cloud1-telemetry
             debug_enabled: false
           - collector_type: ceilometer
-            subscription_address: anycast/ceilometer/metering.sample
+            subscription_address: anycast/ceilometer/cloud1-metering.sample
             debug_enabled: false
           - collector_type: sensubility
-            subscription_address: sensubility/telemetry
+            subscription_address: sensubility/cloud1-telemetry
             debug_enabled: false
       events:
         collectors:
           - collector_type: collectd
-            subscription_address: collectd/notify
+            subscription_address: collectd/cloud1-notify
             debug_enabled: false
           - collector_type: ceilometer
-            subscription_address: anycast/ceilometer/event.sample
+            subscription_address: anycast/ceilometer/cloud1-event.sample
             debug_enabled: false
       logs:
         collectors:
           - collector_type: rsyslog
-            subscription_address: rsyslog/logs
+            subscription_address: rsyslog/cloud1-logs
             debug_enabled: false
 
 

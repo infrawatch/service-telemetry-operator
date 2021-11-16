@@ -46,7 +46,7 @@ spec:
         resources:
           requests:
             storage: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.pvc_storage_request }}
-{% if servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_selector %}
+{% if servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_selector is defined %}
         selector: {{ servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_selector }}
 {% endif %}
 {% if servicetelemetry_vars.alerting.alertmanager.storage.persistent.storage_class | length %}

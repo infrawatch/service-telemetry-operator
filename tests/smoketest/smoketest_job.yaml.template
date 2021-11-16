@@ -39,7 +39,7 @@ spec:
           subPath: smoketest_collectd_entrypoint.sh
         securityContext:
           allowPrivilegeEscalation: false
-            
+
       - name: smoketest-ceilometer
         image: quay.io/tripleomaster/openstack-ceilometer-notification:current-tripleo
         command:

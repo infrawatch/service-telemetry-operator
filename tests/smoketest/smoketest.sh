@@ -16,21 +16,23 @@
 # Generate an array of cloud names to use
 NUMCLOUDS=${NUMCLOUDS:-1}
 CLOUDNAMES=()
+OCP_PROJECT=${OCP_PROJECT:-}
 
 CLEANUP=${CLEANUP:-true}
 
 for ((i=1; i<=NUMCLOUDS; i++)); do
   NAME="smoke${i}"
-  CLOUDNAMES+=(${NAME})
+  CLOUDNAMES+=("${NAME}")
 done
 REL=$(dirname "$0")
 
-if [ -z ${OCP_PROJECT+x} ]; then
-    oc project $OCP_PROJECT
+if [ -n "${OCP_PROJECT}" ]; then
+    oc project "$OCP_PROJECT"
 else
     OCP_PROJECT=$(oc project -q)
 fi
 
+echo "*** [INFO] Working in project ${OCP_PROJECT}"
 
 echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
@@ -39,16 +41,16 @@ echo "*** [INFO] Getting Prometheus authentication password"
 PROMETHEUS_AUTH_PASS=$(oc get secret default-prometheus-htpasswd -ogo-template='{{ .data.password | base64decode }}')
 
 echo "*** [INFO] Setting namepsace for collectd-sensubility config"
-sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g" ${REL}/collectd-sensubility.conf > /tmp/collectd-sensubility.conf
+sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g" "${REL}/collectd-sensubility.conf" > /tmp/collectd-sensubility.conf
 
 echo "*** [INFO] Creating configmaps..."
 oc delete configmap/stf-smoketest-healthcheck-log configmap/stf-smoketest-collectd-config configmap/stf-smoketest-sensubility-config configmap/stf-smoketest-collectd-entrypoint-script configmap/stf-smoketest-ceilometer-publisher configmap/stf-smoketest-ceilometer-entrypoint-script job/stf-smoketest || true
-oc create configmap stf-smoketest-healthcheck-log --from-file ${REL}/healthcheck.log
-oc create configmap stf-smoketest-collectd-config --from-file ${REL}/minimal-collectd.conf.template
+oc create configmap stf-smoketest-healthcheck-log --from-file "${REL}/healthcheck.log"
+oc create configmap stf-smoketest-collectd-config --from-file "${REL}/minimal-collectd.conf.template"
 oc create configmap stf-smoketest-sensubility-config --from-file /tmp/collectd-sensubility.conf
-oc create configmap stf-smoketest-collectd-entrypoint-script --from-file ${REL}/smoketest_collectd_entrypoint.sh
-oc create configmap stf-smoketest-ceilometer-publisher --from-file ${REL}/ceilometer_publish.py
-oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file ${REL}/smoketest_ceilometer_entrypoint.sh
+oc create configmap stf-smoketest-collectd-entrypoint-script --from-file "${REL}/smoketest_collectd_entrypoint.sh"
+oc create configmap stf-smoketest-ceilometer-publisher --from-file "${REL}/ceilometer_publish.py"
+oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${REL}/smoketest_ceilometer_entrypoint.sh"
 
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
@@ -103,6 +105,8 @@ oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-meter" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')" -c bridge
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-sens-meter" -o jsonpath='{.items[0].metadata.name}')" -c bridge
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-sens-meter" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
@@ -121,9 +125,13 @@ echo "*** [INFO] Logs from snmp webhook..."
 oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"
 echo
 
+echo "*** [INFO] Logs from alertmanager..."
+oc logs "$(oc get pod -l app=alertmanager -o jsonpath='{.items[0].metadata.name}')" -c alertmanager
+echo
+
 echo "*** [INFO] Cleanup resources..."
 if $CLEANUP; then
-    oc delete job/stf-smoketest-${NAME}
+    oc delete "job/stf-smoketest-${NAME}"
 fi
 echo
 

@@ -68,7 +68,7 @@ spec:
         resources:
           requests:
             storage: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.pvc_storage_request }}
-{% if servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_selector %}
+{% if servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_selector is defined %}
         selector: {{ servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_selector }}
 {% endif %}
 {% if servicetelemetry_vars.backends.metrics.prometheus.storage.persistent.storage_class | length %}
