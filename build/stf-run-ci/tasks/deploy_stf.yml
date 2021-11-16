@@ -68,7 +68,7 @@
         observabilityStrategy: none
   when:
     - service_telemetry_manifest is not defined
-    - __service_telemetry_observability_strategy == "use_community"
+    - __service_telemetry_observability_strategy == "none"
 
 - name: Show ServiceTelemetry manifest
   debug:
