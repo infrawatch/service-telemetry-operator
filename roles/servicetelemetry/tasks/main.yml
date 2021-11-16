@@ -34,8 +34,8 @@
     include_tasks: component_alertmanager.yml
   when:
     - has_monitoring_coreos_api | bool
-    - servicetelemetry_vars.observability_strategy == 'use_community' or servicetelemetry_vars.observability_strategy == 'use_community_sub'
-    - servicetelemetry_vars.observability_strategy != 'none'
+    - observability_strategy == 'use_community' or observability_strategy == 'use_community_sub'
+    - observability_strategy != 'none'
 
 # --> backends.events
 - name: Check if we have elasticsearch API
@@ -57,8 +57,8 @@
   when:
     - has_elasticsearch_api | bool
     - has_certmanager_api | bool
-    - servicetelemetry_vars.observability_strategy == 'use_community' or servicetelemetry_vars.observability_strategy == 'use_community_sub'
-    - servicetelemetry_vars.observability_strategy != 'none'
+    - observability_strategy == 'use_community' or observability_strategy == 'use_community_sub'
+    - observability_strategy != 'none'
 
 # --> backends.logs
 - name: Check if we have loki API
@@ -69,8 +69,8 @@
   include_tasks: component_loki.yml
   when:
     - has_loki_api | bool
-    - servicetelemetry_vars.observability_strategy == 'use_community' or servicetelemetry_vars.observability_strategy == 'use_community_sub'
-    - servicetelemetry_vars.observability_strategy != 'none'
+    - observability_strategy == 'use_community' or observability_strategy == 'use_community_sub'
+    - observability_strategy != 'none'
 
 # --> graphing
 - name: Check if we have integreatly.org API
@@ -87,8 +87,8 @@
 #    include_tasks: component_dashboards.yml
   when:
     - has_integreatly_api | bool
-    - servicetelemetry_vars.observability_strategy == 'use_community' or servicetelemetry_vars.observability_strategy == 'use_community_sub'
-    - servicetelemetry_vars.observability_strategy != 'none'
+    - observability_strategy == 'use_community' or observability_strategy == 'use_community_sub'
+    - observability_strategy != 'none'
 
 # --> clouds
 - name: Get data about clouds

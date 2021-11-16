@@ -45,8 +45,8 @@
         label: "{{ this_collector.collector_type }}"
       when:
         - servicetelemetry_vars.backends.events.elasticsearch.enabled
-        - servicetelemetry_vars.observability_strategy == "use_community" or servicetelemetry_vars.observability_strategy == "use_community_sub"
-        - servicetelemetry_vars.observability_strategy != "none"
+        - observability_strategy == "use_community" or observability_strategy == "use_community_sub"
+        - observability_strategy != "none"
         - this_cloud.events is defined
         - this_cloud.events.collectors is defined
         - this_cloud.events is iterable
