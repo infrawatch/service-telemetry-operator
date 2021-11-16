@@ -4,23 +4,72 @@ metadata:
   name: {{ meta.name }}
   namespace: {{ meta.namespace }}
 spec:
+  serviceAccount:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{{ grafana_oauth_redir_ref | to_json }}'
+  deployment:
+    annotations:
+      hash-of-creds-to-force-restart-if-changed: {{ (servicetelemetry_vars.graphing.grafana.admin_user + servicetelemetry_vars.graphing.grafana.admin_password) | password_hash('sha256', (session_secret | b64encode)[:16] ) }}
   baseImage: {{ servicetelemetry_vars.graphing.grafana.base_image }}
   ingress:
     enabled: {{ servicetelemetry_vars.graphing.grafana.ingress_enabled }}
+    targetPort: web
+    termination: reencrypt
+  client:
+    preferService: true
   config:
     auth:
       disable_signout_menu: {{ servicetelemetry_vars.graphing.grafana.disable_signout_menu }}
+      disable_login_form: true
     auth.anonymous:
       enabled: true
+      org_role: 'Admin'
     log:
       level: warn
       mode: console
-    security:
-      admin_password: {{ servicetelemetry_vars.graphing.grafana.admin_password }}
-      admin_user: {{ servicetelemetry_vars.graphing.grafana.admin_user }}
   dashboardLabelSelector:
     - matchExpressions:
         - key: app
           operator: In
           values:
             - grafana
+  containers:
+  - name: oauth-proxy
+    image: {{ oauth_proxy_image }}
+    args:
+    - -provider=openshift
+    - -pass-basic-auth=false
+    - -https-address=:3002
+    - -htpasswd-file=/etc/proxy/htpasswd/auth
+    - -tls-cert=/etc/tls/private/tls.crt
+    - -tls-key=/etc/tls/private/tls.key
+    - -upstream=http://localhost:3000
+    - -cookie-secret-file=/etc/proxy/secrets/session_secret
+    - -openshift-service-account=grafana-serviceaccount
+    - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+    - -openshift-ca=/etc/pki/tls/cert.pem
+    - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    ports:
+      - containerPort: 3002
+        name: https
+        protocol: TCP
+    volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-{{ meta.name }}-grafana-proxy-tls
+      - mountPath: /etc/proxy/secrets
+        name: secret-{{ meta.name }}-session-secret
+      - mountPath: /etc/proxy/htpasswd
+        name: secret-{{ meta.name }}-grafana-htpasswd
+  secrets:
+    - '{{ meta.name }}-grafana-proxy-tls'
+    - '{{ meta.name }}-session-secret'
+    - '{{ meta.name }}-grafana-htpasswd'
+  service:
+    ports:
+      - name: web
+        port: 3002
+        protocol: TCP
+        targetPort: https
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: {{ meta.name }}-grafana-proxy-tls
+

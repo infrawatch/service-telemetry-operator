@@ -37,6 +37,9 @@ echo "*** [INFO] Working in project ${OCP_PROJECT}"
 echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
 
+echo "*** [INFO] Getting Prometheus authentication password"
+PROMETHEUS_AUTH_PASS=$(oc get secret default-prometheus-htpasswd -ogo-template='{{ .data.password | base64decode }}')
+
 echo "*** [INFO] Setting namepsace for collectd-sensubility config"
 sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g" "${REL}/collectd-sensubility.conf" > /tmp/collectd-sensubility.conf
 
@@ -52,11 +55,11 @@ oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${RE
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/" "${REL}/smoketest_job.yaml.template")
+    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_PASS>>/${PROMETHEUS_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- curl -H "Content-Type: application/json" -d '[{"labels":{"alertname":"Testalert1"}}]' http://alertmanager-operated:9093/api/v1/alerts
+oc run curl --serviceaccount=prometheus-k8s --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer \$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\" -d '[{\"labels\":{\"alertname\":\"Testalert1\"}}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
 # it takes some time to get the alert delivered, continuing with other tests
 
 

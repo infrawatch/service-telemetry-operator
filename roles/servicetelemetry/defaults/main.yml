@@ -116,6 +116,19 @@ servicetelemetry_defaults:
 is_k8s: false
 is_openshift: false
 
+# - This image works on OCP 4.6, 4.7, and 4.8 (v4.4 tag instead of 'latest' as I'd prefer above)
+oauth_proxy_image: image-registry.openshift-image-registry.svc:5000/openshift/oauth-proxy:v4.4
+
+# - Downstream, this one works, but there is a big red "Red Hat strongly recommends updating to the newest image version..." (4.9) which doesn't work
+# - See https://github.com/openshift/oauth-proxy/issues/229 for why 4.9 isn't working for us
+# oauth_proxy_image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.8
+
+# - This image works (probably upstream and down!), but is pinned back to the version we're strongly recommended not to use:
+# oauth_proxy_image: quay.io/openshift/origin-oauth-proxy:4.8
+
+# - For reference this is the image line I see in openshift-monitoring for the equivalent image:
+# oauth_proxy_image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ca37f5fc57643a353dcdcd6ad3a7bc8bb40fd4276a555fe5de2b8c7167d64020
+
 _ephemeral_storage_enabled: false
 
 # set default smartgateway deployment size. You should not modify this.

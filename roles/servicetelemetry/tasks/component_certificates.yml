@@ -1,2 +1,34 @@
 - name: Create local signing authority
   include_tasks: _local_signing_authority.yml
+
+- name: Create configmap for OAUTH CA certs
+  k8s:
+    definition:
+      api_version: v1
+      kind: ConfigMap
+      metadata:
+        name: serving-certs-ca-bundle
+        namespace: '{{ meta.namespace }}'
+        annotations:
+          service.beta.openshift.io/inject-cabundle: 'true'
+
+- name: Check for existing cookie secret
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-session-secret'
+  register: session_secret
+
+- name: Create cookie secret
+  no_log: true
+  k8s:
+    definition:
+      api_version: v1
+      kind: Secret
+      metadata:
+        name: '{{ meta.name }}-session-secret'
+        namespace: '{{ meta.namespace }}'
+      stringData:
+        session_secret: "{{ lookup('password', '/dev/null') }}"
+  when: session_secret.resources|length == 0

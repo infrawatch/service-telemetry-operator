@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: '{{ meta.name }}-alertmanager-proxy'
+  namespace: '{{ meta.namespace }}'
+spec:
+  port:
+    targetPort: web
+  to:
+    kind: Service
+    name: '{{ meta.name }}-alertmanager-proxy'
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: Reencrypt

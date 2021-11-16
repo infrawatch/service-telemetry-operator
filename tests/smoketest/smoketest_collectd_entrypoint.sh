@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-
 # Executes inside the test harness container to start collectd and look for resulting metrics in prometheus
-PROMETHEUS=${PROMETHEUS:-"prometheus-operated:9090"}
-ELASTICSEARCH=${ELASTICSEARCH:-"elasticsearch-es-http:9200"}
+PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}
+ELASTICSEARCH=${ELASTICSEARCH:-"https://elasticsearch-es-http:9200"}
 ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
+PROMETHEUS_AUTH_PASS=${PROMETHEUS_AUTH_PASS:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
 
@@ -37,12 +37,12 @@ sleep 30
 
 
 echo "*** [INFO] List of metric names for debugging..."
-curl -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
+curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
 echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent CPU metrics..."
-curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=collectd_cpu_total{container="sg-core",plugin_instance="0",type_instance="user",service="default-cloud1-coll-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
+curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=collectd_cpu_total{container="sg-core",plugin_instance="0",type_instance="user",service="default-cloud1-coll-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
 echo; echo
 
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code
@@ -53,7 +53,7 @@ echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent healthcheck metrics..."
-curl -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=sensubility_container_health_status{container="sg-core",service="default-cloud1-sens-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
+curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=sensubility_container_health_status{container="sg-core",service="default-cloud1-sens-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
 echo; echo
 
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code
@@ -63,7 +63,7 @@ metrics_result=$((metrics_result || $?))
 echo; echo
 
 echo "*** [INFO] Get documents for this test from ElasticSearch..."
-DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "https://${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{
+DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{
   "query": {
     "bool": {
       "filter": [

@@ -189,6 +189,57 @@ spec:
     mediatype: image/svg+xml
   install:
     spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterroles
+          - clusterrolebindings
+          verbs:
+          - create
+          - get
+          - list
+          - watch
+          - update
+          - patch
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - nonroot
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+        - apiGroups:
+          - ""
+          resources:
+          - nodes/metrics
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        serviceAccountName: service-telemetry-operator
       deployments:
       - name: service-telemetry-operator
         spec:
@@ -244,6 +295,28 @@ spec:
           - secrets
           verbs:
           - '*'
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - create
+          - get
+          - list
+          - watch
+          - update
+          - patch
+        - apiGroups:
+          - ""
+          resources:
+          - serviceaccounts
+          verbs:
+          - create
+          - get
+          - list
+          - watch
+          - update
+          - patch
         - apiGroups:
           - apps
           resources:

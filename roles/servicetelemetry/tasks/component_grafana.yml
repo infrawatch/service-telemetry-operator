@@ -1,3 +1,25 @@
+- name: Construct oauth redirect reference
+  set_fact:
+    grafana_oauth_redir_ref:
+      kind: OAuthRedirectReference
+      apiVersion: v1
+      reference:
+        kind: Route
+        name: 'grafana-route'
+
+- name: Create htpasswd secret for grafana admin
+  no_log: true
+  k8s:
+    definition:
+      api_version: v1
+      kind: Secret
+      metadata:
+        name: '{{ meta.name }}-grafana-htpasswd'
+        namespace: '{{ meta.namespace }}'
+      type: Opaque
+      stringData:
+        auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | htpasswd_sha1 }}'
+
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
@@ -14,10 +36,33 @@
       '{{ grafana_manifest }}'
   when: servicetelemetry_vars.graphing.enabled
 
-# Lookup existing datasources
-- block:
+- when: servicetelemetry_vars.graphing.enabled
+  block:
+  - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
+    block:
+    - name: Retrieve configmap for OAUTH CA certs
+      k8s_info:
+        api_version: v1
+        kind: ConfigMap
+        name: serving-certs-ca-bundle
+        namespace: '{{ meta.namespace }}'
+      register: serving_certs_ca
 
-  - block:
+    - name: Retrieve prometheus secret
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        namespace: '{{ meta.namespace }}'
+        name: '{{ meta.name }}-prometheus-htpasswd'
+      register: prometheus_secret
+
+    - name: Decode prometheus password
+      no_log: true
+      set_fact:
+        prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
+
+  - when: servicetelemetry_vars.backends.events.elasticsearch.enabled
+    block:
     - name: Retrieve elastic search secret
       k8s_info:
         api_version: v1
@@ -29,8 +74,8 @@
     - name: Decode elasticsearch password
       set_fact:
         elasticsearch_pass: '{{ es_secret.resources[0].data.elastic | b64decode }}'
-    when: servicetelemetry_vars.backends.events.elasticsearch.enabled
 
+  # Lookup existing datasources
   - name: Remove legacy datasources
     k8s:
       api_version: integreatly.org/v1alpha1
@@ -49,4 +94,3 @@
       state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
       definition:
         '{{ ds_manifest }}'
-  when: servicetelemetry_vars.graphing.enabled
