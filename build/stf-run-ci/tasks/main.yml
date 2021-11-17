@@ -76,30 +76,51 @@
 \ \ \ http_config:\n
 \ \ \ \ \ insecure_skip_verify: true"
     when:
-    - __loki_skip_tls_verify | bool
+      - __loki_skip_tls_verify | bool
+      - __service_telemetry_observability_strategy == "use_community"
 
-  - name: Replace loki-operator golang base image
-    replace:
-      path: "{{ playbook_dir }}/working/loki-operator/Dockerfile"
-      regexp: "golang:1.16"
-      replace: "{{ __golang_image_path }}"
+  - block:
+    - name: Replace loki-operator golang base image
+      replace:
+        path: "{{ playbook_dir }}/working/loki-operator/Dockerfile"
+        regexp: "golang:1.16"
+        replace: "{{ __golang_image_path }}"
 
-  - name: Replace Loki image
-    replace:
-      path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/var.go"
-      regexp: "docker.io/grafana/loki:\\d\\.\\d\\.\\d"
-      replace: "{{ __loki_image_path }}"
+    - name: Replace Loki image
+      replace:
+        path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/var.go"
+        regexp: "docker.io/grafana/loki:\\d\\.\\d\\.\\d"
+        replace: "{{ __loki_image_path }}"
+    when:
+      - __service_telemetry_observability_strategy == "use_community"
+
+  - name: Create base build list
+    set_fact:
+      build_list:
+        - { name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: ../ }
+        - { name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: ./working/smart-gateway-operator }
+        - { name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: ./working/sg-core }
+        - { name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: ./working/sg-bridge }
+        - { name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: ./working/prometheus-webhook-snmp }
+
+  - name: Create Loki build list
+    set_fact:
+      loki_build_list:
+        - { name: loki-operator-bundle, dockerfile_path: bundle.Dockerfile, image_reference_name: loki_operator_bundle_image_path, working_build_dir: ./working/loki-operator }
+        - { name: loki-operator, dockerfile_path: Dockerfile, image_reference_name: loki_operator_image_path, working_build_dir: ./working/loki-operator }
+
+  - name: Combine lists when community operators are enabled
+    set_fact:
+      build_list: "{{ build_list + loki_build_list }}"
+    when:
+      - __service_telemetry_observability_strategy == "use_community"
+
+  - debug:
+     var: build_list
 
   - name: Create builds and artifacts
     include_tasks: create_builds.yml
-    loop:
-      - { name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: ../ }
-      - { name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: ./working/smart-gateway-operator }
-      - { name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: ./working/sg-core }
-      - { name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: ./working/sg-bridge }
-      - { name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: ./working/prometheus-webhook-snmp }
-      - { name: loki-operator-bundle, dockerfile_path: bundle.Dockerfile, image_reference_name: loki_operator_bundle_image_path, working_build_dir: ./working/loki-operator }
-      - { name: loki-operator, dockerfile_path: Dockerfile, image_reference_name: loki_operator_image_path, working_build_dir: ./working/loki-operator }
+    loop: "{{ build_list }}"
     loop_control:
       loop_var: artifact
     tags:

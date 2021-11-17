@@ -40,8 +40,6 @@
         name: amq7-cert-manager-operator
         source: redhat-operators
         sourceNamespace: openshift-marketplace
-  when:
-    - __service_telemetry_observability_strategy == "use_community"
 
 - name: Enable OperatorHub.io for Elastic Cloud on Kubernetes
   k8s:
