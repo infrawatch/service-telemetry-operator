@@ -25,10 +25,6 @@
   - name: Create Prometheus instance
     include_tasks: component_prometheus.yml
 
-  # create Service Monitor instance
-  - name: Create Service Monitor instance
-    include_tasks: component_servicemonitor.yml
-
   # --> alerting
   - name: Create Alertmanager instance
     include_tasks: component_alertmanager.yml

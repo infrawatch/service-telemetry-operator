@@ -1,12 +1,12 @@
-- name: Create default Service Monitor manifest
+- name: Create SG-specific Service Monitor manifest
   set_fact:
-    servicemonitor_manifest: |
+    sg_specific_servicemonitor_manifest: |
       apiVersion: monitoring.coreos.com/v1
       kind: ServiceMonitor
       metadata:
         labels:
           app: smart-gateway
-        name: '{{ meta.name }}'
+        name: '{{ this_smartgateway }}'
         namespace: '{{ meta.namespace }}'
       spec:
         endpoints:
@@ -27,14 +27,26 @@
               - action: labeldrop
                 regex: publisher
                 sourcelabels: []
-            port: prom-http
+            port: prom-https
+            scheme: https
+            tlsConfig:
+              caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
+              serverName: "{{ this_smartgateway }}.{{ meta.namespace }}.svc"
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
         selector:
           matchLabels:
             app: smart-gateway
-  when: servicemonitor_manifest is not defined
+            smart-gateway: "{{ this_smartgateway }}"
 
 - name: Create ServiceMonitor to scrape Smart Gateway
   k8s:
     state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
+      '{{ sg_specific_servicemonitor_manifest }}'
+
+- name: Create additional serviceMonitor if provided
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
       '{{ servicemonitor_manifest }}'
+  when: servicemonitor_manifest is defined

@@ -5,3 +5,7 @@
 - name: Deploy instance of Smart Gateway
   k8s:
     definition: "{{ lookup('template', manifest) | from_yaml }}"
+
+- name: Deploy SG-specific ServiceMonitor for metrics SGs
+  include_tasks: component_servicemonitor.yml
+  when: data_type == 'metrics'
