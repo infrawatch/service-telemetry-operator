@@ -77,3 +77,5 @@
         dest: working/loki-operator
         version: "{{ version_branches.loki_operator }}"
         force: yes
+  when:
+    - __service_telemetry_observability_strategy == "use_community"

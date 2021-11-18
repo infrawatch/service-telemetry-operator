@@ -29,7 +29,6 @@ metadata:
               "enabled": true
             },
             "backends": {
-              "deploymentStrategy": "use_community",
               "events": {
                 "elasticsearch": {
                   "enabled": false,
@@ -117,6 +116,7 @@ metadata:
             "highAvailability": {
               "enabled": false
             },
+            "observabilityStrategy": "use_community",
             "transports": {
               "qdr": {
                 "enabled": true,

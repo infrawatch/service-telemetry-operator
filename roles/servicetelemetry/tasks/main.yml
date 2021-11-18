@@ -12,9 +12,15 @@
   set_fact:
     has_interconnect_api: "{{ True if 'interconnectedcloud.github.io' in api_groups else False }}"
 
+- name: Check if we have certmanager.k8s.io API
+  set_fact:
+    has_certmanager_api: "{{ True if 'certmanager.k8s.io' in api_groups else False }}"
+
 - name: Create QDR instance
   include_tasks: component_qdr.yml
-  when: has_interconnect_api | bool
+  when:
+    - has_interconnect_api | bool
+    - has_certmanager_api | bool
 
 # --> backends.metrics
 - name: Check if we have monitoring.coreos.com API
@@ -34,30 +40,24 @@
     include_tasks: component_alertmanager.yml
   when:
     - has_monitoring_coreos_api | bool
-    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
-    - servicetelemetry_vars.backends.deployment_strategy != 'none'
+    - observability_strategy == 'use_community'
 
 # --> backends.events
 - name: Check if we have elasticsearch API
   set_fact:
     has_elasticsearch_api: "{{ True if 'elasticsearch.k8s.elastic.co' in api_groups else False }}"
 
-- name: Check if we have certmanager.k8s.io API
-  set_fact:
-    has_certmanager_api: "{{ True if 'certmanager.k8s.io' in api_groups else False }}"
-
 - name: Deploy ElasticSearch events backend
   block:
   - name: Setup Certificates for ElasticSearch
     include_tasks: component_certificates.yml
-    when: has_certmanager_api | bool
 
   - name: Setup ElasticSearch
     include_tasks: component_elasticsearch.yml
   when:
     - has_elasticsearch_api | bool
-    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
-    - servicetelemetry_vars.backends.deployment_strategy != 'none'
+    - has_certmanager_api | bool
+    - observability_strategy == 'use_community'
 
 # --> backends.logs
 - name: Check if we have loki API
@@ -68,8 +68,7 @@
   include_tasks: component_loki.yml
   when:
     - has_loki_api | bool
-    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
-    - servicetelemetry_vars.backends.deployment_strategy != 'none'
+    - observability_strategy == 'use_community'
 
 # --> graphing
 - name: Check if we have integreatly.org API
@@ -86,8 +85,7 @@
 #    include_tasks: component_dashboards.yml
   when:
     - has_integreatly_api | bool
-    - servicetelemetry_vars.backends.deployment_strategy == 'use_community' or servicetelemetry_vars.backends.deployment_strategy == 'use_community_sub'
-    - servicetelemetry_vars.backends.deployment_strategy != 'none'
+    - observability_strategy == 'use_community'
 
 # --> clouds
 - name: Get data about clouds

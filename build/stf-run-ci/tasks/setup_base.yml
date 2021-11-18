@@ -54,6 +54,8 @@
         image: quay.io/operatorhubio/catalog:latest
         displayName: OperatorHub.io Operators
         publisher: OperatorHub.io
+  when:
+    - __service_telemetry_observability_strategy == "use_community"
 
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
   k8s:
@@ -69,6 +71,8 @@
         name: elasticsearch-eck-operator-certified
         source: certified-operators
         sourceNamespace: openshift-marketplace
+  when:
+    - __service_telemetry_observability_strategy == "use_community"
 
 - name: Subscribe to AMQ Interconnect Operator
   k8s:
@@ -99,3 +103,5 @@
         name: prometheus
         source: operatorhubio-operators
         sourceNamespace: openshift-marketplace
+  when:
+    - __service_telemetry_observability_strategy == "use_community"
