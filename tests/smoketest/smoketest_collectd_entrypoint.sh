@@ -47,7 +47,7 @@ echo; echo
 
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code
 echo "*** [INFO] Checking for returned CPU metrics..."
-grep -E '"result":\[{"metric":{"__name__":"collectd_cpu_total","container":"sg-core","endpoint":"prom-http","host":"'"${POD}"'","plugin_instance":"0","service":"default-cloud1-coll-meter","type_instance":"user"},"values":\[\[.+,".+"\]' /tmp/query_output
+grep -E '"result":\[{"metric":{"__name__":"collectd_cpu_total","container":"sg-core","endpoint":"prom-https","host":"'"${POD}"'","plugin_instance":"0","service":"default-cloud1-coll-meter","type_instance":"user"},"values":\[\[.+,".+"\]' /tmp/query_output
 metrics_result=$?
 echo; echo
 
@@ -58,7 +58,7 @@ echo; echo
 
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code
 echo "*** [INFO] Checking for returned healthcheck metrics..."
-grep -E '"result":\[{"metric":{"__name__":"sensubility_container_health_status","container":"sg-core","endpoint":"prom-http","host":"'"${POD}"'","process":"smoketest-svc","service":"default-cloud1-sens-meter"},"values":\[\[.+,".+"\]' /tmp/query_output
+grep -E '"result":\[{"metric":{"__name__":"sensubility_container_health_status","container":"sg-core","endpoint":"prom-https","host":"'"${POD}"'","process":"smoketest-svc","service":"default-cloud1-sens-meter"},"values":\[\[.+,".+"\]' /tmp/query_output
 metrics_result=$((metrics_result || $?))
 echo; echo
 
