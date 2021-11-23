@@ -481,7 +481,7 @@ spec:
             "ymax": null,
             "ymin": null
           },
-          "tableColumn": "sg_total_msg_received_count{endpoint=\"prom-http\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}",
+          "tableColumn": "sg_total_msg_received_count{endpoint=\"prom-https\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}",
           "targets": [
             {
               "expr": "sg_total_msg_received_count",
@@ -780,7 +780,7 @@ spec:
             "ymax": null,
             "ymin": null
           },
-          "tableColumn": "collectd_qpid_router_status{endpoint=\"prom-http\", service=\"default-cloud1-ceil-meter-smartgateway\", source=\"Metric Listener\"}",
+          "tableColumn": "collectd_qpid_router_status{endpoint=\"prom-https\", service=\"default-cloud1-ceil-meter-smartgateway\", source=\"Metric Listener\"}",
           "targets": [
             {
               "expr": "collectd_qpid_router_status",
@@ -876,7 +876,7 @@ spec:
             "ymax": null,
             "ymin": null
           },
-          "tableColumn": "sg_total_metric_decode_count{endpoint=\"prom-http\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}",
+          "tableColumn": "sg_total_metric_decode_count{endpoint=\"prom-https\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}",
           "targets": [
             {
               "expr": "sg_total_metric_decode_count",
