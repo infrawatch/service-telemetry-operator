@@ -13,7 +13,7 @@ spec:
   size: {{ smartgateway_deployment_size }}
   applications:
   - config: |
-      host: 0.0.0.0
+      host: 127.0.0.1
       port: 8081
       withTimeStamp: true
     name: prometheus
@@ -22,10 +22,10 @@ spec:
   services:
   - name: {{ this_smartgateway }}
     ports:
-    - name: prom-http
-      port: 8081
+    - name: prom-https
+      port: 8083
       protocol: TCP
-      targetPort: 8081
+      targetPort: 8083
   transports:
   - config: |
       path: /tmp/smartgateway
