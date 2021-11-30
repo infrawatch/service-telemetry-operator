@@ -108,7 +108,6 @@ metadata:
               "grafana": {
                 "adminPassword": "secret",
                 "adminUser": "root",
-                "baseImage": "docker.io/grafana/grafana:8.1.5",
                 "disableSignoutMenu": false,
                 "ingressEnabled": false
               }
