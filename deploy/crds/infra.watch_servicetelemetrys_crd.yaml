@@ -370,6 +370,7 @@ spec:
                   type: object
                 type: array
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: Status results of an instance of Service Telemetry
             properties:
