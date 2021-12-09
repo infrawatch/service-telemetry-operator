@@ -43,14 +43,24 @@ PROMETHEUS_AUTH_PASS=$(oc get secret default-prometheus-htpasswd -ogo-template='
 echo "*** [INFO] Setting namepsace for collectd-sensubility config"
 sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g" "${REL}/collectd-sensubility.conf" > /tmp/collectd-sensubility.conf
 
+
 echo "*** [INFO] Creating configmaps..."
-oc delete configmap/stf-smoketest-healthcheck-log configmap/stf-smoketest-collectd-config configmap/stf-smoketest-sensubility-config configmap/stf-smoketest-collectd-entrypoint-script configmap/stf-smoketest-ceilometer-publisher configmap/stf-smoketest-ceilometer-entrypoint-script job/stf-smoketest || true
+oc delete configmap/stf-smoketest-healthcheck-log configmap/stf-smoketest-collectd-config configmap/stf-smoketest-sensubility-config configmap/stf-smoketest-collectd-entrypoint-script configmap/stf-smoketest-ceilometer-publisher configmap/stf-smoketest-ceilometer-entrypoint-script configmap/stf-smoketest-rsyslog-entrypoint-script job/stf-smoketest || true
 oc create configmap stf-smoketest-healthcheck-log --from-file "${REL}/healthcheck.log"
 oc create configmap stf-smoketest-collectd-config --from-file "${REL}/minimal-collectd.conf.template"
 oc create configmap stf-smoketest-sensubility-config --from-file /tmp/collectd-sensubility.conf
 oc create configmap stf-smoketest-collectd-entrypoint-script --from-file "${REL}/smoketest_collectd_entrypoint.sh"
 oc create configmap stf-smoketest-ceilometer-publisher --from-file "${REL}/ceilometer_publish.py"
 oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${REL}/smoketest_ceilometer_entrypoint.sh"
+oc create configmap stf-smoketest-rsyslog-entrypoint-script --from-file "${REL}/smoketest_rsyslog_entrypoint.sh"
+
+echo "*** [INFO] Creating rsyslog config for each cloud"
+for NAME in "${CLOUDNAMES[@]}"; do
+    sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g;s/<<CLOUDNAME>>/${NAME}/g" ${REL}/rsyslog.conf > /tmp/rsyslog-${NAME}.conf
+	oc delete configmap --selector='ci=rsyslog-config'
+	oc create configmap stf-smoketest-rsyslog-config-${NAME} --from-file "/tmp/rsyslog-${NAME}.conf"
+	oc label configmap stf-smoketest-rsyslog-config-${NAME} 'ci=rsyslog-config'
+done
 
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
@@ -89,6 +99,7 @@ echo "*** [INFO] Logs from smoketest containers..."
 for NAME in "${CLOUDNAMES[@]}"; do
     oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')" -c smoketest-collectd
     oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')" -c smoketest-ceilometer
+    oc logs "$(oc get pod -l "job-name=stf-smoketest-${NAME}" -o jsonpath='{.items[0].metadata.name}')" -c smoketest-rsyslog
 done
 echo
 
@@ -107,6 +118,8 @@ oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-ceil-event" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-sens-meter" -o jsonpath='{.items[0].metadata.name}')" -c bridge
 oc logs "$(oc get pod -l "smart-gateway=default-cloud1-sens-meter" -o jsonpath='{.items[0].metadata.name}')" -c sg-core
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-rsys-log"   -o jsonpath='{.items[0].metadata.name}')" -c bridge
+oc logs "$(oc get pod -l "smart-gateway=default-cloud1-rsys-log"   -o jsonpath='{.items[0].metadata.name}')" -c sg-core
 echo
 
 echo "*** [INFO] Logs from smart gateway operator..."
@@ -127,6 +140,10 @@ echo
 
 echo "*** [INFO] Logs from alertmanager..."
 oc logs "$(oc get pod -l app=alertmanager -o jsonpath='{.items[0].metadata.name}')" -c alertmanager
+echo
+
+echo "*** [INFO] Logs from loki..."
+oc logs "$(oc get pod -l app.kubernetes.io/name=loki -o jsonpath='{.items[0].metadata.name}')"
 echo
 
 echo "*** [INFO] Cleanup resources..."

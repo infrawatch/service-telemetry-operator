@@ -5,7 +5,6 @@ metadata:
 spec:
   parallelism: 1
   completions: 1
-spec:
   template:
     metadata:
       labels:
@@ -79,4 +78,33 @@ spec:
       - name: ceilometer-publisher
         configMap:
           name: stf-smoketest-ceilometer-publisher
+          defaultMode: 0555
+
+      - name: smoketest-rsyslog
+        image: quay.io/jwysogla/rsyslog:latest
+        command:
+        - /smoketest_rsyslog_entrypoint.sh
+        env:
+        - name: CLOUDNAME
+          value: <<CLOUDNAME>>
+        - name: ELASTICSEARCH_AUTH_PASS
+          value: <<ELASTICSEARCH_AUTH_PASS>>
+        volumeMounts:
+        - name: rsyslog-entrypoint-script
+          mountPath: /smoketest_rsyslog_entrypoint.sh
+          subPath: smoketest_rsyslog_entrypoint.sh
+        - name: rsyslog-config
+          mountPath: /etc/rsyslog.conf
+          subPath: rsyslog-<<CLOUDNAME>>.conf
+      volumes:
+      - name: rsyslog-config
+        configMap:
+          name: stf-smoketest-rsyslog-config-<<CLOUDNAME>>
+          defaultMode: 0555
+      - name: healthcheck-log
+        configMap:
+          name: stf-smoketest-healthcheck-log
+      - name: rsyslog-entrypoint-script
+        configMap:
+          name: stf-smoketest-rsyslog-entrypoint-script
           defaultMode: 0555
