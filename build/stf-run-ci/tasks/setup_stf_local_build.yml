@@ -190,3 +190,22 @@
     - loki-operator.clusterserviceversion.yaml
   when:
     - __service_telemetry_observability_strategy == "use_community"
+
+# This won't be needed with newest version of Loki-operator
+- name: Fix minio deployment
+  replace:
+    path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/minio/deployment.yaml"
+    regexp: '/usr/bin/minio server /storage'
+    replace: 'minio server /storage'
+  when: 
+    - __service_telemetry_observability_strategy == "use_community"
+    - __deploy_minio_enabled | bool
+
+- name: Use quay.io for minio
+  replace:
+    path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/minio/deployment.yaml"
+    regexp: 'minio/minio'
+    replace: 'quay.io/infrawatch/minio:latest'
+  when: 
+    - __service_telemetry_observability_strategy == "use_community"
+    - __deploy_minio_enabled | bool
