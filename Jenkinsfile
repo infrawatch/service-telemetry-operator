@@ -32,6 +32,14 @@ spec:
         enabled: true
         storage:
           strategy: ephemeral
+    logs:
+      loki:
+        enabled: true
+        replicationFactor: 1
+        flavor: 1x.extra-small
+        storage:
+          objectStorageSecret: test
+          storageClass: standard
   transports:
     qdr:
       enabled: true
@@ -121,6 +129,7 @@ node('ocp-agent') {
                                 "__local_build_enabled": "true",
                                 "__service_telemetry_snmptraps_enabled": "true",
                                 "__service_telemetry_storage_ephemeral_enabled": "true",
+                                "__deploy_minio_enabled": "true",
                                 "working_branch":"${working_branch}"
                             ]
                         )
