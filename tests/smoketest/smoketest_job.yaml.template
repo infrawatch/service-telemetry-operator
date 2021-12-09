@@ -81,7 +81,7 @@ spec:
           defaultMode: 0555
 
       - name: smoketest-rsyslog
-        image: quay.io/jwysogla/rsyslog:latest
+        image: quay.io/infrawatch/rsyslog:latest
         command:
         - /smoketest_rsyslog_entrypoint.sh
         env:
