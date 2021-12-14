@@ -38,7 +38,7 @@ metadata:
                     },
                     "strategy": "persistent"
                   },
-                  "version": "7.10.2"
+                  "version": "7.16.1"
                 }
               },
               "logs": {
