@@ -28,7 +28,7 @@ spec:
     events:
       elasticsearch:
         enabled: false
-        version: 7.10.2
+        version: 7.16.1
         storage:
           strategy: persistent
           persistent:
