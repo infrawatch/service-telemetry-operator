@@ -127,6 +127,11 @@ spec:
                                 - persistent
                                 type: string
                             type: object
+                          version:
+                            description: Version of ElasticSearch to deploy. Versions
+                              above 7.10.2 are subject to the conditions of Elastic
+                              License 2.0 (ELv2) https://www.elastic.co/licensing/elastic-license.
+                            type: string
                         type: object
                     type: object
                   logs:

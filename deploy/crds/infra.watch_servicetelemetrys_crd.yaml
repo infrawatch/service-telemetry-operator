@@ -146,6 +146,9 @@ spec:
                           enabled:
                             description: Enable ElasticSearch as a storage backend for events
                             type: boolean
+                          version:
+                            description: Version of ElasticSearch to deploy. Versions above 7.10.2 are subject to the conditions of Elastic License 2.0 (ELv2) https://www.elastic.co/licensing/elastic-license.
+                            type: string
                           nodeCount:
                             description: Elasticsearch node count
                             type: string
