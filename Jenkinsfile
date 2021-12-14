@@ -44,7 +44,7 @@ spec:
       name: elasticsearch
       namespace: $namespace
     spec:
-      version: 7.10.2
+      version: 7.16.1
       volumeClaimDeletePolicy: DeleteOnScaledownAndClusterDeletion
       http:
         tls:
