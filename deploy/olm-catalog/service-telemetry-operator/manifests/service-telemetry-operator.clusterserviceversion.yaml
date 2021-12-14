@@ -37,7 +37,8 @@ metadata:
                       "pvcStorageRequest": "20Gi"
                     },
                     "strategy": "persistent"
-                  }
+                  },
+                  "version": "7.16.1"
                 }
               },
               "logs": {
