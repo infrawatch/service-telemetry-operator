@@ -35,6 +35,7 @@ servicetelemetry_defaults:
     events:
       elasticsearch:
         enabled: false
+        version: 7.16.1
         node_count: 1
         storage:
           strategy: persistent

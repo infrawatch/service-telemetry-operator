@@ -68,5 +68,5 @@ spec:
       certificate: {}
   updateStrategy:
     changeBudget: {}
-  version: 7.10.2
+  version: {{ servicetelemetry_vars.backends.events.elasticsearch.version }}
   volumeClaimDeletePolicy: DeleteOnScaledownOnly
