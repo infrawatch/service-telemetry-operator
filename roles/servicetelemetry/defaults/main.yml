@@ -90,25 +90,49 @@ servicetelemetry_defaults:
           - collector_type: collectd
             subscription_address: collectd/cloud1-telemetry
             debug_enabled: false
+            bridge:
+              ring_buffer_size: 16384
+              ring_buffer_count: 15000
+              verbose: false
           - collector_type: ceilometer
             subscription_address: anycast/ceilometer/cloud1-metering.sample
             debug_enabled: false
+            bridge:
+              ring_buffer_size: 16384
+              ring_buffer_count: 15000
+              verbose: false
           - collector_type: sensubility
             subscription_address: sensubility/cloud1-telemetry
             debug_enabled: false
+            bridge:
+              ring_buffer_size: 16384
+              ring_buffer_count: 15000
+              verbose: false
       events:
         collectors:
           - collector_type: collectd
             subscription_address: collectd/cloud1-notify
             debug_enabled: false
+            bridge:
+              ring_buffer_size: 16384
+              ring_buffer_count: 15000
+              verbose: false
           - collector_type: ceilometer
             subscription_address: anycast/ceilometer/cloud1-event.sample
             debug_enabled: false
+            bridge:
+              ring_buffer_size: 16384
+              ring_buffer_count: 15000
+              verbose: false
       logs:
         collectors:
           - collector_type: rsyslog
             subscription_address: rsyslog/cloud1-logs
             debug_enabled: false
+            bridge:
+              ring_buffer_size: 135048
+              ring_buffer_count: 15000
+              verbose: false
 
 
 # These variables are outside of the defaults. Their values will be
