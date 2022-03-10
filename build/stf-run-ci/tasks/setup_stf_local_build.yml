@@ -151,9 +151,15 @@
       regexp: '^.*manager'
       replace: ''
 
+  - name: Remove unnecessary patches
+    replace:
+      path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
+      regexp: '.*patch.*'
+      replace: ''
+
   - name: Setup PVs for Loki in crc
     shell:
-      cmd: ./create_standard_pvs.sh 3
+      cmd: ./create_standard_pvs.sh 4
     when:
     - is_crc | bool
     - __service_telemetry_logs_enabled | bool
@@ -174,7 +180,7 @@
       replace: ''
   when:
     - not __deploy_minio_enabled | bool
-    - __service_telemetry_observability_strategy == "use_community"
+    - not __service_telemetry_observability_strategy == "use_community"
 
 - block:
   - name: Deploy Loki Operator
@@ -191,7 +197,7 @@
   - name: Load Loki Operator bundle manifests
     command: oc apply -f working/loki-operator/bundle/manifests/{{ item }} -n "{{ namespace }}"
     loop:
-    - loki.openshift.io_lokistacks.yaml
+    - loki.grafana.com_lokistacks.yaml
     - loki-operator-controller-manager-metrics-service_v1_service.yaml
     - loki-operator-manager-config_v1_configmap.yaml
     - loki-operator-metrics-reader_rbac.authorization.k8s.io_v1_clusterrole.yaml

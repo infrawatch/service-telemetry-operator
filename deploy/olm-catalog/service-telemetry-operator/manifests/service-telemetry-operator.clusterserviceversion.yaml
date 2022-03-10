@@ -360,7 +360,7 @@ spec:
           - elasticsearch.k8s.elastic.co
           - certmanager.k8s.io
           - integreatly.org
-          - loki.openshift.io
+          - loki.grafana.com
           resources:
           - '*'
           verbs:
