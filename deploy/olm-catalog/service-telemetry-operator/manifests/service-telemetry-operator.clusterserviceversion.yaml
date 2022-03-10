@@ -71,11 +71,21 @@ metadata:
                 "events": {
                   "collectors": [
                     {
+                      "bridge": {
+                        "ringBufferCount": 15000,
+                        "ringBufferSize": 16384,
+                        "verbose": false
+                      },
                       "collectorType": "collectd",
                       "debugEnabled": false,
                       "subscriptionAddress": "collectd/cloud1-notify"
                     },
                     {
+                      "bridge": {
+                        "ringBufferCount": 15000,
+                        "ringBufferSize": 16384,
+                        "verbose": false
+                      },
                       "collectorType": "ceilometer",
                       "debugEnabled": false,
                       "subscriptionAddress": "anycast/ceilometer/cloud1-event.sample"
@@ -85,16 +95,31 @@ metadata:
                 "metrics": {
                   "collectors": [
                     {
+                      "bridge": {
+                        "ringBufferCount": 15000,
+                        "ringBufferSize": 16384,
+                        "verbose": false
+                      },
                       "collectorType": "collectd",
                       "debugEnabled": false,
                       "subscriptionAddress": "collectd/cloud1-telemetry"
                     },
                     {
+                      "bridge": {
+                        "ringBufferCount": 15000,
+                        "ringBufferSize": 16384,
+                        "verbose": false
+                      },
                       "collectorType": "ceilometer",
                       "debugEnabled": false,
                       "subscriptionAddress": "anycast/ceilometer/cloud1-metering.sample"
                     },
                     {
+                      "bridge": {
+                        "ringBufferCount": 15000,
+                        "ringBufferSize": 16384,
+                        "verbose": false
+                      },
                       "collectorType": "sensubility",
                       "debugEnabled": false,
                       "subscriptionAddress": "sensubility/cloud1-telemetry"
