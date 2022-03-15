@@ -21,7 +21,7 @@
 
 - name: Replace namespace in SGO role binding
   replace:
-    path: "{{ playbook_dir }}/../deploy/role_binding.yaml"
+    path: "{{ playbook_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
