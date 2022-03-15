@@ -19,6 +19,12 @@
   debug:
     var: generate_bundle_sgo.stdout_lines
 
+- name: Replace namespace in SGO role binding
+  replace:
+    path: "{{ playbook_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
+    regexp: 'placeholder'
+    replace: '{{ namespace }}'
+
 - name: Load Smart Gateway Operator RBAC
   command: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
   loop:
