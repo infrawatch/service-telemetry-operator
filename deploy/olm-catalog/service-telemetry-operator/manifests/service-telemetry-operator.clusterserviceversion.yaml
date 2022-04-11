@@ -164,6 +164,8 @@ metadata:
     olm.properties: '[{"type": "olm.maxOpenShiftVersion", "value": "4.8"}]'
     olm.skipRange: '>=<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
     operatorframework.io/suggested-namespace: service-telemetry
+    operators.openshift.io/valid-subscription: '["OpenStack Platform", "Cloud Infrastructure",
+      "Cloud Suite"]'
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
     repository: https://github.com/infrawatch/service-telemetry-operator
