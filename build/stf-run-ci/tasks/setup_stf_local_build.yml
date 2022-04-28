@@ -19,6 +19,12 @@
   debug:
     var: generate_bundle_sgo.stdout_lines
 
+- name: Replace namespace in STO role binding
+  replace:
+    path: "{{ playbook_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
+    regexp: 'placeholder'
+    replace: '{{ namespace }}'
+
 - name: Load Smart Gateway Operator RBAC
   command: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
   loop:
@@ -54,13 +60,17 @@
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
-- name: Load Service Telemetry Operator RBAC
-  command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
-  loop:
-    - service_account.yaml
-    - role.yaml
-    - role_binding.yaml
-    - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
+- block:
+  - name: Load Service Telemetry Operator RBAC
+    command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+    loop:
+      - service_account.yaml
+      - role.yaml
+      - role_binding.yaml
+      - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
+
+  - name: Revert local change to role_binding.yaml
+    shell: git checkout -- "{{ playbook_dir }}/../deploy/role_binding.yaml"
 
 - name: Replace namespace in STO CSV
   replace:
