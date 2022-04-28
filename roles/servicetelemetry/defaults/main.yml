@@ -87,7 +87,7 @@ servicetelemetry_defaults:
   # NOTE: if you reference any of these parameters in your templates, then be
   # sure to define a `| default(...)` for the parameter in case `clouds`
   # structure is not fully populated.
-clouds:
+  clouds:
     - name: cloud1
       metrics:
         collectors:
