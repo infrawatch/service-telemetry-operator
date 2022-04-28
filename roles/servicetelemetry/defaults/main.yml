@@ -83,7 +83,11 @@ servicetelemetry_defaults:
 
   # 'clouds' object is not partially updatable like other objects. If 'clouds'
   # object is defined then the default is overwritten.
-  clouds:
+
+  # NOTE: if you reference any of these parameters in your templates, then be
+  # sure to define a `| default(...)` for the parameter in case `clouds`
+  # structure is not fully populated.
+clouds:
     - name: cloud1
       metrics:
         collectors:
