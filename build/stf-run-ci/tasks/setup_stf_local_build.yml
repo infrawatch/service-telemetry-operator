@@ -19,7 +19,7 @@
   debug:
     var: generate_bundle_sgo.stdout_lines
 
-- name: Replace namespace in STO role binding
+- name: Replace namespace in SGO role binding
   replace:
     path: "{{ playbook_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
     regexp: 'placeholder'
