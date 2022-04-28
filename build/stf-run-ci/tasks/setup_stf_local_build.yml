@@ -42,9 +42,6 @@
 - name: Load Smart Gateway Operator CSV
   shell: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
-- name: Revert local change to role_binding.yaml
-  shell: git checkout -- "{{ playbook_dir }}../deploy/role_binding.yaml"
-
 # --- Service Telemetry Operator ---
 - name: Generate Service Telemetry Operator CSV
   shell:
@@ -63,13 +60,17 @@
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
-- name: Load Service Telemetry Operator RBAC
-  command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
-  loop:
-    - service_account.yaml
-    - role.yaml
-    - role_binding.yaml
-    - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
+- block:
+  - name: Load Service Telemetry Operator RBAC
+    command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+    loop:
+      - service_account.yaml
+      - role.yaml
+      - role_binding.yaml
+      - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
+
+  - name: Revert local change to role_binding.yaml
+    shell: git checkout -- "{{ playbook_dir }}/../deploy/role_binding.yaml"
 
 - name: Replace namespace in STO CSV
   replace:
