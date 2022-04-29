@@ -42,7 +42,7 @@ version_branches:
   sgo: stable-1.4
   sg_core: stable-1.4
   sg_bridge: stable-1.4
-  prometheus_webhook_snmp: master
+  prometheus_webhook_snmp: stable-1.4
   loki_operator: master
 
 sgo_repository: https://github.com/infrawatch/smart-gateway-operator
