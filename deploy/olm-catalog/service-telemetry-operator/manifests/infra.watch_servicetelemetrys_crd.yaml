@@ -269,6 +269,24 @@ spec:
                             cloud object.
                           items:
                             properties:
+                              bridge:
+                                description: Bridge configuration and tuning configurations.
+                                properties:
+                                  ringBufferCount:
+                                    description: sg-bridge ring buffer count. This
+                                      affects the potential number of messages in
+                                      queue, which can result in increased memory
+                                      usage within the sg-bridge container.
+                                    type: integer
+                                  ringBufferSize:
+                                    description: sg-bridge ring buffer size. This
+                                      affects the size of messages that can be passed
+                                      between sg-bridge and sg-core.
+                                    type: integer
+                                  verbose:
+                                    description: Enable verbosity for debugging purposes.
+                                    type: boolean
+                                type: object
                               collectorType:
                                 description: Set the collector type, value of 'ceilometer'
                                   or 'collectd'.
@@ -295,6 +313,24 @@ spec:
                             cloud object.
                           items:
                             properties:
+                              bridge:
+                                description: Bridge configuration and tuning configurations.
+                                properties:
+                                  ringBufferCount:
+                                    description: sg-bridge ring buffer count. This
+                                      affects the potential number of messages in
+                                      queue, which can result in increased memory
+                                      usage within the sg-bridge container.
+                                    type: integer
+                                  ringBufferSize:
+                                    description: sg-bridge ring buffer size. This
+                                      affects the size of messages that can be passed
+                                      between sg-bridge and sg-core.
+                                    type: integer
+                                  verbose:
+                                    description: Enable verbosity for debugging purposes.
+                                    type: boolean
+                                type: object
                               collectorType:
                                 description: Set the collector type, value of 'rsyslog'
                                 enum:
