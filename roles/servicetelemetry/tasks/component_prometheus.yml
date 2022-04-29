@@ -62,7 +62,7 @@
             namespace: '{{ meta.namespace }}'
           type: Opaque
           stringData:
-            auth: 'internal:{{ prom_basicauth_passwd | htpasswd_sha1 }}'  #SHA1 is deprecated, bcrypt is available in OCP 4.8+ only https://bugzilla.redhat.com/show_bug.cgi?id=1874322
+            auth: 'internal:{{ prom_basicauth_passwd | htpasswd_sha1 }}'  # SHA1 is deprecated, bcrypt is available in OCP 4.8+ only https://bugzilla.redhat.com/show_bug.cgi?id=1874322
             password: '{{ prom_basicauth_passwd }}'
 
     - name: Re-register new object for use in the annotation

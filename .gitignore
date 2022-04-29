@@ -3,3 +3,4 @@ watches.local
 build/working/
 bundle.Dockerfile
 build/stf-run-ci/filter_plugins/__pycache__/
+roles/servicetelemetry/filter_plugins/__pycache__/
