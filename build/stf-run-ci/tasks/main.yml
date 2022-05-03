@@ -93,8 +93,8 @@
     - name: Replace loki-operator golang base image
       replace:
         path: "{{ playbook_dir }}/working/loki-operator/Dockerfile"
-        regexp: "^.*golang:1.16$"
-        replace: "{{ __golang_image_path }}"
+        regexp: "FROM golang:1.16 as builder"
+        replace: "FROM {{ __golang_image_path }} as builder"
 
     - name: Replace Loki image
       replace:
