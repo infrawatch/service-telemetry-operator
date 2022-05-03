@@ -178,9 +178,9 @@
       path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
       regexp: '^.*minio'
       replace: ''
-  when:
-    - not __deploy_minio_enabled | bool
-    - not __service_telemetry_observability_strategy == "use_community"
+  when: not __deploy_minio_enabled | bool or
+        not __service_telemetry_observability_strategy == "use_community" or
+        not __service_telemetry_logs_enabled | bool
 
 - block:
   - name: Deploy Loki Operator
