@@ -20,7 +20,7 @@ __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __deploy_minio_enabled: false
 __loki_skip_tls_verify: false
 __golang_image_path: quay.io/infrawatch/golang:1.16
-__loki_image_path: quay.io/infrawatch/loki:2.2.1
+__loki_image_path: quay.io/infrawatch/loki:2.4.2
 
 sgo_image_tag: latest
 sto_image_tag: latest
@@ -28,13 +28,13 @@ sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
 loki_operator_image_tag: latest
-new_operator_sdk_version: v1.5.0
+new_operator_sdk_version: v1.11.0
 new_go_version: 1.16.3
 namespace: service-telemetry
 
 # Set a default commit hash to clone for loki-operator to freeze
 # the operator developement.
-loki_operator_branch: 700e275
+loki_operator_branch: b8e9973
 
 
 # used when building images to default to correct version branch for STF subcomponents per STF version
@@ -49,4 +49,6 @@ sgo_repository: https://github.com/infrawatch/smart-gateway-operator
 sg_core_repository: https://github.com/infrawatch/sg-core
 sg_bridge_repository: https://github.com/infrawatch/sg-bridge
 prometheus_webhook_snmp_repository: https://github.com/infrawatch/prometheus-webhook-snmp
-loki_operator_repository: https://github.com/viaq/loki-operator
+loki_operator_repository: https://github.com/grafana/loki
+
+loki_operator_folder: operator
