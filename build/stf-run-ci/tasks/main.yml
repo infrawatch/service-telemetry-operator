@@ -46,15 +46,17 @@
     tags:
       - clone
 
-  - name: Move loki-operator to loki-operator folder
-    command: rm -rf "{{ playbook_dir }}/working/loki-operator"
-    command: mv "{{ playbook_dir }}/working/loki/{{ loki_operator_folder }}" "{{ playbook_dir }}/working/loki-operator"
+  - block:
+    - name: Move loki-operator to loki-operator folder
+      command: rm -rf "{{ playbook_dir }}/working/loki-operator"
+      command: mv "{{ playbook_dir }}/working/loki/{{ loki_operator_folder }}" "{{ playbook_dir }}/working/loki-operator"
 
-  - name: Get new operator sdk
-    command: ./get_new_operator_sdk.sh "{{ new_operator_sdk_version }}"
+    - name: Get new operator sdk
+      command: ./get_new_operator_sdk.sh "{{ new_operator_sdk_version }}"
 
-  - name: Get new go
-    command: ./get_go.sh "{{ new_go_version }}"
+    - name: Get new go
+      command: ./get_go.sh "{{ new_go_version }}"
+    when: __deploy_loki_enabled | bool
 
   - name: Setup supporting Operator subscriptions
     include_tasks: setup_base.yml
@@ -80,6 +82,7 @@
 \ \ \ http_config:\n
 \ \ \ \ \ insecure_skip_verify: true"
     when:
+      - __deploy_loki_enabled | bool
       - __loki_skip_tls_verify | bool
       - __service_telemetry_observability_strategy == "use_community"
 
@@ -88,6 +91,7 @@
       path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
       regexp: "auth_enabled: true"
       replace: "auth_enabled: false"
+    when: __deploy_loki_enabled | bool
 
   - block:
     - name: Replace loki-operator golang base image
@@ -102,6 +106,7 @@
         regexp: "docker.io/grafana/loki:\\d\\.\\d\\.\\d"
         replace: "{{ __loki_image_path }}"
     when:
+      - __deploy_loki_enabled | bool
       - __service_telemetry_observability_strategy == "use_community"
 
   - name: Create base build list
@@ -113,16 +118,18 @@
         - { name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: ./working/sg-bridge }
         - { name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: ./working/prometheus-webhook-snmp }
 
-  - name: Create Loki build list
-    set_fact:
-      loki_build_list:
-        - { name: loki-operator-bundle, dockerfile_path: bundle.Dockerfile, image_reference_name: loki_operator_bundle_image_path, working_build_dir: ./working/loki-operator }
-        - { name: loki-operator, dockerfile_path: Dockerfile, image_reference_name: loki_operator_image_path, working_build_dir: ./working/loki-operator }
+  - block:
+    - name: Create Loki build list
+      set_fact:
+        loki_build_list:
+          - { name: loki-operator-bundle, dockerfile_path: bundle.Dockerfile, image_reference_name: loki_operator_bundle_image_path, working_build_dir: ./working/loki-operator }
+          - { name: loki-operator, dockerfile_path: Dockerfile, image_reference_name: loki_operator_image_path, working_build_dir: ./working/loki-operator }
 
-  - name: Combine lists when community operators are enabled
-    set_fact:
-      build_list: "{{ build_list + loki_build_list }}"
+    - name: Combine lists when community operators are enabled
+      set_fact:
+        build_list: "{{ build_list + loki_build_list }}"
     when:
+      - __deploy_loki_enabled | bool
       - __service_telemetry_observability_strategy == "use_community"
 
   - debug:
@@ -140,7 +147,6 @@
     include_tasks: setup_stf_local_build.yml
     tags:
       - deploy
-
   when: __local_build_enabled | bool
 
 - block:
