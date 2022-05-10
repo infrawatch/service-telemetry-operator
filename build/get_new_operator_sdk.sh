@@ -9,5 +9,7 @@ OPERATOR_SDK_DL_URL=https://github.com/operator-framework/operator-sdk/releases/
 if [[ ! -f ${REL}/working/operator-sdk-${VERSION} ]]; then
 	curl -L ${OPERATOR_SDK_DL_URL}/operator-sdk_${OS}_${ARCH} -o ${REL}/working/operator-sdk-${VERSION}
 	chmod +x ${REL}/working/operator-sdk-${VERSION}
+	rm ${REL}/working/operator-sdk
+	ln -s operator-sdk-${VERSION} ${REL}/working/operator-sdk
 fi
 

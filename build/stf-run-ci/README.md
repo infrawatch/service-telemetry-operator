@@ -21,7 +21,11 @@ choose to override:
 | Parameter name                                         | Values                   | Default                                               | Description                                                                                                         |
 | ------------------------------                         | ------------             | ---------                                             | ------------------------------------                                                                                |
 | `__deploy_stf`                                         | {true,false}             | true                                                  | Whether to deploy an instance of STF                                                                                |
-| `__local_build_enabled`                                | {true,false}             | true                                                  | Whether to deploySTF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch`               |
+| `__local_build_enabled`                                | {true,false}             | true                                                  | Whether to deploy STF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch`               |
+| `__deploy_from_bundles_enabled`                        | {true,false}             | false                                                |  Whether to deploy STF from OLM bundles (TODO: compat with __local_build_enabled) |
+
+| `__service_telemetry_bundle_image_path`                | <image_path>             | <none>                                                | Image path to Service Telemetry Operator bundle |
+| `__smart_gateway_bundle_image_path`                    | <image_path>             | <none>                                                | Image path to Smart Gateway Operator bundle |
 | `prometheus_webhook_snmp_branch`                       | <git_branch>             | master                                                | Which Prometheus Webhook SNMP git branch to checkout                                                                |
 | `sgo_branch`                                           | <git_branch>             | master                                                | Which Smart Gateway Operator git branch to checkout                                                                 |
 | `sg_core_branch`                                       | <git_branch>             | master                                                | Which Smart Gateway Core git branch to checkout                                                                     |
@@ -46,6 +50,7 @@ choose to override:
 | `__loki_skip_tls_verify`                               | {true,false}             | false                                                 | Whether to skip TLS verify for Loki S3 connection                                                                   |
 | `__golang_image_path`                                  | <image_path>             | quay.io/infrawatch/golang:1.16                        | Golang image path for building the loki-operator image                                                              |
 | `__loki_image_path`                                    | <image_path>             | quay.io/infrawatch/loki:2.2.1                         | Loki image path for Loki microservices                                                                              |
+
 
 
 Example Playbook
@@ -85,6 +90,16 @@ the following command:
 ```
 ansible-playbook --extra-vars __local_build_enabled=false run-ci.yaml
 ```
+
+You can deploy directly from pre-built bundles like this:
+```
+ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled=true run-ci.yaml
+```
+
+NOTE: When deploying from bundles, you must have an _authfile_ and _CA.pem_ for
+the registry already in place in the build directory, if required. If these
+are not required, add `--skip-tags bundle_registry_auth --skip-tags bundle_registry_tls_ca`
+to disable one or both.
 
 License
 -------
