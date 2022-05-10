@@ -78,4 +78,5 @@
         version: "{{ version_branches.loki_operator }}"
         force: yes
   when:
+    - __deploy_loki_enabled | bool
     - __service_telemetry_observability_strategy == "use_community"

@@ -164,6 +164,7 @@
       regexp: 'default'
       replace: '{{ namespace }}'
   when:
+    - __deploy_loki_enabled | bool
     - __service_telemetry_observability_strategy == "use_community"
 
 - block:
@@ -173,8 +174,10 @@
       regexp: '^.*minio'
       replace: ''
   when:
-    - not __deploy_minio_enabled | bool
-    - __service_telemetry_observability_strategy == "use_community"
+    - not __deploy_minio_enabled | bool or
+      not __service_telemetry_observability_strategy == "use_community" or
+      not __service_telemetry_logs_enabled | bool
+    - __deploy_loki_enabled | bool
 
 - block:
   - name: Deploy Loki Operator
@@ -199,4 +202,5 @@
     - loki-operator-prometheus_rbac.authorization.k8s.io_v1_role.yaml
     - loki-operator.clusterserviceversion.yaml
   when:
+    - __deploy_loki_enabled | bool
     - __service_telemetry_observability_strategy == "use_community"

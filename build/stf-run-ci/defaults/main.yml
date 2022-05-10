@@ -18,6 +18,7 @@ __service_telemetry_observability_strategy: use_community
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 
 __deploy_minio_enabled: false
+__deploy_loki_enabled: false
 __loki_skip_tls_verify: false
 __golang_image_path: quay.io/infrawatch/golang:1.16
 __loki_image_path: quay.io/infrawatch/loki:2.2.1
