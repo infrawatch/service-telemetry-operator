@@ -12,7 +12,7 @@
   tags:
     - clean-crds
 
-# The clusterroles and clusterrolebindings are clobal objects that can be left
+# The clusterroles and clusterrolebindings are global objects that can be left
 # behind by failed bundle installs
 - name: Remove all clusterrolebindings owned by OLM for this namespace
   k8s:
