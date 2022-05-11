@@ -4,4 +4,4 @@ RUN curl -LO "https://github.com/operator-framework/operator-sdk/releases/downlo
 RUN dnf install -y ansible golang && \
     dnf groupinstall -y "Development Tools" -y && \
     ansible-galaxy collection install community.kubernetes && \
-    python -m pip install openshift
+    python -m pip install openshift kubernetes
