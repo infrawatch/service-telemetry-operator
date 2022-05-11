@@ -7,6 +7,7 @@ VERSION="${1:-v1.5.0}"
 OPERATOR_SDK_DL_URL=https://github.com/operator-framework/operator-sdk/releases/download/${VERSION}
 
 if [[ ! -f ${REL}/working/operator-sdk-${VERSION} ]]; then
+	mkdir ${REL}/working
 	curl -L ${OPERATOR_SDK_DL_URL}/operator-sdk_${OS}_${ARCH} -o ${REL}/working/operator-sdk-${VERSION}
 	chmod +x ${REL}/working/operator-sdk-${VERSION}
 	rm ${REL}/working/operator-sdk
