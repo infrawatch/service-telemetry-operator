@@ -1,0 +1,50 @@
+- name: Create pull secret
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        name: pull-secret
+        namespace: "{{ namespace }}"
+      data:
+        .dockerconfigjson: "{{ lookup('file', 'authfile') | b64encode }}"
+  tags:
+    - bundle_registry_auth
+
+- name: Create registry CA Cert
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      metadata:
+        name: registry-tls-ca
+        namespace: "{{ namespace }}"
+      data:
+        cert.pem: "{{ lookup('file', 'CA.pem') | b64encode }}"
+  tags:
+    - bundle_registry_tls_ca
+
+- name: Patch the default service account to use our pull secret
+  kubernetes.core.k8s_json_patch:
+    kind: ServiceAccount
+    namespace: "{{ namespace }}"
+    name: default
+    patch:
+      - op: add
+        path: /imagePullSecrets
+        value:
+          - name: pull-secret
+  tags:
+    - bundle_registry_tls_ca
+
+- name: Deploy SGO via OLM bundle
+  shell:
+    cmd: "{{ playbook_dir }}/working/operator-sdk run bundle {{__smart_gateway_bundle_image_path}} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca --namespace={{ namespace }}"
+
+- name: Deploy STO via OLM bundle
+  shell:
+    cmd: "{{ playbook_dir }}/working/operator-sdk run bundle {{ __service_telemetry_bundle_image_path}} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca --namespace={{ namespace }}"

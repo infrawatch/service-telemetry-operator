@@ -6,6 +6,7 @@ list_of_stf_objects:
   - smart-gateway
 
 __local_build_enabled: true
+__deploy_from_bundles_enabled: false
 __deploy_stf: true
 
 __service_telemetry_events_enabled: true
@@ -16,6 +17,8 @@ __service_telemetry_snmptraps_enabled: true
 __service_telemetry_logs_enabled: false
 __service_telemetry_observability_strategy: use_community
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
+__service_telemetry_bundle_image_path:
+__smart_gateway_bundle_image_path:
 
 __deploy_minio_enabled: false
 __deploy_loki_enabled: false
