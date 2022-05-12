@@ -93,7 +93,10 @@ ansible-playbook --extra-vars __local_build_enabled=false run-ci.yaml
 
 You can deploy directly from pre-built bundles like this:
 ```
-ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled=true run-ci.yaml
+ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled=true \
+  -e __service_telemetry_bundle_image_path=<registry>/<namespace>/stf-service-telemetry-operator-bundle:<tag> \
+  -e __smart_gateway_bundle_image_path=<registry>/<namespace>/stf-smart-gateway-operator-bundle:<tag> \
+  run-ci.yaml
 ```
 
 NOTE: When deploying from bundles, you must have an _authfile_ and _CA.pem_ for
