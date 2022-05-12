@@ -119,7 +119,7 @@
       target: bundle
       params:
           REGISTRY_ORG: infrawatch
-          OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
+          OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk"
           GOROOT: "{{ playbook_dir }}/working/go"
           GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
           GOBIN: "{{ playbook_dir }}/working/go/bin"
@@ -192,7 +192,7 @@
       target: deploy
       params:
           REGISTRY_ORG: infrawatch
-          OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk-{{ new_operator_sdk_version }}"
+          OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk"
           GOROOT: "{{ playbook_dir }}/working/go"
           GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
           GOBIN: "{{ playbook_dir }}/working/go/bin"
