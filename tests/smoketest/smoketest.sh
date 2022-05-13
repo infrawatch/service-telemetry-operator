@@ -59,7 +59,8 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-oc run curl --serviceaccount=prometheus-k8s --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer \$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\" -d '[{\"labels\":{\"alertname\":\"Testalert1\"}}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
+PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-k8s)
+oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"labels\":{\"alertname\":\"Testalert1\"}}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
 # it takes some time to get the alert delivered, continuing with other tests
 
 

@@ -15,6 +15,11 @@
     loki_operator_image_path: "{{ __internal_registry_path }}/{{ namespace }}/loki-operator:{{ loki_operator_image_tag }}"
     loki_operator_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/loki-operator-bundle:{{ loki_operator_image_tag }}"
 
+- name: Fail on mutually exclusive flags
+  fail:
+    msg: __deploy_from_bundles_enabled not currently supported with __local_build_enabled (but should be)
+  when: __local_build_enabled | bool and __deploy_from_bundles_enabled | bool
+
 - name: Get the node hostnames
   set_fact:
     nodes: "{{ lookup('k8s', kind='nodes') }}"
@@ -29,18 +34,20 @@
       set_fact:
         is_crc: "{{ True if 'crc' in nodes.metadata.labels[\"kubernetes.io/hostname\"] else False }}"
 
-- name: Clear out existing CRDs so we don't conflict or fail merge
-  k8s:
-    state: absent
-    api_version: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
-    name: "{{ item }}"
-  loop:
-    - smartgateways.smartgateway.infra.watch
-    - servicetelemetrys.infra.watch
-    - lokistacks.loki.openshift.io
+- name: Clean up any existing global artifacts
+  include_tasks: pre-clean.yml
 
-- block:
+- name: Setup supporting Operator subscriptions
+  include_tasks: setup_base.yml
+  tags:
+    - deploy
+
+- name: Get new operator sdk
+  when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_loki_enabled | bool
+  command: ./get_new_operator_sdk.sh "{{ new_operator_sdk_version }}"
+
+- when: __local_build_enabled | bool
+  block:
   - name: Setup supporting repositories
     include_tasks: clone_repos.yml
     tags:
@@ -51,17 +58,9 @@
       command: rm -rf "{{ playbook_dir }}/working/loki-operator"
       command: mv "{{ playbook_dir }}/working/loki/{{ loki_operator_folder }}" "{{ playbook_dir }}/working/loki-operator"
 
-    - name: Get new operator sdk
-      command: ./get_new_operator_sdk.sh "{{ new_operator_sdk_version }}"
-
     - name: Get new go
       command: ./get_go.sh "{{ new_go_version }}"
     when: __deploy_loki_enabled | bool
-
-  - name: Setup supporting Operator subscriptions
-    include_tasks: setup_base.yml
-    tags:
-      - deploy
 
     # TLS verification support doesn't seem to be implemented in the operator yet
   - block:
@@ -147,14 +146,15 @@
     include_tasks: setup_stf_local_build.yml
     tags:
       - deploy
-  when: __local_build_enabled | bool
 
 - block:
-  - name: Setup supporting Operator subscriptions
-    include_tasks: setup_base.yml
+  - name: Setup Service Telemetry Framework from supplied bundle URLs
+    include_tasks: setup_stf_from_bundles.yml
+    when: __deploy_from_bundles_enabled | bool
 
   - name: Setup Service Telemetry Framework from application registry
     include_tasks: setup_stf.yml
+    when: not __deploy_from_bundles_enabled | bool
 
   when: not __local_build_enabled | bool
 
