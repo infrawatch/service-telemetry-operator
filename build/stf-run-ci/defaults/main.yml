@@ -6,6 +6,7 @@ list_of_stf_objects:
   - smart-gateway
 
 __local_build_enabled: true
+__deploy_from_bundles_enabled: false
 __deploy_stf: true
 
 __service_telemetry_events_enabled: true
@@ -14,12 +15,15 @@ __service_telemetry_metrics_enabled: true
 __service_telemetry_storage_ephemeral_enabled: false
 __service_telemetry_snmptraps_enabled: true
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
+__service_telemetry_bundle_image_path:
+__smart_gateway_bundle_image_path:
 
 sgo_image_tag: latest
 sto_image_tag: latest
 sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
+new_operator_sdk_version: v1.5.0
 namespace: service-telemetry
 
 # used when building images to default to correct version branch for STF subcomponents per STF version
@@ -27,5 +31,5 @@ version_branches:
   sgo: stable-1.3
   sg_core: stable-1.3
   sg_bridge: stable-1.2
-  prometheus_webhook_snmp: stable-1.2
+  prometheus_webhook_snmp: stable-1.3
   
