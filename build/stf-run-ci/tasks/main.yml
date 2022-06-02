@@ -20,19 +20,20 @@
     msg: __deploy_from_bundles_enabled not currently supported with __local_build_enabled (but should be)
   when: __local_build_enabled | bool and __deploy_from_bundles_enabled | bool
 
-- name: Get the node hostnames
-  set_fact:
-    nodes: "{{ lookup('k8s', kind='nodes') }}"
+- name: Get the list of nodes
+  k8s_info:
+    kind: Node
+  register: node_info
 
-- name: Find out if we are using crc
+- name: Find out if we are using crc by looking at the node hostnames
   block:
     - name: Try finding out for cluster with more than 1 node
       set_fact:
-        is_crc: "{{ True if 'crc' in nodes[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
+        is_crc: "{{ True if 'crc' in node_info.resources[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
   rescue:
     - name: Try finding out for cluster with only 1 node
       set_fact:
-        is_crc: "{{ True if 'crc' in nodes.metadata.labels[\"kubernetes.io/hostname\"] else False }}"
+        is_crc: "{{ True if 'crc' in node_info.resources.metadata.labels[\"kubernetes.io/hostname\"] else False }}"
 
 - name: Clean up any existing global artifacts
   include_tasks: pre-clean.yml
