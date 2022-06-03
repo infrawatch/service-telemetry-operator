@@ -26,14 +26,8 @@
   register: node_info
 
 - name: Find out if we are using crc by looking at the node hostnames
-  block:
-    - name: Try finding out for cluster with more than 1 node
-      set_fact:
-        is_crc: "{{ True if 'crc' in node_info.resources[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
-  rescue:
-    - name: Try finding out for cluster with only 1 node
-      set_fact:
-        is_crc: "{{ True if 'crc' in node_info.resources.metadata.labels[\"kubernetes.io/hostname\"] else False }}"
+  set_fact:
+    is_crc: "{{ True if 'crc' in node_info.resources[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
 
 - name: Clean up any existing global artifacts
   include_tasks: pre-clean.yml
