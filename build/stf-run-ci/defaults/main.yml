@@ -56,3 +56,5 @@ prometheus_webhook_snmp_repository: https://github.com/infrawatch/prometheus-web
 loki_operator_repository: https://github.com/grafana/loki
 
 loki_operator_folder: operator
+
+base_dir: ''
