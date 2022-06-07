@@ -35,6 +35,9 @@ loki_operator_image_tag: latest
 new_operator_sdk_version: v1.5.0
 new_go_version: 1.16.3
 namespace: service-telemetry
+pull_secret_registry:
+pull_secret_user:
+pull_secret_pass:
 
 # Set a default commit hash to clone for loki-operator to freeze
 # the operator developement.
