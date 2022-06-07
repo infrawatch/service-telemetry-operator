@@ -35,4 +35,10 @@ version_branches:
   sg_core: stable-1.3
   sg_bridge: stable-1.2
   prometheus_webhook_snmp: stable-1.3
-  
+
+sgo_repository: https://github.com/infrawatch/smart-gateway-operator
+sg_core_repository: https://github.com/infrawatch/sg-core
+sg_bridge_repository: https://github.com/infrawatch/sg-bridge
+prometheus_webhook_snmp_repository: https://github.com/infrawatch/prometheus-webhook-snmp
+
+base_dir: ''

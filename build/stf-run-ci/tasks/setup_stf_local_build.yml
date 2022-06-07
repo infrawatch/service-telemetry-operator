@@ -5,7 +5,7 @@
   shell:
     chdir: working/smart-gateway-operator/build
     cmd: |
-      WORKING_DIR="{{ playbook_dir }}/working/smart-gateway-operator-bundle" \
+      WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
       RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
       RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
       RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
@@ -29,7 +29,7 @@
 
 - name: Replace namespace in SGO CSV
   replace:
-    path: "{{ playbook_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml"
+    path: "{{ base_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
@@ -39,9 +39,9 @@
 # --- Service Telemetry Operator ---
 - name: Generate Service Telemetry Operator CSV
   shell:
-    chdir: "{{ playbook_dir }}"
+    chdir: "{{ base_dir }}"
     cmd: |
-      WORKING_DIR="{{ playbook_dir }}/working/service-telemetry-operator-bundle" \
+      WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
       OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
@@ -58,7 +58,7 @@
 
 - name: Replace namespace in STO CSV
   replace:
-    path: "{{ playbook_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
+    path: "{{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
