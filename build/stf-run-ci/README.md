@@ -81,13 +81,16 @@ You can deploy directly from pre-built bundles like this:
 ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled=true \
   -e __service_telemetry_bundle_image_path=<registry>/<namespace>/stf-service-telemetry-operator-bundle:<tag> \
   -e __smart_gateway_bundle_image_path=<registry>/<namespace>/stf-smart-gateway-operator-bundle:<tag> \
+  -e pull_secret_registry=<registry> \
+  -e pull_secret_user=<username> \
+  -e pull_secret_pass=<password>
   run-ci.yaml
 ```
 
-NOTE: When deploying from bundles, you must have an _authfile_ and _CA.pem_ for
-the registry already in place in the build directory, if required. If these
-are not required, add `--skip-tags bundle_registry_auth --skip-tags bundle_registry_tls_ca`
-to disable one or both.
+NOTE: When deploying from bundles, you must have a _CA.pem_ for
+the registry already in place in the build directory, if required. If this is
+not required, add `--skip-tags bundle_registry_tls_ca`. If no login is required
+to your bundle image registry, add `--skip-tags bundle_registry_auth`
 
 License
 -------
