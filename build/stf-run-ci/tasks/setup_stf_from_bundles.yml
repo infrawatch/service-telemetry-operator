@@ -1,15 +1,40 @@
-- name: Create pull secret
-  k8s:
-    state: present
-    definition:
-      apiVersion: v1
+- block:
+  - name: Get existing Pull Secret from openshift config
+    k8s_info:
+      api_version: v1
       kind: Secret
-      type: kubernetes.io/dockerconfigjson
-      metadata:
-        name: pull-secret
-        namespace: "{{ namespace }}"
-      data:
-        .dockerconfigjson: "{{ lookup('file', 'authfile') | b64encode }}"
+      namespace: openshift-config
+      name: pull-secret
+    register: pull_secret
+
+  - name: Decode docker config json
+    set_fact:
+      dockerconfigjson: "{{ pull_secret.resources[0].data['.dockerconfigjson'] | b64decode }}"
+
+  - name: Merge registry creds into auth section of docker config
+    set_fact:
+      new_dockerauths: "{{ dockerconfigjson['auths'] | combine( {
+        pull_secret_registry:{
+              'auth': (pull_secret_user ~ ':' ~ pull_secret_pass) | b64encode
+            }
+        }) }}"
+
+  - name: Create new docker config
+    set_fact:
+      new_dockerconfigjson: "{{ dockerconfigjson | combine({'auths': new_dockerauths}) }}"
+
+  - name: Create Pull Secret for bundle registry access
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Secret
+        type: kubernetes.io/dockerconfigjson
+        metadata:
+          name: pull-secret
+          namespace: "{{ namespace }}"
+        data:
+          .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
   tags:
     - bundle_registry_auth
 
