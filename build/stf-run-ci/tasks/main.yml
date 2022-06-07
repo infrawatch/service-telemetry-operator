@@ -42,9 +42,14 @@
   tags:
     - deploy
 
+- name: Set default base dir if not provided
+  set_fact:
+    base_dir: "{{ playbook_dir }}"
+  when: base_dir | length == 0
+
 - name: Get new operator sdk
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_loki_enabled | bool
-  command: ./get_new_operator_sdk.sh "{{ new_operator_sdk_version }}"
+  command: "{{ base_dir }}/get_new_operator_sdk.sh {{ new_operator_sdk_version }}"
 
 - when: __local_build_enabled | bool
   block:
@@ -55,18 +60,18 @@
 
   - block:
     - name: Move loki-operator to loki-operator folder
-      command: rm -rf "{{ playbook_dir }}/working/loki-operator"
-      command: mv "{{ playbook_dir }}/working/loki/{{ loki_operator_folder }}" "{{ playbook_dir }}/working/loki-operator"
+      command: rm -rf "{{ base_dir }}/working/loki-operator"
+      command: mv "{{ base_dir }}/working/loki/{{ loki_operator_folder }}" "{{ base_dir }}/working/loki-operator"
 
     - name: Get new go
-      command: ./get_go.sh "{{ new_go_version }}"
+      command: "{{ base_dir }}/get_go.sh {{ new_go_version }}"
     when: __deploy_loki_enabled | bool
 
     # TLS verification support doesn't seem to be implemented in the operator yet
   - block:
     - name: Prepare for skip Loki TLS patch
       replace:
-        path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
+        path: "{{ base_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
         regexp: "\ \ \ \ insecure: false\n
 \ \ \ http_config:\n
 \ \ \ \ \ insecure_skip_verify: true"
@@ -74,7 +79,7 @@
 
     - name: Skip Loki TLS verification
       replace:
-        path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
+        path: "{{ base_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
         regexp: "\ \ \ \ s3forcepathstyle: true"
         replace: "\ \ \ \ s3forcepathstyle: true\n
 \ \ \ insecure: false\n
@@ -87,7 +92,7 @@
 
   - name: Remove forced multi-tenancy from loki-operator config
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
+      path: "{{ base_dir }}/working/loki-operator/internal/manifests/internal/config/loki-config.yaml"
       regexp: "auth_enabled: true"
       replace: "auth_enabled: false"
     when: __deploy_loki_enabled | bool
@@ -95,13 +100,13 @@
   - block:
     - name: Replace loki-operator golang base image
       replace:
-        path: "{{ playbook_dir }}/working/loki-operator/Dockerfile"
-        regexp: "golang:1.16"
-        replace: "{{ __golang_image_path }}"
+        path: "{{ base_dir }}/working/loki-operator/Dockerfile"
+        regexp: "FROM golang:1.16 as builder"
+        replace: "FROM {{ __golang_image_path }} as builder"
 
     - name: Replace Loki image
       replace:
-        path: "{{ playbook_dir }}/working/loki-operator/internal/manifests/var.go"
+        path: "{{ base_dir }}/working/loki-operator/internal/manifests/var.go"
         regexp: "docker.io/grafana/loki:\\d\\.\\d\\.\\d"
         replace: "{{ __loki_image_path }}"
     when:

@@ -5,7 +5,7 @@
   shell:
     chdir: working/smart-gateway-operator/build
     cmd: |
-      WORKING_DIR="{{ playbook_dir }}/working/smart-gateway-operator-bundle" \
+      WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
       RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
       RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
       RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
@@ -21,7 +21,7 @@
 
 - name: Replace namespace in SGO role binding
   replace:
-    path: "{{ playbook_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
+    path: "{{ base_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
@@ -35,7 +35,7 @@
 
 - name: Replace namespace in SGO CSV
   replace:
-    path: "{{ playbook_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml"
+    path: "{{ base_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
@@ -45,9 +45,9 @@
 # --- Service Telemetry Operator ---
 - name: Generate Service Telemetry Operator CSV
   shell:
-    chdir: "{{ playbook_dir }}"
+    chdir: "{{ base_dir }}"
     cmd: |
-      WORKING_DIR="{{ playbook_dir }}/working/service-telemetry-operator-bundle" \
+      WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
       OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
@@ -56,7 +56,7 @@
 
 - name: Replace namespace in STO role binding
   replace:
-    path: "{{ playbook_dir }}/../deploy/role_binding.yaml"
+    path: "{{ base_dir }}/../deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
@@ -70,11 +70,11 @@
       - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
 
   - name: Revert local change to role_binding.yaml
-    shell: git checkout -- "{{ playbook_dir }}/../deploy/role_binding.yaml"
+    shell: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
 
 - name: Replace namespace in STO CSV
   replace:
-    path: "{{ playbook_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
+    path: "{{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
@@ -85,25 +85,25 @@
 - block:
   - name: Prevent Loki Operator from building operator-sdk
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/.bingo/Variables.mk"
+      path: "{{ base_dir }}/working/loki-operator/.bingo/Variables.mk"
       regexp: '^.*modfile=operator-sdk.mod.*$'
       replace: ''
 
   - name: Prevent Loki Operator from replacing GOBIN
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/.bingo/Variables.mk"
+      path: "{{ base_dir }}/working/loki-operator/.bingo/Variables.mk"
       regexp: '^GOBIN.*$'
       replace: 'GOBIN  ?= $(shell go env GOBIN)'
 
   - name: Prevent Loki Operator from using system golang
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/.bingo/Variables.mk"
+      path: "{{ base_dir }}/working/loki-operator/.bingo/Variables.mk"
       regexp: '^GO .*$'
       replace: 'GO     ?= $(GOBIN)"/go"'
 
   - name: Prevent Loki Operator from putting authentication on /metrics
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/config/overlays/openshift/kustomization.yaml"
+      path: "{{ base_dir }}/working/loki-operator/config/overlays/openshift/kustomization.yaml"
       regexp: '{{ item }}'
       replace: ''
     loop:
@@ -115,24 +115,24 @@
 
   - name: Generate Loki Operator CSV
     make:
-      chdir: "{{ playbook_dir }}/working/loki-operator"
+      chdir: "{{ base_dir }}/working/loki-operator"
       target: bundle
       params:
           REGISTRY_ORG: infrawatch
-          OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk"
-          GOROOT: "{{ playbook_dir }}/working/go"
-          GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
-          GOBIN: "{{ playbook_dir }}/working/go/bin"
+          OPERATOR_SDK: "{{ base_dir }}/working/operator-sdk"
+          GOROOT: "{{ base_dir }}/working/go"
+          GOTOOLDIR: "{{ base_dir }}/working/go/pkg/tool/linux_amd64"
+          GOBIN: "{{ base_dir }}/working/go/bin"
 
   - name: Replace namespace in loki-operator CSV
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/bundle/manifests/loki-operator.clusterserviceversion.yaml"
+      path: "{{ base_dir }}/working/loki-operator/bundle/manifests/loki-operator.clusterserviceversion.yaml"
       regexp: 'placeholder'
       replace: '{{ namespace }}'
 
   - name: Replace image path in loki-operator CSV
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/bundle/manifests/loki-operator.clusterserviceversion.yaml"
+      path: "{{ base_dir }}/working/loki-operator/bundle/manifests/loki-operator.clusterserviceversion.yaml"
       regexp: '{{ item }}'
       replace: '{{ loki_operator_image_path }}'
     loop:
@@ -141,13 +141,13 @@
 
   - name: Replace namespace in loki-operator
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
+      path: "{{ base_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
       regexp: 'default'
       replace: '{{ namespace }}'
 
   - name: Remove additional manager deployment
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
+      path: "{{ base_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
       regexp: '^.*manager'
       replace: ''
 
@@ -160,7 +160,7 @@
 
   - name: Replace namespace in S3 secret
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/minio/secret.yaml"
+      path: "{{ base_dir }}/working/loki-operator/config/overlays/development/minio/secret.yaml"
       regexp: 'default'
       replace: '{{ namespace }}'
   when:
@@ -170,7 +170,7 @@
 - block:
   - name: Remove minio deployment
     replace:
-      path: "{{ playbook_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
+      path: "{{ base_dir }}/working/loki-operator/config/overlays/development/kustomization.yaml"
       regexp: '^.*minio'
       replace: ''
   when:
@@ -182,14 +182,14 @@
 - block:
   - name: Deploy Loki Operator
     make:
-      chdir: "{{ playbook_dir }}/working/loki-operator"
+      chdir: "{{ base_dir }}/working/loki-operator"
       target: deploy
       params:
           REGISTRY_ORG: infrawatch
-          OPERATOR_SDK: "{{ playbook_dir }}/working/operator-sdk"
-          GOROOT: "{{ playbook_dir }}/working/go"
-          GOTOOLDIR: "{{ playbook_dir }}/working/go/pkg/tool/linux_amd64"
-          GOBIN: "{{ playbook_dir }}/working/go/bin"
+          OPERATOR_SDK: "{{ base_dir }}/working/operator-sdk"
+          GOROOT: "{{ base_dir }}/working/go"
+          GOTOOLDIR: "{{ base_dir }}/working/go/pkg/tool/linux_amd64"
+          GOBIN: "{{ base_dir }}/working/go/bin"
 
   - name: Load Loki Operator bundle manifests
     command: oc apply -f working/loki-operator/bundle/manifests/{{ item }} -n "{{ namespace }}"
