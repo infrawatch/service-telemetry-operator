@@ -39,8 +39,7 @@
 
 - name: Set default base dir if not provided
   set_fact:
-    name: base_dir
-    value: "{{ playbook_dir }}"
+    base_dir: "{{ playbook_dir }}"
   when: base_dir | length == 0
 
 - name: Get new operator sdk
