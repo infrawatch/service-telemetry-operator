@@ -5,8 +5,6 @@ def namespace = env.JOB_BASE_NAME + '-' + env.BUILD_NUMBER
 namespace = namespace.toLowerCase()
 namespace = namespace.replaceAll('\\.', '-')
 
-def stages_failed = false;
-
 def stf_resource = """
 apiVersion: infra.watch/v1beta1
 kind: ServiceTelemetry
@@ -82,79 +80,133 @@ spec:
 
 def working_branch = "master"
 
-node('ocp-agent') {
-    container('exec') {
-        dir('service-telemetry-operator') {
-            stage ('Clone Upstream') {
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    checkout scm
-
-                    // ansible script needs local branch to exist, not detached HEAD
-                    working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3', returnStdout: true).toString().trim()
-                    if (!working_branch) {
-                        // in this case, a merge with the base branch was required thus we use the second to last commit
-                        // to find the original topic branch name
-                        working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD~1) | cut -d / -f 3', returnStdout: true).toString().trim()
-                    }
-
-                    sh "git checkout -b ${working_branch}"
-                }
-            }
-            stage ('Create project') {
-                if ( currentBuild.result != null ) { stages_failed = true; return; }
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    openshift.withCluster(){
-                        openshift.newProject(namespace)
-                    }
-                }
-            }
-            stage('Build STF Containers') {
-                if ( currentBuild.result != null ) { stages_failed = true; return; }
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    ansiColor('xterm') {
-                        ansiblePlaybook(
-                            // use the playbook to build the containers but don't run CI
-                            playbook: 'build/run-ci.yaml',
-                            colorized: true,
-                            extraVars: [
-                                "namespace": namespace,
-                                "__deploy_stf": "false",
-                                "__local_build_enabled": "true",
-                                "__service_telemetry_snmptraps_enabled": "true",
-                                "__service_telemetry_storage_ephemeral_enabled": "true",
-                                "working_branch":"${working_branch}"
-                            ]
-                        )
-                    }
-                }
-            }
-            stage('Deploy STF Object') {
-                if ( currentBuild.result != null ) { stages_failed = true; return; }
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    openshift.withCluster() {
-                        openshift.withProject(namespace) {
-                            timeout(time: 800, unit: 'SECONDS') {
-                                openshift.create(stf_resource)
-                                sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
-                            }
-                        }
-                    }
-                }
-            }
-            stage('Run Smoketest') {
-                if ( currentBuild.result != null ) { stages_failed = true; return; }
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    sh "OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh"
-                }
-            }
-            stage('Cleanup') {
-                openshift.withCluster(){
-                    openshift.selector("project/${namespace}").delete()
-                    if ( stages_failed ) { currentBuild.result = 'FAILURE' }
-                }
-                if ( stages_failed ) { currentBuild.result = 'FAILURE' }
-            }
-        }
-    }
+pipeline {
+	agent {
+		kubernetes {
+			inheritFrom 'ocp-agent'
+			defaultContainer 'exec'
+		}
+	}
+	stages {
+		stage('Clone Upstream') {
+			steps {
+				dir('service-telemetry-operator') {
+					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+						checkout scm
+						script {
+							working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3', returnStdout: true).toString().trim()
+							if (!working_branch) {
+								// in this case, a merge with the base branch was required thus we use the second to last commit
+								// to find the original topic branch name
+								working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD~1) | cut -d / -f 3', returnStdout: true).toString().trim()
+							}
+						}
+						sh "git checkout -b ${working_branch}"
+					}
+				}
+			}
+		}
+		stage('Create project') {
+			when {
+				expression {
+					currentBuild.result == null
+				}
+			}
+			steps {
+				dir('service-telemetry-operator') {
+					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+						script {
+							openshift.withCluster() {
+								openshift.newProject(namespace)
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('Build STF Containers') {
+			when {
+				expression {
+					currentBuild.result == null
+				}
+			}
+			steps {
+				dir('service-telemetry-operator') {
+					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+						ansiColor('xterm') {
+							ansiblePlaybook(
+								playbook: 'build/run-ci.yaml',
+								colorized: true,
+								extraVars: [
+									"namespace": namespace,
+									"__deploy_stf": "false",
+									"__local_build_enabled": "true",
+									"__service_telemetry_snmptraps_enabled": "true",
+									"__service_telemetry_storage_ephemeral_enabled": "true",
+									"working_branch":"${working_branch}"
+								]
+							)
+						}
+					}
+				}
+			}
+		}
+		stage('Deploy STF Object') {
+			when {
+				expression {
+					currentBuild.result == null
+				}
+			}
+			steps {
+				dir('service-telemetry-operator') {
+					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+						script {
+							openshift.withCluster() {
+								openshift.withProject(namespace) {
+									timeout(time: 800, unit: 'SECONDS') {
+										openshift.create(stf_resource)
+										sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('Run Smoketest') {
+			when {
+				expression {
+					currentBuild.result == null
+				}
+			}
+			steps {
+				dir('service-telemetry-operator') {
+					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+						sh "OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh"
+					}
+				}
+			}
+		}
+		stage('Cleanup') {
+			steps {
+				dir('service-telemetry-operator') {
+					script {
+						openshift.withCluster(){
+							openshift.selector("project/${namespace}").delete()
+						}
+					}
+				}
+			}
+			post {
+				always {
+					script {
+						if ( currentBuild.result != null && currentBuild.result != 'SUCCESS' ) {
+							currentBuild.result = 'FAILURE'
+						}
+					}
+				}
+			}
+		}
+	}
 }
-
