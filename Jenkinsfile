@@ -1,5 +1,8 @@
 #!/usr/bin/env groovy
 
+
+def tested_files = "build/.*|deploy/.*|roles/.*|tests/smoketest/.*|Makefile|watches.yaml|Jenkinsfile"
+
 // can't just use BUILD_TAG because qdr operator limits name of resources to 60 chars
 def namespace = env.JOB_BASE_NAME + '-' + env.BUILD_NUMBER
 namespace = namespace.toLowerCase()
@@ -89,6 +92,9 @@ pipeline {
 	}
 	stages {
 		stage('Clone Upstream') {
+			when {
+				changeset pattern: "${tested_files}", comparator: "REGEXP"
+			}
 			steps {
 				dir('service-telemetry-operator') {
 					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
@@ -111,6 +117,7 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
+				changeset pattern: "${tested_files}", comparator: "REGEXP"
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -129,6 +136,7 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
+				changeset pattern: "${tested_files}", comparator: "REGEXP"
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -156,6 +164,7 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
+				changeset pattern: "${tested_files}", comparator: "REGEXP"
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -179,6 +188,7 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
+				changeset pattern: "${tested_files}", comparator: "REGEXP"
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -189,6 +199,9 @@ pipeline {
 			}
 		}
 		stage('Cleanup') {
+			when {
+				changeset pattern: "${tested_files}", comparator: "REGEXP"
+			}
 			steps {
 				dir('service-telemetry-operator') {
 					script {
