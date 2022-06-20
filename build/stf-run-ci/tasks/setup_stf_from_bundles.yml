@@ -23,7 +23,7 @@
     set_fact:
       new_dockerconfigjson: "{{ dockerconfigjson | combine({'auths': new_dockerauths}) }}"
 
-  - name: Create Pull Secret for bundle registry access
+  - name: Create Pull Secret for bundle registry access (in the local namespace)
     k8s:
       state: present
       definition:
@@ -35,6 +35,20 @@
           namespace: "{{ namespace }}"
         data:
           .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
+
+  - name: Create Pull Secret for bundle registry access (in the global namespace)
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Secret
+        type: kubernetes.io/dockerconfigjson
+        metadata:
+          name: pull-secret
+          namespace: openshift-config
+        data:
+          .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
+
   tags:
     - bundle_registry_auth
 
