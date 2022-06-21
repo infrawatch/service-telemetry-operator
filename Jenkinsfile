@@ -93,7 +93,12 @@ pipeline {
 	stages {
 		stage('Clone Upstream') {
 			when {
-				changeset pattern: "${tested_files}", comparator: "REGEXP"
+				anyOf {
+					changeset pattern: "${tested_files}", comparator: "REGEXP"
+					expression {
+						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
+					}
+				}
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -117,7 +122,12 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
-				changeset pattern: "${tested_files}", comparator: "REGEXP"
+				anyOf {
+					changeset pattern: "${tested_files}", comparator: "REGEXP"
+					expression {
+						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
+					}
+				}
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -136,7 +146,12 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
-				changeset pattern: "${tested_files}", comparator: "REGEXP"
+				anyOf {
+					changeset pattern: "${tested_files}", comparator: "REGEXP"
+					expression {
+						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
+					}
+				}
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -164,7 +179,12 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
-				changeset pattern: "${tested_files}", comparator: "REGEXP"
+				anyOf {
+					changeset pattern: "${tested_files}", comparator: "REGEXP"
+					expression {
+						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
+					}
+				}
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -188,7 +208,12 @@ pipeline {
 				expression {
 					currentBuild.result == null
 				}
-				changeset pattern: "${tested_files}", comparator: "REGEXP"
+				anyOf {
+					changeset pattern: "${tested_files}", comparator: "REGEXP"
+					expression {
+						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
+					}
+				}
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -200,7 +225,12 @@ pipeline {
 		}
 		stage('Cleanup') {
 			when {
-				changeset pattern: "${tested_files}", comparator: "REGEXP"
+				anyOf {
+					changeset pattern: "${tested_files}", comparator: "REGEXP"
+					expression {
+						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
+					}
+				}
 			}
 			steps {
 				dir('service-telemetry-operator') {
