@@ -25,8 +25,8 @@ spec:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 1,
-      "id": 3,
-      "iteration": 1612376150375,
+      "id": 2,
+      "iteration": 1643740228362,
       "links": [],
       "panels": [
         {
@@ -44,16 +44,7 @@ spec:
           "type": "row"
         },
         {
-          "dashboardFilter": "",
-          "dashboardTags": [],
           "datasource": "OCPPrometheus",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "folderId": null,
           "gridPos": {
             "h": 12,
             "w": 4,
@@ -61,12 +52,25 @@ spec:
             "y": 1
           },
           "id": 36,
-          "limit": 10,
-          "nameFilter": "",
-          "onlyAlertsOnDashboard": false,
-          "show": "current",
-          "sortOrder": 1,
-          "stateFilter": [],
+          "options": {
+            "alertName": "",
+            "dashboardAlerts": false,
+            "dashboardTitle": "",
+            "folderId": null,
+            "maxItems": 10,
+            "showOptions": "current",
+            "sortOrder": 1,
+            "stateFilter": {
+              "alerting": false,
+              "execution_error": false,
+              "no_data": false,
+              "ok": false,
+              "paused": false,
+              "pending": false
+            },
+            "tags": []
+          },
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "kube_node_status_condition",
@@ -83,12 +87,6 @@ spec:
           "columns": [],
           "datasource": "OCPPrometheus",
           "description": "Entries will appear here for nodes that report Unready,  Disk/Memory/PID Pressure, or that return \"Unknown\" for any of those statuses.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
           "fontSize": "100%",
           "gridPos": {
             "h": 4,
@@ -168,7 +166,6 @@ spec:
               "color": {
                 "mode": "thresholds"
               },
-              "custom": {},
               "decimals": 2,
               "displayName": "",
               "mappings": [],
@@ -212,9 +209,10 @@ spec:
               "values": true
             },
             "showThresholdLabels": true,
-            "showThresholdMarkers": true
+            "showThresholdMarkers": true,
+            "text": {}
           },
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "sum(count_over_time({host !~ \"stf-perftest-.*-runner.*\", type_instance =~ \".+\"}[$__range])) / sum(delta(deliveries_ingress{service=\"stf-default-interconnect\"}[$__range]))",
@@ -230,30 +228,41 @@ spec:
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorPostfix": false,
-          "colorPrefix": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": "STFPrometheus",
           "description": "The total number of messages received by the server side QDR mesh for routing.\n\nNOTE: The QDR outputs metrics slowly so we can only poll every 10s. That means this number can be up to 9 seconds behind the other counters on this part of the dashboard.",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -264,40 +273,23 @@ spec:
           "id": 64,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "delta"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "sum(qdr_deliveries_ingress_total{job=\"default-interconnect\"})",
@@ -307,45 +299,51 @@ spec:
               "refId": "A"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
           "title": "Received by STF QDRs",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "delta"
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": true,
-          "colors": [
-            "#299c46",
-            "#73BF69",
-            "#F2495C"
-          ],
           "datasource": "STFPrometheus",
           "description": "Shows the dropped deliveries for the time period. \n\nNOTE: Despite the name \"dropped_presettled_deliveries\" this metric appears to include messages that are not \"presettled\"",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#299c46",
+                    "value": null
+                  },
+                  {
+                    "color": "#73BF69",
+                    "value": 1
+                  },
+                  {
+                    "color": "#F2495C",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -356,40 +354,23 @@ spec:
           "id": 66,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "delta"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "sum(qdr_dropped_presettled_deliveries_total{job=\"default-interconnect\"})",
@@ -399,45 +380,48 @@ spec:
               "refId": "A"
             }
           ],
-          "thresholds": "1,1",
           "timeFrom": null,
           "timeShift": null,
           "title": "Dropped by STF QDRs",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "delta"
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": "STFPrometheus",
           "description": "Delta of the total number of amqp messages the smartgateway has successfully processed.",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -448,40 +432,23 @@ spec:
           "id": 52,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "delta"
+              ],
+              "fields": "/^sg_total_msg_received_count{endpoint=\"prom-https\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}$/",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "sg_total_msg_received_count{endpoint=\"prom-https\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "sg_total_msg_received_count",
@@ -490,44 +457,46 @@ spec:
               "refId": "A"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
           "title": "Processed by SmartGateway",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "delta"
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": "STFPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -538,40 +507,23 @@ spec:
           "id": 70,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "/s",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "max"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "max(irate(qdr_deliveries_ingress_total{job=\"default-interconnect\"}[1m]))",
@@ -580,32 +532,13 @@ spec:
               "refId": "A"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
           "title": "Peak Input Rate -> STF QDRs",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "max"
+          "type": "stat"
         },
         {
-          "dashboardFilter": "",
-          "dashboardTags": [],
           "datasource": null,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "folderId": null,
           "gridPos": {
             "h": 8,
             "w": 8,
@@ -613,12 +546,25 @@ spec:
             "y": 5
           },
           "id": 54,
-          "limit": "10000",
-          "nameFilter": "",
-          "onlyAlertsOnDashboard": true,
-          "show": "changes",
-          "sortOrder": 1,
-          "stateFilter": [],
+          "options": {
+            "alertName": "",
+            "dashboardAlerts": true,
+            "dashboardTitle": "",
+            "folderId": null,
+            "maxItems": "10000",
+            "showOptions": "changes",
+            "sortOrder": 1,
+            "stateFilter": {
+              "alerting": false,
+              "execution_error": false,
+              "no_data": false,
+              "ok": false,
+              "paused": false,
+              "pending": false
+            },
+            "tags": []
+          },
+          "pluginVersion": "8.0.6",
           "timeFrom": null,
           "timeShift": null,
           "title": "Alert History",
@@ -632,7 +578,6 @@ spec:
               "color": {
                 "mode": "thresholds"
               },
-              "custom": {},
               "links": [
                 {
                   "title": "",
@@ -676,9 +621,10 @@ spec:
               "values": false
             },
             "showThresholdLabels": false,
-            "showThresholdMarkers": true
+            "showThresholdMarkers": true,
+            "text": {}
           },
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "bucketAggs": [
@@ -714,29 +660,46 @@ spec:
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorPrefix": true,
-          "colorValue": true,
-          "colors": [
-            "#d44a3a",
-            "#F2495C",
-            "#299c46"
-          ],
           "datasource": "STFPrometheus",
           "description": "Detects if the smartgateway has ever reported that it was disconnected from the qdr. This is based on metric polling, not events so may not be 100% reliable.",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "text": "At Least Once"
+                    },
+                    "1": {
+                      "text": "Never"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#d44a3a",
+                    "value": null
+                  },
+                  {
+                    "color": "#F2495C",
+                    "value": 0
+                  },
+                  {
+                    "color": "#299c46",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -747,40 +710,23 @@ spec:
           "id": 26,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "min"
+              ],
+              "fields": "/^collectd_qpid_router_status{endpoint=\"prom-https\", service=\"default-cloud1-ceil-meter-smartgateway\", source=\"Metric Listener\"}$/",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "collectd_qpid_router_status{endpoint=\"prom-https\", service=\"default-cloud1-ceil-meter-smartgateway\", source=\"Metric Listener\"}",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "collectd_qpid_router_status",
@@ -789,50 +735,48 @@ spec:
               "refId": "A"
             }
           ],
-          "thresholds": "0,1",
           "timeFrom": null,
           "timeShift": null,
           "title": "QPID Router Disconnect",
-          "type": "singlestat",
-          "valueFontSize": "110%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "Never",
-              "value": "1"
-            },
-            {
-              "op": "=",
-              "text": "At Least Once",
-              "value": "0"
-            }
-          ],
-          "valueName": "min"
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": "STFPrometheus",
           "description": "Delta of the total number of amqp messages the smartgateway has successfully processed.",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -843,40 +787,23 @@ spec:
           "id": 80,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "delta"
+              ],
+              "fields": "/^sg_total_metric_decode_count{endpoint=\"prom-https\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}$/",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "sg_total_metric_decode_count{endpoint=\"prom-https\", service=\"default-cloud1-coll-meter-smartgateway\", source=\"SG\"}",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "sg_total_metric_decode_count",
@@ -885,45 +812,48 @@ spec:
               "refId": "A"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
           "title": "Decoded by SmartGateway",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "delta"
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": "STFPrometheus",
           "description": "Counts discrete metrics samples that can be queried from prometheus for the selected time range. Only includes metrics that are generated by our performance tests.",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -931,43 +861,26 @@ spec:
             "x": 21,
             "y": 7
           },
-          "id": 48,
+          "id": 89,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "expr": "sum(count_over_time({host !~ \"generated-.*\", type_instance =~ \".+\"}[$__range]))",
@@ -984,45 +897,48 @@ spec:
               "refId": "B"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
           "title": "Processed by Prometheus",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": "STFElasticsearch",
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
             },
             "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
           },
           "gridPos": {
             "h": 3,
@@ -1033,40 +949,23 @@ spec:
           "id": 77,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.0.6",
           "targets": [
             {
               "bucketAggs": [
@@ -1095,20 +994,176 @@ spec:
               "timeField": "startsAt"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
           "title": "Avg Event Latency (WIP)",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
+          "type": "stat"
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "STFPrometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 18,
+            "y": 10
+          },
+          "id": 90,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.0.6",
+          "targets": [
             {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
+              "exemplar": true,
+              "expr": "max(rate(loki_distributor_lines_received_total{}[1m]))",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": "",
+              "hide": false,
+              "instant": true,
+              "refId": "B"
             }
           ],
-          "valueName": "current"
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Peak input rate into Loki",
+          "type": "stat"
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "STFPrometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "rgb(31, 120, 193)",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 21,
+            "y": 10
+          },
+          "id": 48,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.0.6",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "(max(loki_distributor_lines_received_total{}) / max(sg_total_logs_received{container=\"sg-core\"})) * 100",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "% of logs in Loki",
+          "type": "stat"
         },
         {
           "collapsed": false,
@@ -1132,7 +1187,6 @@ spec:
           "datasource": "STFPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1161,8 +1215,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1240,7 +1297,6 @@ spec:
           "datasource": "STFPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1267,8 +1323,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1349,7 +1408,6 @@ spec:
           "description": "Shows the rate of amqp message receiving and processing as well as whether any messages have ever failed to process. Restart the smartgateway to clear the counters if you need reset the unprocessed message count.",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1377,8 +1435,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1458,7 +1519,6 @@ spec:
           "description": "The golang prometheus client does not capture the max response time, only quantiles and sum/count. \n\nUsing rate() we found the spikes were getting averaged out, so I use irate(sum)/irate(count) which should represent the request time of the last request at 1s intervals. This is not still not an exact max because we still average the data within the 1s interval, but it's the best we can do.\n\nWe also graph the quantiles to give an overall view of the request time",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1485,8 +1545,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1560,7 +1623,6 @@ spec:
           "description": "Shows the rate of amqp message receiving and processing as well as whether any messages have ever failed to process. Restart the smartgateway to clear the counters if you need reset the unprocessed message count.",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1588,8 +1650,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1663,6 +1728,344 @@ spec:
             "x": 0,
             "y": 37
           },
+          "id": 92,
+          "panels": [],
+          "title": "Logs",
+          "type": "row"
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 38
+          },
+          "id": 88,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "rate(loki_distributor_lines_received_total{container=\"loki-distributor\",tenant=\"fake\"}[1m])",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Logs/s coming into Loki",
+          "type": "timeseries"
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 38
+          },
+          "id": 86,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "rate(sg_total_logs_received{container=\"sg-core\"}[1m])",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Logs/s coming into SG ",
+          "type": "timeseries"
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 46
+          },
+          "id": 82,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "loki_distributor_lines_received_total{}",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Logs in Loki total",
+          "type": "timeseries"
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 46
+          },
+          "id": 84,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sg_total_logs_received{container=\"sg-core\"}",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Logs received by SG",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "datasource": null,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 54
+          },
           "id": 15,
           "panels": [],
           "title": "Prometheus",
@@ -1676,7 +2079,6 @@ spec:
           "datasource": "STFPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1687,7 +2089,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 38
+            "y": 55
           },
           "hiddenSeries": false,
           "id": 13,
@@ -1704,8 +2106,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1780,7 +2185,6 @@ spec:
           "description": "Shows a 10s moving average as well as a 99th percentile of the scrape performance for 1s scrape intervals.",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1791,7 +2195,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 38
+            "y": 55
           },
           "hiddenSeries": false,
           "id": 30,
@@ -1807,8 +2211,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1880,7 +2287,6 @@ spec:
           "description": "Shows the samples scraped per smartgateway as well as a total number of discrete metrics that were produced for each node.",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1891,7 +2297,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 45
+            "y": 62
           },
           "hiddenSeries": false,
           "id": 11,
@@ -1908,8 +2314,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1991,7 +2400,6 @@ spec:
           "description": "This panel will appear  blank until the first sync occurs",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2002,7 +2410,7 @@ spec:
             "h": 7,
             "w": 6,
             "x": 12,
-            "y": 45
+            "y": 62
           },
           "hiddenSeries": false,
           "id": 21,
@@ -2018,8 +2426,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2092,7 +2503,6 @@ spec:
           "datasource": "STFPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2103,7 +2513,7 @@ spec:
             "h": 7,
             "w": 6,
             "x": 18,
-            "y": 45
+            "y": 62
           },
           "hiddenSeries": false,
           "id": 46,
@@ -2119,8 +2529,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2183,7 +2596,7 @@ spec:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 52
+            "y": 69
           },
           "id": 17,
           "panels": [],
@@ -2199,7 +2612,6 @@ spec:
           "description": "These are based on a 5m load average, so will lag the real CPU utilization and may not reflect peak values. Especially not useful on tests < 5m long except for the most rudimentary readings.",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2210,7 +2622,7 @@ spec:
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 53
+            "y": 70
           },
           "hiddenSeries": false,
           "id": 2,
@@ -2227,8 +2639,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2296,7 +2711,6 @@ spec:
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2307,7 +2721,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 53
+            "y": 70
           },
           "hiddenSeries": false,
           "id": 4,
@@ -2324,8 +2738,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2393,7 +2810,6 @@ spec:
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2404,7 +2820,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 60
+            "y": 77
           },
           "hiddenSeries": false,
           "id": 78,
@@ -2421,8 +2837,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2489,7 +2908,6 @@ spec:
           "datasource": "OCPPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2500,7 +2918,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 62
+            "y": 79
           },
           "hiddenSeries": false,
           "id": 6,
@@ -2520,8 +2938,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2599,7 +3020,6 @@ spec:
           "datasource": "OCPPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2610,7 +3030,7 @@ spec:
             "h": 7,
             "w": 6,
             "x": 12,
-            "y": 67
+            "y": 84
           },
           "hiddenSeries": false,
           "id": 7,
@@ -2630,8 +3050,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2724,7 +3147,6 @@ spec:
           "datasource": "OCPPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2735,7 +3157,7 @@ spec:
             "h": 7,
             "w": 6,
             "x": 18,
-            "y": 67
+            "y": 84
           },
           "hiddenSeries": false,
           "id": 22,
@@ -2753,8 +3175,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2831,7 +3256,7 @@ spec:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 74
+            "y": 91
           },
           "id": 34,
           "panels": [],
@@ -2846,7 +3271,6 @@ spec:
           "datasource": "OCPPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2857,7 +3281,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 75
+            "y": 92
           },
           "hiddenSeries": false,
           "id": 40,
@@ -2874,8 +3298,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2940,7 +3367,6 @@ spec:
           "datasource": "OCPPrometheus",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2951,7 +3377,7 @@ spec:
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 75
+            "y": 92
           },
           "hiddenSeries": false,
           "id": 44,
@@ -2968,8 +3394,11 @@ spec:
           "lines": true,
           "linewidth": 1,
           "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
           "percentage": false,
-          "pluginVersion": "7.1.1",
+          "pluginVersion": "8.0.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -3028,27 +3457,17 @@ spec:
         }
       ],
       "refresh": false,
-      "schemaVersion": 26,
+      "schemaVersion": 30,
       "style": "dark",
       "tags": [],
       "templating": {
         "list": [
           {
-            "current": {
-              "selected": false,
-              "text": "pod=~\".*-smartgateway-.*|.*default-interconnect-.*|prometheus-default-0|generator-.*|elasticsearch-cdm.*\"",
-              "value": "pod=~\".*-smartgateway-.*|.*default-interconnect-.*|prometheus-default-0|generator-.*|elasticsearch-cdm.*\""
-            },
+            "description": null,
+            "error": null,
             "hide": 2,
             "label": "",
             "name": "all_stf_pods",
-            "options": [
-              {
-                "selected": true,
-                "text": "pod=~\".*-smartgateway-.*|.*default-interconnect-.*|prometheus-default-0|generator-.*|elasticsearch-cdm.*\"",
-                "value": "pod=~\".*-smartgateway-.*|.*default-interconnect-.*|prometheus-default-0|generator-.*|elasticsearch-cdm.*\""
-              }
-            ],
             "query": "pod=~\".*-smartgateway-.*|.*default-interconnect-.*|prometheus-default-0|generator-.*|elasticsearch-cdm.*\"",
             "skipUrlSync": false,
             "type": "constant"
@@ -3073,7 +3492,7 @@ spec:
         ]
       },
       "timezone": "",
-      "title": "STF Perf Test Dashboard Copy",
+      "title": "STF Perf Test Dashboard",
       "uid": "39v6vyYGz",
-      "version": 12
+      "version": 5
     }
