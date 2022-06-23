@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 
-def tested_files = "build/.*|deploy/.*|roles/.*|tests/smoketest/.*|Makefile|watches.yaml|Jenkinsfile"
+def tested_files = "\"build/.\\*|deploy/.\\*|roles/.\\*|tests/smoketest/.\\*|Makefile|watches.yaml|Jenkinsfile\""
 
 // can't just use BUILD_TAG because qdr operator limits name of resources to 60 chars
 def namespace = env.JOB_BASE_NAME + '-' + env.BUILD_NUMBER
@@ -90,15 +90,13 @@ pipeline {
 			defaultContainer 'exec'
 		}
 	}
+	environment {
+		run_ci = sh(script: "git fetch origin ${env.CHANGE_TARGET} && git diff --name-only origin/${env.CHANGE_TARGET} | egrep ${tested_files}", returnStatus: true)
+	}
 	stages {
 		stage('Clone Upstream') {
 			when {
-				anyOf {
-					changeset pattern: "${tested_files}", comparator: "REGEXP"
-					expression {
-						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
-					}
-				}
+				environment name: 'run_ci', value: '0'
 			}
 			steps {
 				dir('service-telemetry-operator') {
@@ -119,14 +117,9 @@ pipeline {
 		}
 		stage('Create project') {
 			when {
+				environment name: 'run_ci', value: '0'
 				expression {
 					currentBuild.result == null
-				}
-				anyOf {
-					changeset pattern: "${tested_files}", comparator: "REGEXP"
-					expression {
-						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
-					}
 				}
 			}
 			steps {
@@ -143,14 +136,9 @@ pipeline {
 		}
 		stage('Build STF Containers') {
 			when {
+				environment name: 'run_ci', value: '0'
 				expression {
 					currentBuild.result == null
-				}
-				anyOf {
-					changeset pattern: "${tested_files}", comparator: "REGEXP"
-					expression {
-						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
-					}
 				}
 			}
 			steps {
@@ -176,14 +164,9 @@ pipeline {
 		}
 		stage('Deploy STF Object') {
 			when {
+				environment name: 'run_ci', value: '0'
 				expression {
 					currentBuild.result == null
-				}
-				anyOf {
-					changeset pattern: "${tested_files}", comparator: "REGEXP"
-					expression {
-						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
-					}
 				}
 			}
 			steps {
@@ -205,14 +188,9 @@ pipeline {
 		}
 		stage('Run Smoketest') {
 			when {
+				environment name: 'run_ci', value: '0'
 				expression {
 					currentBuild.result == null
-				}
-				anyOf {
-					changeset pattern: "${tested_files}", comparator: "REGEXP"
-					expression {
-						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
-					}
 				}
 			}
 			steps {
@@ -225,12 +203,7 @@ pipeline {
 		}
 		stage('Cleanup') {
 			when {
-				anyOf {
-					changeset pattern: "${tested_files}", comparator: "REGEXP"
-					expression {
-						currentBuild.previousBuild.result != "SUCCESS" && currentBuild.previousBuild.result != null
-					}
-				}
+				environment name: 'run_ci', value: '0'
 			}
 			steps {
 				dir('service-telemetry-operator') {
