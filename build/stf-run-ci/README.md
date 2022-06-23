@@ -23,7 +23,6 @@ choose to override:
 | `__deploy_stf`                                         | {true,false}             | true                                                  | Whether to deploy an instance of STF                                                                                |
 | `__local_build_enabled`                                | {true,false}             | true                                                  | Whether to deploy STF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch`               |
 | `__deploy_from_bundles_enabled`                        | {true,false}             | false                                                |  Whether to deploy STF from OLM bundles (TODO: compat with __local_build_enabled) |
-
 | `__service_telemetry_bundle_image_path`                | <image_path>             | <none>                                                | Image path to Service Telemetry Operator bundle |
 | `__smart_gateway_bundle_image_path`                    | <image_path>             | <none>                                                | Image path to Smart Gateway Operator bundle |
 | `prometheus_webhook_snmp_branch`                       | <git_branch>             | master                                                | Which Prometheus Webhook SNMP git branch to checkout                                                                |
