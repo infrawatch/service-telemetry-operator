@@ -67,14 +67,14 @@
     - name: Try cloning same-named branch or override branch from specified repository
       git:
         repo: "{{ loki_operator_repository }}"
-        dest: working/loki-operator
+        dest: working/loki
         version: "{{ loki_operator_branch | default(branch, true) }}"
         force: yes
   rescue:
     - name: "Get {{ version_branches.loki_operator }} upstream branch because specified branch or repository doesn't exist"
       git:
-        repo: https://github.com/viaq/loki-operator
-        dest: working/loki-operator
+        repo: https://github.com/grafana/loki
+        dest: working/loki
         version: "{{ version_branches.loki_operator }}"
         force: yes
   when:
