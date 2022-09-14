@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: ci
+spec:
+  selector:
+    matchLabels:
+      app: jenkins
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins
+      containers:
+      - name: jenkins
+        image: >-
+          image-registry.openshift-image-registry.svc:5000/ci/jenkins:latest
+        ports:
+        - name: http-port
+          containerPort: 8080
+        - name: jnlp-port
+          containerPort: 50000
+        volumeMounts:
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+        - name: jenkins-casc
+          mountPath: /var/jenkins_config
+        env:
+        - name: OPENSHIFT_ENABLE_OAUTH
+          value: "true"
+        - name: JAVA_OPTS
+          value: -Djenkins.install.runSetupWizard=false
+        - name: CASC_JENKINS_CONFIG
+          value: /var/jenkins_config/casc.yaml
+      volumes:
+      - name: jenkins-home
+        emptyDir: {}
+      - name: jenkins-casc
+        configMap:
+          name: jenkins-casc
