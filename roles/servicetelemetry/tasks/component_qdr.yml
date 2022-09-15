@@ -7,8 +7,8 @@
         apiVersion: certmanager.k8s.io/v1alpha1
         kind: Issuer
         metadata:
-          name: {{ meta.name }}-interconnect-selfsigned
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-selfsigned"
+          namespace: "{{ meta.namespace }}"
         spec:
           selfSigned: {}
 
@@ -19,14 +19,14 @@
         apiVersion: certmanager.k8s.io/v1alpha1
         kind: Certificate
         metadata:
-          name: {{ meta.name }}-interconnect-selfsigned
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-selfsigned"
+          namespace: "{{ meta.namespace }}"
         spec:
-          commonName: {{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local
+          commonName: "{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local"
           isCA: true
           issuerRef:
-            name: {{ meta.name }}-interconnect-selfsigned
-          secretName: {{ meta.name }}-interconnect-selfsigned
+            name: "{{ meta.name }}-interconnect-selfsigned"
+          secretName: "{{ meta.name }}-interconnect-selfsigned"
 
 
   - name: Create default CA interconnect issuer using self-signed interconnect certificate
@@ -36,11 +36,11 @@
         apiVersion: certmanager.k8s.io/v1alpha1
         kind: Issuer
         metadata:
-          name: {{ meta.name }}-interconnect-ca
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-ca"
+          namespace: "{{ meta.namespace }}"
         spec:
           ca:
-            secretName: {{ meta.name }}-interconnect-selfsigned
+            secretName: "{{ meta.name }}-interconnect-selfsigned"
 
   - name: Create OpenStack CA certificate using self-signed interconnect certificate
     k8s:
@@ -49,14 +49,14 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: {{ meta.name }}-interconnect-openstack-ca
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-openstack-ca"
+          namespace: "{{ meta.namespace }}"
         spec:
-          commonName: {{ meta.name }}-interconnect-openstack-ca
+          commonName: "{{ meta.name }}-interconnect-openstack-ca"
           isCA: true
           issuerRef:
-            name: {{ meta.name }}-interconnect-selfsigned
-          secretName: {{ meta.name }}-interconnect-openstack-ca
+            name: "{{ meta.name }}-interconnect-selfsigned"
+          secretName: "{{ meta.name }}-interconnect-openstack-ca"
 
   - name: Create OpenStack credentials certificate using self-signed interconnect certificate
     k8s:
@@ -65,15 +65,15 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: {{ meta.name }}-interconnect-openstack-credentials
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-openstack-credentials"
+          namespace: "{{ meta.namespace }}"
         spec:
-          commonName: {{ meta.name }}-interconnect
+          commonName: "{{ meta.name }}-interconnect"
           dnsNames:
-          - {{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local
+            - "{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local"
           issuerRef:
-            name: {{ meta.name }}-interconnect-ca
-          secretName: {{ meta.name }}-interconnect-openstack-credentials
+            name: "{{ meta.name }}-interconnect-ca"
+          secretName: "{{ meta.name }}-interconnect-openstack-credentials"
 
   - name: Create inter-router CA issuer
     k8s:
@@ -82,11 +82,11 @@
         apiVersion: cert-manager.io/v1
         kind: Issuer
         metadata:
-          name: {{ meta.name }}-interconnect-inter-router-ca
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-inter-router-ca"
+          namespace: "{{ meta.namespace }}"
         spec:
           ca:
-            secretName: {{ meta.name }}-interconnect-inter-router-ca
+            secretName: "{{ meta.name }}-interconnect-inter-router-ca"
 
   - name: Create inter-router CA certificate
     k8s:
@@ -95,14 +95,14 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: {{ meta.name }}-interconnect-inter-router-ca
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-inter-router-ca"
+          namespace: "{{ meta.namespace }}"
         spec:
-          commonName: {{ meta.name }}-interconnect-inter-router-ca
+          commonName: "{{ meta.name }}-interconnect-inter-router-ca"
           isCA: true
           issuerRef:
-            name: {{ meta.name }}-interconnect-selfsigned
-          secretName: {{ meta.name }}-interconnect-inter-router-ca
+            name: "{{ meta.name }}-interconnect-selfsigned"
+          secretName: "{{ meta.name }}-interconnect-inter-router-ca"
 
   - name: Create inter-router credentials certificate
     k8s:
@@ -111,15 +111,15 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: {{ meta.name }}-interconnect-inter-router-credentials
-          namespace: {{ meta.namespace }}
+          name: "{{ meta.name }}-interconnect-inter-router-credentials"
+          namespace: "{{ meta.namespace }}"
         spec:
-          commonName: {{ meta.name }}-interconnect
+          commonName: "{{ meta.name }}-interconnect"
           dnsNames:
-          - {{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local
+            - "{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local"
           issuerRef:
-            name: {{ meta.name }}-interconnect-inter-router-ca
-          secretName: {{ meta.name }}-interconnect-inter-router-credentials
+            name: "{{ meta.name }}-interconnect-inter-router-ca"
+          secretName: "{{ meta.name }}-interconnect-inter-router-credentials"
   when: interconnect_manifest is not defined
 
 - name: Create Interconnect SASL ConfigMap
@@ -129,11 +129,11 @@
       kind: ConfigMap
       apiVersion: v1
       metadata:
-        name: {{ meta.name }}-interconnect-sasl-config
-        namespace: {{ meta.namespace }}
+        name: "{{ meta.name }}-interconnect-sasl-config"
+        namespace: "{{ meta.namespace }}"
         labels:
-          application: {{ meta.name }}-interconnect
-          interconnect_cr: {{ meta-name }}-interconnect
+          application: "{{ meta.name }}-interconnect"
+          interconnect_cr: "{{ meta-name }}-interconnect"
       data:
         qdrouterd.conf: |
           pwcheck_method: auxprop
