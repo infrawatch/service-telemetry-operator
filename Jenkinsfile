@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 
-def tested_files = "\"build/.\\*|deploy/.\\*|roles/.\\*|tests/smoketest/.\\*|Makefile|watches.yaml|Jenkinsfile\""
+def tested_files = "build/.*|deploy/.*|roles/.*|tests/smoketest/.*|Makefile|watches.yaml|Jenkinsfile"
 
 // can't just use BUILD_TAG because qdr operator limits name of resources to 60 chars
 def namespace = env.JOB_BASE_NAME + '-' + env.BUILD_NUMBER
@@ -91,7 +91,7 @@ pipeline {
 		}
 	}
 	environment {
-		run_ci = sh(script: "git fetch origin ${env.CHANGE_TARGET} && git diff --name-only origin/${env.CHANGE_TARGET} | egrep ${tested_files}", returnStatus: true)
+		run_ci = sh(script: "git fetch origin ${env.CHANGE_TARGET} && git diff --name-only origin/${env.CHANGE_TARGET} | egrep \"${tested_files}\"", returnStatus: true)
 	}
 	stages {
 		stage('Clone Upstream') {
