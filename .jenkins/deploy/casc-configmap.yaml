@@ -125,7 +125,7 @@ data:
             def commentTriggerPhrase = '^test$|^retest$|^recheck$'
             configure { node ->
               node / strategy(class: 'jenkins.branch.DefaultBranchPropertyStrategy') {
-                properties(class: 'java.util.Arrays$ArrayList') {
+                properties(class: 'java.util.Arrays$${ESCAPEDOLLAR}ArrayList') {
                   def s = a(class: 'jenkins.branch.BranchProperty-array')
                   s / 'jenkins.branch.NoTriggerBranchProperty' {}
                   s / 'com.adobe.jenkins.github__pr__comment__build.TriggerPRCommentBranchProperty'(plugin: 'github-pr-comment-build@2.3') {
