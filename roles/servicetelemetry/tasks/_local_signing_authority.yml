@@ -2,7 +2,7 @@
 - name: Create selfsigned Issuer
   k8s:
     definition:
-      apiVersion: certmanager.k8s.io/v1alpha1
+      apiVersion: cert-manager.io/v1
       kind: Issuer
       metadata:
         name: '{{ meta.namespace }}-selfsigned'
@@ -13,7 +13,7 @@
 - name: Create CA certificate
   k8s:
     definition:
-      apiVersion: certmanager.k8s.io/v1alpha1
+      apiVersion: cert-manager.io/v1
       kind: Certificate
       metadata:
         name: '{{ meta.namespace }}-ca'
@@ -28,7 +28,7 @@
 - name: Create namespace CA Issuer
   k8s:
     definition:
-      apiVersion: certmanager.k8s.io/v1alpha1
+      apiVersion: cert-manager.io/v1
       kind: Issuer
       metadata:
         name: '{{ meta.namespace }}-ca'
@@ -41,7 +41,7 @@
 - name: Create certificate for elasticsearch
   set_fact:
     elasticsearch_certificate_manifest:
-      apiVersion: certmanager.k8s.io/v1alpha1
+      apiVersion: cert-manager.io/v1
       kind: Certificate
       metadata:
         name: elasticsearch-es-http
