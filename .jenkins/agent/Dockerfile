@@ -5,4 +5,4 @@ RUN dnf install -y ansible golang python38 && \
     dnf groupinstall -y "Development Tools" -y && \
     alternatives --set python /usr/bin/python3.8 && \
     python -m pip install openshift kubernetes "ansible-core~=2.12" && \
-    ansible-galaxy collection install -f kubernetes.core community.general
+    ansible-galaxy collection install -f 'kubernetes.core:>=2.2.0' community.general

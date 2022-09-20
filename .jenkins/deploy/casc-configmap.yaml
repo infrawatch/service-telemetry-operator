@@ -37,6 +37,7 @@ data:
             - name: exec
               workingDir: "/home/jenkins/agent"
               image: image-registry.openshift-image-registry.svc:5000/ci/jenkins-agent:latest
+              alwaysPullImage: true
               command: sleep
               args: infinity
 
