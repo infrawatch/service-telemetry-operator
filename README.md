@@ -6,11 +6,11 @@ Framework.
 ## Getting Started
 
 You'll need to do the following steps in order to load the prerequisites for
-deploying to an OpenShift 4.x environment:
+deploying to an OpenShift 4.10 environment:
 
 * import catalog containing Service Telemetry and Smart Gateway Operators via
   OperatorSource file
-* install the AMQ Certificate Manager Operator before installing Service
+* install the Certificate Manager for OpenShift before installing Service
   Telemetry Operator
 * install the Service Telemetry Operator
 
@@ -60,14 +60,3 @@ ansible-playbook \
 
 Additional flags for overriding various branch and path names is documented in
 `build/stf-run-ci/README.md`.
-
-## CI
-
-### Travis
-
-* Runs OLM and Ansible linting
-
-### Hybrid DIY CI
-
-* We run an internal CI server that smoketests builds and publishes the results
-* WIP - Not fully implemented yet
