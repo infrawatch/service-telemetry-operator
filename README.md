@@ -47,6 +47,15 @@ The quickest way to start up Service Telemetry Framework for development is to
 run the `quickstart.sh` script located in the `deploy/` directory after starting
 up a [CodeReady Containers](https://github.com/code-ready/crc) environment.
 
+```shell
+crc setup
+crc config set memory 16384
+crc config set enable-cluster-monitoring true
+crc start
+crc console --credentials
+oc login -u kubeadmin https://api.crc.testing:6443
+```
+
 To deploy a local build of the Service Telemetry Operator itself, start by
 running `ansible-playbook build/run-ci.yaml`. If you have code to coordinate
 across the supporting InfraWatch repositories, you can pass the
