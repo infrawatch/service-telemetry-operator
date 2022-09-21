@@ -198,8 +198,8 @@
             name: openstack
           - caCert: {{ meta.name }}-interconnect-inter-router-ca
             credentials: {{ meta.name }}-interconnect-inter-router-credentials
-            generateCaCert: true
-            generateCredentials: true
+            generateCaCert: false
+            generateCredentials: false
             mutualAuth: true
             name: inter-router
   when: interconnect_manifest is not defined
