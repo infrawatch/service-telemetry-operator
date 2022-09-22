@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Removes STF and (optionally) amq7 certmanager from your cluster
+# Removes STF and (optionally) Cert-Manager For OpenShift from your cluster
 #
 REL=$(dirname "$0"); . "${REL}/../build/metadata.sh"
 REMOVE_CERTMANAGER=${REMOVE_CERTMANAGER:-true}
@@ -42,7 +42,7 @@ if [ "${REMOVE_CERTMANAGER}" = "true" ]; then
     oc delete csv "${CERTMANAGER_CSV}" -n openshift-operators
 
     # Certmanager CRDs
-    oc get crd | grep certmanager.k8s.io | cut -d ' ' -f 1 | xargs oc delete crd
+    oc get crd | grep cert-manager.io | cut -d ' ' -f 1 | xargs oc delete crd
 fi
 
 # Wait for namespace to actually disappear (this can take awhile)

@@ -6,11 +6,11 @@ Framework.
 ## Getting Started
 
 You'll need to do the following steps in order to load the prerequisites for
-deploying to an OpenShift 4.x environment:
+deploying to an OpenShift 4.10 environment:
 
 * import catalog containing Service Telemetry and Smart Gateway Operators via
   OperatorSource file
-* install the AMQ Certificate Manager Operator before installing Service
+* install the Certificate Manager for OpenShift before installing Service
   Telemetry Operator
 * install the Service Telemetry Operator
 
@@ -47,6 +47,15 @@ The quickest way to start up Service Telemetry Framework for development is to
 run the `quickstart.sh` script located in the `deploy/` directory after starting
 up a [CodeReady Containers](https://github.com/code-ready/crc) environment.
 
+```shell
+crc setup
+crc config set memory 16384
+crc config set enable-cluster-monitoring true
+crc start
+crc console --credentials
+oc login -u kubeadmin https://api.crc.testing:6443
+```
+
 To deploy a local build of the Service Telemetry Operator itself, start by
 running `ansible-playbook build/run-ci.yaml`. If you have code to coordinate
 across the supporting InfraWatch repositories, you can pass the
@@ -60,14 +69,3 @@ ansible-playbook \
 
 Additional flags for overriding various branch and path names is documented in
 `build/stf-run-ci/README.md`.
-
-## CI
-
-### Travis
-
-* Runs OLM and Ansible linting
-
-### Hybrid DIY CI
-
-* We run an internal CI server that smoketests builds and publishes the results
-* WIP - Not fully implemented yet

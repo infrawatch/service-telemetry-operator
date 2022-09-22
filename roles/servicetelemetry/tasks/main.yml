@@ -12,9 +12,9 @@
   set_fact:
     has_interconnect_api: "{{ True if 'interconnectedcloud.github.io' in api_groups else False }}"
 
-- name: Check if we have certmanager.k8s.io API
+- name: Check if we have cert-manager.io API
   set_fact:
-    has_certmanager_api: "{{ True if 'certmanager.k8s.io' in api_groups else False }}"
+    has_certmanager_api: "{{ True if 'cert-manager.io' in api_groups else False }}"
 
 - name: Create QDR instance
   include_tasks: component_qdr.yml

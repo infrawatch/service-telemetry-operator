@@ -354,11 +354,17 @@ spec:
           verbs:
           - '*'
         - apiGroups:
+          - cert-manager.io
+          resources:
+          - issuers
+          - certificates
+          verbs:
+          - '*'
+        - apiGroups:
           - interconnectedcloud.github.io
           - smartgateway.infra.watch
           - monitoring.coreos.com
           - elasticsearch.k8s.elastic.co
-          - certmanager.k8s.io
           - integreatly.org
           - loki.grafana.com
           resources:
