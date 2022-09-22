@@ -1,4 +1,7 @@
 ---
+# For more information about this block and understanding what is going on here, see comments:
+# * https://github.com/infrawatch/service-telemetry-operator/pull/371#discussion_r972387977
+# * https://github.com/infrawatch/service-telemetry-operator/pull/371#discussion_r977045766
 - block:
   - name: Create self-signed interconnect issuer
     k8s:
