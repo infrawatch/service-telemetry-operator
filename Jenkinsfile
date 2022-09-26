@@ -103,11 +103,11 @@ pipeline {
 					catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
 						checkout scm
 						script {
-							working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3', returnStdout: true).toString().trim()
+							working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3-', returnStdout: true).toString().trim()
 							if (!working_branch) {
 								// in this case, a merge with the base branch was required thus we use the second to last commit
 								// to find the original topic branch name
-								working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD~1) | cut -d / -f 3', returnStdout: true).toString().trim()
+								working_branch = sh(script: 'git ls-remote --heads origin | grep $(git rev-parse HEAD~1) | cut -d / -f 3-', returnStdout: true).toString().trim()
 							}
 						}
 						sh "git checkout -b ${working_branch}"
