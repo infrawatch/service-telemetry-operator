@@ -22,7 +22,7 @@
       api_version: v2
       kind: SmartGateway
       name: "{{ item }}"
-      namespace: "{{ meta.namespace }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
       state: absent
     loop: "{{ smartgateway_loaded_list | difference(smartgateway_list) }}"
   when: clouds_remove_on_missing | bool

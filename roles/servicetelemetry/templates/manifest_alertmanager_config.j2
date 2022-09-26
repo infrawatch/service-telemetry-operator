@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: 'alertmanager-{{ meta.name }}'
-  namespace: '{{ meta.namespace }}'
+  name: 'alertmanager-{{ ansible_operator_meta.name }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 type: Opaque
 stringData:
   alertmanager.yaml: |-
@@ -22,7 +22,7 @@ stringData:
 {% if servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.enabled %}
     - name: 'snmp_wh'
       webhook_configs:
-         - url: 'http://{{ meta.name }}-prometheus-webhook-snmp:9099'
+         - url: 'http://{{ ansible_operator_meta.name }}-prometheus-webhook-snmp:9099'
 {% else %}
     - name: 'null'
 {% endif %}

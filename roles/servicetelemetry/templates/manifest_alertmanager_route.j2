@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Route
 metadata:
-  name: '{{ meta.name }}-alertmanager-proxy'
-  namespace: '{{ meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}-alertmanager-proxy'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
   port:
     targetPort: web
   to:
     kind: Service
-    name: '{{ meta.name }}-alertmanager-proxy'
+    name: '{{ ansible_operator_meta.name }}-alertmanager-proxy'
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: Reencrypt

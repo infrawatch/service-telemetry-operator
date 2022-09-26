@@ -2,7 +2,7 @@ apiVersion: loki.grafana.com/v1beta1
 kind: LokiStack
 metadata:
   name: lokistack
-  namespace: '{{ meta.namespace }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
   size: {{ servicetelemetry_vars.backends.logs.loki.flavor }}
   replicationFactor: {{ servicetelemetry_vars.backends.logs.loki.replication_factor }}

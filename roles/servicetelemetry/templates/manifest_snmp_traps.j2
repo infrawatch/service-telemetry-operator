@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: '{{ meta.name }}-snmp-webhook'
-  namespace: '{{ meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}-snmp-webhook'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
   selector:
     matchLabels:
-      app: '{{ meta.name }}-snmp-webhook'
+      app: '{{ ansible_operator_meta.name }}-snmp-webhook'
   replicas: 1
   template:
     metadata:
       labels:
-        app: '{{ meta.name }}-snmp-webhook'
+        app: '{{ ansible_operator_meta.name }}-snmp-webhook'
     spec:
       containers:
         - name: 'prometheus-webhook-snmp'

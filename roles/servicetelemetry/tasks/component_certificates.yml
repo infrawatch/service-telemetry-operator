@@ -8,7 +8,7 @@
       kind: ConfigMap
       metadata:
         name: serving-certs-ca-bundle
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         annotations:
           service.beta.openshift.io/inject-cabundle: 'true'
 
@@ -16,8 +16,8 @@
   k8s_info:
     api_version: v1
     kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-session-secret'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-session-secret'
   register: session_secret
 
 - name: Create cookie secret
@@ -27,8 +27,8 @@
       api_version: v1
       kind: Secret
       metadata:
-        name: '{{ meta.name }}-session-secret'
-        namespace: '{{ meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-session-secret'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       stringData:
         session_secret: "{{ lookup('password', '/dev/null') }}"
   when: session_secret.resources|length == 0

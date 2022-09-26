@@ -2,9 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
   labels:
-    alertmanager: '{{ meta.name }}'
-  name: '{{ meta.name }}'
-  namespace: '{{ meta.namespace }}'
+    alertmanager: '{{ ansible_operator_meta.name }}'
+  name: '{{ ansible_operator_meta.name }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
   replicas: {{ servicetelemetry_vars.alerting.alertmanager.deployment_size }}
   serviceAccountName: alertmanager-stf
@@ -14,7 +14,7 @@ spec:
   listenLocal: true
   podMetadata:
     labels:
-      alertmanager: '{{ meta.name }}'
+      alertmanager: '{{ ansible_operator_meta.name }}'
   containers:
   - name: oauth-proxy
     image: {{ oauth_proxy_image }}
@@ -33,12 +33,12 @@ spec:
         protocol: TCP
     volumeMounts:
       - mountPath: /etc/tls/private
-        name: secret-{{ meta.name }}-alertmanager-proxy-tls
+        name: secret-{{ ansible_operator_meta.name }}-alertmanager-proxy-tls
       - mountPath: /etc/proxy/secrets
-        name: secret-{{ meta.name }}-session-secret
+        name: secret-{{ ansible_operator_meta.name }}-session-secret
   secrets:
-    - '{{ meta.name }}-alertmanager-proxy-tls'
-    - '{{ meta.name }}-session-secret'
+    - '{{ ansible_operator_meta.name }}-alertmanager-proxy-tls'
+    - '{{ ansible_operator_meta.name }}-session-secret'
 {% if servicetelemetry_vars.alerting.alertmanager.storage.strategy == "persistent" %}
   storage:
     volumeClaimTemplate:

@@ -2,7 +2,7 @@ apiVersion: smartgateway.infra.watch/v2
 kind: SmartGateway
 metadata:
   name: '{{ this_smartgateway }}'
-  namespace: '{{ meta.namespace }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
 {% if this_collector.debug_enabled is defined and this_collector.debug_enabled %}
   logLevel: "debug"
@@ -18,7 +18,7 @@ spec:
       withTimeStamp: true
     name: prometheus
   bridge:
-    amqpUrl: amqp://{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}
+    amqpUrl: amqp://{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}
     ringBufferSize: {{ this_collector.bridge.ring_buffer_size | default(16384) }}
     ringBufferCount: {{ this_collector.bridge.ring_buffer_count | default(15000) }}
     verbose: {{ this_collector.bridge.verbose | default(false)}}

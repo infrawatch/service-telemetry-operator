@@ -14,8 +14,8 @@
       api_version: v1
       kind: Secret
       metadata:
-        name: '{{ meta.name }}-grafana-htpasswd'
-        namespace: '{{ meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       type: Opaque
       stringData:
         auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | htpasswd_sha1 }}'
@@ -45,15 +45,15 @@
         api_version: v1
         kind: ConfigMap
         name: serving-certs-ca-bundle
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       register: serving_certs_ca
 
     - name: Retrieve prometheus secret
       k8s_info:
         api_version: v1
         kind: Secret
-        namespace: '{{ meta.namespace }}'
-        name: '{{ meta.name }}-prometheus-htpasswd'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
       register: prometheus_secret
 
     - name: Decode prometheus password
@@ -68,7 +68,7 @@
         api_version: v1
         kind: Secret
         name: elasticsearch-es-elastic-user
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       register: es_secret
 
     - name: Decode elasticsearch password
@@ -79,9 +79,9 @@
   - name: Remove legacy datasources
     k8s:
       api_version: integreatly.org/v1alpha1
-      name: '{{ meta.name }}-ds-prometheus'
+      name: '{{ ansible_operator_meta.name }}-ds-prometheus'
       kind: GrafanaDataSource
-      namespace: '{{ meta.namespace }}'
+      namespace: '{{ ansible_operator_meta.namespace }}'
       state: absent
 
   - name: Set datasources
