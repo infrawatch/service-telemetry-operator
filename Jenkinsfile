@@ -201,6 +201,7 @@ pipeline {
 				}
 			}
 		}
+/*
 		stage('Cleanup') {
 			when {
 				environment name: 'run_ci', value: '0'
@@ -224,5 +225,6 @@ pipeline {
 				}
 			}
 		}
+*/
 	}
 }
