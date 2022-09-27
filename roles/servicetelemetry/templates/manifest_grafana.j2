@@ -1,8 +1,8 @@
 apiVersion: integreatly.org/v1alpha1
 kind: Grafana
 metadata:
-  name: {{ meta.name }}
-  namespace: {{ meta.namespace }}
+  name: {{ ansible_operator_meta.name }}
+  namespace: {{ ansible_operator_meta.namespace }}
 spec:
   serviceAccount:
     annotations:
@@ -55,15 +55,15 @@ spec:
         protocol: TCP
     volumeMounts:
       - mountPath: /etc/tls/private
-        name: secret-{{ meta.name }}-grafana-proxy-tls
+        name: secret-{{ ansible_operator_meta.name }}-grafana-proxy-tls
       - mountPath: /etc/proxy/secrets
-        name: secret-{{ meta.name }}-session-secret
+        name: secret-{{ ansible_operator_meta.name }}-session-secret
       - mountPath: /etc/proxy/htpasswd
-        name: secret-{{ meta.name }}-grafana-htpasswd
+        name: secret-{{ ansible_operator_meta.name }}-grafana-htpasswd
   secrets:
-    - '{{ meta.name }}-grafana-proxy-tls'
-    - '{{ meta.name }}-session-secret'
-    - '{{ meta.name }}-grafana-htpasswd'
+    - '{{ ansible_operator_meta.name }}-grafana-proxy-tls'
+    - '{{ ansible_operator_meta.name }}-session-secret'
+    - '{{ ansible_operator_meta.name }}-grafana-htpasswd'
   service:
     ports:
       - name: web
@@ -71,5 +71,5 @@ spec:
         protocol: TCP
         targetPort: https
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: {{ meta.name }}-grafana-proxy-tls
+      service.alpha.openshift.io/serving-cert-secret-name: {{ ansible_operator_meta.name }}-grafana-proxy-tls
 

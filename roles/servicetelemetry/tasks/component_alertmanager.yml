@@ -44,7 +44,7 @@
       apiVersion: v1
       reference:
         kind: Route
-        name: '{{ meta.name }}-alertmanager-proxy'
+        name: '{{ ansible_operator_meta.name }}-alertmanager-proxy'
 
 - name: Add a service account to used by Alertmanager
   k8s:
@@ -53,7 +53,7 @@
       kind: ServiceAccount
       metadata:
         name: alertmanager-stf
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.alertmanager: '{{ alertmanager_oauth_redir_ref | to_json }}'
 
@@ -64,7 +64,7 @@
       kind: ClusterRoleBinding
       metadata:
         name: alertmanager-stf
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
@@ -72,7 +72,7 @@
       subjects:
       - kind: ServiceAccount
         name: alertmanager-stf
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
 
 - name: Set default alertmanager service template
   set_fact:

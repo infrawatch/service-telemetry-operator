@@ -1,8 +1,8 @@
 apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDataSource
 metadata:
-  name: {{ meta.name }}-datasources
-  namespace: {{ meta.namespace }}
+  name: {{ ansible_operator_meta.name }}-datasources
+  namespace: {{ ansible_operator_meta.namespace }}
 spec:
   datasources:
 {% if servicetelemetry_vars.backends.metrics.prometheus.enabled %}
@@ -14,7 +14,7 @@ spec:
         tlsAuthWithCACert: true
       name: STFPrometheus
       type: prometheus
-      url: 'https://{{ meta.name }}-prometheus-proxy.{{ meta.namespace }}.svc:9092'
+      url: 'https://{{ ansible_operator_meta.name }}-prometheus-proxy.{{ ansible_operator_meta.namespace }}.svc:9092'
       version: 1
       basicAuth: true
       basicAuthUser: internal
@@ -65,4 +65,4 @@ spec:
       url: 'http://loki-query-frontend-http-lokistack:3100'
       version: 1
 {% endif %}
-  name: {{ meta.name }}-ds-stf.yaml
+  name: {{ ansible_operator_meta.name }}-ds-stf.yaml

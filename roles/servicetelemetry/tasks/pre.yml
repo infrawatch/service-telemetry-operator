@@ -75,7 +75,7 @@
   k8s_info:
     api_version: smartgateway.infra.watch/v2
     kind: SmartGateway
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
   register: smartgateways_loaded
 
 - name: Set ephemeral_storage_enabled to true when storage strategy is ephemeral
@@ -90,16 +90,16 @@
   k8s_info:
     api_version: infra.watch/v1beta1
     kind: ServiceTelemetry
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
   register: _stf_object
 
 - name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
   operator_sdk.util.k8s_status:
     api_version: infra.watch/v1beta1
     kind: ServiceTelemetry
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       ephemeralStorageEnabled:
         status: "{{ _ephemeral_storage_enabled }}"

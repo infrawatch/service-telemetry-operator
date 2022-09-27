@@ -7,7 +7,7 @@
         labels:
           app: smart-gateway
         name: '{{ this_smartgateway }}'
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
         endpoints:
           - interval: {{ servicetelemetry_vars.backends.metrics.prometheus.scrape_interval }}
@@ -31,7 +31,7 @@
             scheme: https
             tlsConfig:
               caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
-              serverName: "{{ this_smartgateway }}.{{ meta.namespace }}.svc"
+              serverName: "{{ this_smartgateway }}.{{ ansible_operator_meta.namespace }}.svc"
             bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
         selector:
           matchLabels:

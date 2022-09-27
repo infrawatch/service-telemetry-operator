@@ -10,8 +10,8 @@
         apiVersion: cert-manager.io/v1
         kind: Issuer
         metadata:
-          name: "{{ meta.name }}-interconnect-selfsigned"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
           selfSigned: {}
 
@@ -22,14 +22,14 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: "{{ meta.name }}-interconnect-selfsigned"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          commonName: "{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local"
+          commonName: "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
           isCA: true
           issuerRef:
-            name: "{{ meta.name }}-interconnect-selfsigned"
-          secretName: "{{ meta.name }}-interconnect-selfsigned"
+            name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
+          secretName: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
 
 
   - name: Create default CA interconnect issuer using self-signed interconnect certificate
@@ -39,11 +39,11 @@
         apiVersion: cert-manager.io/v1
         kind: Issuer
         metadata:
-          name: "{{ meta.name }}-interconnect-ca"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-ca"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
           ca:
-            secretName: "{{ meta.name }}-interconnect-selfsigned"
+            secretName: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
 
   - name: Create OpenStack CA certificate using self-signed interconnect certificate
     k8s:
@@ -52,14 +52,14 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: "{{ meta.name }}-interconnect-openstack-ca"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          commonName: "{{ meta.name }}-interconnect-openstack-ca"
+          commonName: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
           isCA: true
           issuerRef:
-            name: "{{ meta.name }}-interconnect-selfsigned"
-          secretName: "{{ meta.name }}-interconnect-openstack-ca"
+            name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
+          secretName: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
 
   - name: Create OpenStack credentials certificate using self-signed interconnect certificate
     k8s:
@@ -68,15 +68,15 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: "{{ meta.name }}-interconnect-openstack-credentials"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-openstack-credentials"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          commonName: "{{ meta.name }}-interconnect"
+          commonName: "{{ ansible_operator_meta.name }}-interconnect"
           dnsNames:
-            - "{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local"
+            - "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
           issuerRef:
-            name: "{{ meta.name }}-interconnect-ca"
-          secretName: "{{ meta.name }}-interconnect-openstack-credentials"
+            name: "{{ ansible_operator_meta.name }}-interconnect-ca"
+          secretName: "{{ ansible_operator_meta.name }}-interconnect-openstack-credentials"
 
   - name: Create inter-router CA issuer
     k8s:
@@ -85,11 +85,11 @@
         apiVersion: cert-manager.io/v1
         kind: Issuer
         metadata:
-          name: "{{ meta.name }}-interconnect-inter-router-ca"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
           ca:
-            secretName: "{{ meta.name }}-interconnect-inter-router-ca"
+            secretName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
 
   - name: Create inter-router CA certificate
     k8s:
@@ -98,14 +98,14 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: "{{ meta.name }}-interconnect-inter-router-ca"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          commonName: "{{ meta.name }}-interconnect-inter-router-ca"
+          commonName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
           isCA: true
           issuerRef:
-            name: "{{ meta.name }}-interconnect-selfsigned"
-          secretName: "{{ meta.name }}-interconnect-inter-router-ca"
+            name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
+          secretName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
 
   - name: Create inter-router credentials certificate
     k8s:
@@ -114,15 +114,15 @@
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
-          name: "{{ meta.name }}-interconnect-inter-router-credentials"
-          namespace: "{{ meta.namespace }}"
+          name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-credentials"
+          namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          commonName: "{{ meta.name }}-interconnect"
+          commonName: "{{ ansible_operator_meta.name }}-interconnect"
           dnsNames:
-            - "{{ meta.name }}-interconnect.{{ meta.namespace }}.svc.cluster.local"
+            - "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
           issuerRef:
-            name: "{{ meta.name }}-interconnect-inter-router-ca"
-          secretName: "{{ meta.name }}-interconnect-inter-router-credentials"
+            name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
+          secretName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-credentials"
   when: interconnect_manifest is not defined
 
 - name: Create Interconnect SASL ConfigMap
@@ -132,11 +132,11 @@
       kind: ConfigMap
       apiVersion: v1
       metadata:
-        name: "{{ meta.name }}-interconnect-sasl-config"
-        namespace: "{{ meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}-interconnect-sasl-config"
+        namespace: "{{ ansible_operator_meta.namespace }}"
         labels:
-          application: "{{ meta.name }}-interconnect"
-          interconnect_cr: "{{ meta.name }}-interconnect"
+          application: "{{ ansible_operator_meta.name }}-interconnect"
+          interconnect_cr: "{{ ansible_operator_meta.name }}-interconnect"
       data:
         qdrouterd.conf: |
           pwcheck_method: auxprop
@@ -151,8 +151,8 @@
       apiVersion: interconnectedcloud.github.io/v1alpha1
       kind: Interconnect
       metadata:
-        name: '{{ meta.name }}-interconnect'
-        namespace: '{{ meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-interconnect'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
         deploymentPlan:
           size: {{ servicetelemetry_vars.transports.qdr.deployment_size }}
@@ -194,13 +194,13 @@
             http: true
             port: 8672
         sslProfiles:
-          - caCert: {{ meta.name }}-interconnect-openstack-ca
-            credentials: {{ meta.name }}-interconnect-openstack-credentials
+          - caCert: {{ ansible_operator_meta.name }}-interconnect-openstack-ca
+            credentials: {{ ansible_operator_meta.name }}-interconnect-openstack-credentials
             generateCaCert: true
             generateCredentials: true
             name: openstack
-          - caCert: {{ meta.name }}-interconnect-inter-router-ca
-            credentials: {{ meta.name }}-interconnect-inter-router-credentials
+          - caCert: {{ ansible_operator_meta.name }}-interconnect-inter-router-ca
+            credentials: {{ ansible_operator_meta.name }}-interconnect-inter-router-credentials
             generateCaCert: false
             generateCredentials: false
             mutualAuth: true

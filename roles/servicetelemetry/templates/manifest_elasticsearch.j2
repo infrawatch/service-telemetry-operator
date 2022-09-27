@@ -2,7 +2,7 @@ apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch
-  namespace: '{{ meta.namespace }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
   auth: {}
   http:

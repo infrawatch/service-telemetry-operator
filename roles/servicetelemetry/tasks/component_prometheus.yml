@@ -5,7 +5,7 @@
       apiVersion: v1
       reference:
         kind: Route
-        name: '{{ meta.name }}-prometheus-proxy'
+        name: '{{ ansible_operator_meta.name }}-prometheus-proxy'
 
 - name: Add oauth redirect annotation to prometheus-k8s service account
   k8s:
@@ -14,7 +14,7 @@
       kind: ServiceAccount
       metadata:
         name: prometheus-k8s
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.prometheus: '{{ prom_oauth_redir_ref | to_json }}'
 
@@ -24,8 +24,8 @@
       apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRoleBinding
       metadata:
-        name: prometheus-k8s-{{ meta.namespace }}
-        namespace: '{{ meta.namespace }}'
+        name: prometheus-k8s-{{ ansible_operator_meta.namespace }}
+        namespace: '{{ ansible_operator_meta.namespace }}'
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
@@ -33,14 +33,14 @@
       subjects:
       - kind: ServiceAccount
         name: prometheus-k8s
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
 
 - name: Check for existing prometheus htpasswd user secret
   k8s_info:
     api_version: v1
     kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-prometheus-htpasswd'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
   register: prometheus_htpasswd
 
 - name: Create a new prometheus password if it doesn't exist yet
@@ -58,8 +58,8 @@
           api_version: v1
           kind: Secret
           metadata:
-            name: '{{ meta.name }}-prometheus-htpasswd'
-            namespace: '{{ meta.namespace }}'
+            name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
+            namespace: '{{ ansible_operator_meta.namespace }}'
           type: Opaque
           stringData:
             auth: 'internal:{{ prom_basicauth_passwd | htpasswd_sha1 }}'  # SHA1 is deprecated, bcrypt is available in OCP 4.8+ only https://bugzilla.redhat.com/show_bug.cgi?id=1874322
@@ -69,8 +69,8 @@
       k8s_info:
         api_version: v1
         kind: Secret
-        namespace: '{{ meta.namespace }}'
-        name: '{{ meta.name }}-prometheus-htpasswd'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
       register: prometheus_htpasswd
 
 - name: Lookup template
