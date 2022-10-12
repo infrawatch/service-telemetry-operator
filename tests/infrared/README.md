@@ -5,9 +5,11 @@ to an STF instance all on one (large) baremetal machine.
 
 ## Usage
 
-1. Have `ir --version` working
+1. Have `ir --version` working with at least these plugins: 
+    * virsh tripleo-undercloud tripleo-overcloud cloud-config tempest
 1. Set VIRTHOST and have key based SSH access to root@$VIRTHOST
 1. Set AMQP_HOST and AMQP_PORT
+1. (OSP 13/17) `export CA_CERT_FILE_CONTENT=$(oc get secret/default-interconnect-selfsigned -o jsonpath='{.data.ca\.crt}' | base64 -d)`
 1. Run `infrared-openstack.sh` to install OSP on $VIRTHOST
 
 ## Verification
