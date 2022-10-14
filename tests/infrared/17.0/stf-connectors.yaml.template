@@ -10,15 +10,15 @@ custom_templates:
     # set parameter defaults to match stable-1.3 documentation
     parameter_defaults:
         MetricsQdrConnectors:
-        - host: <<AMQP_HOST>>
-            port: <<AMQP_PORT>>
-            role: edge
-            verifyHostname: false
-            sslProfile: sslProfile
+            - host: <<AMQP_HOST>>
+              port: <<AMQP_PORT>>
+              role: edge
+              verifyHostname: false
+              sslProfile: sslProfile
 
         MetricsQdrSSLProfiles:
-        -   name: sslProfile
-            caCertFileContent: |
+            - name: sslProfile
+              caCertFileContent: |
                 <<CA_CERT_FILE_CONTENT>>
 
         CeilometerQdrEventsConfig:
