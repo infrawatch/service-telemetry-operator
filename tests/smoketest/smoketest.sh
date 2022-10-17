@@ -78,6 +78,8 @@ SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[
 oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
 SNMP_WEBHOOK_STATUS=$?
 
+echo "*** [DEBUG] Current value of SNMP_WEBHOOK_STATUS: ${SNMP_WEBHOOK_STATUS}"
+
 echo "*** [INFO] Showing oc get all..."
 oc get all
 echo
@@ -135,6 +137,14 @@ if $CLEANUP; then
     oc delete "job/stf-smoketest-${NAME}"
 fi
 echo
+
+# test a recheck of the value outputs
+SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
+echo "*** [DEBUG] Working against SNMP_WEBHOOK_POD: ${SNMP_WEBHOOK_POD}"
+oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
+SNMP_WEBHOOK_STATUS=$?
+
+echo "*** [DEBUG] Current value of SNMP_WEBHOOK_STATUS: ${SNMP_WEBHOOK_STATUS}"
 
 if [ $SNMP_WEBHOOK_STATUS -ne 0 ]; then
     echo "*** [FAILURE] SNMP Webhook failed"
