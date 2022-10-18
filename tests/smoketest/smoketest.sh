@@ -64,7 +64,6 @@ oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh 
 # it takes some time to get the alert delivered, continuing with other tests
 
 
-
 # Trying to find a less brittle test than a timeout
 JOB_TIMEOUT=300s
 for NAME in "${CLOUDNAMES[@]}"; do
@@ -73,10 +72,8 @@ for NAME in "${CLOUDNAMES[@]}"; do
     RET=$((RET || $?)) # Accumulate exit codes
 done
 
+echo "*** [INFO] Clean up the curl pod used for delivery of test alert"
 oc delete pod curl
-SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
-oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
-SNMP_WEBHOOK_STATUS=$?
 
 echo "*** [INFO] Showing oc get all..."
 oc get all
@@ -130,16 +127,23 @@ echo "*** [INFO] Logs from alertmanager..."
 oc logs "$(oc get pod -l app=alertmanager -o jsonpath='{.items[0].metadata.name}')" -c alertmanager
 echo
 
-echo "*** [INFO] Cleanup resources..."
-if $CLEANUP; then
-    oc delete "job/stf-smoketest-${NAME}"
-fi
+# moved this check to near the end as previously noted the delivery of this alert and the resulting trap delivery does take some time
+echo "*** [INFO] Check status of SNMP webhook trap delivery"
+SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
+oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
+SNMP_WEBHOOK_STATUS=$?
 echo
 
 if [ $SNMP_WEBHOOK_STATUS -ne 0 ]; then
     echo "*** [FAILURE] SNMP Webhook failed"
     exit 1
 fi
+
+echo "*** [INFO] Cleanup resources..."
+if $CLEANUP; then
+    oc delete "job/stf-smoketest-${NAME}"
+fi
+echo
 
 if [ $RET -eq 0 ]; then
     echo "*** [SUCCESS] Smoke test job completed successfully"
