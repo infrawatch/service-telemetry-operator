@@ -75,8 +75,18 @@ done
 
 oc delete pod curl
 SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
-oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
-SNMP_WEBHOOK_STATUS=$?
+SNMP_WEBHOOK_CHECK_MAX_TRIES=5
+SNMP_WEBHOOK_CHECK_TIMEOUT=30
+SNMP_WEBHOOK_CHECK_COUNT=0
+while [ $SNMP_WEBHOOK_CHECK_COUNT -lt $SNMP_WEBHOOK_CHECK_MAX_TRIES ]; do
+    oc logs "$SNMP_WEBHOOK_POD" | grep 'Sending SNMP trap'
+    SNMP_WEBHOOK_STATUS=$?
+    (( SNMP_WEBHOOK_CHECK_COUNT=SNMP_WEBHOOK_CHECK_COUNT+1 ))
+    if [ $SNMP_WEBHOOK_STATUS -eq 0 ]; then
+        break
+    fi
+    sleep $SNMP_WEBHOOK_CHECK_TIMEOUT
+done
 
 echo "*** [INFO] Showing oc get all..."
 oc get all
