@@ -13,7 +13,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           selfSigned: {}
 
   - name: Create self-signed interconnect certificate
@@ -26,7 +26,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
           isCA: true
           issuerRef:
@@ -44,7 +44,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-ca"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           ca:
             secretName: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
 
@@ -58,7 +58,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
           isCA: true
           issuerRef:
@@ -75,7 +75,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-openstack-credentials"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect"
           dnsNames:
             - "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
@@ -93,7 +93,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           ca:
             secretName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
 
@@ -107,7 +107,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
           isCA: true
           issuerRef:
@@ -124,7 +124,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-credentials"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: 70080h
+          duration: '{{ certificate_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect"
           dnsNames:
             - "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"

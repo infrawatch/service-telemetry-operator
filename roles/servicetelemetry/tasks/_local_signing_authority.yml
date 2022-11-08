@@ -8,7 +8,7 @@
         name: '{{ ansible_operator_meta.namespace }}-selfsigned'
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        duration: 70080h
+        duration: '{{ certificate_duration }}'
         selfSigned: {}
 
 - name: Create CA certificate
@@ -20,7 +20,7 @@
         name: '{{ ansible_operator_meta.namespace }}-ca'
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        duration: 70080h
+        duration: '{{ certificate_duration }}'
         secretName: '{{ ansible_operator_meta.namespace }}-ca'
         commonName: '{{ ansible_operator_meta.namespace }}-ca'
         isCA: true
@@ -36,7 +36,7 @@
         name: '{{ ansible_operator_meta.namespace }}-ca'
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        duration: 70080h
+        duration: '{{ certificate_duration }}'
         ca:
           secretName: '{{ ansible_operator_meta.namespace }}-ca'
 
@@ -50,7 +50,7 @@
         name: elasticsearch-es-http
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        duration: 70080h
+        duration: '{{ certificate_duration }}'
         commonName: elasticsearch-es-http
         secretName: 'elasticsearch-es-cert'
         dnsNames:
