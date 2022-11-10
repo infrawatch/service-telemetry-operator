@@ -5,7 +5,7 @@
 #       of these separately rather than using a loop.
 - name: Get Smart Gateway Operator
   block:
-    - name: Try cloning same-named branch or override branch from specified repository
+    - name: Try cloning same-named branch or override branch from SGO repository
       git:
         repo: "{{ sgo_repository }}"
         dest: working/smart-gateway-operator
@@ -19,7 +19,7 @@
 
 - name: Get sg-core
   block:
-    - name: Try cloning same-named branch or override branch from specified repository
+    - name: Try cloning same-named branch or override branch from sg-core repository
       git:
         repo: "{{ sg_core_repository }}"
         dest: working/sg-core
@@ -33,7 +33,7 @@
 
 - name: Get sg-bridge
   block:
-    - name: Try cloning same-named branch or override branch from specified repository
+    - name: Try cloning same-named branch or override branch from sg-bridge repository
       git:
         repo: "{{ sg_bridge_repository }}"
         dest: working/sg-bridge
@@ -47,7 +47,7 @@
 
 - name: Get prometheus-webhook-snmp
   block:
-    - name: Try cloning same-named branch or override branch from specified repository
+    - name: Try cloning same-named branch or override branch from prometheus-webhook-snmp repository
       git:
         repo: "{{ prometheus_webhook_snmp_repository }}"
         dest: working/prometheus-webhook-snmp
@@ -64,7 +64,7 @@
 # branches there.
 - name: Get Loki Operator
   block:
-    - name: Try cloning same-named branch or override branch from specified repository
+    - name: Try cloning same-named branch or override branch from loki repository
       git:
         repo: "{{ loki_operator_repository }}"
         dest: working/loki
