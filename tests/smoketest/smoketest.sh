@@ -73,6 +73,15 @@ for NAME in "${CLOUDNAMES[@]}"; do
     RET=$((RET || $?)) # Accumulate exit codes
 done
 
+echo "*** [INFO] Checking that the qdr certificate has a long expiry"
+EXPIRETIME=$(oc get secret default-interconnect-openstack-ca -o json | grep \"tls.crt\"\: | awk -F '": "' '{print $2}' | rev | cut -c3- | rev | base64 -d | openssl x509 -in - -text | grep "Not After" | awk -F " : " '{print $2}')
+EXPIRETIME_UNIX=$(date -d "${EXPIRETIME}" "+%s")
+TARGET_UNIX=$(date -d "now + 7 years" "+%s")
+if [ ${EXPIRETIME_UNIX} -lt ${TARGET_UNIX} ]; then
+    echo "[FAILURE] Certificate expire time (${EXPIRETIME}) less than 7 years from now"
+fi
+
+echo "*** [INFO] Waiting to see SNMP trap message in webhook pod"
 oc delete pod curl
 SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
 SNMP_WEBHOOK_CHECK_MAX_TRIES=5

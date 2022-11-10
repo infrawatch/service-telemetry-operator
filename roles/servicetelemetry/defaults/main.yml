@@ -6,6 +6,8 @@ clouds_remove_on_missing: false
 # default observability strategy (compatible with STF 1.3)
 observability_strategy: use_community
 
+certificate_duration: 70080h
+
 servicetelemetry_defaults:
   high_availability:
     enabled: false
