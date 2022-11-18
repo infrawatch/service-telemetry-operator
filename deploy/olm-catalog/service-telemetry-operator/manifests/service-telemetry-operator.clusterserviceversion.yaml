@@ -161,7 +161,7 @@ metadata:
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
-    olm.properties: '[{"type": "olm.maxOpenShiftVersion", "value": "4.10"}]'
+    olm.properties: '[{"type": "olm.maxOpenShiftVersion", "value": "4.11"}]'
     olm.skipRange: '>=<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
     operatorframework.io/suggested-namespace: service-telemetry
     operators.openshift.io/valid-subscription: '["OpenStack Platform", "Cloud Infrastructure",
