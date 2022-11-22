@@ -6,5 +6,5 @@ RUN dnf install -y ansible golang python38 && \
     alternatives --set python /usr/bin/python3.8 && \
     python -m pip install openshift kubernetes "ansible-core~=2.12" && \
     ansible-galaxy collection install -f 'kubernetes.core:>=2.2.0' community.general
-RUN curl -LO "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.10/openshift-client-linux.tar.gz" && \
+RUN curl -LO "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.11/openshift-client-linux.tar.gz" && \
     tar -xv -C /usr/local/bin -f openshift-client-linux.tar.gz
