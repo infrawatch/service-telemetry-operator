@@ -29,3 +29,22 @@
     kind: clusterroles
     label_selectors:
       - "olm.owner.namespace = {{ namespace }}"
+
+# Clean the environment if it has OperatorHub.io CatalogSource still enabled as
+# environment is using community-operators CatalogSource when use_community has
+# been enabled. This avoids installing an additional CatalogSource which is no
+# longer required.
+- name: Remove OperatorHub.io CatalogSource if it installed
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: operatorhubio-operators
+        namespace: openshift-marketplace
+      spec:
+        sourceType: grpc
+        image: quay.io/operatorhubio/catalog:latest
+        displayName: OperatorHub.io Operators
+        publisher: OperatorHub.io
