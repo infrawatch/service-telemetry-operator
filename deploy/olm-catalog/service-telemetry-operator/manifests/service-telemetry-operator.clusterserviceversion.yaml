@@ -203,12 +203,6 @@ spec:
         name: servicemonitors.monitoring.coreos.com
         version: v1
       version: v1beta1
-    required:
-    - description: Creation of Smart Gateways
-      displayName: Smart Gateway
-      kind: SmartGateway
-      name: smartgateways.smartgateway.infra.watch
-      version: v2
   description: Service Telemetry Operator for monitoring clouds
   displayName: Service Telemetry Operator
   icon:

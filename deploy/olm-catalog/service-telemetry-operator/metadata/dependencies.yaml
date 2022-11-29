@@ -1,0 +1,7 @@
+---
+dependencies:
+  - type: olm.gvk
+    value:
+      group: smartgateways.smartgateway.infra.watch
+      kind: SmartGateway
+      version: v2
