@@ -14,6 +14,7 @@ spec:
     matchLabels:
       app: smart-gateway
   listenLocal: true
+  enableRemoteWriteReceiver: true
   podMetadata:
     labels:
       prometheus: '{{ ansible_operator_meta.name }}'
