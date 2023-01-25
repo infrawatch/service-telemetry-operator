@@ -96,7 +96,7 @@ data:
                 }
                 // Custom Github Notification Context; https://github.com/jenkinsci/github-scm-trait-notification-context-plugin
                 traits << 'org.jenkinsci.plugins.githubScmTraitNotificationContext.NotificationContextTrait' {
-                   contextLabel("continuous-integration/jenkins/ocp-4.12")
+                   contextLabel("continuous-integration/jenkins/ocp-${OCP_VERSION}")
                    typeSuffix(true)
                 }
             }
