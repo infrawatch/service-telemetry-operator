@@ -15,7 +15,10 @@ metadata:
               "alertmanager": {
                 "receivers": {
                   "snmpTraps": {
+                    "community": "public",
                     "enabled": false,
+                    "port": 162,
+                    "retries": 1,
                     "target": "192.168.24.254"
                   }
                 },
