@@ -56,9 +56,18 @@ spec:
                               enabled:
                                 description: Deploy container to send snmp traps
                                 type: boolean
+                              community:
+                                description: 'Target community for SNMP traps. Default is "public"'
+                                type: string
                               target:
                                 description: Target address for SNMP traps to send to
                                 type: string
+                              retries:
+                                description: 'SNMP trap delivery retry limit. Default is 1.'
+                                type: integer
+                              port:
+                                description: 'SNMP track delivery port. Default is 162.'
+                                type: integer
                             type: object
                         type: object
                       storage:

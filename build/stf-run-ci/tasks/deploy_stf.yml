@@ -21,6 +21,10 @@
             receivers:
               snmpTraps:
                 enabled: {{ __service_telemetry_snmptraps_enabled }}
+                target: "{{ __service_telemetry_snmptraps_target }}"
+                community: "{{ __service_telemetry_snmptraps_community }}"
+                retries: {{ __service_telemetry_snmptraps_retries }}
+                port: {{ __service_telemetry_snmptraps_port }}
         backends:
           events:
             elasticsearch:

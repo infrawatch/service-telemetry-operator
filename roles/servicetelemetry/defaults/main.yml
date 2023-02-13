@@ -24,7 +24,10 @@ servicetelemetry_defaults:
       receivers:
         snmp_traps:
           enabled: false
+          community: public
           target: 192.168.24.254
+          retries: 1
+          port: 162
 
   backends:
     metrics:

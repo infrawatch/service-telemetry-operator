@@ -10,7 +10,10 @@ spec:
       receivers:
         snmpTraps:
           enabled: false
+          community: public
           target: 192.168.24.254
+          retries: 1
+          port: 162
       storage:
         strategy: persistent
         persistent:

@@ -20,10 +20,10 @@ spec:
             - containerPort: 9099
           env:
             - name: SNMP_COMMUNITY
-              value: public
+              value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.community }}"
             - name: SNMP_RETRIES
-              value: "1"
+              value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.retries }}"
             - name: SNMP_HOST
               value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.target }}"
             - name: SNMP_PORT
-              value: "162"
+              value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.port }}"
