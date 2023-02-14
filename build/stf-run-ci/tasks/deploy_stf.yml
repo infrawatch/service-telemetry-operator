@@ -25,6 +25,11 @@
                 community: "{{ __service_telemetry_snmptraps_community }}"
                 retries: {{ __service_telemetry_snmptraps_retries }}
                 port: {{ __service_telemetry_snmptraps_port }}
+                timeout: {{ __service_telemetry_snmptraps_timeout }}
+                alertOidLabel: "{{ __service_telemetry_snmptraps_alert_oid_label }}"
+                trapOidPrefix: "{{ __service_telemetry_snmptraps_trap_oid_prefix }}"
+                trapDefaultOid: "{{ __service_telemetry_snmptraps_trap_default_oid }}"
+                trapDefaultSeverity: "{{ __service_telemetry_snmptraps_trap_default_severity }}"
         backends:
           events:
             elasticsearch:
