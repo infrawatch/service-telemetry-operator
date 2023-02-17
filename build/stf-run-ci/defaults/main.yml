@@ -24,6 +24,7 @@ sto_image_tag: latest
 sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
+new_operator_sdk_version: v1.11.0
 namespace: service-telemetry
 pull_secret_registry:
 pull_secret_user:

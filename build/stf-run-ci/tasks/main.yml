@@ -40,6 +40,10 @@
     base_dir: "{{ playbook_dir }}"
   when: base_dir | length == 0
 
+- name: Get new operator sdk
+  when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool
+  command: "{{ base_dir }}/get_new_operator_sdk.sh {{ new_operator_sdk_version }}"
+
 - when: __local_build_enabled | bool
   block:
   - name: Setup supporting repositories
