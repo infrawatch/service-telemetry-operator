@@ -19,7 +19,7 @@
         name: '{{ ansible_operator_meta.namespace }}-ca'
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        duration: '{{ ca_certificate_duration }}'
+        duration: '{{ servicetelemetry_vars.backends.events.elasticsearch.ca_cert_duration }}'
         secretName: '{{ ansible_operator_meta.namespace }}-ca'
         commonName: '{{ ansible_operator_meta.namespace }}-ca'
         isCA: true
@@ -48,7 +48,7 @@
         name: elasticsearch-es-http
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        duration: '{{ endpoint_certificate_duration }}'
+        duration: '{{ servicetelemetry_vars.backends.events.elasticsearch.endpoint_cert_duration }}'
         commonName: elasticsearch-es-http
         secretName: 'elasticsearch-es-cert'
         dnsNames:
