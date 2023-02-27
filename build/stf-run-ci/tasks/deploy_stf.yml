@@ -51,7 +51,7 @@
       {% endif %}
           logs:
             loki:
-              enabled: {{ __service_telemetry_logs_enabled }}
+              enabled: false
               replicationFactor: 1
               flavor: 1x.extra-small
               storage:

@@ -8,7 +8,6 @@
   loop:
     - smartgateways.smartgateway.infra.watch
     - servicetelemetrys.infra.watch
-    - lokistacks.loki.openshift.io
   tags:
     - clean-crds
 
