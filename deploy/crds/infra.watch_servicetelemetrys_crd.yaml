@@ -175,13 +175,13 @@ spec:
                                     type: string
                                 type: object
                             type: object
+                          endpoint_cert_duration:
+                            description: The requested 'duration' (i.e. lifetime) of the ElasticSearch endpoint Certificate.
+                            type: string
+                          ca_cert_duration:
+                            description: The requested 'duration' (i.e. lifetime) of the ElasticSearch CA Certificate.
+                            type: string 
                         type: object
-                        endpoint_cert_duration:
-                          description: The requested 'duration' (i.e. lifetime) of the ElasticSearch endpoint Certificate.
-                          type: string
-                        ca_cert_duration:
-                          description: The requested 'duration' (i.e. lifetime) of the ElasticSearch CA Certificate.
-                          type: string
                     type: object
                   logs:
                     description: Logs related backend configuration.
