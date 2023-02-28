@@ -14,6 +14,16 @@ __service_telemetry_high_availability_enabled: false
 __service_telemetry_metrics_enabled: true
 __service_telemetry_storage_ephemeral_enabled: false
 __service_telemetry_snmptraps_enabled: true
+__service_telemetry_snmptraps_target: "192.168.24.254"
+__service_telemetry_snmptraps_community: "public"
+__service_telemetry_snmptraps_retries: 5
+__service_telemetry_snmptraps_timeout: 1
+__service_telemetry_snmptraps_port: 162
+__service_telemetry_snmptraps_alert_oid_label: "oid"
+__service_telemetry_snmptraps_trap_oid_prefix: "1.3.6.1.4.1.50495.15"
+__service_telemetry_snmptraps_trap_default_oid: "1.3.6.1.4.1.50495.15.1.2.1"
+__service_telemetry_snmptraps_trap_default_severity: ""
+__service_telemetry_logs_enabled: false
 __service_telemetry_observability_strategy: use_community
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __service_telemetry_bundle_image_path:
