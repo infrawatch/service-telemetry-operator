@@ -175,10 +175,10 @@ spec:
                                     type: string
                                 type: object
                             type: object
-                          endpoint_cert_duration:
+                          endpointCertDuration:
                             description: The requested 'duration' (i.e. lifetime) of the ElasticSearch endpoint Certificate.
                             type: string
-                          ca_cert_duration:
+                          caCertDuration:
                             description: The requested 'duration' (i.e. lifetime) of the ElasticSearch CA Certificate.
                             type: string 
                         type: object
@@ -268,10 +268,10 @@ spec:
                             description: Enable web interface for QDR
                             type: boolean
                         type: object
-                      endpoint_cert_duration:
+                      endpointCertDuration:
                         description: The requested 'duration' (i.e. lifetime) of the QDR endpoint Certificate.
                         type: string
-                      ca_cert_duration:
+                      caCertDuration:
                         description: The requested 'duration' (i.e. lifetime) of the QDR CA Certificate.
                         type: string
                     type: object
