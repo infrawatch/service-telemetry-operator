@@ -92,10 +92,24 @@ spec:
                       elasticsearch:
                         description: Events storage backend ElasticSearch
                         properties:
+                          caCertDuration:
+                            description: The requested 'duration' (i.e. lifetime)
+                              of the ElasticSearch CA Certificate. Minimum accepted
+                              duration is 1 hour. Value must be in units accepted
+                              by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                            type: string
                           enabled:
                             description: Enable ElasticSearch as a storage backend
                               for events
                             type: boolean
+                          endpointCertDuration:
+                            description: The requested 'duration' (i.e. lifetime)
+                              of the ElasticSearch endpoint Certificate. Minimum accepted
+                              duration is 1 hour. Value must be in units accepted
+                              by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                            type: string
                           nodeCount:
                             description: Elasticsearch node count
                             type: string
@@ -131,16 +145,6 @@ spec:
                             description: Version of ElasticSearch to deploy. Elasticsearch
                               licensing has changed as of version 7.11. See https://www.elastic.co/pricing/faq/licensing
                               for details.
-                            type: string
-                          endpointCertDuration:
-                            description: The requested 'duration' (i.e. lifetime) of the ElasticSearch endpoint Certificate.
-                              Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
-                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
-                            type: string
-                          caCertDuration:
-                            description: The requested 'duration' (i.e. lifetime) of the ElasticSearch CA Certificate.
-                              Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
-                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                             type: string
                         type: object
                     type: object
@@ -464,9 +468,23 @@ spec:
                   qdr:
                     description: QDR configuration for data transport
                     properties:
+                      caCertDuration:
+                        description: The requested 'duration' (i.e. lifetime) of the
+                          QDR CA Certificate. Minimum accepted duration is 1 hour.
+                          Value must be in units accepted by Go time.ParseDuration
+                          https://golang.org/pkg/time/#ParseDuration
+                        pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                        type: string
                       enabled:
                         description: Enable QDR data transort
                         type: boolean
+                      endpointCertDuration:
+                        description: The requested 'duration' (i.e. lifetime) of the
+                          QDR endpoint Certificate. Minimum accepted duration is 1
+                          hour. Value must be in units accepted by Go time.ParseDuration
+                          https://golang.org/pkg/time/#ParseDuration
+                        pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                        type: string
                       web:
                         description: QDR web configuration
                         properties:
@@ -474,16 +492,6 @@ spec:
                             description: Enable web interface for QDR
                             type: boolean
                         type: object
-                      endpointCertDuration:
-                        description: The requested 'duration' (i.e. lifetime) of the QDR endpoint Certificate.
-                          Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
-                        pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
-                        type: string
-                      caCertDuration:
-                        description: The requested 'duration' (i.e. lifetime) of the QDR CA Certificate.
-                          Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
-                        pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
-                        type: string
                     type: object
                 type: object
             type: object

@@ -46,8 +46,9 @@ servicetelemetry_defaults:
           persistent:
             storage_class: ""
             pvc_storage_request: 20Gi
-        endpoint_cert_duration: 70080h
-        ca_cert_duration: 70080h
+        certificates:
+          endpoint_cert_duration: 70080h
+          ca_cert_duration: 70080h
     logs:
       loki:
         enabled: false
@@ -73,8 +74,9 @@ servicetelemetry_defaults:
       deployment_size: 1
       web:
         enabled: false
-      endpoint_cert_duration: 70080h
-      ca_cert_duration: 70080h
+      certificates:
+        endpoint_cert_duration: 70080h
+        ca_cert_duration: 70080h
 
   graphing:
     enabled: false
