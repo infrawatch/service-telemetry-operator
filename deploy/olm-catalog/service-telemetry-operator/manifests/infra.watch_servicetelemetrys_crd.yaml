@@ -134,9 +134,13 @@ spec:
                             type: string
                           endpointCertDuration:
                             description: The requested 'duration' (i.e. lifetime) of the ElasticSearch endpoint Certificate.
+                              Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                             type: string
                           caCertDuration:
                             description: The requested 'duration' (i.e. lifetime) of the ElasticSearch CA Certificate.
+                              Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                             type: string
                         type: object
                     type: object
@@ -472,9 +476,13 @@ spec:
                         type: object
                       endpointCertDuration:
                         description: The requested 'duration' (i.e. lifetime) of the QDR endpoint Certificate.
+                          Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                        pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                         type: string
                       caCertDuration:
                         description: The requested 'duration' (i.e. lifetime) of the QDR CA Certificate.
+                          Minimum accepted duration is 1 hour. Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                        pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                         type: string
                     type: object
                 type: object
