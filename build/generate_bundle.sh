@@ -38,6 +38,13 @@ generate_bundle() {
     echo "---- Generated bundle complete at ${WORKING_DIR}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"
 }
 
+copy_extra_metadata() {
+    echo "-- Copy extra metadata in"
+    pushd "${REL}/../"
+    cp -r ./deploy/olm-catalog/service-telemetry-operator/tests/ "${WORKING_DIR}"
+    cp ./deploy/olm-catalog/service-telemetry-operator/metadata/properties.yaml "${WORKING_DIR}/metadata/"
+}
+
 build_bundle_instructions() {
     echo "-- Commands to create a bundle build"
     echo docker build -t "${OPERATOR_BUNDLE_IMAGE}:${OPERATOR_BUNDLE_VERSION}" -f "${WORKING_DIR}/Dockerfile" "${WORKING_DIR}"
@@ -51,5 +58,6 @@ generate_version
 create_working_dir
 generate_dockerfile
 generate_bundle
+copy_extra_metadata
 build_bundle_instructions
 echo "## End Bundle creation"

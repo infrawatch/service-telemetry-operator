@@ -1,0 +1,4 @@
+    olm.properties: '[{"type": "olm.maxOpenShiftVersion", "value": "4.10"}]'
+properties:
+  - type: olm.maxOpenShiftVersion
+    value: "4.10"
