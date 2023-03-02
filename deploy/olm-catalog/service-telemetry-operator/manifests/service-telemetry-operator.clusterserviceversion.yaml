@@ -30,8 +30,11 @@ metadata:
             },
             "backends": {
               "events": {
-                "caCertDuration": "70080h",
                 "elasticsearch": {
+                  "certificates": {
+                    "caCertDuration": "70080h",
+                    "endpointCertDuration": "70080h"
+                  },
                   "enabled": false,
                   "storage": {
                     "persistent": {
@@ -40,8 +43,7 @@ metadata:
                     "strategy": "persistent"
                   },
                   "version": "7.16.1"
-                },
-                "endpointCertDuration": "70080h"
+                }
               },
               "logs": {
                 "loki": {
@@ -146,9 +148,11 @@ metadata:
             "observabilityStrategy": "use_community",
             "transports": {
               "qdr": {
-                "caCertDuration": "70080h",
+                "certificates": {
+                  "caCertDuration": "70080h",
+                  "endpointCertDuration": "70080h"
+                },
                 "enabled": true,
-                "endpointCertDuration": "70080h",
                 "web": {
                   "enabled": false
                 }

@@ -9,6 +9,8 @@ __local_build_enabled: true
 __deploy_from_bundles_enabled: false
 __deploy_stf: true
 
+__service_telemetry_events_endpoint_cert_duration: 70080h
+__service_telemetry_events_ca_cert_duration: 2160h
 __service_telemetry_events_enabled: true
 __service_telemetry_high_availability_enabled: false
 __service_telemetry_metrics_enabled: true
@@ -16,6 +18,8 @@ __service_telemetry_storage_ephemeral_enabled: false
 __service_telemetry_snmptraps_enabled: true
 __service_telemetry_logs_enabled: false
 __service_telemetry_observability_strategy: use_community
+__service_telemetry_transports_endpoint_cert_duration: 70080h
+__service_telemetry_transports_ca_cert_duration: 2160h
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __service_telemetry_bundle_image_path:
 __smart_gateway_bundle_image_path:

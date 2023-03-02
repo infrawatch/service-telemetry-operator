@@ -31,6 +31,9 @@
                 persistent:
                   storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
+              certificates:
+                endpoint_cert_duration: {{ __service_telemetry_events_endpoint_cert_duration }}
+                ca_cert_duration: {{ __service_telemetry_events_ca_cert_duration }}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}
@@ -50,6 +53,12 @@
       {% if __service_telemetry_storage_persistent_storage_class is defined %}
                 storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
+          transports:
+            qdr:
+              enabled: true
+              certificates:
+                endpoint_cert_duration: {{ __service_telemetry_transports_endpoint_cert_duration }}
+                ca_cert_duration: {{ __service_telemetry_transports_ca_cert_duration }}
         highAvailability:
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when:
