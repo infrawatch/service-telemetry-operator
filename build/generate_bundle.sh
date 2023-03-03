@@ -39,6 +39,11 @@ generate_bundle() {
 }
 
 copy_extra_metadata() {
+    # We add this because our version of operator-sdk for building doesn't
+    # understand these files, but newer versions of operator-sdk (for testing
+    # purposes) does, and newer versions of opm (as used in both downstream and
+    # upstream index image builds) also understands these files. Just copy them
+    # into the bundle directory during building.
     echo "-- Copy extra metadata in"
     pushd "${REL}/../"
     cp -r ./deploy/olm-catalog/service-telemetry-operator/tests/ "${WORKING_DIR}"
