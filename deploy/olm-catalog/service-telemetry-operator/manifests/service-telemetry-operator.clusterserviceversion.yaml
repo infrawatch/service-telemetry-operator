@@ -39,6 +39,10 @@ metadata:
             "backends": {
               "events": {
                 "elasticsearch": {
+                  "certificates": {
+                    "caCertDuration": "70080h",
+                    "endpointCertDuration": "70080h"
+                  },
                   "enabled": false,
                   "storage": {
                     "persistent": {
@@ -152,6 +156,10 @@ metadata:
             "observabilityStrategy": "use_community",
             "transports": {
               "qdr": {
+                "certificates": {
+                  "caCertDuration": "70080h",
+                  "endpointCertDuration": "70080h"
+                },
                 "enabled": true,
                 "web": {
                   "enabled": false

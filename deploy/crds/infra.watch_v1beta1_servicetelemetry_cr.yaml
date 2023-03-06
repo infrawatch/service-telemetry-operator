@@ -41,6 +41,9 @@ spec:
           strategy: persistent
           persistent:
             pvcStorageRequest: 20Gi
+        certificates:
+          endpointCertDuration: 70080h
+          caCertDuration: 70080h
     logs:
       loki:
         enabled: false
@@ -102,6 +105,9 @@ spec:
       enabled: true
       web:
         enabled: false
+      certificates:
+        endpointCertDuration: 70080h
+        caCertDuration: 70080h
   highAvailability:
     enabled: false
 # vim: set ft=yaml shiftwidth=2 tabstop=2 expandtab:
