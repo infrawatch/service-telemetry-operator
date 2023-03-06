@@ -9,40 +9,40 @@ __local_build_enabled: true
 __deploy_from_bundles_enabled: false
 __deploy_stf: true
 
+__service_telemetry_events_certificates_endpoint_cert_duration: 70080h
+__service_telemetry_events_certificates_ca_cert_duration: 2160h
 __service_telemetry_events_enabled: true
 __service_telemetry_high_availability_enabled: false
 __service_telemetry_metrics_enabled: true
 __service_telemetry_storage_ephemeral_enabled: false
 __service_telemetry_snmptraps_enabled: true
+__service_telemetry_snmptraps_target: "192.168.24.254"
+__service_telemetry_snmptraps_community: "public"
+__service_telemetry_snmptraps_retries: 5
+__service_telemetry_snmptraps_timeout: 1
+__service_telemetry_snmptraps_port: 162
+__service_telemetry_snmptraps_alert_oid_label: "oid"
+__service_telemetry_snmptraps_trap_oid_prefix: "1.3.6.1.4.1.50495.15"
+__service_telemetry_snmptraps_trap_default_oid: "1.3.6.1.4.1.50495.15.1.2.1"
+__service_telemetry_snmptraps_trap_default_severity: ""
 __service_telemetry_logs_enabled: false
 __service_telemetry_observability_strategy: use_community
+__service_telemetry_transports_certificates_endpoint_cert_duration: 70080h
+__service_telemetry_transports_certificates_ca_cert_duration: 2160h
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __service_telemetry_bundle_image_path:
 __smart_gateway_bundle_image_path:
-
-__deploy_minio_enabled: false
-__deploy_loki_enabled: false
-__loki_skip_tls_verify: false
-__golang_image_path: quay.io/infrawatch/golang:1.16
-__loki_image_path: quay.io/infrawatch/loki:2.4.2
 
 sgo_image_tag: latest
 sto_image_tag: latest
 sg_core_image_tag: latest
 sg_bridge_image_tag: latest
 prometheus_webhook_snmp_image_tag: latest
-loki_operator_image_tag: latest
 new_operator_sdk_version: v1.11.0
-new_go_version: 1.16.3
 namespace: service-telemetry
 pull_secret_registry:
 pull_secret_user:
 pull_secret_pass:
-
-# Set a default commit hash to clone for loki-operator to freeze
-# the operator developement.
-loki_operator_branch: b8e9973
-
 
 # used when building images to default to correct version branch for STF subcomponents per STF version
 version_branches:
@@ -50,14 +50,10 @@ version_branches:
   sg_core: master
   sg_bridge: master
   prometheus_webhook_snmp: master
-  loki_operator: master
 
 sgo_repository: https://github.com/infrawatch/smart-gateway-operator
 sg_core_repository: https://github.com/infrawatch/sg-core
 sg_bridge_repository: https://github.com/infrawatch/sg-bridge
 prometheus_webhook_snmp_repository: https://github.com/infrawatch/prometheus-webhook-snmp
-loki_operator_repository: https://github.com/grafana/loki
-
-loki_operator_folder: operator
 
 base_dir: ''

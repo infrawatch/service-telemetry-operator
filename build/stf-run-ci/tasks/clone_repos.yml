@@ -10,6 +10,7 @@
         repo: "{{ sgo_repository }}"
         dest: working/smart-gateway-operator
         version: "{{ sgo_branch | default(branch, true) }}"
+        force: yes
   rescue:
     - name: "Get {{ version_branches.sgo }} upstream branch because specified branch or repository doesn't exist"
       git:
@@ -58,25 +59,3 @@
         repo: https://github.com/infrawatch/prometheus-webhook-snmp
         dest: working/prometheus-webhook-snmp
         version: "{{ version_branches.prometheus_webhook_snmp }}"
-
-# Branches for Loki Operator don't work the same as with other repositories.
-# We don't have write access to the upstream repository to create our own
-# branches there.
-- name: Get Loki Operator
-  block:
-    - name: Try cloning same-named branch or override branch from loki repository
-      git:
-        repo: "{{ loki_operator_repository }}"
-        dest: working/loki
-        version: "{{ loki_operator_branch | default(branch, true) }}"
-        force: yes
-  rescue:
-    - name: "Get {{ version_branches.loki_operator }} upstream branch because specified branch or repository doesn't exist"
-      git:
-        repo: https://github.com/grafana/loki
-        dest: working/loki
-        version: "{{ version_branches.loki_operator }}"
-        force: yes
-  when:
-    - __deploy_loki_enabled | bool
-    - __service_telemetry_observability_strategy == "use_community"

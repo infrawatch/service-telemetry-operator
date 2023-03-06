@@ -13,6 +13,8 @@
           name: certified-operators
         - disabled: false
           name: redhat-operators
+        - disabled: "{{ false if __service_telemetry_observability_strategy == 'use_community' else true }}"
+          name: community-operators
 
 - name: Create OperatorGroup
   k8s:
@@ -63,22 +65,6 @@
           source: redhat-operators
           sourceNamespace: openshift-marketplace
 
-- name: Enable OperatorHub.io for Elastic Cloud on Kubernetes
-  k8s:
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        name: operatorhubio-operators
-        namespace: openshift-marketplace
-      spec:
-        sourceType: grpc
-        image: quay.io/operatorhubio/catalog:latest
-        displayName: OperatorHub.io Operators
-        publisher: OperatorHub.io
-  when:
-    - __service_telemetry_observability_strategy == "use_community"
-
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
   k8s:
     definition:
@@ -123,7 +109,7 @@
         channel: beta
         installPlanApproval: Automatic
         name: prometheus
-        source: operatorhubio-operators
+        source: community-operators
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy == "use_community"
