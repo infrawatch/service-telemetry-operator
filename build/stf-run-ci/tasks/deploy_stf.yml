@@ -62,12 +62,12 @@
       {% if __service_telemetry_storage_persistent_storage_class is defined %}
                 storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
-          transports:
-            qdr:
-              enabled: true
-              certificates:
-                endpointCertDuration: {{ __service_telemetry_transports_certificates_endpoint_cert_duration }}
-                caCertDuration: {{ __service_telemetry_transports_certificates_ca_cert_duration }}
+        transports:
+          qdr:
+            enabled: true
+            certificates:
+              endpointCertDuration: {{ __service_telemetry_transports_certificates_endpoint_cert_duration }}
+              caCertDuration: {{ __service_telemetry_transports_certificates_ca_cert_duration }}
         highAvailability:
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when:
