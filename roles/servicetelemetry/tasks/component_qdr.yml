@@ -26,7 +26,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-selfsigned"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: '{{ certificate_duration }}'
+          duration: '{{ servicetelemetry_vars.transports.qdr.certificates.ca_cert_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
           isCA: true
           issuerRef:
@@ -58,7 +58,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: '{{ certificate_duration }}'
+          duration: '{{ servicetelemetry_vars.transports.qdr.certificates.ca_cert_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect-openstack-ca"
           isCA: true
           issuerRef:
@@ -75,7 +75,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-openstack-credentials"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: '{{ certificate_duration }}'
+          duration: '{{ servicetelemetry_vars.transports.qdr.certificates.endpoint_cert_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect"
           dnsNames:
             - "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
@@ -107,7 +107,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: '{{ certificate_duration }}'
+          duration: '{{ servicetelemetry_vars.transports.qdr.certificates.ca_cert_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect-inter-router-ca"
           isCA: true
           issuerRef:
@@ -124,7 +124,7 @@
           name: "{{ ansible_operator_meta.name }}-interconnect-inter-router-credentials"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          duration: '{{ certificate_duration }}'
+          duration: '{{ servicetelemetry_vars.transports.qdr.certificates.endpoint_cert_duration }}'
           commonName: "{{ ansible_operator_meta.name }}-interconnect"
           dnsNames:
             - "{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local"

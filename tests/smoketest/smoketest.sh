@@ -17,6 +17,15 @@
 NUMCLOUDS=${NUMCLOUDS:-1}
 CLOUDNAMES=()
 OCP_PROJECT=${OCP_PROJECT:-}
+OC_CLIENT_VERSION_X=$(oc version --client | grep Client | cut -f2 -d: | tr -s -d "[:space:]" - | cut -d. -f1)
+OC_CLIENT_VERSION_X_REQUIRED=4
+OC_CLIENT_VERSION_Y=$(oc version --client | grep Client | cut -f2 -d: | tr -s -d "[:space:]" - | cut -d. -f2)
+OC_CLIENT_VERSION_Y_REQUIRED=10
+
+if [ "${OC_CLIENT_VERSION_Y}" -lt "${OC_CLIENT_VERSION_Y_REQUIRED}" ] || [ "${OC_CLIENT_VERSION_X}" != "${OC_CLIENT_VERSION_X_REQUIRED}" ]; then
+    echo "*** Please install 'oc' client version ${OC_CLIENT_VERSION_X_REQUIRED}.${OC_CLIENT_VERSION_Y_REQUIRED} or later ***"
+    exit 1
+fi
 
 CLEANUP=${CLEANUP:-true}
 
@@ -59,7 +68,7 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-k8s)
+PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-k8s)
 oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"labels\":{\"alertname\":\"Testalert1\"}}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
 # it takes some time to get the alert delivered, continuing with other tests
 
@@ -146,7 +155,7 @@ oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metada
 echo
 
 echo "*** [INFO] Logs from alertmanager..."
-oc logs "$(oc get pod -l app=alertmanager -o jsonpath='{.items[0].metadata.name}')" -c alertmanager
+oc logs "$(oc get pod -l app.kubernetes.io/name=alertmanager -o jsonpath='{.items[0].metadata.name}')" -c alertmanager
 echo
 
 echo "*** [INFO] Cleanup resources..."

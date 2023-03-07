@@ -46,12 +46,44 @@ spec:
                         properties:
                           snmpTraps:
                             properties:
+                              alertOidLabel:
+                                description: Label for finding the OID. Default is
+                                  "oid"
+                                type: string
+                              community:
+                                description: Target community for SNMP traps. Default
+                                  is "public"
+                                type: string
                               enabled:
                                 description: Deploy container to send snmp traps
                                 type: boolean
+                              port:
+                                description: SNMP track delivery port. Default is
+                                  162
+                                type: integer
+                              retries:
+                                description: SNMP trap delivery retry limit. Default
+                                  is 5
+                                type: integer
                               target:
                                 description: Target address for SNMP traps to send
-                                  to
+                                  to.
+                                type: string
+                              timeout:
+                                description: Response timeout, in seconds. Default
+                                  is 1
+                                type: integer
+                              trapDefaultOid:
+                                description: The trap OID if none is found in the
+                                  Prometheus alert labels. Default is "1.3.6.1.4.1.50495.15.1.2.1"
+                                type: string
+                              trapDefaultSeverity:
+                                description: The trap severity if none is found in
+                                  the Prometheus alert labels. Default is empty.
+                                type: string
+                              trapOidPrefix:
+                                description: OID prefix for the trap variable bindings.
+                                  Default is "1.3.6.1.4.1.50495.15"
                                 type: string
                             type: object
                         type: object
@@ -92,6 +124,23 @@ spec:
                       elasticsearch:
                         description: Events storage backend ElasticSearch
                         properties:
+                          certificates:
+                            properties:
+                              caCertDuration:
+                                description: The requested 'duration' (i.e. lifetime)
+                                  of the ElasticSearch CA Certificate. Minimum accepted
+                                  duration is 1 hour. Value must be in units accepted
+                                  by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                                pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                                type: string
+                              endpointCertDuration:
+                                description: The requested 'duration' (i.e. lifetime)
+                                  of the ElasticSearch endpoint Certificate. Minimum
+                                  accepted duration is 1 hour. Value must be in units
+                                  accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                                pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                                type: string
+                            type: object
                           enabled:
                             description: Enable ElasticSearch as a storage backend
                               for events
@@ -454,6 +503,23 @@ spec:
                   qdr:
                     description: QDR configuration for data transport
                     properties:
+                      certificates:
+                        properties:
+                          caCertDuration:
+                            description: The requested 'duration' (i.e. lifetime)
+                              of the QDR CA Certificate. Minimum accepted duration
+                              is 1 hour. Value must be in units accepted by Go time.ParseDuration
+                              https://golang.org/pkg/time/#ParseDuration
+                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                            type: string
+                          endpointCertDuration:
+                            description: The requested 'duration' (i.e. lifetime)
+                              of the QDR endpoint Certificate. Minimum accepted duration
+                              is 1 hour. Value must be in units accepted by Go time.ParseDuration
+                              https://golang.org/pkg/time/#ParseDuration
+                            pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                            type: string
+                        type: object
                       enabled:
                         description: Enable QDR data transort
                         type: boolean
