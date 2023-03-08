@@ -68,10 +68,16 @@ for NAME in "${CLOUDNAMES[@]}"; do
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
-PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-k8s)
+
+# check if the oc client version is less than 4.11 and adjust the token command to match available commands
+if [ 0${OC_CLIENT_VERSION_Y_REQUIRED} -lt 011 ]; then
+    PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-k8s)
+else
+    PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-k8s)
+fi
+
 oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"labels\":{\"alertname\":\"Testalert1\"}}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
 # it takes some time to get the alert delivered, continuing with other tests
-
 
 
 # Trying to find a less brittle test than a timeout
