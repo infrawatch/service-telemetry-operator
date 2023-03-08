@@ -10,7 +10,7 @@ __deploy_from_bundles_enabled: false
 __deploy_stf: true
 
 __service_telemetry_events_certificates_endpoint_cert_duration: 70080h
-__service_telemetry_events_certificates_ca_cert_duration: 2160h
+__service_telemetry_events_certificates_ca_cert_duration: 70080h
 __service_telemetry_events_enabled: true
 __service_telemetry_high_availability_enabled: false
 __service_telemetry_metrics_enabled: true
