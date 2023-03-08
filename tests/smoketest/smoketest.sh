@@ -70,7 +70,7 @@ done
 echo "*** [INFO] Triggering an alertmanager notification..."
 
 # check if the oc client version is less than 4.11 and adjust the token command to match available commands
-if [ 0${OC_CLIENT_VERSION_Y_REQUIRED} -lt 011 ]; then
+if [ 0${OC_CLIENT_VERSION_Y} -lt 011 ]; then
     PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-k8s)
 else
     PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-k8s)
