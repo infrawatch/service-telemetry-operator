@@ -103,13 +103,13 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
-        name: prometheus
+        name: rhods-prometheus-operator
         namespace: "{{ namespace }}"
       spec:
         channel: beta
         installPlanApproval: Automatic
-        name: prometheus
-        source: community-operators
+        name: rhods-prometheus-operator
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy == "use_community"
