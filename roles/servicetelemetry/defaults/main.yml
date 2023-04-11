@@ -160,8 +160,6 @@ servicetelemetry_defaults:
 is_k8s: false
 is_openshift: false
 
-oauth_proxy_image: registry.redhat.io/openshift4/ose-oauth-proxy:latest
-
 _ephemeral_storage_enabled: false
 
 # set default smartgateway deployment size. You should not modify this.
