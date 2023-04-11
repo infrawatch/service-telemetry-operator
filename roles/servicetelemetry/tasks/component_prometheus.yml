@@ -64,6 +64,8 @@
           stringData:
             auth: 'internal:{{ prom_basicauth_passwd | password_hash("bcrypt") | replace("$2b$","$2y$", 1)}}'
             password: '{{ prom_basicauth_passwd }}'
+      tags:
+        - skip_ansible_lint
 
     - name: Re-register new object for use in the annotation
       k8s_info:
