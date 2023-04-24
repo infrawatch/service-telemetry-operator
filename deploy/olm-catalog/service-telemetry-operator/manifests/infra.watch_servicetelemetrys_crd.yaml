@@ -491,10 +491,14 @@ spec:
                 type: object
               observabilityStrategy:
                 description: The strategy to use for observability systems. Options
-                  are "none" (do not deploy any observability components), and "use_community"
-                  (community operators with administrator managed subscriptions).
+                  are "none" (do not deploy any observability components), "use_community"
+                  (community supported operators), "use_redhat" (Red Hat Observability
+                  Operator with no unsupported components), "use_hybrid" (RHOBO +
+                  community supported operators).
                 enum:
                 - use_community
+                - use_redhat
+                - use_hybrid
                 - none
                 type: string
               transports:

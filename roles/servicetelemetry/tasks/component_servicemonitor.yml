@@ -1,7 +1,7 @@
 - name: Create SG-specific Service Monitor manifest
   set_fact:
     sg_specific_servicemonitor_manifest: |
-      apiVersion: monitoring.coreos.com/v1
+      apiVersion: {{ prometheus_operator_api_string }}/v1
       kind: ServiceMonitor
       metadata:
         labels:

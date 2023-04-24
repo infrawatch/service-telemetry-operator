@@ -15,7 +15,7 @@ metadata:
   name: default
   namespace: ${namespace}
 spec:
-  observabilityStrategy: use_community
+  observabilityStrategy: use_hybrid
   alerting:
     alertmanager:
       storage:

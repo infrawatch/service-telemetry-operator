@@ -54,7 +54,7 @@
   when:
     - has_elasticsearch_api | bool
     - servicetelemetry_vars.backends.events.elasticsearch.enabled
-    - observability_strategy == 'use_community'
+    - observability_strategy in ['use_community', 'use_hybrid']
 
 - name: Deploy Logs Smart Gateway instance
   vars:
@@ -68,7 +68,7 @@
     label: "{{ this_collector.collector_type }}"
   when:
     - has_loki_api | bool
-    - observability_strategy == 'use_community'
+    - observability_strategy in ['use_community', 'use_hybrid']
     - servicetelemetry_vars.backends.logs.loki.enabled
     - this_cloud.logs is defined
     - this_cloud.logs.collectors is defined

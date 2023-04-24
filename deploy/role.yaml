@@ -116,6 +116,7 @@ rules:
   - interconnectedcloud.github.io
   - smartgateway.infra.watch
   - monitoring.coreos.com
+  - monitoring.rhobs
   - elasticsearch.k8s.elastic.co
   - integreatly.org
   - loki.grafana.com
@@ -125,6 +126,13 @@ rules:
   - '*'
 - apiGroups:
   - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - monitoring.rhobs
   resources:
   - servicemonitors
   verbs:
