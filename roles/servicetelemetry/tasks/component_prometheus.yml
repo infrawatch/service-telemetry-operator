@@ -18,11 +18,69 @@
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.prometheus: '{{ prom_oauth_redir_ref | to_json }}'
 
-- name: Bind the local prometheus SA to prometheus cluster role
+- block:
+  - name: Install RBAC Role for prometheus operations
+    k8s:
+      definition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: Role
+        metadata:
+          name: prometheus-stf
+          namespace: '{{ ansible_operator_meta.namespace }}'
+        rules:
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          - endpoints
+          - pods
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - extensions
+          - networking.k8s.io
+          resources:
+          - ingresses
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - nonroot
+          - nonroot-v2
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+
+  - name: Bind the local prometheus SA to our new role
+    k8s:
+      definition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        metadata:
+          name: prometheus-k8s-stf
+          namespace: '{{ ansible_operator_meta.namespace }}'
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: Role
+          name: prometheus-stf
+        subjects:
+        - kind: ServiceAccount
+          name: prometheus-k8s
+          namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy in ['use_redhat', 'use_hybrid']
+
+- name: Bind the local prometheus SA to prometheus cluster role (for oauth perms)
   k8s:
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
-      kind: ClusterRoleBinding
+      kind: RoleBinding
       metadata:
         name: prometheus-k8s-{{ ansible_operator_meta.namespace }}
         namespace: '{{ ansible_operator_meta.namespace }}'

@@ -261,6 +261,7 @@ spec:
           - security.openshift.io
           resourceNames:
           - nonroot
+          - nonroot-v2
           resources:
           - securitycontextconstraints
           verbs:
@@ -427,6 +428,27 @@ spec:
           - '*'
           verbs:
           - '*'
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - roles
+          - rolebindings
+          verbs:
+          - create
+          - get
+          - list
+          - watch
+          - update
+          - patch
+        - apiGroups:
+          - extensions
+          - networking.k8s.io
+          resources:
+          - ingresses
+          verbs:
+          - get
+          - list
+          - watch
         serviceAccountName: service-telemetry-operator
     strategy: deployment
   installModes:
