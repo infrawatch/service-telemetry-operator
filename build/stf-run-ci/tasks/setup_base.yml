@@ -135,7 +135,7 @@
           sourceType: grpc
           updateStrategy:
             registryPoll:
-              interval: 1m0s
+              interval: 10m0s
 
   - name: Subscribe to Red Hat Obervability Operator
     k8s:

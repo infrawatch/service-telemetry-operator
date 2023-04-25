@@ -30,19 +30,19 @@
 
 - name: Set community monitoring API string and labels
   set_fact:
-    prometheus_operator_api_string: monitoring.coreos.com
+    prometheus_operator_api_string: monitoring.coreos.com/v1
     prometheus_operator_label:
   when: observability_strategy == 'use_community'
 
 - name: Set Red Hat monitoring API string
   set_fact:
-    prometheus_operator_api_string: monitoring.rhobs
+    prometheus_operator_api_string: monitoring.rhobs/v1
     prometheus_operator_label: 'app.kubernetes.io/managed-by: observability-operator'
   when: observability_strategy in ['use_redhat', 'use_hybrid']
 
 - name: Check if we have monitoring.coreos.com API
   set_fact:
-    has_monitoring_api: "{{ True if prometheus_operator_api_string in api_groups else False }}"
+    has_monitoring_api: "{{ True if (prometheus_operator_api_string | dirname) in api_groups else False }}"
 
 - block:
   - name: Create Prometheus instance
