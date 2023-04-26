@@ -3,7 +3,7 @@
 #
 # remove SmartGateway object when cloud no longer in current `clouds` object list.
 clouds_remove_on_missing: false
-observability_strategy: use_redhat
+observability_strategy: use_community
 
 servicetelemetry_defaults:
   high_availability:
