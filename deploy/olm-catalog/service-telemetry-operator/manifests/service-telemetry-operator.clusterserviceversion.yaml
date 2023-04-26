@@ -312,6 +312,8 @@ spec:
                   value: explicit
                 - name: RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE
                   value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
+                - name: RELATED_IMAGE_OAUTH_PROXY_IMAGE
+                  value: <<RELATED_IMAGE_OAUTH_PROXY>>:<<RELATED_IMAGE_OAUTH_PROXY_TAG>>
                 image: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
                 imagePullPolicy: Always
                 name: operator
