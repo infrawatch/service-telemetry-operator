@@ -148,6 +148,26 @@
     definition:
       '{{ prometheus_manifest }}'
 
+- name: Ensure no community Prometheus is installed if not using community operator
+  k8s:
+    state: absent
+    api_version: monitoring.coreos.com/v1
+    kind: prometheus
+    name: '{{ ansible_operator_meta.name }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy != "use_community"
+
+- name: Ensure no rhobs Prometheus is installed if not using it
+  k8s:
+    state: absent
+    api_version: monitoring.rhobs/v1
+    kind: prometheus
+    name: '{{ ansible_operator_meta.name }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy not in ['use_redhat', 'use_hybrid']
+
 - name: Set default prometheus service template
   set_fact:
     prometheus_service_manifest: "{{ lookup('template', './manifest_prometheus_service.j2') | from_yaml }}"

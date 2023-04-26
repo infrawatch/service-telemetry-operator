@@ -28,6 +28,26 @@
     definition:
       '{{ alertmanager_manifest }}'
 
+- name: Ensure no community Alertmanager is installed if not using community operator
+  k8s:
+    state: absent
+    api_version: monitoring.coreos.com/v1
+    kind: alertmanager
+    name: '{{ ansible_operator_meta.name }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy != "use_community"
+
+- name: Ensure no rhbos Alertmanager is installed if not using it
+  k8s:
+    state: absent
+    api_version: monitoring.rhobs/v1
+    kind: alertmanager
+    name: '{{ ansible_operator_meta.name }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy not in ['use_redhat', 'use_hybrid']
+
 # TODO: expand the management of alertmanager receivers and move this functionality to a common location
 # --> SNMP traps
 - name: Create SNMP traps instance
