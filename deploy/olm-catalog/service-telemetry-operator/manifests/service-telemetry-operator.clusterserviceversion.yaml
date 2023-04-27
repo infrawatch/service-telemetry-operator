@@ -15,8 +15,16 @@ metadata:
               "alertmanager": {
                 "receivers": {
                   "snmpTraps": {
+                    "alertOidLabel": "oid",
+                    "community": "public",
                     "enabled": false,
-                    "target": "192.168.24.254"
+                    "port": 162,
+                    "retries": 5,
+                    "target": "192.168.24.254",
+                    "timeout": 1,
+                    "trapDefaultOid": "1.3.6.1.4.1.50495.15.1.2.1",
+                    "trapDefaultSeverity": "",
+                    "trapOidPrefix": "1.3.6.1.4.1.50495.15"
                   }
                 },
                 "storage": {
@@ -31,6 +39,10 @@ metadata:
             "backends": {
               "events": {
                 "elasticsearch": {
+                  "certificates": {
+                    "caCertDuration": "70080h",
+                    "endpointCertDuration": "70080h"
+                  },
                   "enabled": false,
                   "storage": {
                     "persistent": {
@@ -144,6 +156,10 @@ metadata:
             "observabilityStrategy": "use_community",
             "transports": {
               "qdr": {
+                "certificates": {
+                  "caCertDuration": "70080h",
+                  "endpointCertDuration": "70080h"
+                },
                 "enabled": true,
                 "web": {
                   "enabled": false
@@ -161,7 +177,6 @@ metadata:
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
-    olm.properties: '[{"type": "olm.maxOpenShiftVersion", "value": "4.12"}]'
     olm.skipRange: '>=<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
     operatorframework.io/suggested-namespace: service-telemetry
     operators.openshift.io/valid-subscription: '["OpenStack Platform", "Cloud Infrastructure",
@@ -296,6 +311,8 @@ spec:
                   value: explicit
                 - name: RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE
                   value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
+                - name: RELATED_IMAGE_OAUTH_PROXY_IMAGE
+                  value: <<RELATED_IMAGE_OAUTH_PROXY>>:<<RELATED_IMAGE_OAUTH_PROXY_TAG>>
                 image: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
                 imagePullPolicy: Always
                 name: operator

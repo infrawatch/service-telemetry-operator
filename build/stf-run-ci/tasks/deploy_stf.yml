@@ -21,6 +21,15 @@
             receivers:
               snmpTraps:
                 enabled: {{ __service_telemetry_snmptraps_enabled }}
+                target: "{{ __service_telemetry_snmptraps_target }}"
+                community: "{{ __service_telemetry_snmptraps_community }}"
+                retries: {{ __service_telemetry_snmptraps_retries }}
+                port: {{ __service_telemetry_snmptraps_port }}
+                timeout: {{ __service_telemetry_snmptraps_timeout }}
+                alertOidLabel: "{{ __service_telemetry_snmptraps_alert_oid_label }}"
+                trapOidPrefix: "{{ __service_telemetry_snmptraps_trap_oid_prefix }}"
+                trapDefaultOid: "{{ __service_telemetry_snmptraps_trap_default_oid }}"
+                trapDefaultSeverity: "{{ __service_telemetry_snmptraps_trap_default_severity }}"
         backends:
           events:
             elasticsearch:
@@ -31,6 +40,9 @@
                 persistent:
                   storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
+              certificates:
+                endpointCertDuration: {{ __service_telemetry_events_certificates_endpoint_cert_duration }}
+                caCertDuration: {{ __service_telemetry_events_certificates_ca_cert_duration }}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}
@@ -42,7 +54,7 @@
       {% endif %}
           logs:
             loki:
-              enabled: {{ __service_telemetry_logs_enabled }}
+              enabled: false
               replicationFactor: 1
               flavor: 1x.extra-small
               storage:
@@ -50,6 +62,12 @@
       {% if __service_telemetry_storage_persistent_storage_class is defined %}
                 storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
+        transports:
+          qdr:
+            enabled: true
+            certificates:
+              endpointCertDuration: {{ __service_telemetry_transports_certificates_endpoint_cert_duration }}
+              caCertDuration: {{ __service_telemetry_transports_certificates_ca_cert_duration }}
         highAvailability:
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when:

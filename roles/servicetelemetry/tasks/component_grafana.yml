@@ -18,7 +18,7 @@
         namespace: '{{ ansible_operator_meta.namespace }}'
       type: Opaque
       stringData:
-        auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | htpasswd_sha1 }}'
+        auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | password_hash("bcrypt") | replace("$2b$","$2y$", 1) }}'
 
 - name: Lookup template
   debug:

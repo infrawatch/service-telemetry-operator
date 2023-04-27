@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Ansible
         run: python -m pip install 'ansible <= 2.9'
@@ -20,36 +20,30 @@ jobs:
 
       - name: Lint Ansible roles/servicetelemetry/ directory
         run: ${HOME}/.local/bin/ansible-lint roles/servicetelemetry
-# TODO: requires a bunch of work on our bash scripts, or finesse
-#      - name: Run Super-Linter
-#        uses: github/super-linter@v3
-#        env:
-#          DEFAULT_BRANCH: master
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-check:
-    name: Build check
+  build-operator-check:
+    name: Build Operator check
     runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Verify image builds
         run: docker build --tag infrawatch/service-telemetry-operator:latest --file build/Dockerfile .
 
-  bundle-check:
-    name: Bundle check
+  build-bundle-check:
+    name: Build bundle check
     runs-on: ubuntu-20.04
+    env:
+      RELEASE_VERSION: v0.19.4
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Get operator-sdk image
+      - name: Get operator-sdk image 0.19.4
         run: curl --output operator-sdk -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk-$RELEASE_VERSION-x86_64-linux-gnu
-        env:
-          RELEASE_VERSION: v0.19.4
 
       - name: Make operator-sdk executable
         run: chmod +x operator-sdk
@@ -63,5 +57,55 @@ jobs:
       - name: Generate bundle
         run: WORKING_DIR=/tmp/bundle ./build/generate_bundle.sh
 
+      - name: Verify image builds
+        run: docker build --tag infrawatch/service-telemetry-operator:latest --file build/Dockerfile .
+
+  check-bundle-validation-scorecard:
+    name: Validate the generated bundle and perform scorecard checks
+    runs-on: ubuntu-20.04
+    env:
+      RELEASE_VERSION: v1.26.0
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # prepare environment to buld the bundle
+      - name: Get operator-sdk image 0.19.4
+        run: curl --output operator-sdk -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk-$RELEASE_VERSION-x86_64-linux-gnu
+        env:
+          RELEASE_VERSION: v0.19.4
+
+      - name: Make operator-sdk executable
+        run: chmod +x operator-sdk
+
+      - name: Move operator-sdk binary
+        run: sudo mv operator-sdk /usr/local/bin
+
+      - name: Create working directory
+        run: mkdir /tmp/bundle
+
+      # generate the bundle using operator-sdk-0.19.4
+      - name: Generate bundle
+        run: WORKING_DIR=/tmp/bundle ./build/generate_bundle.sh
+
+      # prepare the environment to run bundle validation and bundle scorecard checks
+      - name: Get operator-sdk image 1.26.0
+        run: curl --output operator-sdk-$RELEASE_VERSION -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk_linux_amd64
+
+      - name: Make operator-sdk executable
+        run: chmod +x operator-sdk-$RELEASE_VERSION
+
+      - name: Move operator-sdk binary
+        run: sudo mv operator-sdk-$RELEASE_VERSION /usr/local/bin
+
+      # perform bundle validation
       - name: Check bundle validation
-        run: operator-sdk bundle validate --verbose /tmp/bundle
+        run: operator-sdk-$RELEASE_VERSION bundle validate --verbose /tmp/bundle
+
+      - name: Create KinD cluster to execute scorecard tests
+        uses: helm/kind-action@v1.4.0
+
+      # perform scorecard checks against a KinD cluster
+      - name: Check scorecord validation
+        run: operator-sdk-$RELEASE_VERSION scorecard --verbose /tmp/bundle
