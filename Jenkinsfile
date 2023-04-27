@@ -15,7 +15,7 @@ metadata:
   name: default
   namespace: ${namespace}
 spec:
-  observabilityStrategy: use_hybrid
+  observabilityStrategy: use_redhat
   alerting:
     alertmanager:
       storage:
