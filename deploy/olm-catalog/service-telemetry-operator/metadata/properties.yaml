@@ -3,6 +3,15 @@ properties:
     value: "4.12"
   - type: olm.constraint
     value:
+      failureMessage: Require Smart Gateway for Service Telemetry Framework
+      all:
+        constraints:
+          - failureMessage: Package smart-gateway-operator is needed for Service Telemetry Framework
+            package:
+              packageName: smart-gateway-operator
+              versionRange: '>=5.0.0'
+  - type: olm.constraint
+    value:
       failureMessage: Require data transport for Service Telemetry Framework
       all:
         constraints:
