@@ -38,7 +38,7 @@
   when:
     - observability_strategy != "use_community"
 
-- name: Ensure no rhbos Alertmanager is installed if not using it
+- name: Ensure no rhobs Alertmanager is installed if not using it
   k8s:
     state: absent
     api_version: monitoring.rhobs/v1
