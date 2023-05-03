@@ -96,7 +96,7 @@
   register: _community_prom_object
 
 - block:
-  - name: Apply community observability_strategy if missing on an STF object with an existing community prometheus
+  - name: Apply community observabilityStrategy if missing on an STF object with an existing community prometheus
     k8s:
       definition:
         apiVersion: infra.watch/v1beta1
@@ -105,7 +105,7 @@
           name: "{{ ansible_operator_meta.name }}"
           namespace: "{{ ansible_operator_meta.namespace }}"
         spec:
-          observability_strategy: use_community
+          observabilityStrategy: use_community
   - name: Set non-default community strategy for remainder of this run
     set_fact:
       observability_strategy: use_community
@@ -122,7 +122,7 @@
         name: "{{ ansible_operator_meta.name }}"
         namespace: "{{ ansible_operator_meta.namespace }}"
       spec:
-        observability_strategy: "{{ observability_strategy }}"
+        observabilityStrategy: "{{ observability_strategy }}"
   when:
     - _community_prom_object.resources[0] is not defined
     - _stf_object.resources[0].spec.observability_strategy is not defined
