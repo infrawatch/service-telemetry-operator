@@ -3,7 +3,7 @@ kind: ServiceTelemetry
 metadata:
   name: default
 spec:
-  observabilityStrategy: use_community
+  observabilityStrategy: use_redhat
   alerting:
     enabled: true
     alertmanager:

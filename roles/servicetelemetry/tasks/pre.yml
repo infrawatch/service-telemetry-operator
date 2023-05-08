@@ -79,6 +79,54 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: smartgateways_loaded
 
+- name: Get current STF object
+  k8s_info:
+    api_version: infra.watch/v1beta1
+    kind: ServiceTelemetry
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: _stf_object
+
+- name: Get community Prometheus objects
+  k8s_info:
+    api_version: monitoring.coreos.com/v1
+    kind: Prometheus
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: _community_prom_object
+
+- block:
+  - name: Apply community observabilityStrategy if missing on an STF object with an existing community prometheus
+    k8s:
+      definition:
+        apiVersion: infra.watch/v1beta1
+        kind: ServiceTelemetry
+        metadata:
+          name: "{{ ansible_operator_meta.name }}"
+          namespace: "{{ ansible_operator_meta.namespace }}"
+        spec:
+          observabilityStrategy: use_community
+  - name: Set non-default community strategy for remainder of this run
+    set_fact:
+      observability_strategy: use_community
+  when:
+    - _community_prom_object.resources[0] is defined
+    - _stf_object.resources[0].spec.observability_strategy is not defined
+
+- name: Apply default observability_strategy if missing on a new STF object with no associated community prometheus
+  k8s:
+    definition:
+      apiVersion: infra.watch/v1beta1
+      kind: ServiceTelemetry
+      metadata:
+        name: "{{ ansible_operator_meta.name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      spec:
+        observabilityStrategy: "{{ observability_strategy }}"
+  when:
+    - _community_prom_object.resources[0] is not defined
+    - _stf_object.resources[0].spec.observability_strategy is not defined
+
 - name: Set ephemeral_storage_enabled to true when storage strategy is ephemeral
   set_fact:
     _ephemeral_storage_enabled: true
@@ -86,14 +134,6 @@
     - servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "ephemeral" or
       servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" or
       servicetelemetry_vars.alerting.alertmanager.storage.strategy == "ephemeral"
-
-- name: Get current ephemeralStorageEnabled status
-  k8s_info:
-    api_version: infra.watch/v1beta1
-    kind: ServiceTelemetry
-    name: "{{ ansible_operator_meta.name }}"
-    namespace: "{{ ansible_operator_meta.namespace }}"
-  register: _stf_object
 
 - name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
   operator_sdk.util.k8s_status:

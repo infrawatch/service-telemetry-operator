@@ -1,6 +1,3 @@
-- name: Create local signing authority
-  include_tasks: _local_signing_authority.yml
-
 - name: Create configmap for OAUTH CA certs
   k8s:
     definition:

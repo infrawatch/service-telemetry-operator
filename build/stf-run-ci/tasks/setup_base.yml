@@ -13,7 +13,7 @@
           name: certified-operators
         - disabled: false
           name: redhat-operators
-        - disabled: "{{ false if __service_telemetry_observability_strategy == 'use_community' else true }}"
+        - disabled: "{{ false if __service_telemetry_observability_strategy in ['use_community', 'use_hybrid'] else true }}"
           name: community-operators
 
 - name: Create OperatorGroup
@@ -80,7 +80,7 @@
         source: certified-operators
         sourceNamespace: openshift-marketplace
   when:
-    - __service_telemetry_observability_strategy == "use_community"
+    - __service_telemetry_observability_strategy in ['use_community', 'use_hybrid']
 
 - name: Subscribe to AMQ Interconnect Operator
   k8s:
@@ -103,13 +103,55 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
-        name: rhods-prometheus-operator
+        name: prometheus
         namespace: "{{ namespace }}"
       spec:
         channel: beta
         installPlanApproval: Automatic
-        name: rhods-prometheus-operator
-        source: redhat-operators
+        name: prometheus
+        source: community-operators
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy == "use_community"
+
+- block:
+  # Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm
+  - name: Create CatalogSource for Red Hat Observability Operator
+    k8s:
+      definition:
+        apiVersion: operators.coreos.com/v1alpha1
+        kind: CatalogSource
+        metadata:
+          annotations:
+          name: observability-operator
+          namespace: openshift-marketplace
+        spec:
+          displayName: Observability Operator - Test
+          icon:
+            base64data: ""
+            mediatype: ""
+          image: quay.io/rhobs/observability-operator-catalog:latest
+          publisher: Sunil Thaha
+          sourceType: grpc
+          updateStrategy:
+            registryPoll:
+              interval: 10m0s
+
+  - name: Subscribe to Red Hat Obervability Operator
+    k8s:
+      definition:
+        apiVersion: operators.coreos.com/v1alpha1
+        kind: Subscription
+        metadata:
+          labels:
+            operators.coreos.com/observability-operator.openshift-operators: ""
+          name: observability-operator
+          namespace: openshift-operators
+        spec:
+          channel: development
+          installPlanApproval: Automatic
+          name: observability-operator
+          source: observability-operator
+          sourceNamespace: openshift-marketplace
+  when:
+    - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']

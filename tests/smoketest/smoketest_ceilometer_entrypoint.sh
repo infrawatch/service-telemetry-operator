@@ -32,38 +32,42 @@ echo "[DEBUG] Query returned"
 metrics_result=$?
 echo "[DEBUG] Set metrics_result to $metrics_result"
 
-echo "*** [INFO] Get documents for this test from ElasticSearch..."
-DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{
-  "query": {
-    "bool": {
-      "filter": [
-        { "term" : { "labels.instance" : { "value" : "'${CLOUDNAME}'", "boost" : 1.0 } } },
-        { "range" : { "startsAt" : { "gte" : "now-1m", "lt" : "now" } } }
-      ]
+if [ "$OBSERVABILITY_STRATEGY" != "use_redhat" ]; then
+  echo "*** [INFO] Get documents for this test from ElasticSearch..."
+  DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{
+    "query": {
+      "bool": {
+        "filter": [
+          { "term" : { "labels.instance" : { "value" : "'${CLOUDNAME}'", "boost" : 1.0 } } },
+          { "range" : { "startsAt" : { "gte" : "now-1m", "lt" : "now" } } }
+        ]
+      }
     }
-  }
-}' | python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
+  }' | python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
 
 
-echo "*** [INFO] List of indices for debugging..."
-curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/_cat/indices/ceilometer_*?s=index"
-echo
+  echo "*** [INFO] List of indices for debugging..."
+  curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/_cat/indices/ceilometer_*?s=index"
+  echo
 
-echo "*** [INFO] Get documents for this test from ElasticSearch..."
-ES_INDEX=ceilometer_image
-DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/${ES_INDEX}/_search" -H 'Content-Type: application/json' -d'{
-  "query": {
-    "match_all": {}
-  }
-}'| python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
+  echo "*** [INFO] Get documents for this test from ElasticSearch..."
+  ES_INDEX=ceilometer_image
+  DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/${ES_INDEX}/_search" -H 'Content-Type: application/json' -d'{
+    "query": {
+      "match_all": {}
+    }
+  }'| python3 -c "import sys, json; parsed = json.load(sys.stdin); print(parsed['hits']['total']['value'])")
 
-echo "*** [INFO] Found ${DOCUMENT_HITS} documents"
-echo; echo
+  echo "*** [INFO] Found ${DOCUMENT_HITS} documents"
+  echo; echo
 
-# check if we got documents back for this test
-events_result=1
-if [ "$DOCUMENT_HITS" -gt "0" ]; then
-    events_result=0
+  # check if we got documents back for this test
+  events_result=1
+  if [ "$DOCUMENT_HITS" -gt "0" ]; then
+      events_result=0
+  fi
+else
+  events_result=0
 fi
 
 echo "[INFO] Verification exit codes (0 is passing, non-zero is a failure): events=${events_result} metrics=${metrics_result}"

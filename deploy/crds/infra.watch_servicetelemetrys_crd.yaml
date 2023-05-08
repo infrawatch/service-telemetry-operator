@@ -36,10 +36,12 @@ spec:
             description: ServiceTelemetrySpec holds the specification of an STF instance.
             properties:
               observabilityStrategy:
-                description: 'The strategy to use for observability systems. Options are "none" (do not deploy any observability components), and "use_community" (community operators with administrator managed subscriptions).'
+                description: 'The strategy to use for observability systems. Options are "none" (do not deploy any observability components), "use_community" (community supported operators), "use_redhat" (Red Hat Observability Operator with no unsupported components), "use_hybrid" (Red Hat Observability Operator + community supported operators).'
                 type: string
                 enum:
                 - use_community
+                - use_redhat
+                - use_hybrid
                 - none
               alerting:
                 properties:
