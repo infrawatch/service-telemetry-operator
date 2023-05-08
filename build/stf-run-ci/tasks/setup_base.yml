@@ -57,7 +57,7 @@
   - name: Use tech-preview channge for cert_manager in older OCP versions
     set_fact:
       cert_manager_channel: tech-preview
-    when: ocp_ver.stdout is version('4.13', '<')
+    when: ocp_ver.stdout is version('4.12', '<')
 
   - name: Subscribe to Cert Manager for OpenShift Operator
     k8s:
