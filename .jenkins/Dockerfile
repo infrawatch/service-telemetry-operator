@@ -10,6 +10,7 @@ RUN jenkins-plugin-cli -p ant:latest \
   email-ext:latest \
   git:latest \
   github-branch-source:latest \
+  github-scm-trait-notification-context:latest \
   gradle:latest \
   ldap:latest \
   mailer:latest \
