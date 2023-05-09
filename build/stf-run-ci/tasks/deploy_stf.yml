@@ -1,6 +1,6 @@
 # NOTE: be aware that if the API version changes for the ServiceTelemetry
 # object that it'll need to be updated here
-- name: Create default ServiceTelemetry manifest with observabilityStrategy use_community
+- name: Create default ServiceTelemetry manifest with a observabilityStrategy other than none
   set_fact:
     service_telemetry_manifest: |
       apiVersion: infra.watch/v1beta1
@@ -9,7 +9,7 @@
         name: default
         namespace: "{{ namespace }}"
       spec:
-        observabilityStrategy: "use_community"
+        observabilityStrategy: "{{ __service_telemetry_observability_strategy }}"
         alerting:
           alertmanager:
             storage:
@@ -72,7 +72,7 @@
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when:
     - service_telemetry_manifest is not defined
-    - __service_telemetry_observability_strategy == "use_community"
+    - __service_telemetry_observability_strategy != "none"
 
 - name: Create default ServiceTelemetry manifest with observabilityStrategy none
   set_fact:

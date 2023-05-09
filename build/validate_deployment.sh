@@ -12,7 +12,7 @@ echo -e "\n* [info] Waiting for QDR deployment to complete\n"
 until timeout 300 oc rollout status deployment.apps/default-interconnect; do sleep 3; done
 
 case "${VALIDATION_SCOPE}" in
-    "use_community")
+    "use_community" | "use_hybrid")
         echo -e "\n* [info] Waiting for prometheus deployment to complete\n"
         until timeout 300 oc rollout status statefulset.apps/prometheus-default; do sleep 3; done
         echo -e "\n* [info] Waiting for elasticsearch deployment to complete \n"
@@ -30,12 +30,25 @@ case "${VALIDATION_SCOPE}" in
         until timeout 300 oc rollout status deployment.apps/default-cloud1-coll-event-smartgateway; do sleep 3; done
         until timeout 300 oc rollout status deployment.apps/default-cloud1-ceil-event-smartgateway; do sleep 3; done
         until timeout 300 oc rollout status deployment.apps/default-cloud1-ceil-meter-smartgateway; do sleep 3; done
+        until timeout 300 oc rollout status deployment.apps/default-cloud1-sens-meter-smartgateway; do sleep 3; done
+    ;;
+
+    "use_redhat")
+        echo -e "\n* [info] Waiting for prometheus deployment to complete\n"
+        until timeout 300 oc rollout status statefulset.apps/prometheus-default; do sleep 3; done
+        echo -e "\n* [info] Waiting for alertmanager deployment to complete\n"
+        until timeout 300 oc rollout status statefulset.apps/alertmanager-default; do sleep 3; done
+        echo -e "\n* [info] Waiting for smart-gateway deployment to complete\n"
+        until timeout 300 oc rollout status deployment.apps/default-cloud1-coll-meter-smartgateway; do sleep 3; done
+        until timeout 300 oc rollout status deployment.apps/default-cloud1-ceil-meter-smartgateway; do sleep 3; done
+        until timeout 300 oc rollout status deployment.apps/default-cloud1-sens-meter-smartgateway; do sleep 3; done
     ;;
 
     "none")
         echo -e "\n* [info] Waiting for smart-gateway deployment to complete\n"
         until timeout 300 oc rollout status deployment.apps/default-cloud1-coll-meter-smartgateway; do sleep 3; done
         until timeout 300 oc rollout status deployment.apps/default-cloud1-ceil-meter-smartgateway; do sleep 3; done
+        until timeout 300 oc rollout status deployment.apps/default-cloud1-sens-meter-smartgateway; do sleep 3; done
     ;;
 esac
 

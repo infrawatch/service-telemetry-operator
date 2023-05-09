@@ -24,6 +24,8 @@ spec:
           value: "<<ELASTICSEARCH_AUTH_PASS>>"
         - name: PROMETHEUS_AUTH_PASS
           value: "<<PROMETHEUS_AUTH_PASS>>"
+        - name: OBSERVABILITY_STRATEGY
+          value: "<<OBSERVABILITY_STRATEGY>>"
         volumeMounts:
         - name: collectd-config
           mountPath: /etc/minimal-collectd.conf.template
@@ -51,6 +53,8 @@ spec:
           value: "<<ELASTICSEARCH_AUTH_PASS>>"
         - name: PROMETHEUS_AUTH_PASS
           value: "<<PROMETHEUS_AUTH_PASS>>"
+        - name: OBSERVABILITY_STRATEGY
+          value: "<<OBSERVABILITY_STRATEGY>>"
         volumeMounts:
         - name: ceilometer-publisher
           mountPath: /ceilometer_publish.py

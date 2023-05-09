@@ -3,8 +3,7 @@
 #
 # remove SmartGateway object when cloud no longer in current `clouds` object list.
 clouds_remove_on_missing: false
-# default observability strategy (compatible with STF 1.3)
-observability_strategy: use_community
+observability_strategy: use_redhat
 
 servicetelemetry_defaults:
   high_availability:
