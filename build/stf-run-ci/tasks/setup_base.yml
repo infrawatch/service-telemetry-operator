@@ -54,7 +54,7 @@
     shell: oc version -o yaml | grep openshiftVersion | awk '{print $2}'
     register: ocp_ver
 
-  - name: Use tech-preview channge for cert_manager in older OCP versions
+  - name: Use tech-preview channel for cert_manager in older OCP versions
     set_fact:
       cert_manager_channel: tech-preview
     when: ocp_ver.stdout is version('4.12', '<')
