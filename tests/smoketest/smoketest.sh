@@ -29,6 +29,8 @@ fi
 
 CLEANUP=${CLEANUP:-true}
 
+OBSERVABILITY_STRATEGY="${OBSERVABILITY_STRATEGY:-use_redhat}"
+
 for ((i=1; i<=NUMCLOUDS; i++)); do
   NAME="smoke${i}"
   CLOUDNAMES+=("${NAME}")
@@ -64,7 +66,7 @@ oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${RE
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_PASS>>/${PROMETHEUS_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
+    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_PASS>>/${PROMETHEUS_AUTH_PASS}/;s/<<OBSERVABILITY_STRATEGY>>/${OBSERVABILITY_STRATEGY}/" ${REL}/smoketest_job.yaml.template)
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
@@ -152,9 +154,11 @@ echo "*** [INFO] Logs from prometheus..."
 oc logs "$(oc get pod -l prometheus=default -o jsonpath='{.items[0].metadata.name}')" -c prometheus
 echo
 
-echo "*** [INFO] Logs from elasticsearch..."
-oc logs "$(oc get pod -l common.k8s.elastic.co/type=elasticsearch -o jsonpath='{.items[0].metadata.name}')"
-echo
+if [ "$OBSERVABILITY_STRATEGY" != "use_redhat" ]; then
+    echo "*** [INFO] Logs from elasticsearch..."
+    oc logs "$(oc get pod -l common.k8s.elastic.co/type=elasticsearch -o jsonpath='{.items[0].metadata.name}')"
+    echo
+fi
 
 echo "*** [INFO] Logs from snmp webhook..."
 oc logs "$(oc get pod -l app=default-snmp-webhook -o jsonpath='{.items[0].metadata.name}')"

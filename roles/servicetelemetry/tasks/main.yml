@@ -23,9 +23,26 @@
     - has_certmanager_api | bool
 
 # --> backends.metrics
+- name: Setup Certificates for metrics components
+  include_tasks: component_certificates.yml
+  when:
+    - has_certmanager_api | bool
+
+- name: Set community monitoring API string and labels
+  set_fact:
+    prometheus_operator_api_string: monitoring.coreos.com/v1
+    prometheus_operator_label:
+  when: observability_strategy == 'use_community'
+
+- name: Set Red Hat monitoring API string
+  set_fact:
+    prometheus_operator_api_string: monitoring.rhobs/v1
+    prometheus_operator_label: 'app.kubernetes.io/managed-by: observability-operator'
+  when: observability_strategy in ['use_redhat', 'use_hybrid']
+
 - name: Check if we have monitoring.coreos.com API
   set_fact:
-    has_monitoring_coreos_api: "{{ True if 'monitoring.coreos.com' in api_groups else False }}"
+    has_monitoring_api: "{{ True if (prometheus_operator_api_string | dirname) in api_groups else False }}"
 
 - block:
   - name: Create Prometheus instance
@@ -35,8 +52,8 @@
   - name: Create Alertmanager instance
     include_tasks: component_alertmanager.yml
   when:
-    - has_monitoring_coreos_api | bool
-    - observability_strategy == 'use_community'
+    - has_monitoring_api | bool
+    - observability_strategy != 'none'
 
 # --> backends.events
 - name: Check if we have elasticsearch API
@@ -46,14 +63,14 @@
 - name: Deploy ElasticSearch events backend
   block:
   - name: Setup Certificates for ElasticSearch
-    include_tasks: component_certificates.yml
+    include_tasks: component_es_certificates.yml
 
   - name: Setup ElasticSearch
     include_tasks: component_elasticsearch.yml
   when:
     - has_elasticsearch_api | bool
     - has_certmanager_api | bool
-    - observability_strategy == 'use_community'
+    - observability_strategy in ['use_community', 'use_hybrid']
 
 # --> backends.logs
 - name: Check if we have loki API
@@ -64,7 +81,7 @@
   include_tasks: component_loki.yml
   when:
     - has_loki_api | bool
-    - observability_strategy == 'use_community'
+    - observability_strategy in ['use_community', 'use_hybrid']
 
 # --> graphing
 - name: Check if we have integreatly.org API
@@ -81,7 +98,7 @@
 #    include_tasks: component_dashboards.yml
   when:
     - has_integreatly_api | bool
-    - observability_strategy == 'use_community'
+    - observability_strategy in ['use_community', 'use_hybrid']
 
 # --> clouds
 - name: Get data about clouds

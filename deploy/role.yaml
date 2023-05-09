@@ -32,6 +32,7 @@ rules:
   - security.openshift.io
   resourceNames:
   - nonroot
+  - nonroot-v2
   resources:
   - securitycontextconstraints
   verbs:
@@ -116,6 +117,7 @@ rules:
   - interconnectedcloud.github.io
   - smartgateway.infra.watch
   - monitoring.coreos.com
+  - monitoring.rhobs
   - elasticsearch.k8s.elastic.co
   - integreatly.org
   - loki.grafana.com
@@ -125,6 +127,13 @@ rules:
   - '*'
 - apiGroups:
   - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - monitoring.rhobs
   resources:
   - servicemonitors
   verbs:
@@ -156,3 +165,24 @@ rules:
   - '*'
   verbs:
   - '*'
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+- apiGroups:
+  - extensions
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch

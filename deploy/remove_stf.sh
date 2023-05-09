@@ -4,6 +4,7 @@
 #
 REL=$(dirname "$0"); . "${REL}/../build/metadata.sh"
 REMOVE_CERTMANAGER=${REMOVE_CERTMANAGER:-true}
+REMOVE_OBO=${REMOVE_OBO:-true}
 
 # The whole STF project (start this first since it's slow)
 oc delete project "${OCP_PROJECT}"
@@ -43,6 +44,18 @@ if [ "${REMOVE_CERTMANAGER}" = "true" ]; then
 
     # Certmanager CRDs
     oc get crd | grep cert-manager.io | cut -d ' ' -f 1 | xargs oc delete crd
+fi
+
+if [ "${REMOVE_OBO}" = "true" ]; then
+  oc delete subscription observability-operator -n openshift-operators
+  oc delete catalogsource observability-operator -n openshift-marketplace
+
+  # CSV for OBO
+  OBO_CSV=$(oc get csv | grep observability-operator | cut -d ' ' -f 1)
+  oc delete csv "${OBO_CSV}"
+
+  # OBO CRDs
+  oc get crd | grep monitoring.rhobs | cut -d ' ' -f 1 | xargs oc delete crd
 fi
 
 # Wait for namespace to actually disappear (this can take awhile)

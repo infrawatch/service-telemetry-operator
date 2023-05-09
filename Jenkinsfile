@@ -15,7 +15,7 @@ metadata:
   name: default
   namespace: ${namespace}
 spec:
-  observabilityStrategy: use_community
+  observabilityStrategy: use_redhat
   alerting:
     alertmanager:
       storage:
@@ -177,7 +177,7 @@ pipeline {
 								openshift.withProject(namespace) {
 									timeout(time: 800, unit: 'SECONDS') {
 										openshift.create(stf_resource)
-										sh "OCP_PROJECT=${namespace} ./build/validate_deployment.sh"
+										sh "OCP_PROJECT=${namespace} VALIDATION_SCOPE=use_redhat ./build/validate_deployment.sh"
 									}
 								}
 							}
