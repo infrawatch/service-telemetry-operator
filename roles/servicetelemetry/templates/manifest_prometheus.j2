@@ -7,6 +7,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
+  version: v2.43.0
   replicas: {{ servicetelemetry_vars.backends.metrics.prometheus.deployment_size }}
   ruleSelector: {}
   securityContext: {}
