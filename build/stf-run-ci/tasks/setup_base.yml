@@ -50,6 +50,15 @@
           namespace: openshift-cert-manager-operator
         spec: {}
 
+  - name: Get OCP version
+    shell: oc version -o yaml | grep openshiftVersion | awk '{print $2}'
+    register: ocp_ver
+
+  - name: Use tech-preview channel for cert_manager in older OCP versions
+    set_fact:
+      cert_manager_channel: tech-preview
+    when: ocp_ver.stdout is version('4.12', '<')
+
   - name: Subscribe to Cert Manager for OpenShift Operator
     k8s:
       definition:
@@ -59,7 +68,7 @@
           name: openshift-cert-manager-operator
           namespace: openshift-cert-manager-operator
         spec:
-          channel: tech-preview
+          channel: "{{ cert_manager_channel }}"
           installPlanApproval: Automatic
           name: openshift-cert-manager-operator
           source: redhat-operators
