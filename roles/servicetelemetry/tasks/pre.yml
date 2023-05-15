@@ -111,9 +111,9 @@
       observability_strategy: use_community
   when:
     - _community_prom_object.resources[0] is defined
-    - _stf_object.resources[0].spec.observability_strategy is not defined
+    - _stf_object.resources[0].spec.observabilityStrategy is not defined
 
-- name: Apply default observability_strategy if missing on a new STF object with no associated community prometheus
+- name: Apply default observabilityStrategy if missing on a new STF object with no associated community prometheus
   k8s:
     definition:
       apiVersion: infra.watch/v1beta1
@@ -125,7 +125,7 @@
         observabilityStrategy: "{{ observability_strategy }}"
   when:
     - _community_prom_object.resources[0] is not defined
-    - _stf_object.resources[0].spec.observability_strategy is not defined
+    - _stf_object.resources[0].spec.observabilityStrategy is not defined
 
 - name: Set ephemeral_storage_enabled to true when storage strategy is ephemeral
   set_fact:
