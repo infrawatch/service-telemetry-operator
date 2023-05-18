@@ -29,11 +29,11 @@ spec:
       access: proxy
       editable: true
       isDefault: false
-      url: 'https://elasticsearch-es-http:9200'
+      url: {{ service_telemetry_vars.backends.events.elasticsearch.extHostUrl }}
       type: elasticsearch
-      basicAuth: true
-      basicAuthUser: elastic
-      basicAuthPassword: {{ elasticsearch_pass }}
+      basicAuth: {{ service_telemetry_vars.backends.events.elasticsearch.extUseBasicAuth }}
+      basicAuthUser: {{ elastic_user }}
+      basicAuthPassword: {{ elastic_pass }}
       database: collectd_*
       jsonData:
         tlsSkipVerify: true
@@ -44,11 +44,11 @@ spec:
       access: proxy
       editable: true
       isDefault: false
-      url: 'https://elasticsearch-es-http:9200'
+      url: {{ service_telemetry_vars.backends.events.elasticsearch.extHostUrl }}
       type: elasticsearch
-      basicAuth: true
-      basicAuthUser: elastic
-      basicAuthPassword: {{ elasticsearch_pass }}
+      basicAuth: {{ service_telemetry_vars.backends.events.elasticsearch.extUseBasicAuth }}
+      basicAuthUser: {{ elastic_user }}
+      basicAuthPassword: {{ elastic_pass }}
       database: ceilometer_*
       jsonData:
         tlsSkipVerify: true

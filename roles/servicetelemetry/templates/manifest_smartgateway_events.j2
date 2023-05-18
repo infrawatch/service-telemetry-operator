@@ -1,27 +1,28 @@
 apiVersion: smartgateway.infra.watch/v2
 kind: SmartGateway
 metadata:
-  name: '{{ this_smartgateway }}'
-  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: {{ this_smartgateway }}
+  namespace: {{ ansible_operator_meta.namespace }}
 spec:
 {% if this_collector.debug_enabled is defined and this_collector.debug_enabled %}
-  logLevel: "debug"
+  logLevel: debug
 {% else %}
-  logLevel: "info"
+  logLevel: info
 {% endif %}
   handleErrors: true
   size: {{ smartgateway_deployment_size }}
   applications:
   - config: |
-      hostURL: https://elasticsearch-es-http.{{ ansible_operator_meta.namespace }}.svc.cluster.local:9200
-      useTLS: true
-      tlsClientCert: /config/certs/tls.crt
-      tlsClientKey: /config/certs/tls.key
+      hostURL: {{ servicetelemetry_vars.backends.events.elasticsearch.extHostUrl }}
+      useTLS: {{ servicetelemetry_vars.backends.events.elasticsearch.extUseTls }}
+      tlsClientCert: /config/certs/user.crt
+      tlsClientKey: /config/certs/user.key
       tlsCaCert: /config/certs/ca.crt
-      tlsServerName: 'elasticsearch-es-http.{{ ansible_operator_meta.namespace }}.svc.cluster.local'
-      user: '{{ elastic_user | default('elastic') }}'
-      password: '{{ elastic_pass | default('') }}'
-      useBasicAuth: true
+      tlsServerName: {{ servicetelemetry_vars.backends.events.elasticsearch.extTlsServerName }}
+      tlsSecretName: {{ servicetelemetry_vars.backends.events.elasticsearch.extTlsSecretName }}
+      user: {{ elastic_user | default('elastic') }}
+      password: {{ elastic_pass | default('') }}
+      useBasicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.extUseBasicAuth }}
     name: elasticsearch
   bridge:
     amqpUrl: amqp://{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}

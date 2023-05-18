@@ -46,6 +46,12 @@ servicetelemetry_defaults:
     events:
       elasticsearch:
         enabled: false
+        extHostUrl: https://elasticsearch-es-http:9200
+        extTlsServerName: elasticsearch-es-http.{{ ansible_operator_meta.namespace }}.svc.cluster.local
+        extTlsSecretName: elasticsearch-es-cert
+        extUserSecretName: elasticsearch-es-elastic-user
+        extUseBasicAuth: true
+        extUseTls: true
         version: 7.16.1
         node_count: 1
         storage:

@@ -25,13 +25,43 @@
         api_version: v1
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
-        name: 'elasticsearch-es-elastic-user'
+        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.extUserSecretName }}'
       register: elasticsearch_es_elastic_user
 
-    - name: Filter out ElasticSearch password for BasicAuth
+    - name: Set ElasticSearch user for BasicAuth
       set_fact:
-        elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[0].data.elastic') | b64decode }}"
+        elastic_user: "{{ elasticsearch_es_elastic_user.resources[0].data | dict2items | map(attribute='key') | list | first }}"
+
+    - name: Set ElasticSearch password for BasicAuth
+      set_fact:
+        elastic_pass: "{{ elasticsearch_es_elastic_user.resources[0].data[elastic_user] | b64decode }}"
       no_log: true
+
+    - name: Get the ElasticSearch TLS materials secret
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.extTlsSecretName }}'
+      register: es_certs
+
+    - when: es_certs[0].data[user.key] is not defined or es_certs[0].data[user.crt] is not defined
+      block:
+        - name: Load dummy certs
+          include_vars:
+            file: dummy_user_certs.yml
+
+        - name: Augment the secret with dummy TLS cert/key if no TLS user auth material provided
+          k8s:
+            definition:
+              api_version: v1
+              kind: Secret
+              metadata:
+                name: '{{ servicetelemetry_vars.backends.events.elasticsearch.extTlsSecretName }}'
+                namespace: '{{ ansible_operator_meta.namespace }}'
+              stringData:
+                user.crt: '{{ elastic_user_cert_dummy }}'
+                user.key: '{{ elastic_user_key_dummy }}'
 
     - name: Deploy Events Smart Gateway instance for each collector
       vars:
