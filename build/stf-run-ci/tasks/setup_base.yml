@@ -16,19 +16,17 @@
         - disabled: "{{ false if __service_telemetry_observability_strategy in ['use_community', 'use_hybrid'] else true }}"
           name: community-operators
 
-- when: not __deploy_from_index_enabled | bool
-  block:
-  - name: Create OperatorGroup
-    k8s:
-      definition:
-        apiVersion: operators.coreos.com/v1
-        kind: OperatorGroup
-        metadata:
-          name: service-telemetry-operator-group
-          namespace: "{{ namespace }}"
-        spec:
-          targetNamespaces:
-          - "{{ namespace }}"
+- name: Create OperatorGroup
+  k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: service-telemetry-operator-group
+        namespace: "{{ namespace }}"
+      spec:
+        targetNamespaces:
+        - "{{ namespace }}"
 
   - block:
     - name: Create openshift-cert-manager-operator namespace

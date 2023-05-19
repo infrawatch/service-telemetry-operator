@@ -30,21 +30,17 @@
   set_fact:
     internal_registry: "{{ builder_dockercfg_auth_results['image-registry.openshift-image-registry.svc:5000'] | to_json }}"
 
-- name: Create config.json to import as Secret
-  template:
-    variable_start_string: "<<"
-    variable_end_string: ">>"
-    src: config-json.j2
-    dest: working/service-telemetry-framework-index/config.json
+- when: query('kubernetes.core.k8s', api_version='v1', kind='Secret', resource_name='service-telemetry-framework-index-dockercfg', namespace=namespace) | length == 0
+  block:
+  - name: Create config.json to import as Secret
+    template:
+      variable_start_string: "<<"
+      variable_end_string: ">>"
+      src: config-json.j2
+      dest: working/service-telemetry-framework-index/config.json
 
-- name: Create index.yaml base for index image
-  template:
-    src: index-yaml.j2
-    dest: working/service-telemetry-framework-index/index.yaml
-
-- name: Create a Secret for the dockercfg
-  command: oc create secret generic -n {{ namespace }} {{ secret_builder_dockercfg_name.stdout }} --from-file=.dockerconfigjson=working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
-  when: query('kubernetes.core.k8s', api_version='v1', kind='Secret', resource_name='service-telemetry-operator-index-dockercfg', namespace=namespace) | length == 0
+  - name: Create a Secret for the dockercfg
+    command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson=working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
 
 - name: Create ImageStream for ose-operator-registry
   command: oc import-image -n {{ namespace }} ose-operator-registry:v4.12 --from=registry.redhat.io/openshift4/ose-operator-registry:v4.12 --confirm
@@ -107,11 +103,43 @@
               source:
                 secret:
                   defaultMode: 420
-                  secretName: service-telemetry-operator-index-dockercfg
+                  secretName: service-telemetry-framework-index-dockercfg
                 type: Secret
           type: Docker
         successfulBuildsHistoryLimit: 5
 
-- name: Build service-telemetry-framework-index
-  command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir working/service-telemetry-framework-index
+- name: Get builds of service-telemetry-framework-index
+  k8s_info:
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=service-telemetry-framework-index"
+  register: index_builds
 
+- when: index_builds.resources | length == 0
+  block:
+  - name: Create index.yaml base for index image
+    template:
+      src: index-yaml.j2
+      dest: working/service-telemetry-framework-index/index.yaml
+
+  - name: Build service-telemetry-framework-index
+    command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir working/service-telemetry-framework-index
+
+- name: Create CloudOps CatalogSource
+  k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-framework-operators
+        namespace: "{{ namespace }}"
+      spec:
+        displayName: CloudOps Operators
+        image: "{{ stf_index_image_path }}"
+        publisher: CloudOps
+        sourceType: grpc
+        updateStrategy:
+          registryPoll:
+            interval: 1m
