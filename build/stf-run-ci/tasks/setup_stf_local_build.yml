@@ -82,9 +82,9 @@
       - role_binding.yaml
       - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
 
-  - name: Revert local change to role_binding.yaml
-    shell: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
-
   - name: Load Service Telemetry Operator CSV
     shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
+# cleanup
+- name: Revert local change to role_binding.yaml
+  shell: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
