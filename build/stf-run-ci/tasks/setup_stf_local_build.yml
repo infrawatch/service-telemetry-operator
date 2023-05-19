@@ -1,8 +1,6 @@
 ---
-# NOTE: the split filter cuts the image path
-# (quay.io:443/infrawatch/container_image:tag_name) on the colon. Field :-1
-# (everything but the final field) is the image path, field -1 (final field) is
-# the image tag
+# WARNING: generation of bundles is not idempotent from the point of being able
+# to use the generate_bundle_<name> content for use in other places
 
 # --- Smart Gateway Operator ---
 - name: Generate Smart Gateway Operator CSV
@@ -19,9 +17,9 @@
       ./generate_bundle.sh
   register: generate_bundle_sgo
 
-- name: Results of bundle generation
+- name: Results of SGO bundle generation
   debug:
-    var: generate_bundle_sgo.stdout_lines
+    var: generate_bundle_sgo
 
 - name: Replace namespace in SGO role binding
   replace:
@@ -59,6 +57,11 @@
       OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
       OPERATOR_TAG={{ sto_image_path | parse_tag | quote }} \
       ./generate_bundle.sh
+  register: generate_bundle_sto
+
+- name: Results of STO bundle generation
+  debug:
+    var: generate_bundle_sto.stdout
 
 - name: Replace namespace in STO role binding
   replace:

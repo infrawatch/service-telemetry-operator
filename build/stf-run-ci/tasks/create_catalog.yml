@@ -1,0 +1,117 @@
+---
+- name: Create service-telemetry-framework-index working directory
+  file:
+    path: working/service-telemetry-framework-index
+    state: directory
+    mode: '0755'
+
+- name: Create info variables from bundle generation output
+  set_fact:
+    sto_bundle_info: "{{ generate_bundle_sto.stdout }}"
+    sgo_bundle_info: "{{ generate_bundle_sgo.stdout }}"
+
+- name: Get the builder-dockercfg Secret name
+  command: oc get secret -n {{ namespace }} --field-selector='type==kubernetes.io/dockercfg' -ojsonpath='{.items[?(@.metadata.annotations.kubernetes\.io/service-account\.name=="builder")].metadata.name}'
+  register: secret_builder_dockercfg_name
+
+- name: Get contents of builder Secret
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "{{ secret_builder_dockercfg_name.stdout }}"
+    namespace: "{{ namespace }}"
+  register: secret_builder_dockercfg_results
+
+- name: Get builder-dockercfg authentication contents
+  set_fact:
+    builder_dockercfg_auth_results: "{{ secret_builder_dockercfg_results.resources[0].data['.dockercfg'] | b64decode }}"
+
+- name: Set internal registry authentication
+  set_fact:
+    internal_registry: "{{ builder_dockercfg_auth_results['image-registry.openshift-image-registry.svc:5000'] | to_json }}"
+
+- name: Create config.json to import as Secret
+  template:
+    variable_start_string: "<<"
+    variable_end_string: ">>"
+    src: config-json.j2
+    dest: working/service-telemetry-framework-index/config.json
+
+- name: Create index.yaml base for index image
+  template:
+    src: index-yaml.j2
+    dest: working/service-telemetry-framework-index/index.yaml
+
+- name: Create a Secret for the dockercfg
+  command: oc create secret generic -n {{ namespace }} {{ secret_builder_dockercfg_name.stdout }} --from-file=.dockerconfigjson=working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
+  when: query('kubernetes.core.k8s', api_version='v1', kind='Secret', resource_name='service-telemetry-operator-index-dockercfg', namespace=namespace) | length == 0
+
+- name: Create ImageStream for ose-operator-registry
+  command: oc import-image -n {{ namespace }} ose-operator-registry:v4.12 --from=registry.redhat.io/openshift4/ose-operator-registry:v4.12 --confirm
+  when: query('kubernetes.core.k8s', api_version='v1', kind='ImageStream', resource_name='ose-operator-registry', namespace=namespace) | length == 0
+
+- name: Create ImageStream for service-telemetry-framework-index
+  command: oc create imagestream -n {{ namespace }} service-telemetry-framework-index
+  when: query('kubernetes.core.k8s', api_version='v1', kind='ImageStream', resource_name='service-telemetry-framework-index', namespace=namespace) | length == 0
+
+- name: Create BuildConfig for service-telemetry-framework-index
+  k8s:
+    definition:
+      apiVersion: build.openshift.io/v1
+      kind: BuildConfig
+      metadata:
+        annotations:
+          openshift.iio/generated-by: stf-run-ci
+        labels:
+          build: service-telemetry-framework-index
+        name: service-telemetry-framework-index
+        namespace: "{{ namespace }}"
+      spec:
+        failedBuildsHistoryLimit: 5
+        nodeSelector: null
+        output:
+          to:
+            kind: ImageStreamTag
+            name: service-telemetry-framework-index:latest
+        postCommit: {}
+        resources: {}
+        runPolicy: Serial
+        source:
+          dockerfile: |
+            # The base image is expected to contain
+            # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
+            FROM registry.redhat.io/openshift4/ose-operator-registry:v4.12
+
+            COPY --chmod=666 index.yaml /configs/
+
+            RUN mkdir /tmp/auth/
+            # we need the contents of the mounted build volume from secret placed into config.json
+            RUN cp /opt/app-root/auth/.dockerconfigjson /tmp/auth/config.json
+            RUN DOCKER_CONFIG=/tmp/auth /bin/opm --skip-tls-verify render {{ sto_bundle_image_path }} {{ sgo_bundle_image_path }} --output=yaml >> /configs/index.yaml
+
+            ENTRYPOINT ["/bin/opm"]
+            CMD ["serve", "/configs"]
+            # Set DC-specific label for the location of the DC root directory
+            # in the image
+            LABEL operators.operatorframework.io.index.configs.v1=/configs
+          type: Dockerfile
+        strategy:
+          dockerStrategy:
+            from:
+              kind: ImageStreamTag
+              name: ose-operator-registry:v4.12
+            volumes:
+            - mounts:
+              - destinationPath: /opt/app-root/auth
+              name: pull-secret
+              source:
+                secret:
+                  defaultMode: 420
+                  secretName: service-telemetry-operator-index-dockercfg
+                type: Secret
+          type: Docker
+        successfulBuildsHistoryLimit: 5
+
+- name: Build service-telemetry-framework-index
+  command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir working/service-telemetry-framework-index
+
