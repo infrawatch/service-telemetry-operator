@@ -28,7 +28,8 @@
         targetNamespaces:
         - "{{ namespace }}"
 
-  - block:
+- when: not __deploy_from_index_enabled | bool
+  block:
     - name: Create openshift-cert-manager-operator namespace
       k8s:
         definition:
