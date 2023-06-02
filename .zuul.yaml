@@ -26,8 +26,16 @@
       # Pass vars to crc cli https://review.rdoproject.org/cgit/config/tree/playbooks/crc/simple-start.yaml#n30
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
+- job:
+    name: stf-crc-latest-local_build-index_deploy
+    parent: stf-base
+    description:
+      Build STF locally and deploy from index
+    vars:
+      scenario: "local_build-index_deploy"
+
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
-        - noop
+        - stf-crc-latest-local_build-index_deploy
