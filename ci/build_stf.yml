@@ -1,0 +1,14 @@
+---
+hosts: controller
+tasks:
+  - name: "Build STF containers"
+    when: build_stf | default(True)
+    ansible.builtin.import_role:
+      name: build/stf-run-ci
+    vars:
+      __deploy_stf: false
+      __local_build_enabled: true
+      __service_telemetry_snmptraps_enabled: "true"
+      __service_telemetry_storage_ephemeral_enabled": "true"
+      __working_branch: master
+

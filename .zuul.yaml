@@ -1,0 +1,60 @@
+---
+- job:
+    name: stf-base
+    # defined in: https://review.rdoproject.org/cgit/config/tree/zuul.d/_jobs-crc.yaml
+    parent: base-simple-crc
+    # need to set cluster-monitoring
+    abstract: true
+    description: |
+      Create a CRC instance that's configured for STF
+    # irrelevant-files
+    roles:  # adds in dependent roles i.e. put it in the role path
+      - zuul: github.com/openstack-k8s-operators/ci-framework
+    # These are the additional repos that zuul will clone
+    required-projects:
+      - openstack-k8s-operators/ci-framework
+    # requires:  # defines a resource that needs to be available e.g. a content-provide job will provide a resource
+    # dependencies:  # list a job that needs to run successfully for this one
+    #
+    nodeset: centos-9-stream-crc-xxl
+    vars:
+      # vars for base-simple-crc
+      crc_config_cluster_monitoring: true
+      # crc_parameters:  # Pass vars to crc cli https://review.rdoproject.org/cgit/config/tree/playbooks/crc/simple-start.yaml#n30
+
+      # need a base job here, for now to request the specific versions of OCP
+
+      # content provider job that provides stf-15.
+      # MIGHT need OCP
+
+      # all jobs would depend on a combo of the stf and ocp content providers
+
+  # this is the one to use
+- job:
+    name: stf-crc-latest
+    parent: stf-base
+    description: |
+      Build, deploy and test STF
+    pre:
+      - ci/prepare.yml
+    run:
+      - ci/build_stf.yml
+      - ci/deploy_stf.yml
+      - ci/test_stf.yml
+
+#stf-1.5-ocp-4.10
+#  parent: stf-base
+#  dependencies: [make-ocp-4.10]
+#  requires:
+#    - "ocp-4.10"
+#
+#stf-1.5-ocp-4.12
+#  parent: stf-base
+#stf-1.5-ocp-pre-release
+#  parent: stf-base
+
+- project:
+  name: infrawatch/service-telemetry-operator
+  github-check:
+    jobs:
+      - stf-crc-latest

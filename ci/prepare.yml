@@ -1,0 +1,13 @@
+---
+- hosts: controller
+  tasks:
+    #- name: Clone upstream
+
+    - name: Log into the cluster
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+    - name: Create project
+      shell:
+        cmd: |
+          oc new-project service-telemetry

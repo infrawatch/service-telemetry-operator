@@ -1,0 +1,8 @@
+---
+- hosts: controller
+  tasks:
+    - name: "Run STF smoketests"
+      ansible.builtin.shell:
+        cmd: |
+          OCP_PROJECT=${namespace} ./tests/smoketest/smoketest.sh
+          chdir: "{{ ansible_user_dir }}/src/github.com/infrawatch/service-telemetry-operator/"

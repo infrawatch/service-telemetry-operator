@@ -1,0 +1,8 @@
+---
+- hosts: controller
+  tasks:
+    - name: "Deploy STF object"
+      ansible.builtin.shell:
+        cmd: |
+          OCP_PROJECT=service-telemetry VALIDATION_SCOPE=use_redhat ./build/validate_deployment.sh
+        chdir: "{{ ansible_user_dir }}/src/github.com/infrawatch/service-telemetry-operator/"
