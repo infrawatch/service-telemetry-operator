@@ -1,0 +1,17 @@
+---
+- hosts: controller
+  tasks:
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+    - name: "Get the oc version info"
+      ansible.builtin.shell:
+        cmd: |
+          oc version | grep -i Server
+      register: oc_version
+
+    - name: "Show the oc version"
+      ansible.builtin.debug:
+        var: oc_version

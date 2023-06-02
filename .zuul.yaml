@@ -1,6 +1,36 @@
 ---
+- job:
+    name: stf-base
+    # defined in: https://review.rdoproject.org/cgit/config/tree/zuul.d/_jobs-crc.yaml
+    parent: base-simple-crc
+    abstract: true
+    description: |
+      Run the stf-run-ci role, and then test stf
+    roles:  # adds in dependent roles i.e. put it in the role path
+      - zuul: github.com/openstack-k8s-operators/ci-framework
+    run:
+      - ci/check_ocp_version.yml
+    # These are the additional repos that zuul will clone
+    required-projects:
+      - name: openstack-k8s-operators/ci-framework
+        override-checkout: main
+    nodeset: centos-9-crc-xxl
+
+- job:
+    name: stf-crc-ocp410
+    parent: stf-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.10.9/crc_libvirt_4.10.9_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp412
+    parent: stf-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
-        - noop
+        - stf-crc-ocp410
+        - stf-crc-ocp412
