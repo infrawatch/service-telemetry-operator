@@ -1,0 +1,44 @@
+---
+- name: "Prepare the environment for running stf"
+  hosts: controller
+  tasks:
+    - name: "Update pip"
+      ansible.builtin.pip:
+        name: pip
+        state: latest
+        extra_args: "-U"
+
+    - name: "Install pre-reqs from pip"
+      ansible.builtin.pip:
+        name:
+            # https://stackoverflow.com/questions/64073422/importerror-cannot-import-name-oauth1session-from-requests-oauthlib
+          - requests==2.27.1
+          - requests_oauthlib==1.3.0
+            # https://github.com/domainaware/parsedmarc/issues/318
+          - oauthlib==3.2.0
+          - kubernetes==24.2.0
+          - openshift==0.13.1
+          - ansible-core==2.12.10
+        state: present
+
+    - name: "Install ansible collections"
+      community.general.ansible_galaxy_install:
+        type: collection
+        name: "{{ item }}"
+      with_items:
+        - "kubernetes.core:2.3.2"
+        - "community.general:6.2.0"
+
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+    - name: "Create the service-telemetry project"
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: "service-telemetry"
+        state: present
+      retries: 3
+      delay: 30
