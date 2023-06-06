@@ -28,7 +28,7 @@ spec:
             - name: SNMP_PORT
               value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.port }}"
             - name: SNMP_TIMEOUT
-              value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.port }}"
+              value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.timeout }}"
             - name: ALERT_OID_LABEL
               value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.alert_oid_label }}"
             - name: TRAP_OID_PREFIX
