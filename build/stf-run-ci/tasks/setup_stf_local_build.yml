@@ -19,7 +19,7 @@
 
 - name: Results of SGO bundle generation
   debug:
-    var: generate_bundle_sgo
+    var: generate_bundle_sgo.stdout
 
 - name: Replace namespace in SGO role binding
   replace:
