@@ -57,7 +57,7 @@
       kind: BuildConfig
       metadata:
         annotations:
-          openshift.iio/generated-by: stf-run-ci
+          openshift.io/generated-by: stf-run-ci
         labels:
           build: service-telemetry-framework-index
         name: service-telemetry-framework-index
