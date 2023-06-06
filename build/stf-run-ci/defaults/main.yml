@@ -34,6 +34,9 @@ __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __service_telemetry_bundle_image_path:
 __smart_gateway_bundle_image_path:
 
+default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator-registry
+default_operator_registry_image_tag: v4.12
+
 sgo_image_tag: latest
 sto_image_tag: latest
 sg_core_image_tag: latest

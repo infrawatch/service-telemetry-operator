@@ -43,7 +43,7 @@
     command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson=working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
 
 - name: Create ImageStream for ose-operator-registry
-  command: oc import-image -n {{ namespace }} ose-operator-registry:v4.12 --from=registry.redhat.io/openshift4/ose-operator-registry:v4.12 --confirm
+  command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
   when: query('kubernetes.core.k8s', api_version='v1', kind='ImageStream', resource_name='ose-operator-registry', namespace=namespace) | length == 0
 
 - name: Create ImageStream for service-telemetry-framework-index
