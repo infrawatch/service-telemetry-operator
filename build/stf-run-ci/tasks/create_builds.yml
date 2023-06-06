@@ -16,19 +16,18 @@
       - "build={{ artifact.name }}"
   register: build_lookup
 
-- block:
+- when: build_config_lookup.resources | length == 0
+  block:
   - name: Create BuildConfig and ImageStream
     shell: oc new-build -n "{{ namespace }}" --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
-    when: build_config_lookup.resources | length == 0
 
   - name: Kill first build since it will always fail (triggered on BuildConfig creation)
     shell: sleep 10 ; oc delete build {{ artifact.name }}-1 -n "{{ namespace }}"
-    when: build_config_lookup.resources | length == 0
 
-  - name: Start local image build
-    command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --wait --from-dir "{{ artifact.working_build_dir }}"
-    register: build_results
-    when: build_lookup.resources | length == 0
+- name: Start local image build
+  command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --wait --from-dir "{{ artifact.working_build_dir }}"
+  register: build_results
+  when: build_lookup.resources | length == 0
 
 - name: Get latest build information for artifact
   command: oc get build --selector build={{ artifact.name }} -n "{{ namespace }}" -ojsonpath='{.items[-1:]}'
