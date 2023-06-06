@@ -36,6 +36,10 @@
     kind: Node
   register: node_info
 
+- name: Get OCP version
+  shell: oc version -o yaml | grep openshiftVersion | awk '{print $2}'
+  register: ocp_ver
+
 - name: Find out if we are using crc by looking at the node hostnames
   set_fact:
     is_crc: "{{ True if 'crc' in node_info.resources[0].metadata.labels[\"kubernetes.io/hostname\"] else False }}"
