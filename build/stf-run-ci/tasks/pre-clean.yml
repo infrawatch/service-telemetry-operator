@@ -62,6 +62,26 @@
         publisher: CloudOps
         sourceType: grpc
 
+- name: Remove service-telemetry-operator-bundle CatalogSource (bundle deploy)
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-operator-catalog
+        namespace: "{{ namespace }}"
+
+- name: Remove smart-gateway-operator-bundle CatalogSource (bundle deploy)
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: smart-gateway-operator-catalog
+        namespace: "{{ namespace }}"
+
 - name: Remove Service Telemetry Operator bundle build
   k8s:
     state: absent
