@@ -48,6 +48,26 @@
         displayName: OperatorHub.io Operators
         publisher: OperatorHub.io
 
+- name: Remove service-telemetry-operator-bundle CatalogSource (bundle deploy)
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-operator-catalog
+        namespace: "{{ namespace }}"
+
+- name: Remove smart-gateway-operator-bundle CatalogSource (bundle deploy)
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: smart-gateway-operator-catalog
+        namespace: "{{ namespace }}"
+
 # Remove the cert manager since we install it as part of the CI/documented pre-install process
 - name: Remove openshift-cert-manager-operator namespace
   k8s:
