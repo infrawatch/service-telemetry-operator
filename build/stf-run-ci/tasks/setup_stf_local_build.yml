@@ -55,7 +55,6 @@
   ansible.builtin.shell:
     chdir: "{{ base_dir }}"
     cmd: |
-      LOGFILE="{{ ansible_env.HOME }}/sto_gen_bundle.log" \
       OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
       WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
