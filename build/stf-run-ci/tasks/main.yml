@@ -31,6 +31,11 @@
     msg: __deploy_from_index_enabled must also have __local_build_enabled
   when: __deploy_from_index_enabled | bool and not __local_build_enabled | bool
 
+- name: Fail when deploying from index images and deployment from bundles also requested (mutually exclusive methods)
+  fail:
+    msg: __deploy_from_index_enabled can not be used with __deploy_from_bundles_enabled
+  when: __deploy_from_index_enabled | bool and __deploy_from_bundles_enabled | bool
+
 - name: Get the list of nodes
   k8s_info:
     kind: Node
