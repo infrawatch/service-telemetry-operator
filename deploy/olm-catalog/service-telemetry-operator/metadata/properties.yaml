@@ -37,8 +37,5 @@ properties:
               packageName: prometheus
               versionRange: '>=0.56.0'
           - package:
-              packageName: rhods-prometheus-operator
-              versionRange: '>=4.10.0'
-          - package:
               packageName: observability-operator
               versionRange: '>=0.0.1'
