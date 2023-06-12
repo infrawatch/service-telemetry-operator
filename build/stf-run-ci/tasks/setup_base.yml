@@ -28,51 +28,80 @@
         targetNamespaces:
         - "{{ namespace }}"
 
-- block:
-  - name: Create openshift-cert-manager-operator namespace
-    k8s:
-      definition:
-        apiVersion: project.openshift.io/v1
-        kind: Project
-        metadata:
-          name: openshift-cert-manager-operator
-        spec:
-          finalizers:
-          - kubernetes
+- when: not __deploy_from_index_enabled | bool
+  block:
+    - name: Create openshift-cert-manager-operator namespace
+      k8s:
+        definition:
+          apiVersion: project.openshift.io/v1
+          kind: Project
+          metadata:
+            name: openshift-cert-manager-operator
+          spec:
+            finalizers:
+            - kubernetes
 
-  - name: Create openshift-cert-manager-operator OperatorGroup
-    k8s:
-      definition:
-        apiVersion: operators.coreos.com/v1
-        kind: OperatorGroup
-        metadata:
-          name: openshift-cert-manager-operator
-          namespace: openshift-cert-manager-operator
-        spec: {}
+    - name: Create openshift-cert-manager-operator OperatorGroup
+      k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1
+          kind: OperatorGroup
+          metadata:
+            name: openshift-cert-manager-operator
+            namespace: openshift-cert-manager-operator
+          spec: {}
 
-  - name: Get OCP version
-    shell: oc version -o yaml | grep openshiftVersion | awk '{print $2}'
-    register: ocp_ver
+    - name: Use tech-preview channel for cert_manager in older OCP versions
+      set_fact:
+        cert_manager_channel: tech-preview
+      when: ocp_ver.stdout is version('4.12', '<')
 
-  - name: Use tech-preview channel for cert_manager in older OCP versions
-    set_fact:
-      cert_manager_channel: tech-preview
-    when: ocp_ver.stdout is version('4.12', '<')
+    - name: Subscribe to Cert Manager for OpenShift Operator
+      k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: openshift-cert-manager-operator
+            namespace: openshift-cert-manager-operator
+          spec:
+            channel: "{{ cert_manager_channel }}"
+            installPlanApproval: Automatic
+            name: openshift-cert-manager-operator
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
 
-  - name: Subscribe to Cert Manager for OpenShift Operator
-    k8s:
-      definition:
-        apiVersion: operators.coreos.com/v1alpha1
-        kind: Subscription
-        metadata:
-          name: openshift-cert-manager-operator
-          namespace: openshift-cert-manager-operator
-        spec:
-          channel: "{{ cert_manager_channel }}"
-          installPlanApproval: Automatic
-          name: openshift-cert-manager-operator
-          source: redhat-operators
-          sourceNamespace: openshift-marketplace
+    - name: Subscribe to AMQ Interconnect Operator
+      k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: amq7-interconnect-operator
+            namespace: "{{ namespace }}"
+          spec:
+            channel: 1.10.x
+            installPlanApproval: Automatic
+            name: amq7-interconnect-operator
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+
+    - name: Subscribe to Prometheus Operator
+      k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: prometheus
+            namespace: "{{ namespace }}"
+          spec:
+            channel: beta
+            installPlanApproval: Automatic
+            name: prometheus
+            source: community-operators
+            sourceNamespace: openshift-marketplace
+      when:
+        - __service_telemetry_observability_strategy == "use_community"
 
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
   k8s:
@@ -90,38 +119,6 @@
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy in ['use_community', 'use_hybrid']
-
-- name: Subscribe to AMQ Interconnect Operator
-  k8s:
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: Subscription
-      metadata:
-        name: amq7-interconnect-operator
-        namespace: "{{ namespace }}"
-      spec:
-        channel: 1.10.x
-        installPlanApproval: Automatic
-        name: amq7-interconnect-operator
-        source: redhat-operators
-        sourceNamespace: openshift-marketplace
-
-- name: Subscribe to Prometheus Operator
-  k8s:
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: Subscription
-      metadata:
-        name: prometheus
-        namespace: "{{ namespace }}"
-      spec:
-        channel: beta
-        installPlanApproval: Automatic
-        name: prometheus
-        source: community-operators
-        sourceNamespace: openshift-marketplace
-  when:
-    - __service_telemetry_observability_strategy == "use_community"
 
 - block:
   # Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm
