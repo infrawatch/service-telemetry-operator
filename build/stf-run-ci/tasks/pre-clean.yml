@@ -48,6 +48,47 @@
         displayName: OperatorHub.io Operators
         publisher: OperatorHub.io
 
+- name: Remove CloudOps CatalogSource if it is installed
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-framework-operators
+        namespace: "{{ namespace }}"
+      spec:
+        displayName: CloudOps Operators
+        publisher: CloudOps
+        sourceType: grpc
+
+- name: Remove Service Telemetry Operator bundle build
+  k8s:
+    state: absent
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=service-telemetry-operator-bundle"
+
+- name: Remove Smart Gateway Operator bundle build
+  k8s:
+    state: absent
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=smart-gateway-operator-bundle"
+
+- name: Remove Service Telemetry Framework index build
+  k8s:
+    state: absent
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=service-telemetry-framework-index"
+
 - name: Remove service-telemetry-operator-bundle CatalogSource (bundle deploy)
   k8s:
     state: absent

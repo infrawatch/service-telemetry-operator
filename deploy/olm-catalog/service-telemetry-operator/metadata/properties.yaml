@@ -1,3 +1,41 @@
 properties:
   - type: olm.maxOpenShiftVersion
     value: "4.12"
+  - type: olm.constraint
+    value:
+      failureMessage: Require Smart Gateway for Service Telemetry Framework
+      all:
+        constraints:
+          - failureMessage: Package smart-gateway-operator is needed for Service Telemetry Framework
+            package:
+              packageName: smart-gateway-operator
+              versionRange: '>=5.0.0'
+  - type: olm.constraint
+    value:
+      failureMessage: Require data transport for Service Telemetry Framework
+      all:
+        constraints:
+          - failureMessage: Package amq7-interconnect-operator is needed for data transport with STF
+            package:
+              packageName: amq7-interconnect-operator
+              versionRange: '>=1.10.0'
+  - type: olm.constraint
+    value:
+      failureMessage: Require certificate management for Service Telemetry Framework
+      all:
+        constraints:
+          - failureMessage: Package openshift-cert-manager-operator is needed for AMQ Interconnect setup
+            package:
+              packageName: openshift-cert-manager-operator
+              versionRange: '>=1.10.0'
+  - type: olm.constraint
+    value:
+      failureMessage: Require Prometheus backend for data storage of metrics for Service Telemetry Framework
+      any:
+        constraints:
+          - package:
+              packageName: prometheus
+              versionRange: '>=0.56.0'
+          - package:
+              packageName: observability-operator
+              versionRange: '>=0.0.1'
