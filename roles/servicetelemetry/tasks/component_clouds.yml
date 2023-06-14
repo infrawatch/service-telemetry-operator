@@ -19,6 +19,7 @@
     - this_cloud.metrics.collectors is iterable
 
 - name: Events Smart Gateway deployment
+  when: servicetelemetry_vars.backends.events.elasticsearch.enabled
   block:
     - name: Lookup ElasticSearch BasicAuth
       k8s_info:
@@ -77,14 +78,6 @@
         - this_cloud.events is defined
         - this_cloud.events.collectors is defined
         - this_cloud.events is iterable
-  # TODO: it should be possible to deploy the eventing SGs when ElasticSearch
-  # is not available, but currently the template for smartgateway_events
-  # expects to have information about a local ES instance on cluster.
-  # https://github.com/infrawatch/service-telemetry-operator/issues/274
-  when:
-    - has_elasticsearch_api | bool
-    - servicetelemetry_vars.backends.events.elasticsearch.enabled
-    - observability_strategy in ['use_community', 'use_hybrid']
 
 - name: Deploy Logs Smart Gateway instance
   vars:

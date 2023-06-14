@@ -83,6 +83,17 @@
     - has_loki_api | bool
     - observability_strategy in ['use_community', 'use_hybrid']
 
+# --> clouds
+- name: Get data about clouds
+  debug:
+    var: servicetelemetry_vars.clouds
+
+- name: Loop through cloud instances to setup transport receivers
+  include_tasks: component_clouds.yml
+  loop: "{{ servicetelemetry_vars.clouds }}"
+  loop_control:
+    loop_var: this_cloud
+
 # --> graphing
 - name: Check if we have integreatly.org API
   set_fact:
@@ -99,17 +110,6 @@
   when:
     - has_integreatly_api | bool
     - observability_strategy in ['use_community', 'use_hybrid']
-
-# --> clouds
-- name: Get data about clouds
-  debug:
-    var: servicetelemetry_vars.clouds
-
-- name: Loop through cloud instances to setup transport receivers
-  include_tasks: component_clouds.yml
-  loop: "{{ servicetelemetry_vars.clouds }}"
-  loop_control:
-    loop_var: this_cloud
 
 # Post deployment tasks
 - name: Post-setup
