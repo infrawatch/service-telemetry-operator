@@ -29,9 +29,9 @@ spec:
       access: proxy
       editable: true
       isDefault: false
-      url: {{ servicetelemetry_vars.backends.events.elasticsearch.extHostUrl }}
+      url: {{ servicetelemetry_vars.backends.events.elasticsearch.ext_host_url }}
       type: elasticsearch
-      basicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.extUseBasicAuth }}
+      basicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.ext_use_basic_auth }}
       basicAuthUser: {{ elastic_user }}
       basicAuthPassword: {{ elastic_pass }}
       database: collectd_*
@@ -44,9 +44,9 @@ spec:
       access: proxy
       editable: true
       isDefault: false
-      url: {{ servicetelemetry_vars.backends.events.elasticsearch.extHostUrl }}
+      url: {{ servicetelemetry_vars.backends.events.elasticsearch.ext_host_url }}
       type: elasticsearch
-      basicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.extUseBasicAuth }}
+      basicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.ext_use_basic_auth }}
       basicAuthUser: {{ elastic_user }}
       basicAuthPassword: {{ elastic_pass }}
       database: ceilometer_*
