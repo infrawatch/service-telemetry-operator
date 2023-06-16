@@ -44,6 +44,12 @@ metadata:
                     "endpointCertDuration": "70080h"
                   },
                   "enabled": false,
+                  "extHostUrl": "https://external-elastic-http.domain:9200",
+                  "extTlsSecretName": "elasticsearch-es-cert",
+                  "extTlsServerName": "external-elastic-http.domain",
+                  "extUseBasicAuth": true,
+                  "extUseTls": true,
+                  "extUserSecretName": "elasticsearch-es-elastic-user",
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20Gi"
