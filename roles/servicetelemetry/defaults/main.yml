@@ -47,7 +47,7 @@ servicetelemetry_defaults:
       elasticsearch:
         enabled: false
         ext_host_url: https://elasticsearch-es-http:9200
-        ext_tls_server_name: elasticsearch-es-http.{{ ansible_operator_meta.namespace }}.svc.cluster.local
+        ext_tls_server_name: ""
         ext_tls_secret_name: elasticsearch-es-cert
         ext_user_secret_name: elasticsearch-es-elastic-user
         ext_use_basic_auth: true

@@ -69,6 +69,7 @@
         data_type: 'events'
         manifest: './manifest_smartgateway_events.j2'
         this_smartgateway: "{{ ansible_operator_meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event"
+        elasticsearch: "{{ servicetelemetry_vars.backends.events.elasticsearch | from_yaml }}"
       include_tasks: base_smartgateway.yml
       loop: "{{ this_cloud.events.collectors }}"
       loop_control:

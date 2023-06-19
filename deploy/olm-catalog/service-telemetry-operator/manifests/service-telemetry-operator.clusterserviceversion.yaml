@@ -46,7 +46,7 @@ metadata:
                   "enabled": false,
                   "extHostUrl": "https://external-elastic-http.domain:9200",
                   "extTlsSecretName": "elasticsearch-es-cert",
-                  "extTlsServerName": "external-elastic-http.domain",
+                  "extTlsServerName": "",
                   "extUseBasicAuth": true,
                   "extUseTls": true,
                   "extUserSecretName": "elasticsearch-es-elastic-user",
