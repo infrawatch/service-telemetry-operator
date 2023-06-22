@@ -5,6 +5,10 @@
 clouds_remove_on_missing: false
 observability_strategy: use_redhat
 
+# These get auto-discovered, but the code is simpler if they are never undefined
+prometheus_operator_api_string: ""
+prometheus_operator_label: ""
+
 servicetelemetry_defaults:
   high_availability:
     enabled: false
