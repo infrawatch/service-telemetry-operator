@@ -26,7 +26,7 @@
         api_version: v1
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
-        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.ext_user_secret_name }}'
+        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.user_secret_name }}'
       register: elasticsearch_es_elastic_user
 
     - name: Set Elasticsearch user for BasicAuth
@@ -43,7 +43,7 @@
         api_version: v1
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
-        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.ext_tls_secret_name }}'
+        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_secret_name }}'
       register: es_certs
 
     - when: es_certs[0].data[user.key] is not defined or es_certs[0].data[user.crt] is not defined
@@ -58,7 +58,7 @@
               apiVersion: v1
               kind: Secret
               metadata:
-                name: '{{ servicetelemetry_vars.backends.events.elasticsearch.ext_tls_secret_name }}'
+                name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_secret_name }}'
                 namespace: '{{ ansible_operator_meta.namespace }}'
               stringData:
                 user.crt: '{{ elastic_user_cert_dummy }}'

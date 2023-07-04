@@ -13,16 +13,16 @@ spec:
   size: {{ smartgateway_deployment_size }}
   applications:
   - config: |
-      hostURL: {{ elasticsearch.ext_host_url }}
-      useTLS: {{ elasticsearch.ext_use_tls }}
+      hostURL: {{ elasticsearch.forwarding.host_url }}
+      useTLS: {{ elasticsearch.forwarding.use_tls }}
       tlsClientCert: /config/certs/user.crt
       tlsClientKey: /config/certs/user.key
       tlsCaCert: /config/certs/ca.crt
-      tlsServerName: {{ (elasticsearch.ext_tls_server_name != "") | ternary(elasticsearch.ext_tls_server_name, elasticsearch.ext_host_url.rpartition("//")[-1].partition(":")[0]) }}
-      tlsSecretName: {{ elasticsearch.ext_tls_secret_name }}
+      tlsServerName: {{ (elasticsearch.forwarding.tls_server_name != "") | ternary(elasticsearch.forwarding.tls_server_name, elasticsearch.forwarding.host_url.rpartition("//")[-1].partition(":")[0]) }}
+      tlsSecretName: {{ elasticsearch.forwarding.tls_secret_name }}
       user: {{ elastic_user | default('elastic') }}
       password: {{ elastic_pass | default('') }}
-      useBasicAuth: {{ elasticsearch.ext_use_basic_auth }}
+      useBasicAuth: {{ elasticsearch.forwarding.use_basic_auth }}
     name: elasticsearch
   bridge:
     amqpUrl: amqp://{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}

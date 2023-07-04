@@ -50,12 +50,13 @@ servicetelemetry_defaults:
     events:
       elasticsearch:
         enabled: false
-        ext_host_url: https://elasticsearch-es-http:9200
-        ext_tls_server_name: ""
-        ext_tls_secret_name: elasticsearch-es-cert
-        ext_user_secret_name: elasticsearch-es-elastic-user
-        ext_use_basic_auth: true
-        ext_use_tls: true
+        forwarding:
+          host_url: https://elasticsearch-es-http:9200
+          tls_server_name: ""
+          tls_secret_name: elasticsearch-es-cert
+          user_secret_name: elasticsearch-es-elastic-user
+          use_basic_auth: true
+          use_tls: true
         version: 7.16.1
         node_count: 1
         storage:
