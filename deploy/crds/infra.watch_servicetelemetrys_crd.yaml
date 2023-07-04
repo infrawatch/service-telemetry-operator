@@ -172,24 +172,28 @@ spec:
                           enabled:
                             description: Enable Elasticsearch as a storage backend for events
                             type: boolean
-                          extHostUrl:
-                            description: URL of Elasticsearch HTTP(S) endpoint
-                            type: string
-                          extTlsServerName:
-                            description: (if required) Server Name expected to match the certificate presented by the endpoint
-                            type: string
-                          extTlsSecretName:
-                            description: (if required) Name of the secret that stores the CA cert and client cert/key
-                            type: string
-                          extUserSecretName:
-                            description: (if required) Name of the secret that stores the Basic Auth credentials
-                            type: string
-                          extUseBasicAuth:
-                            description: Whether to provide HTTP Basic Auth headers
-                            type: boolean
-                          extUseTls:
-                            description: Whether to enable TLS
-                            type: boolean
+                          forwarding:
+                            description: Configuration for where to forward events
+                            type: object
+                            properties:
+                              hostUrl:
+                                description: URL of Elasticsearch HTTP(S) endpoint
+                                type: string
+                              tlsServerName:
+                                description: (if required) Server Name expected to match the certificate presented by the endpoint
+                                type: string
+                              tlsSecretName:
+                                description: (if required) Name of the secret that stores the CA cert and client cert/key
+                                type: string
+                              userSecretName:
+                                description: (if required) Name of the secret that stores the Basic Auth credentials
+                                type: string
+                              useBasicAuth:
+                                description: Whether to provide HTTP Basic Auth headers
+                                type: boolean
+                              useTls:
+                                description: Whether to enable TLS
+                                type: boolean
                           version:
                             description: (DEPRECATED - Use ext* after STF 1.5.3) Version of Elasticsearch to deploy. Elasticsearch licensing has changed as of version 7.11. See https://www.elastic.co/pricing/faq/licensing for details.
                             type: string
