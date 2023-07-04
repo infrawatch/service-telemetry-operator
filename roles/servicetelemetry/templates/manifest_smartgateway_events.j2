@@ -18,7 +18,7 @@ spec:
       tlsClientCert: /config/certs/user.crt
       tlsClientKey: /config/certs/user.key
       tlsCaCert: /config/certs/ca.crt
-      tlsServerName: {{ (elasticsearch.forwarding.tls_server_name != "") | ternary(elasticsearch.forwarding.tls_server_name, elasticsearch.forwarding.host_url.rpartition("//")[-1].partition(":")[0]) }}
+      tlsServerName: {{ elastic_tls_server_name }}
       tlsSecretName: {{ elasticsearch.forwarding.tls_secret_name }}
       user: {{ elastic_user | default('elastic') }}
       password: {{ elastic_pass | default('') }}

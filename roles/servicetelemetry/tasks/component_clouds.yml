@@ -38,6 +38,17 @@
         elastic_pass: "{{ elasticsearch_es_elastic_user.resources[0].data[elastic_user] | b64decode }}"
       no_log: true
 
+    - name: Set elastic_tls_server_name from forwarding config if set
+      set_fact:
+        elastic_tls_server_name: "{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_server_name }}"
+      when: servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_server_name != ""
+
+    # This sets the server name based on the host part of the URL between // and : (https://elasticsearch-host:9200)
+    - name: Set elastic_tls_server_name by parsing the host_url if it's not set in the config
+      set_fact:
+        elastic_tls_server_name: "{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.host_url.rpartition('//')[-1].partition(':')[0] }}"
+      when: servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_server_name == ""
+
     - name: Get the Elasticsearch TLS materials secret
       k8s_info:
         api_version: v1
