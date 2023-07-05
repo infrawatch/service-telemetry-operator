@@ -37,7 +37,7 @@ spec:
       elasticsearch:
         enabled: false
         forwarding:
-          hostUrl: https://external-elastic-http.domain:9200
+          hostUrl: https://elasticsearch-es-http:9200
           tlsServerName: ""
           tlsSecretName: elasticsearch-es-cert
           userSecretName: elasticsearch-es-elastic-user
