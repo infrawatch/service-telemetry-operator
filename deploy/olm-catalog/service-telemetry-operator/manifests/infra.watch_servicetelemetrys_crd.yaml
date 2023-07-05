@@ -127,19 +127,19 @@ spec:
                           certificates:
                             properties:
                               caCertDuration:
-                                description: (DEPRECATED - Use ext* after STF 1.5.3)
-                                  The requested 'duration' (i.e. lifetime) of the
-                                  Elasticsearch CA Certificate. Minimum accepted duration
-                                  is 1 hour. Value must be in units accepted by Go
-                                  time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) The requested 'duration' (i.e. lifetime)
+                                  of the Elasticsearch CA Certificate. Minimum accepted
+                                  duration is 1 hour. Value must be in units accepted
+                                  by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                                 pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                               endpointCertDuration:
-                                description: (DEPRECATED - Use ext* after STF 1.5.3)
-                                  The requested 'duration' (i.e. lifetime) of the
-                                  Elasticsearch endpoint Certificate. Minimum accepted
-                                  duration is 1 hour. Value must be in units accepted
-                                  by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) The requested 'duration' (i.e. lifetime)
+                                  of the Elasticsearch endpoint Certificate. Minimum
+                                  accepted duration is 1 hour. Value must be in units
+                                  accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                                 pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                             type: object
@@ -173,46 +173,48 @@ spec:
                                 type: string
                             type: object
                           nodeCount:
-                            description: (DEPRECATED - Use ext* after STF 1.5.3) Elasticsearch
-                              node count
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Elasticsearch node count
                             type: string
                           storage:
-                            description: (DEPRECATED - Use ext* after STF 1.5.3) Events
-                              storage configuration for Elasticsearch
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Events storage configuration for Elasticsearch
                             properties:
                               persistent:
-                                description: (DEPRECATED - Use ext* after STF 1.5.3)
-                                  Persistent storage configuration for Elasticsearch
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) Persistent storage configuration for
+                                  Elasticsearch
                                 properties:
                                   pvcStorageRequest:
-                                    description: (DEPRECATED - Use ext* after STF
-                                      1.5.3) How much storage space to request in
-                                      the PVC
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) How much storage space to request
+                                      in the PVC
                                     type: string
                                   storageClass:
-                                    description: (DEPRECATED - Use ext* after STF
-                                      1.5.3) Storage class name used for Elasticsearch
-                                      PVC
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) Storage class name used for
+                                      Elasticsearch PVC
                                     type: string
                                   storageSelector:
-                                    description: (DEPRECATED - Use ext* after STF
-                                      1.5.3) Storage selector definition for Elasticsearch
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) Storage selector definition
+                                      for Elasticsearch
                                     type: string
                                 type: object
                               strategy:
-                                description: (DEPRECATED - Use ext* after STF 1.5.3)
-                                  Storage strategy. One of 'ephemeral' or 'persistent'.
-                                  Persistent storage must be made available by the
-                                  platform.
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) Storage strategy. One of 'ephemeral'
+                                  or 'persistent'. Persistent storage must be made
+                                  available by the platform.
                                 enum:
                                 - ephemeral
                                 - persistent
                                 type: string
                             type: object
                           version:
-                            description: (DEPRECATED - Use ext* after STF 1.5.3) Version
-                              of Elasticsearch to deploy. Elasticsearch licensing
-                              has changed as of version 7.11. See https://www.elastic.co/pricing/faq/licensing
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Version of Elasticsearch to deploy. Elasticsearch
+                              licensing has changed as of version 7.11. See https://www.elastic.co/pricing/faq/licensing
                               for details.
                             type: string
                         type: object
