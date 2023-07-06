@@ -119,3 +119,14 @@
       kind: Project
       metadata:
         name: openshift-cert-manager-operator
+
+- name: Remove elasticsearch
+  k8s:
+    state: absent
+    wait: yes
+    definition:
+      apiVersion: elasticsearch.k8s.elastic.co/v1
+      kind: Elasticsearch
+      metadata:
+        name: elasticsearch
+        namespace: "{{ namespace }}"

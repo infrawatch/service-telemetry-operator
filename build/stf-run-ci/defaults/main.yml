@@ -27,7 +27,7 @@ __service_telemetry_snmptraps_trap_oid_prefix: "1.3.6.1.4.1.50495.15"
 __service_telemetry_snmptraps_trap_default_oid: "1.3.6.1.4.1.50495.15.1.2.1"
 __service_telemetry_snmptraps_trap_default_severity: ""
 __service_telemetry_logs_enabled: false
-__service_telemetry_observability_strategy: use_hybrid
+__service_telemetry_observability_strategy: use_redhat
 __service_telemetry_transports_certificates_endpoint_cert_duration: 70080h
 __service_telemetry_transports_certificates_ca_cert_duration: 70080h
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
@@ -36,6 +36,8 @@ __smart_gateway_bundle_image_path:
 
 default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator-registry
 default_operator_registry_image_tag: v4.12
+
+elastic_version: 7.16.1
 
 sgo_image_tag: latest
 sto_image_tag: latest

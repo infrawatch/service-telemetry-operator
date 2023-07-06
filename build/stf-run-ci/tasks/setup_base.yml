@@ -117,8 +117,6 @@
         name: elasticsearch-eck-operator-certified
         source: certified-operators
         sourceNamespace: openshift-marketplace
-  when:
-    - __service_telemetry_observability_strategy in ['use_community', 'use_hybrid']
 
 - block:
   # Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm
