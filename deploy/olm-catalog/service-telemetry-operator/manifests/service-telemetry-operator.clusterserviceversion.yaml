@@ -44,6 +44,14 @@ metadata:
                     "endpointCertDuration": "70080h"
                   },
                   "enabled": false,
+                  "forwarding": {
+                    "hostUrl": "https://elasticsearch-es-http:9200",
+                    "tlsSecretName": "elasticsearch-es-cert",
+                    "tlsServerName": "",
+                    "useBasicAuth": true,
+                    "useTls": true,
+                    "userSecretName": "elasticsearch-es-elastic-user"
+                  },
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20Gi"

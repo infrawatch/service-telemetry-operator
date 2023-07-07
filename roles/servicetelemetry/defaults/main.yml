@@ -5,6 +5,10 @@
 clouds_remove_on_missing: false
 observability_strategy: use_redhat
 
+# These get auto-discovered, but the code is simpler if they are never undefined
+prometheus_operator_api_string: ""
+prometheus_operator_label: ""
+
 servicetelemetry_defaults:
   high_availability:
     enabled: false
@@ -46,6 +50,13 @@ servicetelemetry_defaults:
     events:
       elasticsearch:
         enabled: false
+        forwarding:
+          host_url: https://elasticsearch-es-http:9200
+          tls_server_name: ""
+          tls_secret_name: elasticsearch-es-cert
+          user_secret_name: elasticsearch-es-elastic-user
+          use_basic_auth: true
+          use_tls: true
         version: 7.16.1
         node_count: 1
         storage:

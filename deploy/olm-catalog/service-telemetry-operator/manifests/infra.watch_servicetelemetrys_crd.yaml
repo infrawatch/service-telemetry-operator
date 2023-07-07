@@ -122,53 +122,88 @@ spec:
                     description: Events related backend configuration.
                     properties:
                       elasticsearch:
-                        description: Events storage backend ElasticSearch
+                        description: Events storage backend Elasticsearch
                         properties:
                           certificates:
                             properties:
                               caCertDuration:
-                                description: The requested 'duration' (i.e. lifetime)
-                                  of the ElasticSearch CA Certificate. Minimum accepted
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) The requested 'duration' (i.e. lifetime)
+                                  of the Elasticsearch CA Certificate. Minimum accepted
                                   duration is 1 hour. Value must be in units accepted
                                   by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                                 pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                               endpointCertDuration:
-                                description: The requested 'duration' (i.e. lifetime)
-                                  of the ElasticSearch endpoint Certificate. Minimum
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) The requested 'duration' (i.e. lifetime)
+                                  of the Elasticsearch endpoint Certificate. Minimum
                                   accepted duration is 1 hour. Value must be in units
                                   accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                                 pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                             type: object
                           enabled:
-                            description: Enable ElasticSearch as a storage backend
+                            description: Enable Elasticsearch as a storage backend
                               for events
                             type: boolean
+                          forwarding:
+                            description: Configuration for where to forward events
+                            properties:
+                              hostUrl:
+                                description: URL of Elasticsearch HTTP(S) endpoint
+                                type: string
+                              tlsSecretName:
+                                description: (if required) Name of the secret that
+                                  stores the CA cert and client cert/key
+                                type: string
+                              tlsServerName:
+                                description: (if required) Server Name expected to
+                                  match the certificate presented by the endpoint
+                                type: string
+                              useBasicAuth:
+                                description: Whether to provide HTTP Basic Auth headers
+                                type: boolean
+                              useTls:
+                                description: Whether to enable TLS
+                                type: boolean
+                              userSecretName:
+                                description: (if required) Name of the secret that
+                                  stores the Basic Auth credentials
+                                type: string
+                            type: object
                           nodeCount:
-                            description: Elasticsearch node count
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Elasticsearch node count
                             type: string
                           storage:
-                            description: Events storage configuration for ElasticSearch
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Events storage configuration for Elasticsearch
                             properties:
                               persistent:
-                                description: Persistent storage configuration for
-                                  ElasticSearch
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) Persistent storage configuration for
+                                  Elasticsearch
                                 properties:
                                   pvcStorageRequest:
-                                    description: How much storage space to request
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) How much storage space to request
                                       in the PVC
                                     type: string
                                   storageClass:
-                                    description: Storage class name used for ElasticSearch
-                                      PVC
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) Storage class name used for
+                                      Elasticsearch PVC
                                     type: string
                                   storageSelector:
-                                    description: Storage selector definition for ElasticSearch
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) Storage selector definition
+                                      for Elasticsearch
                                     type: string
                                 type: object
                               strategy:
-                                description: Storage strategy. One of 'ephemeral'
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) Storage strategy. One of 'ephemeral'
                                   or 'persistent'. Persistent storage must be made
                                   available by the platform.
                                 enum:
@@ -177,7 +212,8 @@ spec:
                                 type: string
                             type: object
                           version:
-                            description: Version of ElasticSearch to deploy. Elasticsearch
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Version of Elasticsearch to deploy. Elasticsearch
                               licensing has changed as of version 7.11. See https://www.elastic.co/pricing/faq/licensing
                               for details.
                             type: string

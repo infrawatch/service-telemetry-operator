@@ -61,20 +61,6 @@
       set_fact:
         prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
 
-  - when: servicetelemetry_vars.backends.events.elasticsearch.enabled
-    block:
-    - name: Retrieve elastic search secret
-      k8s_info:
-        api_version: v1
-        kind: Secret
-        name: elasticsearch-es-elastic-user
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      register: es_secret
-
-    - name: Decode elasticsearch password
-      set_fact:
-        elasticsearch_pass: '{{ es_secret.resources[0].data.elastic | b64decode }}'
-
   # Lookup existing datasources
   - name: Remove legacy datasources
     k8s:

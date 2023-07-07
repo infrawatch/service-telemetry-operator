@@ -36,6 +36,13 @@ spec:
     events:
       elasticsearch:
         enabled: false
+        forwarding:
+          hostUrl: https://elasticsearch-es-http:9200
+          tlsServerName: ""
+          tlsSecretName: elasticsearch-es-cert
+          userSecretName: elasticsearch-es-elastic-user
+          useBasicAuth: true
+          useTls: true
         version: 7.16.1
         storage:
           strategy: persistent
