@@ -14,10 +14,11 @@
     api_version: v1
     kind: Secret
     name: elasticsearch-es-http-certs-public
+    namespace: '{{ namespace }}'
   register: elasticsearch_certs
-  until: elasticsearch_certs[0].data[ca.crt] is defined
+  until: elasticsearch_certs.resources[0].data["ca.crt"] is defined
   retries: 5
-  delay: 10
+  delay: 30
 
 - name: Copy the ES CA cert to our TLS secret
   k8s:
@@ -27,5 +28,5 @@
       metadata:
         name: elasticsearch-es-cert
         namespace: '{{ namespace }}'
-      stringData:
-        ca.crt: '{{ elasticsearch_certs[0].data[ca.crt] }}'
+      data:
+        ca.crt: '{{ elasticsearch_certs.resources[0].data["ca.crt"] }}'

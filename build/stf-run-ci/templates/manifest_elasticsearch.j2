@@ -37,6 +37,9 @@ spec:
             requests:
               cpu: "1"
               memory: 4Gi
+        volumes:
+        - emptyDir: {}
+          name: elasticsearch-data
   transport:
     service:
       metadata: {}

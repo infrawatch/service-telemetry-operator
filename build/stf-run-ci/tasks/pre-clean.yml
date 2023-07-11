@@ -121,6 +121,7 @@
         name: openshift-cert-manager-operator
 
 - name: Remove elasticsearch
+  ignore_errors: True
   k8s:
     state: absent
     wait: yes
