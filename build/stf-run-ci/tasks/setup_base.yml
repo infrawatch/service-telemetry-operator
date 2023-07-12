@@ -75,7 +75,7 @@
           kind: Subscription
           metadata:
             name: openshift-cert-manager-operator
-            namespace: openshift-cert-manager-operator
+            namespace: "{{ namespace }}"
           spec:
             channel: "{{ cert_manager_channel }}"
             installPlanApproval: Automatic
