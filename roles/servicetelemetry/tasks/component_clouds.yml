@@ -57,7 +57,7 @@
         name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_secret_name }}'
       register: es_certs
 
-    - when: es_certs[0].data[user.key] is not defined or es_certs[0].data[user.crt] is not defined
+    - when: es_certs.resources[0].data["user.key"] is not defined or es_certs.resources[0].data["user.crt"] is not defined
       block:
         - name: Load dummy certs
           include_vars:
