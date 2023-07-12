@@ -30,31 +30,43 @@
 
 - when: not __deploy_from_index_enabled | bool
   block:
-    - name: Create openshift-cert-manager-operator namespace
-      k8s:
-        definition:
-          apiVersion: project.openshift.io/v1
-          kind: Project
-          metadata:
-            name: openshift-cert-manager-operator
-          spec:
-            finalizers:
-            - kubernetes
+    when: ocp_ver.stdout is version('4.12', '<')
+    block:
+      - name: Create openshift-cert-manager-operator namespace in older OCP versions
+        k8s:
+          definition:
+            apiVersion: project.openshift.io/v1
+            kind: Project
+            metadata:
+              name: openshift-cert-manager-operator
+            spec:
+              finalizers:
+              - kubernetes
 
-    - name: Create openshift-cert-manager-operator OperatorGroup
-      k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1
-          kind: OperatorGroup
-          metadata:
-            name: openshift-cert-manager-operator
-            namespace: openshift-cert-manager-operator
-          spec: {}
+      - name: Create openshift-cert-manager-operator OperatorGroup in older OCP versions
+        k8s:
+          definition:
+            apiVersion: operators.coreos.com/v1
+            kind: OperatorGroup
+            metadata:
+              name: openshift-cert-manager-operator
+              namespace: openshift-cert-manager-operator
+            spec: {}
 
-    - name: Use tech-preview channel for cert_manager in older OCP versions
-      set_fact:
-        cert_manager_channel: tech-preview
-      when: ocp_ver.stdout is version('4.12', '<')
+      - name: Subscribe to Cert Manager for OpenShift Operator in older OCP versions
+        k8s:
+          definition:
+            apiVersion: operators.coreos.com/v1alpha1
+            kind: Subscription
+            metadata:
+              name: openshift-cert-manager-operator
+              namespace: openshift-cert-manager-operator
+            spec:
+              channel: tech-preview
+              installPlanApproval: Automatic
+              name: openshift-cert-manager-operator
+              source: redhat-operators
+              sourceNamespace: openshift-marketplace
 
     - name: Subscribe to Cert Manager for OpenShift Operator
       k8s:
@@ -65,11 +77,12 @@
             name: openshift-cert-manager-operator
             namespace: openshift-cert-manager-operator
           spec:
-            channel: "{{ cert_manager_channel }}"
+            channel: stable-v1
             installPlanApproval: Automatic
             name: openshift-cert-manager-operator
             source: redhat-operators
             sourceNamespace: openshift-marketplace
+      when: ocp_ver.stdout is version('4.12', '>=')
 
     - name: Subscribe to AMQ Interconnect Operator
       k8s:
