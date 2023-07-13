@@ -1,0 +1,32 @@
+- name: Set default ElasticSearch manifest
+  set_fact:
+    elasticsearch_manifest: "{{ lookup('template', './manifest_elasticsearch.j2') | from_yaml }}"
+  when: elasticsearch_manifest is not defined
+
+- name: Create an instance of Elasticsearch
+  k8s:
+    state: present
+    definition:
+      '{{ elasticsearch_manifest }}'
+
+- name: Look up the newly generated ES Certs
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    name: elasticsearch-es-http-certs-public
+    namespace: '{{ namespace }}'
+  register: elasticsearch_certs
+  until: elasticsearch_certs.resources[0].data["ca.crt"] is defined
+  retries: 5
+  delay: 30
+
+- name: Copy the ES CA cert to our TLS secret
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: elasticsearch-es-cert
+        namespace: '{{ namespace }}'
+      data:
+        ca.crt: '{{ elasticsearch_certs.resources[0].data["ca.crt"] }}'

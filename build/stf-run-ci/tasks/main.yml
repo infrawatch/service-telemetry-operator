@@ -60,6 +60,9 @@
   tags:
     - deploy
 
+- name: Deploy ES for events testing
+  include_tasks: setup_elasticsearch.yml
+
 - name: Set default base dir if not provided
   set_fact:
     base_dir: "{{ playbook_dir }}"
@@ -89,7 +92,7 @@
         - { name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: ./working/prometheus-webhook-snmp }
 
   - debug:
-     var: build_list
+      var: build_list
 
   - name: Create builds and artifacts
     include_tasks: create_builds.yml
