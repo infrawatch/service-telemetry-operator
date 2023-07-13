@@ -30,7 +30,14 @@
   ansible.builtin.set_fact:
     internal_registry: "{{ builder_dockercfg_auth_results['image-registry.openshift-image-registry.svc:5000'] | to_json }}"
 
-- when: query('kubernetes.core.k8s', api_version='v1', kind='Secret', resource_name='service-telemetry-framework-index-dockercfg', namespace=namespace) | length == 0
+- name: "Get Secrets to check for service-telemetry-framework-index-dockercfg"
+  ansible.builtin.command:
+    cmd: oc get secret -n {{ namespace }} service-telemetry-framework-index-dockercfg
+  register: index_dockercfg_secret
+  ignore_errors: true
+
+# There's an error when the requested resource doesn't exist, so check the rc
+- when: index_dockercfg_secret.rc != 0
   block:
   - name: Create config.json to import as Secret
     ansible.builtin.template:
@@ -41,16 +48,33 @@
 
   - name: Create a Secret for the dockercfg
     ansible.builtin.command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson=working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
+    ignore_errors: true
+
+- name: Get the ose-operator-registry ImageStream
+  ansible.builtin.command:
+    cmd: oc get -n {{ namespace }} ImageStream ose-operator-registry
+  register: ose_op_registry_is
+  ignore_errors: true
 
 - name: Create ImageStream for ose-operator-registry
   ansible.builtin.command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
-  when: query('kubernetes.core.k8s', api_version='v1', kind='ImageStream', resource_name='ose-operator-registry', namespace=namespace) | length == 0
+  when: ose_op_registry_is.rc != 0
+
+- name: "Delete the existing imagestream, if it exists"
+  ansible.builtin.command: oc delete imagestream -n {{ namespace }} service-telemetry-framework-index
+  ignore_errors: true
 
 - name: Create ImageStream for service-telemetry-framework-index
   ansible.builtin.command: oc create imagestream -n {{ namespace }} service-telemetry-framework-index
-  when: query('kubernetes.core.k8s', api_version='v1', kind='ImageStream', resource_name='service-telemetry-framework-index', namespace=namespace) | length == 0
 
-- name: Create BuildConfig for service-telemetry-framework-index
+- name: "Get STF index image stream"
+  ansible.builtin.command:
+    cmd: oc get -n {{ namespace }} ImageStream service-telemetry-framework-index
+  register: stf_index_imagestream
+  ignore_errors: true
+
+- when: stf_index_imagestream.rc != 0
+  name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
     definition:
       apiVersion: build.openshift.io/v1
