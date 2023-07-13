@@ -62,7 +62,7 @@ grep -E '"result":\[{"metric":{"__name__":"sensubility_container_health_status",
 metrics_result=$((metrics_result || $?))
 echo; echo
 
-echo "*** [INFO] Get documents for this test from ElasticSearch..."
+echo "*** [INFO] Get documents for this test from Elasticsearch..."
 DOCUMENT_HITS=$(curl -sk -u "elastic:${ELASTICSEARCH_AUTH_PASS}" -X GET "${ELASTICSEARCH}/_search" -H 'Content-Type: application/json' -d'{
   "query": {
     "bool": {

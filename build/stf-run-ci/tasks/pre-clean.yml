@@ -120,7 +120,7 @@
       metadata:
         name: openshift-cert-manager-operator
 
-- name: Remove elasticsearch
+- name: Remove Elasticsearch
   ignore_errors: True
   k8s:
     state: absent
