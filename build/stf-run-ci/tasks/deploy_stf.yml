@@ -34,15 +34,6 @@
           events:
             elasticsearch:
               enabled: {{ __service_telemetry_events_enabled }}
-              storage:
-                strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
-      {% if __service_telemetry_storage_persistent_storage_class is defined %}
-                persistent:
-                  storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
-      {% endif %}
-              certificates:
-                endpointCertDuration: {{ __service_telemetry_events_certificates_endpoint_cert_duration }}
-                caCertDuration: {{ __service_telemetry_events_certificates_ca_cert_duration }}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}

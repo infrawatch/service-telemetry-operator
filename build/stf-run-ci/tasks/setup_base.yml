@@ -112,8 +112,16 @@
         name: elasticsearch-eck-operator-certified
         source: certified-operators
         sourceNamespace: openshift-marketplace
-  when:
-    - __service_telemetry_observability_strategy in ['use_community', 'use_hybrid']
+
+- name: Wait for Elasticsearch CRD to appear
+  k8s_info:
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: elasticsearches.elasticsearch.k8s.elastic.co
+  register: eckCRD
+  until: eckCRD.resources[0] is defined
+  retries: 5
+  delay: 30
 
 - block:
   # Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm

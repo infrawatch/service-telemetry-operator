@@ -1,0 +1,52 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: {{ namespace }}
+spec:
+  auth: {}
+  http:
+    service:
+      metadata: {}
+      spec: {}
+    tls:
+      certificate: {}
+  monitoring:
+    logs: {}
+    metrics: {}
+  nodeSets:
+  - count: 1
+    name: default
+    config:
+      node.roles:
+      - master
+      - data
+      - ingest
+      node.store.allow_mmap: true
+    podTemplate:
+      metadata:
+        labels:
+          tuned.openshift.io/elasticsearch: elasticsearch
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+        volumes:
+        - emptyDir: {}
+          name: elasticsearch-data
+  transport:
+    service:
+      metadata: {}
+      spec: {}
+    tls:
+      certificate: {}
+      certificateAuthorities: {}
+  updateStrategy:
+    changeBudget: {}
+  version: {{ elasticsearch_version }}
