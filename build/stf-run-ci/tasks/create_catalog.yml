@@ -58,9 +58,38 @@
   register: ose_op_registry_is
   ignore_errors: true
 
-- name: Create ImageStream for ose-operator-registry
-  ansible.builtin.command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
+- name: Set the operator_registry_image
+  ansible.builtin.set_fact:
+    operator_registry_image: "{{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }}"
+
+  # --show-multiarch=true is used because you get an error (and rc!=0) when you query a multi-arch image without specifying the arch, even when the image exists
+- name: "Try to get the image info for the operator registry image"
+  ansible.builtin.command:
+    cmd: oc image info --show-multiarch=true "{{ operator_registry_image }}"
+  ignore_errors: true
+  register: image_info
+
+  # TODO: try docker pull on the image and set accordingly.
+  # i.e. if we can pull/query the registry.redhat.io image, use it, else use quay
+  # TODO: Fix this to actually honour the check.
+- name: "Test alternative operator image"
+  ansible.builtin.set_fact:
+    #operator_registry_image: "registry.redhat.io/openshift4/ose-operator-registry:v4.13"
+    operator_registry_image: "quay.io/openshift/origin-operator-registry:4.13"
+  when: image_info.rc != 0
+
+    # TODO: Clean up the naming and versioning, so we can have a source-agnostic image stream.
+    # TODO: Use the same tag as the image, using an appropriate filter to extract the version from the image.
+- name: Create ImageStream for ose-operator-registry, if it doesn't already exist
+  ansible.builtin.command:
+    cmd: |
+      oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ operator_registry_image }} --confirm
   when: ose_op_registry_is.rc != 0
+  register: create_ose_is
+
+- name: Show the image stream
+  ansible.builtin.debug:
+    var: create_ose_is
 
 - name: Delete the existing imagestream, if it exists
   ansible.builtin.command: oc delete imagestream -n {{ namespace }} service-telemetry-framework-index
@@ -74,6 +103,10 @@
     cmd: oc get -n {{ namespace }} ImageStream service-telemetry-framework-index
   register: stf_index_imagestream
   ignore_errors: true
+
+- name: Show STF index image stream
+  ansible.builtin.debug:
+    var: stf_index_imagestream
 
       #- when: stf_index_imagestream.rc != 0
 - name: Create BuildConfig for service-telemetry-framework-index
@@ -102,7 +135,7 @@
           dockerfile: |
             # The base image is expected to contain
             # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
-            FROM registry.redhat.io/openshift4/ose-operator-registry:v4.13
+            FROM {{ operator_registry_image }}
 
             COPY --chmod=666 index.yaml /configs/
 
