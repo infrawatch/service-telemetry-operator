@@ -4,6 +4,7 @@
 # -- initial setup
 - name: Setup default values
   ansible.builtin.set_fact:
+    # The branch should be removed, we should assume that everything is checked out to the right place.
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ namespace if namespace is defined else (working_namespace | default('service-telemetry'))}}"
 
@@ -68,6 +69,13 @@
     base_dir: "{{ playbook_dir }}"
   when: base_dir | length == 0
 
+- name: Set the repo destination dirs, if not provided
+  ansible.builtin.set_fact:
+    sgo_dir: "{{ sgo_dir if sgo_dir is defined else base_dir + '/working/smart-gateway-operator' }}"
+    sg_core_dir: "{{ sg_core_dir if sg_core_dir is defined else base_dir + '/working/sg-core' }}"
+    sg_bridge_dir: "{{ sg_bridge_dir if sg_bridge_dir is defined else base_dir + '/working/sg-bridge'}}"
+    prometheus_webhook_snmp_dir: "{{ prometheus_webhook_snmp_dir if prometheus_webhook_snmp_dir is defined else base_dir + '/working/prometheus-webhook-snmp' }}"
+
 - name: Get operator_sdk_v0 (build bundles)
   ansible.builtin.command:
     cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
@@ -97,6 +105,7 @@
     - create_builds
   block:
   - name: Setup supporting repositories
+    when: clone_repos | bool
     ansible.builtin.include_tasks: clone_repos.yml
     tags:
       - clone
@@ -105,10 +114,10 @@
     ansible.builtin.set_fact:
       build_list:
         - {name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: "{{ base_dir }}/../"}
-        - {name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: "{{ base_dir }}/working/smart-gateway-operator"}
-        - {name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: "{{ base_dir }}/working/sg-core"}
-        - {name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: "{{ base_dir }}/working/sg-bridge"}
-        - {name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: "{{ base_dir }}/working/prometheus-webhook-snmp"}
+        - {name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: "{{ sgo_dir }}"}
+        - {name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: "{{ sg_core_dir }}"}
+        - {name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: "{{ sg_bridge_dir }}"}
+        - {name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: "{{ prometheus_webhook_snmp_dir }}"}
 
   - ansible.builtin.debug:
       var: build_list

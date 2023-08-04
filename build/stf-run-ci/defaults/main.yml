@@ -67,5 +67,6 @@ prometheus_webhook_snmp_repository: https://github.com/infrawatch/prometheus-web
 
 base_dir: ''
 
+clone_repos: true
 setup_bundle_registry_auth: true
 setup_bundle_registry_tls_ca: true

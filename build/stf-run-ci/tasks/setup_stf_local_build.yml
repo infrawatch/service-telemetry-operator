@@ -6,7 +6,7 @@
 - block:
   - name: Generate Smart Gateway Operator CSV
     ansible.builtin.shell:
-      chdir: "{{ base_dir }}/working/smart-gateway-operator/build"
+      chdir: "{{ sgo_dir }}/build"
       cmd: |
         LOGFILE="{{ logfile_dir }}/sgo_gen_bundle.log" \
         OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
@@ -28,7 +28,7 @@
 
 - name: Replace namespace in SGO role binding
   ansible.builtin.replace:
-    path: "{{ base_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
+    path: "{{ sgo_dir }}/deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
@@ -42,7 +42,8 @@
   block:
   - name: Load Smart Gateway Operator RBAC
     ansible.builtin.command:
-      cmd: oc apply -f {{ base_dir }}/working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
+      cmd: oc apply -f ./deploy/{{ item }} -n "{{ namespace }}"
+      chdir: "{{ sgo_dir }}"
     loop:
       - service_account.yaml
       - role.yaml

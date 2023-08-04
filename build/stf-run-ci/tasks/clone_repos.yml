@@ -3,60 +3,84 @@
 # NOTE: since you can't loop against blocks (and we're using them for failure #
 #       recovery when the request branch doesn't exist) we have to define each
 #       of these separately rather than using a loop.
+
+- name: Check if the {{ sgo_dir }} already exists
+  ansible.builtin.stat:
+    path: "{{ sgo_dir }}"
+  register: check_sgo_dir
+
 - name: Get Smart Gateway Operator
+  when: not check_sgo_dir.stat.exists
   block:
     - name: Try cloning same-named branch or override branch from SGO repository
       ansible.builtin.git:
         repo: "{{ sgo_repository }}"
-        dest: "{{ base_dir }}/working/smart-gateway-operator"
-        version: "{{ sgo_branch | default(branch, true) }}"
-        force: true
+        dest: "{{ sgo_dir }}"
+        version: "{{ version_branches.sgo | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sgo }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
         repo: https://github.com/infrawatch/smart-gateway-operator
-        dest: "{{ base_dir }}/working/smart-gateway-operator"
+        dest: "{{ sgo_dir }}"
         version: "{{ version_branches.sgo }}"
 
+- name: Check if the {{ sg_core_dir }} already exists
+  ansible.builtin.stat:
+    path: "{{ sg_core_dir }}"
+  register: check_sg_core_dir
+
 - name: Get sg-core
+  when: not check_sg_core_dir.stat.exists
   block:
     - name: Try cloning same-named branch or override branch from sg-core repository
       ansible.builtin.git:
         repo: "{{ sg_core_repository }}"
-        dest: "{{ base_dir }}/working/sg-core"
-        version: "{{ sg_core_branch | default(branch, true) }}"
+        dest: "{{ sg_core_dir }}"
+        version: "{{ version_branches.sg_core | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sg_core }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
         repo: https://github.com/infrawatch/sg-core
-        dest: "{{ base_dir }}/working/sg-core"
+        dest: "{{ sg_core_dir }}"
         version: "{{ version_branches.sg_core }}"
 
+- name: Check if the {{ sg_bridge_dir }} already exists
+  ansible.builtin.stat:
+    path: "{{ sg_bridge_dir }}"
+  register: check_sg_bridge_dir
+
 - name: Get sg-bridge
+  when: not check_sg_bridge_dir.stat.exists
   block:
     - name: Try cloning same-named branch or override branch from sg-bridge repository
       ansible.builtin.git:
         repo: "{{ sg_bridge_repository }}"
-        dest: "{{ base_dir }}/working/sg-bridge"
-        version: "{{ sg_bridge_branch | default(branch, true) }}"
+        dest: "{{ sg_bridge_dir }}"
+        version: "{{ version_branches.sg_bridge | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sg_bridge }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
         repo: https://github.com/infrawatch/sg-bridge
-        dest: "{{ base_dir }}/working/sg-bridge"
+        dest: "{{ sg_bridge_dir }}"
         version: "{{ version_branches.sg_bridge }}"
 
+- name: Check if the {{ prometheus_webhook_snmp_dir }} already exists
+  ansible.builtin.stat:
+    path: "{{ prometheus_webhook_snmp_dir }}"
+  register: check_prometheus_webhook_snmp_dir
+
 - name: Get prometheus-webhook-snmp
+  when: not check_prometheus_webhook_snmp_dir.stat.exists
   block:
     - name: Try cloning same-named branch or override branch from prometheus-webhook-snmp repository
       ansible.builtin.git:
         repo: "{{ prometheus_webhook_snmp_repository }}"
-        dest: "{{ base_dir }}/working/prometheus-webhook-snmp"
-        version: "{{ prometheus_webhook_snmp_branch | default(branch, true) }}"
+        dest: "{{ prometheus_webhook_snmp_dir }}"
+        version: "{{ version_branches.prometheus_webhook_snmp | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.prometheus_webhook_snmp }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
         repo: https://github.com/infrawatch/prometheus-webhook-snmp
-        dest: "{{ base_dir }}/working/prometheus-webhook-snmp"
+        dest: "{{ prometheus_webhook_snmp_dir }}"
         version: "{{ version_branches.prometheus_webhook_snmp }}"
 
