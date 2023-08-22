@@ -1,3 +1,4 @@
+# always run main plays so objects can be removed if grafana is disabled
 - name: Construct oauth redirect reference
   set_fact:
     grafana_oauth_redir_ref:
@@ -7,7 +8,18 @@
         kind: Route
         name: 'grafana-route'
 
-- name: Create htpasswd secret for grafana admin
+- name: Check for existing grafana htpasswd secret
+  no_log: true
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
+  register: grafana_htpasswd_secret
+
+# NOTE: if the password is updated in the ServiceTelemetry object, the 'default-grafana-htpasswd' Secret object will need to be deleted to rebuild it (see STF-1499)
+- when: grafana_htpasswd_secret.resources|length == 0
+  name: Create htpasswd secret for grafana admin
   no_log: true
   k8s:
     definition:
@@ -34,7 +46,6 @@
     state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
     definition:
       '{{ grafana_manifest }}'
-  when: servicetelemetry_vars.graphing.enabled
 
 - when: servicetelemetry_vars.graphing.enabled
   block:
@@ -70,6 +81,7 @@
       namespace: '{{ ansible_operator_meta.namespace }}'
       state: absent
 
+  # NOTE: this can fail if you enable grafana without prometheus due to missing resources referenced in the template
   - name: Set datasources
     set_fact:
       ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"

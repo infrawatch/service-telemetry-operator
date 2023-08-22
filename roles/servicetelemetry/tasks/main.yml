@@ -71,6 +71,7 @@
     - has_elasticsearch_api | bool
     - has_certmanager_api | bool
     - observability_strategy in ['use_community', 'use_hybrid']
+    - servicetelemetry_vars.backends.events.elasticsearch.enabled | bool
 
 # --> backends.logs
 - name: Check if we have loki API
