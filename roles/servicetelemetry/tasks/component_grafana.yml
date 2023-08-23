@@ -8,6 +8,10 @@
         kind: Route
         name: 'grafana-route'
 
+- name: Set hash of Grafana basicAuth password
+  set_fact:
+    grafana_basic_auth_hash: "{{ (servicetelemetry_vars.graphing.grafana.admin_user + servicetelemetry_vars.graphing.grafana.admin_password) | password_hash('sha256', (session_secret | b64encode)[:16] ) }}"
+
 - name: Check for existing grafana htpasswd secret
   no_log: true
   k8s_info:
@@ -17,10 +21,13 @@
     name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
   register: grafana_htpasswd_secret
 
-# NOTE: if the password is updated in the ServiceTelemetry object, the 'default-grafana-htpasswd' Secret object will need to be deleted to rebuild it (see STF-1499)
-- when: grafana_htpasswd_secret.resources|length == 0
-  name: Create htpasswd secret for grafana admin
-  no_log: true
+# Use a hash value comparison method. Trigger secret regeneration prior to grafana deployment annotation update to trigger pod restart.
+# Check if annotation has been defined, and if not or the hash value has changed, update the secret.
+- when: (grafana_htpasswd_secret.resources[0].metadata.annotations is not defined) or
+        (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] is not defined) or
+        (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] != "{{ grafana_basic_auth_hash }}")
+  name: Create or patch htpasswd secret for grafana admin
+  no_log: false
   k8s:
     definition:
       api_version: v1
@@ -28,6 +35,8 @@
       metadata:
         name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
         namespace: '{{ ansible_operator_meta.namespace }}'
+        annotations:
+          hash-of-creds-to-force-restart-if-changed: '{{ grafana_basic_auth_hash }}'
       type: Opaque
       stringData:
         auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | password_hash("bcrypt") | replace("$2b$","$2y$", 1) }}'
