@@ -25,7 +25,7 @@
 # Check if annotation has been defined, and if not or the hash value has changed, update the secret.
 - when: (grafana_htpasswd_secret.resources[0].metadata.annotations is not defined) or
         (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] is not defined) or
-        (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] != "{{ grafana_basic_auth_hash }}")
+        (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] != grafana_basic_auth_hash)
   name: Create or patch htpasswd secret for grafana admin
   no_log: false
   k8s:
