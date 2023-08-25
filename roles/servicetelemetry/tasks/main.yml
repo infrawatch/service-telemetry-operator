@@ -100,17 +100,11 @@
   set_fact:
     has_integreatly_api: "{{ True if 'integreatly.org' in api_groups else False }}"
 
-- name: Deploy graphing
-  block:
-  - name: Create Grafana instance
-    include_tasks: component_grafana.yml
-
-# TODO
-#  - name: Create dashboards
-#    include_tasks: component_dashboards.yml
-  when:
+- when:
     - has_integreatly_api | bool
     - observability_strategy in ['use_community', 'use_hybrid']
+  name: Start graphing component plays
+  include_tasks: component_grafana.yml
 
 # Post deployment tasks
 - name: Post-setup
