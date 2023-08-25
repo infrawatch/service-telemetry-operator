@@ -1,4 +1,3 @@
-# always run main plays so objects can be removed if grafana is disabled
 - name: Construct oauth redirect reference
   set_fact:
     grafana_oauth_redir_ref:
@@ -7,10 +6,6 @@
       reference:
         kind: Route
         name: 'grafana-route'
-
-- name: Set hash of Grafana basicAuth password
-  set_fact:
-    grafana_basic_auth_hash: "{{ (servicetelemetry_vars.graphing.grafana.admin_user + servicetelemetry_vars.graphing.grafana.admin_password) | password_hash('sha256', (session_secret | b64encode)[:16] ) }}"
 
 - name: Check for existing grafana htpasswd secret
   no_log: true
@@ -21,12 +16,60 @@
     name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
   register: grafana_htpasswd_secret
 
-# Use a hash value comparison method. Trigger secret regeneration prior to grafana deployment annotation update to trigger pod restart.
-# Check if annotation has been defined, and if not or the hash value has changed, update the secret.
-- when: (grafana_htpasswd_secret.resources[0].metadata.annotations is not defined) or
-        (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] is not defined) or
-        (grafana_htpasswd_secret.resources[0].metadata.annotations['hash-of-creds-to-force-restart-if-changed'] != grafana_basic_auth_hash)
-  name: Create or patch htpasswd secret for grafana admin
+- debug:
+    var: grafana_htpasswd_secret
+
+- block:
+    - debug:
+        msg: "Enter the block"
+
+    - name: Set current Grafana htpasswd salt
+      no_log: false
+      set_fact:
+        grafana_htpasswd_salt: "{{ ((grafana_htpasswd_secret.resources[0].data.auth | b64decode).split('$')[-1])[0:22] }}"
+
+    - debug:
+        var: grafana_htpasswd_salt
+  rescue:
+    - debug:
+        msg: "Enter rescue"
+
+    - name: Generate initial Grafana htpasswd bcrypt string
+      no_log: false
+      set_fact:
+        init_grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt') | replace('$2b$','$2y$', 1)) }}"
+
+    - debug:
+        var: init_grafana_htpasswd_bcrypt_string
+
+    - name: Rescue Grafana htpasswd salt
+      no_log: false
+      set_fact:
+        grafana_htpasswd_salt: "{{ (init_grafana_htpasswd_bcrypt_string.split('$')[-1])[0:22] }}"
+
+    - debug:
+        var: grafana_htpasswd_salt
+
+  always:
+    - debug:
+        msg: "Enter always"
+
+    - name: Set current Grafana htpasswd bcrypt string
+      no_log: false
+      set_fact:
+        grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt', grafana_htpasswd_salt) | replace('$2b$','$2y$', 1)) }}"
+
+    - debug:
+        var: grafana_htpasswd_bcrypt_string
+
+    - name: Set Grafana auth string
+      set_fact:
+        grafana_htpasswd_auth_string: "{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ grafana_htpasswd_bcrypt_string }}"
+
+    - debug:
+        var: grafana_htpasswd_auth_string
+
+- name: Create or patch htpasswd secret for grafana admin
   no_log: false
   k8s:
     definition:
@@ -35,11 +78,9 @@
       metadata:
         name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
         namespace: '{{ ansible_operator_meta.namespace }}'
-        annotations:
-          hash-of-creds-to-force-restart-if-changed: '{{ grafana_basic_auth_hash }}'
       type: Opaque
       stringData:
-        auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | password_hash("bcrypt") | replace("$2b$","$2y$", 1) }}'
+        auth: '{{ grafana_htpasswd_auth_string }}'
 
 - name: Lookup template
   debug:
@@ -58,46 +99,46 @@
 
 - when: servicetelemetry_vars.graphing.enabled
   block:
-  - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
-    block:
-    - name: Retrieve configmap for OAUTH CA certs
-      k8s_info:
-        api_version: v1
-        kind: ConfigMap
-        name: serving-certs-ca-bundle
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      register: serving_certs_ca
+    - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
+      block:
+        - name: Retrieve configmap for OAUTH CA certs
+          k8s_info:
+            api_version: v1
+            kind: ConfigMap
+            name: serving-certs-ca-bundle
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          register: serving_certs_ca
 
-    - name: Retrieve prometheus secret
-      k8s_info:
-        api_version: v1
-        kind: Secret
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
-      register: prometheus_secret
+        - name: Retrieve prometheus secret
+          k8s_info:
+            api_version: v1
+            kind: Secret
+            namespace: '{{ ansible_operator_meta.namespace }}'
+            name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
+          register: prometheus_secret
 
-    - name: Decode prometheus password
-      no_log: true
+        - name: Decode prometheus password
+          no_log: true
+          set_fact:
+            prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
+
+    # Lookup existing datasources
+    - name: Remove legacy datasources
+      k8s:
+        api_version: integreatly.org/v1alpha1
+        name: '{{ ansible_operator_meta.name }}-ds-prometheus'
+        kind: GrafanaDataSource
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        state: absent
+
+    # NOTE: this can fail if you enable grafana without prometheus due to missing resources referenced in the template
+    - name: Set datasources
       set_fact:
-        prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
+        ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
+      when: ds_manifest is not defined
 
-  # Lookup existing datasources
-  - name: Remove legacy datasources
-    k8s:
-      api_version: integreatly.org/v1alpha1
-      name: '{{ ansible_operator_meta.name }}-ds-prometheus'
-      kind: GrafanaDataSource
-      namespace: '{{ ansible_operator_meta.namespace }}'
-      state: absent
-
-  # NOTE: this can fail if you enable grafana without prometheus due to missing resources referenced in the template
-  - name: Set datasources
-    set_fact:
-      ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
-    when: ds_manifest is not defined
-
-  - name: Create the datasources
-    k8s:
-      state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
-      definition:
-        '{{ ds_manifest }}'
+    - name: Create the datasources
+      k8s:
+        state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
+        definition:
+          '{{ ds_manifest }}'
