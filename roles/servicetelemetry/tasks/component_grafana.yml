@@ -17,27 +17,27 @@
   register: grafana_htpasswd_secret
 
 - block:
-    - name: Set current Grafana htpasswd salt
+    - name: Parse current Grafana htpasswd salt from secret
       no_log: true
       set_fact:
         grafana_htpasswd_salt: "{{ ((grafana_htpasswd_secret.resources[0].data.auth | b64decode).split('$')[-1])[0:22] }}"
   rescue:
-    - name: Generate initial Grafana htpasswd bcrypt string
+    - name: Generate initial Grafana htpasswd bcrypt string from grafana.admin_password
       no_log: true
       set_fact:
         init_grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt') | replace('$2b$','$2y$', 1)) }}"
 
-    - name: Rescue Grafana htpasswd salt
+    - name: Read newly generated Grafana htpasswd salt
       no_log: true
       set_fact:
         grafana_htpasswd_salt: "{{ (init_grafana_htpasswd_bcrypt_string.split('$')[-1])[0:22] }}"
   always:
-    - name: Set current Grafana htpasswd bcrypt string
+    - name: Generate Grafana htpasswd bcrypt string from grafana.adminPassword using salt
       no_log: true
       set_fact:
         grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt', grafana_htpasswd_salt) | replace('$2b$','$2y$', 1)) }}"
 
-    - name: Set Grafana auth string
+    - name: Generate Grafana auth string from grafana.adminUser and grafana_htpasswd_bcrypt_string
       no_log: true
       set_fact:
         grafana_htpasswd_auth_string: "{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ grafana_htpasswd_bcrypt_string }}"
