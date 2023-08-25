@@ -76,6 +76,51 @@
   when:
     - observability_strategy in ['use_redhat', 'use_hybrid']
 
+- name: Create the prometheus-stf ClusterRole
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: prometheus-stf
+      rules:
+        - apiGroups:
+          - ""
+          resources:
+          - nodes/metrics
+          verbs:
+          - get
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - nonroot
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+
 - name: Bind the local prometheus SA to prometheus cluster role (for oauth perms)
   k8s:
     definition:
@@ -87,7 +132,7 @@
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
-        name: prometheus-k8s
+        name: prometheus-stf
       subjects:
       - kind: ServiceAccount
         name: prometheus-k8s
