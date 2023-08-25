@@ -77,6 +77,35 @@
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.alertmanager: '{{ alertmanager_oauth_redir_ref | to_json }}'
 
+- name: Create the missing alertmanager-stf ClusterRole
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: alertmanager-stf
+      rules:
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - nonroot
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+
 - name: Bind role
   k8s:
     definition:
@@ -88,7 +117,7 @@
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
-        name: alertmanager-main
+        name: alertmanager-stf
       subjects:
       - kind: ServiceAccount
         name: alertmanager-stf
