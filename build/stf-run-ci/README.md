@@ -118,8 +118,9 @@ ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled
 
 NOTE: When deploying from bundles, you must have a _CA.pem_ for
 the registry already in place in the build directory, if required. If this is
-not required, add `--skip-tags bundle_registry_tls_ca`. If no login is required
-to your bundle image registry, add `--skip-tags bundle_registry_auth`
+not required, set `setup_bundle_registry_tls_ca` to `false`. If no login is required
+to your bundle image registry, set `setup_bundle_registry_auth` to `false`.
+By default, those configuration options are set to `true`.
 
 ## Deployment from local artifacts, bundles, and index
 
