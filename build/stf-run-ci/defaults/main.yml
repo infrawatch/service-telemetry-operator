@@ -31,8 +31,8 @@ __service_telemetry_observability_strategy: use_redhat
 __service_telemetry_transports_certificates_endpoint_cert_duration: 70080h
 __service_telemetry_transports_certificates_ca_cert_duration: 70080h
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
-__service_telemetry_bundle_image_path:
-__smart_gateway_bundle_image_path:
+__service_telemetry_bundle_image_path: "quay.io/infrawatch-operators/service-telemetry-operator-bundle:nightly-head"
+__smart_gateway_bundle_image_path: "quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head"
 
 default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator-registry
 default_operator_registry_image_tag: v4.12
