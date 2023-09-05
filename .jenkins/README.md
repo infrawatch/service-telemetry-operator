@@ -40,7 +40,7 @@ export SMEE_CHANNEL=<YOUR_SMEE_CHANNEL>  #(just the slug, not the whole URL)
 export GH_ORG=<YOUR_GITHUB_ORGANIZATION>
 export JENKINS_URL=$(oc get route jenkins -ojsonpath='{.spec.host}')
 # This is for labelling the status that is returned to github
-export OCP_VERSION=<ocp version>  # e.g. 4.12
+export OCP_VERSION=<ocp version>  # e.g. 4.14
 
 for f in deploy/*; do
   envsubst < "${f}" | oc apply -f -

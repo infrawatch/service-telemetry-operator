@@ -76,7 +76,7 @@
           dockerfile: |
             # The base image is expected to contain
             # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
-            FROM registry.redhat.io/openshift4/ose-operator-registry:v4.12
+            FROM registry.redhat.io/openshift4/ose-operator-registry:v4.13
 
             COPY --chmod=666 index.yaml /configs/
 
@@ -95,7 +95,7 @@
           dockerStrategy:
             from:
               kind: ImageStreamTag
-              name: ose-operator-registry:v4.12
+              name: ose-operator-registry:v4.13
             volumes:
             - mounts:
               - destinationPath: /opt/app-root/auth
