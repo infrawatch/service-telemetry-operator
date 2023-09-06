@@ -35,7 +35,7 @@ __service_telemetry_bundle_image_path: "quay.io/infrawatch-operators/service-tel
 __smart_gateway_bundle_image_path: "quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head"
 
 default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator-registry
-default_operator_registry_image_tag: v4.12
+default_operator_registry_image_tag: v4.13
 
 elasticsearch_version: 7.16.1
 
