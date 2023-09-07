@@ -9,6 +9,9 @@ custom_templates:
 
     # set parameter defaults to match stable-1.3 documentation
     parameter_defaults:
+        ExtraConfig:
+            qdr::router_id: "%{::hostname}.<<CLOUD_NAME>>"
+
         MetricsQdrConnectors:
             - host: <<AMQP_HOST>>
               port: <<AMQP_PORT>>
@@ -45,10 +48,6 @@ custom_templates:
         CephStorageExtraConfig:
             tripleo::profile::base::metrics::collectd::amqp_host: "%{hiera('storage')}"
             tripleo::profile::base::metrics::qdr::listener_addr: "%{hiera('storage')}"
-
-        ExtraConfig:
-            ExtraHostsEntries:
-                - "<<EXTRA_HOSTS_ENTRIES>>"
 
             collectd::plugin::ceph::daemons:
                - ceph-osd.0
