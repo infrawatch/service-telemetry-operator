@@ -10,7 +10,7 @@ AMQP_PORT=${AMQP_PORT:-443}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
 CLOUD_NAME="${CLOUD_NAME:-cloud1}"
-EXTRA_HOSTS_ENTRIES="${EXTRA_HOSTS_ENTRIES:-127.0.0.1 stf-default-interconnect-5671-service-telemetry.apps-crc.testing}"
+OCP_ROUTE_IP=${OCP_ROUTE_IP:-}
 
 VM_IMAGE_URL_PATH="${VM_IMAGE_URL_PATH:-http://download.devel.redhat.com/rhel-9/rel-eng/RHEL-9/latest-RHEL-9.2/compose/BaseOS/x86_64/images/}"
 # Recommend these default to tested immutable dentifiers where possible, pass "latest" style ids via environment if you want them
@@ -19,12 +19,13 @@ VM_IMAGE_LOCATION="${VM_IMAGE_URL_PATH}/${VM_IMAGE}"
 
 OSP_BUILD="${OSP_BUILD:-passed_phase2}"
 OSP_VERSION="${OSP_VERSION:-17.1}"
-OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:3}"
+OSP_TOPOLOGY="${OSP_TOPOLOGY:-undercloud:1,controller:3,compute:2,ceph:0}"
 OSP_MIRROR="${OSP_MIRROR:-rdu2}"
 LIBVIRT_DISKPOOL="${LIBVIRT_DISKPOOL:-/var/lib/libvirt/images}"
 STF_ENVIRONMENT_TEMPLATE="${STF_ENVIRONMENT_TEMPLATE:-stf-connectors.yaml.template}"
 GNOCCHI_ENVIRONMENT_TEMPLATE="${GNOCCHI_ENVIRONMENT_TEMPLATE:-gnocchi-connectors.yaml.template}"
 ENABLE_STF_ENVIRONMENT_TEMPLATE="${ENABLE_STF_ENVIRONMENT_TEMPLATE:-enable-stf.yaml.template}"
+EXTRA_HOST_FILE_TEMPLATE="${EXTRA_HOST_FILE_TEMPLATE:-extra-hosts.yaml.template}"
 OVERCLOUD_DOMAIN="${OVERCLOUD_DOMAIN:-`hostname -s`}"
 
 UNDERCLOUD_CPU="${UNDERCLOUD_CPU:-4}"
@@ -96,7 +97,7 @@ ir_create_undercloud() {
 }
 
 stf_create_config() {
-  sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s/<<EXTRA_HOSTS_ENTRIES>>/${EXTRA_HOSTS_ENTRIES};s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${STF_ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${STF_ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 gnocchi_create_config() {
@@ -105,6 +106,10 @@ gnocchi_create_config() {
 
 enable_stf_create_config() {
   cat ${ENABLE_STF_ENVIRONMENT_TEMPLATE} > outputs/enable-stf.yaml
+}
+
+enable_extra_host_file_create_config() {
+  sed -r "s/<<EXTRA_HOST_FILE_ENTRIES>>/${OCP_ROUTE_IP} ${AMQP_HOST}/g" ${EXTRA_HOST_FILE_TEMPLATE} > outputs/extra-hosts.yaml
 }
 
 ir_create_overcloud() {
@@ -119,20 +124,18 @@ ir_create_overcloud() {
       --network-bgpvpn no \
       --network-dvr no \
       --network-l2gw no \
-      --storage-backend ceph \
-      --storage-external no \
+      --storage-backend lvm \
       --overcloud-ssl no \
       --introspect yes \
       --tagging yes \
       --deploy yes \
-      --ntp-server "${NTP_SERVER}" \
-      --overcloud-templates ceilometer-write-qdr-edge-only,outputs/enable-stf.yaml,outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml \
+      --overcloud-templates ceilometer-write-qdr-edge-only,outputs/enable-stf.yaml,outputs/stf-connectors.yaml,outputs/gnocchi-connectors.yaml,outputs/extra-hosts.yaml \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --containers yes \
       --vbmc-force False \
       --vbmc-host undercloud \
       --config-heat ComputeParameters.NeutronBridgeMappings='tenant:br-isolated' \
-      --extra-vars osp_version=17.0
+      --extra-vars osp_version="${OSP_VERSION}"
 }
 
 ir_run_tempest() {
@@ -158,6 +161,7 @@ ir_run_workload() {
   infrared cloud-config --deployment-files virt --tasks launch_workload
 }
 
+
 if [ -z "${CA_CERT_FILE_CONTENT}" ]; then
     echo "CA_CERT_FILE_CONTENT must be set and passed to the deployment, or QDR will fail to connect."
     exit 1
@@ -177,16 +181,22 @@ else
   echo ">> OSP topology: ${OSP_TOPOLOGY}"
 
   ir_run_cleanup
-  ir_run_provision
-  ir_create_undercloud
   if ${ENABLE_STF_CONNECTORS}; then
     stf_create_config
     enable_stf_create_config
+    if [ -z "${OCP_ROUTE_IP}" ]; then
+      touch outputs/extra-hosts.yaml
+      truncate --size 0 outputs/extra-hosts.yaml
+    else
+      enable_extra_host_file_create_config
+    fi
   else
     touch outputs/stf-connectors.yaml
     truncate --size 0 outputs/stf-connectors.yaml
     touch outputs/enable-stf.yaml
     truncate --size 0 outputs/enable-stf.yaml
+    touch outputs/extra-hosts.yaml
+    truncate --size 0 outputs/extra-hosts.yaml
   fi
   if ${ENABLE_GNOCCHI_CONNECTORS}; then
     gnocchi_create_config
@@ -194,7 +204,8 @@ else
     touch outputs/gnocchi-connectors.yaml
     truncate --size 0 outputs/gnocchi-connectors.yaml
   fi
-
+  ir_run_provision
+  ir_create_undercloud
   ir_create_overcloud
   ir_expose_ui
   if ${RUN_WORKLOAD}; then
