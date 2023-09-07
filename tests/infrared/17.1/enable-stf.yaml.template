@@ -48,7 +48,8 @@ custom_templates:
             - image.*
             - memory
             - memory.*
-            - network.*
+            - network.services.vpn.*
+            - network.services.firewall.*
             - perf.*
             - port
             - port.*
@@ -58,7 +59,8 @@ custom_templates:
             - volume.*
 
             # to avoid filling the memory buffers if disconnected from the message bus
-            collectd::plugin::amqp1::send_queue_limit: 50
+            # note: this may need an adjustment if there are many metrics to be sent.
+            collectd::plugin::amqp1::send_queue_limit: 5000
 
             # receive extra information about virtual memory
             collectd::plugin::vmem::verbose: true
@@ -76,3 +78,4 @@ custom_templates:
               local:
                 host: "%{hiera('fqdn_canonical')}"
                 port: 11211
+
