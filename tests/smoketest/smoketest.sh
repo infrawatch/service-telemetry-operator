@@ -13,6 +13,7 @@
 # OCP_PROJECT - namespace you wish to use. Defaults to current
 # collectd pods will be created)
 
+set -x
 # Generate an array of cloud names to use
 NUMCLOUDS=${NUMCLOUDS:-1}
 CLOUDNAMES=()
@@ -182,4 +183,5 @@ else
 fi
 echo
 
+set +x
 exit $RET

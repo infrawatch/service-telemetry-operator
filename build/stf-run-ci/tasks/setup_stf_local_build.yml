@@ -3,25 +3,26 @@
 # to use the generate_bundle_<name> content for use in other places
 
 # --- Smart Gateway Operator ---
-- name: Generate Smart Gateway Operator CSV
-  ansible.builtin.shell:
-    chdir: working/smart-gateway-operator/build
-    cmd: |
-      LOGFILE="{{ ansible_env.HOME }}/sgo_gen_bundle.log" \
-      OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
-      WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
-      RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
-      RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
-      OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
-      OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
-      ./generate_bundle.sh
-  register: generate_bundle_sgo
-
-- name: Results of SGO bundle generation
-  ansible.builtin.debug:
-    var: generate_bundle_sgo.stdout
+- block:
+  - name: Generate Smart Gateway Operator CSV
+    ansible.builtin.shell:
+      chdir: working/smart-gateway-operator/build
+      cmd: |
+        LOGFILE="{{ ansible_env.HOME }}/sgo_gen_bundle.log" \
+        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
+        WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
+        RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
+        RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
+        RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
+        RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
+        OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
+        OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
+        ./generate_bundle.sh
+    register: generate_bundle_sgo
+  always:
+  - name: Results of SGO bundle generation
+    ansible.builtin.debug:
+      var: generate_bundle_sgo.stdout
 
 - name: Replace namespace in SGO role binding
   ansible.builtin.replace:

@@ -179,10 +179,12 @@
 
   - name: Validate system is operational
     ansible.builtin.shell: |
-      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" "{{ base_dir }}/validate_deployment.sh"
+      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" "{{ base_dir }}/validate_deployment.sh" >> {{ ansible_env.HOME }}/validate_deployment.log 2>&1
     args:
       executable: /bin/bash
     register: validate_deployment
 
-  - ansible.builtin.debug:
-      var: validate_deployment.stdout_lines
+  - name: Show the result of the validate_deployment script
+    ansible.builtin.shell:
+      cmd: |
+        cat {{ ansible_env.HOME }}/validate_deployment.log
