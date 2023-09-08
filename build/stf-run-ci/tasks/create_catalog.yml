@@ -140,6 +140,8 @@
         image: "{{ stf_index_image_path }}"
         publisher: CloudOps
         sourceType: grpc
+        grpcPodConfig:
+          securityContextConfig: legacy
         updateStrategy:
           registryPoll:
             interval: 1m
