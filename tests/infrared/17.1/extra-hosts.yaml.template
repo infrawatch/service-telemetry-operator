@@ -1,0 +1,9 @@
+---
+tripleo_heat_templates:
+    []
+
+custom_templates:
+    parameter_defaults:
+        ExtraHostFileEntries:
+          - '<<EXTRA_HOST_FILE_ENTRIES>>'
+
