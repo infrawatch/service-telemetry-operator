@@ -102,7 +102,6 @@
 
 - when:
     - has_integreatly_api | bool
-    - observability_strategy in ['use_community', 'use_hybrid']
   name: Start graphing component plays
   include_tasks: component_grafana.yml
 
