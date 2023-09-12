@@ -40,7 +40,7 @@ servicetelemetry_defaults:
       prometheus:
         enabled: true
         deployment_size: 1
-        scrape_interval: 10s
+        scrape_interval: 15s
         storage:
           strategy: persistent
           retention: 24h
