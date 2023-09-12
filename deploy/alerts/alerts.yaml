@@ -182,7 +182,7 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: Hugepages (warning)
+            summary: Hugepages (critical)
           expr: >-
             sum without (type_instance) (collectd_hugepages_vmpage_number{type_instance="free"})/ sum without (type_instance) (collectd_hugepages_vmpage_number) < 0.1
           for: 10m
