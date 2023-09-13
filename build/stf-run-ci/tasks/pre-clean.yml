@@ -113,7 +113,7 @@
 - name: Remove openshift-cert-manager-operator namespace
   kubernetes.core.k8s:
     state: absent
-    wait: yes
+    wait: true
     definition:
       apiVersion: project.openshift.io/v1
       kind: Project

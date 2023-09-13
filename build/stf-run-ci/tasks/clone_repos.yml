@@ -10,7 +10,7 @@
         repo: "{{ sgo_repository }}"
         dest: working/smart-gateway-operator
         version: "{{ sgo_branch | default(branch, true) }}"
-        force: yes
+        force: true
   rescue:
     - name: "Get {{ version_branches.sgo }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
