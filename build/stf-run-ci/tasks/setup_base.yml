@@ -16,19 +16,6 @@
         - disabled: false
           name: community-operators
 
-# Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm
-# Moved to using Community Operators Catalog, so no longer require upstream CatalogSource. Eventually move to Red Hat Operators CatalogSource.
-- name: Remove CatalogSource for Red Hat Observability Operator (upstream)
-  k8s:
-    state: absent
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        annotations:
-        name: observability-operator
-        namespace: openshift-marketplace
-
 - name: Create OperatorGroup for service-telemetry
   k8s:
     definition:
