@@ -48,6 +48,19 @@
         displayName: OperatorHub.io Operators
         publisher: OperatorHub.io
 
+# Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm
+# Moved to using Community Operators Catalog, so no longer require upstream CatalogSource. Eventually move to Red Hat Operators CatalogSource.
+- name: Remove Red Hat Observability Operator CatalogSource if it is installed
+  k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        annotations:
+        name: observability-operator
+        namespace: openshift-marketplace
+
 - name: Remove CloudOps CatalogSource if it is installed
   k8s:
     state: absent
