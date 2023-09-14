@@ -1,4 +1,15 @@
 ---
-- name: Wait for Service Telemetry Operator to be Succeeded
-  shell: |
-    while ! oc get csv -n "{{ namespace }}" | grep service-telemetry-operator | grep Succeeded; do echo "waiting for Service Telemetry Operator..."; sleep 3; done
+# Try for 10 minutes to get an output
+- name: "Wait for up to 10 minutes for Service Telemetry Operator to be Succeeded"
+  ansible.builtin.shell: |
+    oc get csv -n "{{ namespace }}" | grep service-telemetry-operator | grep Succeeded
+  register: output
+  retries: 60
+  delay: 10
+  until: output.stdout | length != 0
+  ignore_errors: true
+
+- name: "Show fail message if CSV isn't Succeeded after the alotted time"
+  ansible.builtin.fail:
+    msg: "Service Telemetry Operator CSV not Succeeded after 10 minutes"
+  when: output.rc != 0
