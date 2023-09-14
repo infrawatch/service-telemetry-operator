@@ -1,6 +1,6 @@
 ---
 - name: Setup OperatorHub dependencies
-  k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: config.openshift.io/v1
       kind: OperatorHub
@@ -17,7 +17,7 @@
           name: community-operators
 
 - name: Create OperatorGroup for service-telemetry
-  k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: operators.coreos.com/v1
       kind: OperatorGroup
@@ -32,7 +32,7 @@
 - when: not __deploy_from_index_enabled | bool and ocp_ver.stdout is version ('4.12', '<')
   block:
     - name: Create openshift-cert-manager-operator namespace
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: project.openshift.io/v1
           kind: Project
@@ -43,7 +43,7 @@
             - kubernetes
 
     - name: Create openshift-cert-manager-operator OperatorGroup
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: operators.coreos.com/v1
           kind: OperatorGroup
@@ -53,7 +53,7 @@
           spec: {}
 
     - name: Subscribe to Cert Manager for OpenShift Operator
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: operators.coreos.com/v1alpha1
           kind: Subscription
@@ -71,7 +71,7 @@
 - when: not __deploy_from_index_enabled | bool and ocp_ver.stdout is version ('4.12', '>=')
   block:
     - name: Subscribe to Cert Manager for OpenShift Operator
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: operators.coreos.com/v1alpha1
           kind: Subscription
@@ -90,7 +90,7 @@
 - when: not __deploy_from_index_enabled | bool
   block:
     - name: Subscribe to AMQ Interconnect Operator
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: operators.coreos.com/v1alpha1
           kind: Subscription
@@ -105,7 +105,7 @@
             sourceNamespace: openshift-marketplace
 
     - name: Subscribe to Prometheus Operator
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: operators.coreos.com/v1alpha1
           kind: Subscription
@@ -122,7 +122,7 @@
         - __service_telemetry_observability_strategy == "use_community"
 
     - name: Subscribe to Red Hat Obervability Operator
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: operators.coreos.com/v1alpha1
           kind: Subscription
@@ -141,7 +141,7 @@
         - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']
 
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
-  k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
@@ -156,7 +156,7 @@
         sourceNamespace: openshift-marketplace
 
 - name: Wait for Elasticsearch CRD to appear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
     name: elasticsearches.elasticsearch.k8s.elastic.co
