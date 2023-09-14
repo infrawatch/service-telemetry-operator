@@ -79,7 +79,7 @@
             labels:
               operators.coreos.com/openshift-cert-manager-operator.service-telemetry: ""
             name: openshift-cert-manager-operator-stable-v1-redhat-operators-openshift-marketplace
-            namespace: service-telemetry
+            namespace: "{{ namespace }}"
           spec:
             channel: stable-v1
             installPlanApproval: Automatic
