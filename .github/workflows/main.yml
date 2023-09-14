@@ -2,8 +2,8 @@ name: CI
 on: push
 
 jobs:
-  linting:
-    name: Linting
+  operator-linting:
+    name: Operator Linting
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -16,10 +16,27 @@ jobs:
         run: ansible-galaxy collection install operator_sdk.util
 
       - name: Install ansible-lint
-        run: pip install 'ansible-lint < 6.0.0'
+        run: python -m pip install 'ansible-lint < 6.0.0'
 
       - name: Lint Ansible roles/servicetelemetry/ directory
         run: ${HOME}/.local/bin/ansible-lint roles/servicetelemetry
+
+  stf-run-ci-linting:
+    name: stf-run-ci Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Ansible
+        run: python -m pip install 'ansible'
+
+      - name: Install ansible-lint
+        run: python -m pip install 'ansible-lint'
+
+      - name: Lint Ansible build/stf-run-ci  directory
+        run: ${HOME}/.local/bin/ansible-lint .
+        working-directory: ./build/stf-run-ci
 
   build-operator-check:
     name: Build Operator check
