@@ -4,7 +4,7 @@
 
 # --- Smart Gateway Operator ---
 - name: Generate Smart Gateway Operator CSV
-  shell:
+  ansible.builtin.shell:
     chdir: working/smart-gateway-operator/build
     cmd: |
       WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
@@ -18,17 +18,17 @@
   register: generate_bundle_sgo
 
 - name: Results of SGO bundle generation
-  debug:
+  ansible.builtin.debug:
     var: generate_bundle_sgo.stdout
 
 - name: Replace namespace in SGO role binding
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
 - name: Replace namespace in SGO CSV
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
@@ -36,7 +36,8 @@
 - when: not __deploy_from_index_enabled | bool
   block:
   - name: Load Smart Gateway Operator RBAC
-    command: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
+    ansible.builtin.command:
+      cmd: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
     loop:
       - service_account.yaml
       - role.yaml
@@ -44,11 +45,12 @@
       - olm-catalog/smart-gateway-operator/manifests/smartgateway.infra.watch_smartgateways_crd.yaml
 
   - name: Load Smart Gateway Operator CSV
-    shell: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
+    ansible.builtin.shell:
+      cmd: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # --- Service Telemetry Operator ---
 - name: Generate Service Telemetry Operator CSV
-  shell:
+  ansible.builtin.shell:
     chdir: "{{ base_dir }}"
     cmd: |
       WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
@@ -60,17 +62,17 @@
   register: generate_bundle_sto
 
 - name: Results of STO bundle generation
-  debug:
+  ansible.builtin.debug:
     var: generate_bundle_sto.stdout
 
 - name: Replace namespace in STO role binding
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/../deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
 - name: Replace namespace in STO CSV
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
@@ -78,7 +80,8 @@
 - when: not __deploy_from_index_enabled | bool
   block:
   - name: Load Service Telemetry Operator RBAC
-    command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+    ansible.builtin.command:
+      cmd: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
     loop:
       - service_account.yaml
       - role.yaml
@@ -86,8 +89,10 @@
       - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
 
   - name: Load Service Telemetry Operator CSV
-    shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
+    ansible.builtin.shell:
+      cmd: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # cleanup
 - name: Revert local change to role_binding.yaml
-  shell: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
+  ansible.builtin.shell:
+    cmd: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"

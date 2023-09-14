@@ -1,6 +1,6 @@
 - block:
   - name: Get existing Pull Secret from openshift config
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Secret
       namespace: openshift-config
@@ -8,11 +8,11 @@
     register: pull_secret
 
   - name: Decode docker config json
-    set_fact:
+    ansible.builtin.set_fact:
       dockerconfigjson: "{{ pull_secret.resources[0].data['.dockerconfigjson'] | b64decode }}"
 
   - name: Merge registry creds into auth section of docker config
-    set_fact:
+    ansible.builtin.set_fact:
       new_dockerauths: "{{ dockerconfigjson['auths'] | combine( {
         pull_secret_registry:{
               'auth': (pull_secret_user ~ ':' ~ pull_secret_pass) | b64encode
@@ -20,11 +20,11 @@
         }) }}"
 
   - name: Create new docker config
-    set_fact:
+    ansible.builtin.set_fact:
       new_dockerconfigjson: "{{ dockerconfigjson | combine({'auths': new_dockerauths}) }}"
 
   - name: Create Pull Secret for bundle registry access (in the local namespace)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition:
         apiVersion: v1
@@ -37,7 +37,7 @@
           .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
 
   - name: Create Pull Secret for bundle registry access (in the global namespace)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition:
         apiVersion: v1
@@ -53,7 +53,7 @@
     - bundle_registry_auth
 
 - name: Create registry CA Cert
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -89,9 +89,9 @@
     success_msg: "Bundle paths are defined and not None"
 
 - name: Deploy SGO via OLM bundle
-  shell:
+  ansible.builtin.shell:
     cmd: "{{ base_dir }}/working/operator-sdk run bundle {{__smart_gateway_bundle_image_path}} {% if pull_secret is defined %}--pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca{% endif %} --namespace={{ namespace }} --timeout 600s"
 
 - name: Deploy STO via OLM bundle
-  shell:
+  ansible.builtin.shell:
     cmd: "{{ base_dir }}/working/operator-sdk run bundle {{ __service_telemetry_bundle_image_path}} {% if pull_secret is defined %}--pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca{% endif %} --namespace={{ namespace }} --timeout 600s"
