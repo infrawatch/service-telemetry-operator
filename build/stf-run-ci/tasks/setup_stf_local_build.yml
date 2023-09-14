@@ -2,11 +2,19 @@
 # WARNING: generation of bundles is not idempotent from the point of being able
 # to use the generate_bundle_<name> content for use in other places
 
+- name: Get operator_sdk_v0 (build bundles)
+  ansible.builtin.command:
+    cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
+    chdir: "{{ base_dir }}"
+    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
+
 # --- Smart Gateway Operator ---
 - name: Generate Smart Gateway Operator CSV
   shell:
     chdir: working/smart-gateway-operator/build
     cmd: |
+      LOGFILE="{{ ansible_env.HOME }}/sgo_gen_bundle.log" \
+      OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
       WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
       RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
       RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
@@ -51,6 +59,8 @@
   shell:
     chdir: "{{ base_dir }}"
     cmd: |
+      LOGFILE="{{ ansible_env.HOME }}/sto_gen_bundle.log" \
+      OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
       WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
