@@ -70,8 +70,9 @@
 
 - name: Get operator_sdk_v1 (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
-  ansible.builtin.command: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk_v1 }}"
-  creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }}"
+  ansible.builtin.command:
+    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk_v1 }}"
+    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }}"
 
 # -- create artifacts
 - when: __local_build_enabled | bool
