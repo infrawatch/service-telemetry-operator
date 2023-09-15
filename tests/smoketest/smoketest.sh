@@ -71,9 +71,9 @@ echo "*** [INFO] Triggering an alertmanager notification..."
 
 # check if the oc client version is less than 4.11 and adjust the token command to match available commands
 if [ 0${OC_CLIENT_VERSION_Y} -lt 011 ]; then
-    PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-k8s)
+    PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-stf)
 else
-    PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-k8s)
+    PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-stf)
 fi
 
 oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"labels\":{\"alertname\":\"Testalert1\"}}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
