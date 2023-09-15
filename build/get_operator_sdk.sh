@@ -19,7 +19,6 @@ if [[ ! -f ${REL}/working/operator-sdk-${VERSION} ]]; then
 	fi
 	chmod +x ${REL}/working/operator-sdk-${VERSION}
 	rm -f ${REL}/working/operator-sdk
-	ln -s operator-sdk-${VERSION} ${REL}/working/operator-sdk
 fi
 
 set +x
