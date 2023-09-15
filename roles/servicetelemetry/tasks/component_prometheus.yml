@@ -7,76 +7,18 @@
         kind: Route
         name: '{{ ansible_operator_meta.name }}-prometheus-proxy'
 
-- name: Add oauth redirect annotation to prometheus-k8s service account
+- name: Create ServiceAccount/prometheus-stf with oauth redirect annotation
   k8s:
     definition:
       apiVersion: v1
       kind: ServiceAccount
       metadata:
-        name: prometheus-k8s
+        name: prometheus-stf
         namespace: '{{ ansible_operator_meta.namespace }}'
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.prometheus: '{{ prom_oauth_redir_ref | to_json }}'
 
-- block:
-  - name: Install RBAC Role for prometheus operations
-    k8s:
-      definition:
-        apiVersion: rbac.authorization.k8s.io/v1
-        kind: Role
-        metadata:
-          name: prometheus-stf
-          namespace: '{{ ansible_operator_meta.namespace }}'
-        rules:
-        - apiGroups:
-          - ""
-          resources:
-          - services
-          - endpoints
-          - pods
-          verbs:
-          - get
-          - list
-          - watch
-        - apiGroups:
-          - extensions
-          - networking.k8s.io
-          resources:
-          - ingresses
-          verbs:
-          - get
-          - list
-          - watch
-        - apiGroups:
-          - security.openshift.io
-          resourceNames:
-          - nonroot
-          - nonroot-v2
-          resources:
-          - securitycontextconstraints
-          verbs:
-          - use
-
-  - name: Bind the local prometheus SA to our new role
-    k8s:
-      definition:
-        apiVersion: rbac.authorization.k8s.io/v1
-        kind: RoleBinding
-        metadata:
-          name: prometheus-k8s-stf
-          namespace: '{{ ansible_operator_meta.namespace }}'
-        roleRef:
-          apiGroup: rbac.authorization.k8s.io
-          kind: Role
-          name: prometheus-stf
-        subjects:
-        - kind: ServiceAccount
-          name: prometheus-k8s
-          namespace: '{{ ansible_operator_meta.namespace }}'
-  when:
-    - observability_strategy in ['use_redhat', 'use_hybrid']
-
-- name: Create the prometheus-stf ClusterRole
+- name: Create ClusterRole/prometheus-stf for non-resource URL /metrics access
   k8s:
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
@@ -84,58 +26,114 @@
       metadata:
         name: prometheus-stf
       rules:
-        - apiGroups:
-          - ""
-          resources:
-          - nodes/metrics
-          verbs:
-          - get
-        - nonResourceURLs:
-          - /metrics
-          verbs:
-          - get
-        - apiGroups:
-          - authentication.k8s.io
-          resources:
-          - tokenreviews
-          verbs:
-          - create
-        - apiGroups:
-          - authorization.k8s.io
-          resources:
-          - subjectaccessreviews
-          verbs:
-          - create
-        - apiGroups:
-          - ""
-          resources:
-          - namespaces
-          verbs:
-          - get
-        - apiGroups:
-          - security.openshift.io
-          resourceNames:
-          - nonroot
-          resources:
-          - securitycontextconstraints
-          verbs:
-          - use
+      - apiGroups:
+        - ""
+        resources:
+        - nodes/metrics
+        verbs:
+        - get
+      - nonResourceURLs:
+        - /metrics
+        verbs:
+        - get
+      - apiGroups:
+        - authentication.k8s.io
+        resources:
+        - tokenreviews
+        verbs:
+        - create
+      - apiGroups:
+        - authorization.k8s.io
+        resources:
+        - subjectaccessreviews
+        verbs:
+        - create
+      - apiGroups:
+        - ""
+        resources:
+        - namespaces
+        verbs:
+        - get
+      - apiGroups:
+        - security.openshift.io
+        resourceNames:
+        - nonroot
+        - nonroot-v2
+        resources:
+        - securitycontextconstraints
+        verbs:
+        - use
 
-- name: Bind the local prometheus SA to prometheus cluster role (for oauth perms)
+- name: Create ClusterRoleBinding/prometheus-stf
   k8s:
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRoleBinding
       metadata:
-        name: prometheus-k8s-{{ ansible_operator_meta.namespace }}
-        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: prometheus-stf
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
         name: prometheus-stf
       subjects:
       - kind: ServiceAccount
-        name: prometheus-k8s
+        name: prometheus-stf
+        namespace: '{{ ansible_operator_meta.namespace }}'
+
+- name: Create Role/prometheus-stf for Prometheus operations
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: prometheus-stf
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      rules:
+      - apiGroups:
+        - ""
+        resources:
+        - services
+        - endpoints
+        - pods
+        verbs:
+        - get
+        - list
+        - watch
+      - apiGroups:
+        - extensions
+        - networking.k8s.io
+        resources:
+        - ingresses
+        verbs:
+        - get
+        - list
+        - watch
+
+- name: Create RoleBinding/prometheus-stf
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: prometheus-stf
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: Role
+        name: prometheus-stf
+      subjects:
+      - kind: ServiceAccount
+        name: prometheus-stf
+        namespace: '{{ ansible_operator_meta.namespace }}'
+
+- name: Remove old ClusterRoleBinding for prometheus-k8s using CMO roleRef
+  k8s:
+    state: absent
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: prometheus-k8s-{{ ansible_operator_meta.namespace }}
         namespace: '{{ ansible_operator_meta.namespace }}'
 
 - name: Check for existing prometheus htpasswd user secret
