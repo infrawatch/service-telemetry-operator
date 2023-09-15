@@ -9,7 +9,6 @@ OPERATOR_NAME=${OPERATOR_NAME:-service-telemetry-operator}
 IMAGE_BUILDER=${IMAGE_BUILDER:-podman}
 IMAGE_BUILD_ARGS=${IMAGE_BUILD_ARGS:-''}
 IMAGE_TAG=${IMAGE_TAG:-latest}
-# NOTE(vkmc) Where is this env var being used?
 REQUIRED_OPERATOR_SDK_VERSION=${REQUIRED_OPERATOR_SDK_VERSION:-v0.19.4}
 SERVICE_TELEMETRY_SUBSCRIPTION=${SERVICE_TELEMETRY_SUBSCRIPTION:-service-telemetry-operator-stable-infrawatch-operators-openshift-marketplace}
 OPERATOR_IMAGE=${OPERATOR_IMAGE:-"quay.io/infrawatch/${OPERATOR_NAME}"}

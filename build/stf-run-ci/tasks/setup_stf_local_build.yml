@@ -2,12 +2,6 @@
 # WARNING: generation of bundles is not idempotent from the point of being able
 # to use the generate_bundle_<name> content for use in other places
 
-- name: Get operator_sdk_v0 (build bundles)
-  ansible.builtin.command:
-    cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
-    chdir: "{{ base_dir }}"
-    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
-
 # --- Smart Gateway Operator ---
 - name: Generate Smart Gateway Operator CSV
   ansible.builtin.shell:
