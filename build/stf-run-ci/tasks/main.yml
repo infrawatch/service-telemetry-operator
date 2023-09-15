@@ -68,9 +68,16 @@
     base_dir: "{{ playbook_dir }}"
   when: base_dir | length == 0
 
-- name: Get new operator sdk
+- name: Get operator_sdk_v0 (build bundles)
+  ansible.builtin.command:
+    cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
+    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
+
+- name: Get operator_sdk_v1 (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
-  ansible.builtin.command: "{{ base_dir }}/get_new_operator_sdk.sh {{ new_operator_sdk_version }}"
+  ansible.builtin.command:
+    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk_v1 }}"
+    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }}"
 
 # -- create artifacts
 - when: __local_build_enabled | bool
