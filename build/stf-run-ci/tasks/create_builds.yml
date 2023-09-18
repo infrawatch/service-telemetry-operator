@@ -51,7 +51,7 @@
   ansible.builtin.set_fact:
     build_describe: "{{ build_describe_results.stdout | from_json }}"
 
-- name: Show the ``oc get build ...`` results
+- name: Get the build results
   ansible.builtin.debug:
     var: build_describe
 

@@ -23,7 +23,7 @@
   - name: Show generate bundle log
     ansible.builtin.shell:
       cmd: |
-        cat {{ logfile_dir }}/sgo_gen_bundle.log || true
+        cat {{ logfile_dir }}/sgo_gen_bundle.log
 
 - name: Replace namespace in SGO role binding
   ansible.builtin.replace:

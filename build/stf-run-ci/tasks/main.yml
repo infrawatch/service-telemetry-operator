@@ -87,6 +87,7 @@
 - name: Make sure the logging dir exists
   ansible.builtin.shell:
     cmd: mkdir -p {{ logfile_dir }}
+  creates: "{{ logfile_dir }}"
 
 # -- create artifacts
 - when: __local_build_enabled | bool
