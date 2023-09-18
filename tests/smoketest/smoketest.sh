@@ -80,6 +80,7 @@ fi
 # create the alert using startsAt which in theory may cause trigger to be faster
 echo "*** [INFO] Create alert"
 oc delete pod -l run=curl ; oc run curl --wait --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -v -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"status\":\"firing\",\"labels\":{\"alertname\":\"smoketest\",\"severity\":\"warning\"},\"startsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\"}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
+oc logs curl
 
 echo "*** [INFO] Waiting to see SNMP trap message in webhook pod"
 SNMP_WEBHOOK_POD=$(oc get pod -l "app=default-snmp-webhook" -ojsonpath='{.items[0].metadata.name}')
