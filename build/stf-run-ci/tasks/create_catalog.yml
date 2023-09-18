@@ -1,7 +1,7 @@
 ---
 - name: Create service-telemetry-framework-index working directory
   ansible.builtin.file:
-    path: working/service-telemetry-framework-index
+    path: "{{ base_dir }}/working/service-telemetry-framework-index"
     state: directory
     mode: '0755'
 
@@ -39,10 +39,10 @@
       variable_start_string: "<<"
       variable_end_string: ">>"
       src: config-json.j2
-      dest: working/service-telemetry-framework-index/config.json
+      dest: "{{ base_dir }}/working/service-telemetry-framework-index/config.json"
 
   - name: Create a Secret for the dockercfg
-    ansible.builtin.command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson=working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
+    ansible.builtin.command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson={{ base_dir }}/working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
 
 - name: Create ImageStream for ose-operator-registry
   ansible.builtin.command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
@@ -124,10 +124,10 @@
   - name: Create index.yaml base for index image
     ansible.builtin.template:
       src: index-yaml.j2
-      dest: working/service-telemetry-framework-index/index.yaml
+      dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
 
   - name: Build service-telemetry-framework-index
-    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir working/service-telemetry-framework-index
+    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir {{ base_dir }}/working/service-telemetry-framework-index
 
 - name: Create CloudOps CatalogSource
   kubernetes.core.k8s:
