@@ -23,6 +23,8 @@ choose to override:
 | `__deploy_from_index_enabled`                                        | {true,false}                                                | false                                                 | Whether to deploy STF from locally built bundles and index image.                                                                         |
 | `__service_telemetry_bundle_image_path`                              | <image_path>                                                | `quay.io/infrawatch-operators/service-telemetry-operator-bundle:nightly-head` | Image path to Service Telemetry Operator bundle                                                                                           |
 | `__smart_gateway_bundle_image_path`                                  | <image_path>                                                | `quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head` | Image path to Smart Gateway Operator bundle                                                                                               |
+| `setup_bundle_registry_tls_ca`                                       | {true,false}                                                | true                                                  | Whether to setup or not a TLS CA cert for the bundle registry access                                                                               |
+| `setup_bundle_registry_auth`                                         | {true,false}                                                | true                                                  | Whether to setup or not the auth for the bundle registry access                                                                               |
 | `prometheus_webhook_snmp_branch`                                     | <git_branch>                                                | master                                                | Which Prometheus Webhook SNMP git branch to checkout                                                                                      |
 | `sgo_branch`                                                         | <git_branch>                                                | master                                                | Which Smart Gateway Operator git branch to checkout                                                                                       |
 | `sg_core_branch`                                                     | <git_branch>                                                | master                                                | Which Smart Gateway Core git branch to checkout                                                                                           |
@@ -113,8 +115,9 @@ ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled
 
 NOTE: When deploying from bundles, you must have a _CA.pem_ for
 the registry already in place in the build directory, if required. If this is
-not required, add `--skip-tags bundle_registry_tls_ca`. If no login is required
-to your bundle image registry, add `--skip-tags bundle_registry_auth`
+not required, set `setup_bundle_registry_tls_ca` to `false`. If no login is required
+to your bundle image registry, set `setup_bundle_registry_auth` to `false`.
+By default, those configuration options are set to `true`.
 
 ## Deployment from local artifacts, bundles, and index
 
