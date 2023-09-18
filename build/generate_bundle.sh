@@ -3,7 +3,11 @@ set -e
 set -x
 
 LOGFILE=${LOGFILE:-/dev/null}
-truncate --size=0 $LOGFILE
+
+# If LOGFILE is /dev/null, this command fails, so ignore that error
+truncate --size=0 ${LOGFILE} || true
+
+OPERATOR_SDK=${OPERATOR_SDK:-operator-sdk}
 
 REL=$( readlink -f $(dirname "$0"))
 
@@ -62,5 +66,6 @@ copy_extra_metadata
 #build_bundle_instructions
 #echo "## End Bundle creation"
 
+set +x
 JSON_OUTPUT='{"operator_bundle_image":"%s","operator_bundle_version":"%s","operator_image":"%s","bundle_channels":"%s","bundle_default_channel":"%s","operator_tag":"%s","working_dir":"%s"}'
 printf "$JSON_OUTPUT" "$OPERATOR_BUNDLE_IMAGE" "$OPERATOR_BUNDLE_VERSION" "$OPERATOR_IMAGE" "$BUNDLE_CHANNELS" "$BUNDLE_DEFAULT_CHANNEL" "$OPERATOR_TAG" "$WORKING_DIR"
