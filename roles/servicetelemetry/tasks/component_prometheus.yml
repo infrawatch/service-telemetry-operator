@@ -26,12 +26,6 @@
       metadata:
         name: prometheus-stf
       rules:
-      - apiGroups:
-        - ""
-        resources:
-        - nodes/metrics
-        verbs:
-        - get
       - nonResourceURLs:
         - /metrics
         verbs:
