@@ -3,25 +3,28 @@
 # to use the generate_bundle_<name> content for use in other places
 
 # --- Smart Gateway Operator ---
-- name: Generate Smart Gateway Operator CSV
-  ansible.builtin.shell:
-    chdir: working/smart-gateway-operator/build
-    cmd: |
-      LOGFILE="{{ ansible_env.HOME }}/sgo_gen_bundle.log" \
-      OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
-      WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
-      RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
-      RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
-      OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
-      OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
-      ./generate_bundle.sh
-  register: generate_bundle_sgo
-
-- name: Results of SGO bundle generation
-  ansible.builtin.debug:
-    var: generate_bundle_sgo.stdout
+- block:
+  - name: Generate Smart Gateway Operator CSV
+    ansible.builtin.shell:
+      chdir: working/smart-gateway-operator/build
+      cmd: |
+        LOGFILE="{{ logfile_dir }}/sgo_gen_bundle.log" \
+        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
+        WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
+        RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
+        RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
+        RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
+        RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
+        OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
+        OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
+        ./generate_bundle.sh
+    register: generate_bundle_sgo
+  always:
+    # "|| true" is needed until https://github.com/infrawatch/smart-gateway-operator/pull/143 is merged
+  - name: Show generate bundle log
+    ansible.builtin.shell:
+      cmd: |
+        cat {{ logfile_dir }}/sgo_gen_bundle.log || true
 
 - name: Replace namespace in SGO role binding
   ansible.builtin.replace:
@@ -55,7 +58,7 @@
   ansible.builtin.shell:
     chdir: "{{ base_dir }}"
     cmd: |
-      LOGFILE="{{ ansible_env.HOME }}/sto_gen_bundle.log" \
+      LOGFILE="{{ logfile_dir }}/sto_gen_bundle.log" \
       OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
       WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
       RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
