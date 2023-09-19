@@ -77,14 +77,13 @@
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.alertmanager: '{{ alertmanager_oauth_redir_ref | to_json }}'
 
-- name: Create Role/alertmanager-stf
+- name: Create ClusterRole/alertmanager-stf
   k8s:
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
-      kind: Role
+      kind: ClusterRole
       metadata:
         name: alertmanager-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
       rules:
         - apiGroups:
           - authentication.k8s.io
@@ -117,7 +116,7 @@
         namespace: '{{ ansible_operator_meta.namespace }}'
       roleRef:
         apiGroup: rbac.authorization.k8s.io
-        kind: Role
+        kind: ClusterRole
         name: alertmanager-stf
         namespace: '{{ ansible_operator_meta.namespace }}'
       subjects:
