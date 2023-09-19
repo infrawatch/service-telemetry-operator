@@ -20,10 +20,11 @@
         ./generate_bundle.sh
     register: generate_bundle_sgo
   always:
+    # "|| true" is needed until https://github.com/infrawatch/smart-gateway-operator/pull/143 is merged
   - name: Show generate bundle log
     ansible.builtin.shell:
       cmd: |
-        cat {{ logfile_dir }}/sgo_gen_bundle.log
+        cat {{ logfile_dir }}/sgo_gen_bundle.log || true
 
 - name: Replace namespace in SGO role binding
   ansible.builtin.replace:
