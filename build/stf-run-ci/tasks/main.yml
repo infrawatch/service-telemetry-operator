@@ -79,6 +79,16 @@
     cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk_v1 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }}"
 
+- name: Set logfile_dir
+  when: not (logfile_dir is defined)
+  ansible.builtin.set_fact:
+    logfile_dir: "{{ base_dir }}/working/logs"
+
+- name: Make sure the logging dir exists
+  ansible.builtin.command:
+    cmd: mkdir -p {{ logfile_dir }}
+    creates: "{{ logfile_dir }}"
+
 # -- create artifacts
 - when: __local_build_enabled | bool
   tags:
@@ -113,6 +123,20 @@
     ansible.builtin.include_tasks: setup_stf_local_build.yml
     tags:
       - deploy
+
+- when: __deploy_from_index_enabled | bool or __deploy_from_bundles_enabled | bool
+  name: Relax the pod security admission controls to allow local catalog index registry pods
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ namespace }}"
+        labels:
+          security.openshift.io/scc.podSecurityLabelSync: "false"
+          pod-security.kubernetes.io/enforce: baseline
+          pod-security.kubernetes.io/audit: restricted
+          pod-security.kubernetes.io/warn: restricted
 
 - when: __deploy_from_index_enabled | bool
   tags:
@@ -179,10 +203,12 @@
 
   - name: Validate system is operational
     ansible.builtin.shell: |
-      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" "{{ base_dir }}/validate_deployment.sh"
+      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
     args:
       executable: /bin/bash
     register: validate_deployment
 
-  - ansible.builtin.debug:
-      var: validate_deployment.stdout_lines
+  - name: Show the result of the validate_deployment script
+    ansible.builtin.shell:
+      cmd: |
+        cat {{ logfile_dir }}/validate_deployment.log

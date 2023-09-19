@@ -3,10 +3,12 @@ set -e
 set -x
 
 LOGFILE=${LOGFILE:-/dev/null}
+
 # If LOGFILE is /dev/null, this command fails, so ignore that error
 truncate --size=0 ${LOGFILE} || true
 
 OPERATOR_SDK=${OPERATOR_SDK:-operator-sdk}
+
 REL=$( readlink -f $(dirname "$0"))
 
 # shellcheck source=build/metadata.sh
