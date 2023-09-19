@@ -48,15 +48,6 @@
         - namespaces
         verbs:
         - get
-      - apiGroups:
-        - security.openshift.io
-        resourceNames:
-        - nonroot
-        - nonroot-v2
-        resources:
-        - securitycontextconstraints
-        verbs:
-        - use
 
 - name: Create ClusterRoleBinding/prometheus-stf
   k8s:
@@ -102,6 +93,15 @@
         - get
         - list
         - watch
+      - apiGroups:
+        - security.openshift.io
+        resourceNames:
+        - nonroot
+        - nonroot-v2
+        resources:
+        - securitycontextconstraints
+        verbs:
+        - use
 
 - name: Create RoleBinding/prometheus-stf
   k8s:
