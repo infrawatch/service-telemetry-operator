@@ -124,6 +124,20 @@
     tags:
       - deploy
 
+- when: __deploy_from_index_enabled | bool or __deploy_from_bundles_enabled | bool
+  name: Relax the pod security admission controls to allow local catalog index registry pods
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ namespace }}"
+        labels:
+          security.openshift.io/scc.podSecurityLabelSync: "false"
+          pod-security.kubernetes.io/enforce: baseline
+          pod-security.kubernetes.io/audit: restricted
+          pod-security.kubernetes.io/warn: restricted
+
 - when: __deploy_from_index_enabled | bool
   tags:
     - create_bundles
