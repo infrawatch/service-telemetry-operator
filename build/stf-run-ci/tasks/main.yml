@@ -68,9 +68,26 @@
     base_dir: "{{ playbook_dir }}"
   when: base_dir | length == 0
 
-- name: Get new operator sdk
+- name: Get operator_sdk_v0 (build bundles)
+  ansible.builtin.command:
+    cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
+    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
+
+- name: Get operator_sdk_v1 (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
-  ansible.builtin.command: "{{ base_dir }}/get_new_operator_sdk.sh {{ new_operator_sdk_version }}"
+  ansible.builtin.command:
+    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk_v1 }}"
+    creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }}"
+
+- name: Set logfile_dir
+  when: not (logfile_dir is defined)
+  ansible.builtin.set_fact:
+    logfile_dir: "{{ base_dir }}/working/logs"
+
+- name: Make sure the logging dir exists
+  ansible.builtin.command:
+    cmd: mkdir -p {{ logfile_dir }}
+    creates: "{{ logfile_dir }}"
 
 # -- create artifacts
 - when: __local_build_enabled | bool
@@ -186,10 +203,12 @@
 
   - name: Validate system is operational
     ansible.builtin.shell: |
-      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" "{{ base_dir }}/validate_deployment.sh"
+      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
     args:
       executable: /bin/bash
     register: validate_deployment
 
-  - ansible.builtin.debug:
-      var: validate_deployment.stdout_lines
+  - name: Show the result of the validate_deployment script
+    ansible.builtin.shell:
+      cmd: |
+        cat {{ logfile_dir }}/validate_deployment.log
