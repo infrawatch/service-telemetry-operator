@@ -72,12 +72,14 @@
   ansible.builtin.command:
     cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
+    chdir: "{{ base_dir }}"
 
 - name: Get operator_sdk_v1 (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
   ansible.builtin.command:
     cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk_v1 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }}"
+    chdir: "{{ base_dir }}"
 
 - name: Set logfile_dir
   when: not (logfile_dir is defined)
