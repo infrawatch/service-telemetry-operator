@@ -19,6 +19,9 @@
       ansible.builtin.import_role:
         name: rhol_crc
         tasks_from: add_crc_creds.yml
+    - name: Get scenario-specific vars
+      ansible.builtin.include_vars:
+        file: "vars-{{ scenario }}.yml"
 
     - name: "Run STF smoketests"
       ansible.builtin.shell:

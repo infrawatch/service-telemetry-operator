@@ -38,6 +38,14 @@
 
       # all jobs would depend on a combo of the stf and ocp content providers
 
+- job:
+    name: stf-crc-latest-nightly-bundles
+    parent: stf-base
+    description:
+      Deploy STF nightly bundles
+    vars:
+      scenario: "nightly-bundles"
+
 #stf-1.5-ocp-4.10
 #  parent: stf-base
 #  dependencies: [make-ocp-4.10]
@@ -62,3 +70,4 @@
     github-check:
       jobs:
         - stf-crc-latest-local_build
+        - stf-crc-latest-nightly-bundles
