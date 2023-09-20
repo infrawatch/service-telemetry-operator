@@ -49,21 +49,42 @@
         verbs:
         - get
 
-- name: Create ClusterRoleBinding/prometheus-stf
-  k8s:
-    definition:
-      apiVersion: rbac.authorization.k8s.io/v1
-      kind: ClusterRoleBinding
-      metadata:
-        name: prometheus-stf
-      roleRef:
-        apiGroup: rbac.authorization.k8s.io
-        kind: ClusterRole
-        name: prometheus-stf
-      subjects:
-      - kind: ServiceAccount
-        name: prometheus-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
+- name: Setup ClusterRoleBinding for Prometheus
+  block:
+    - name: Define ClusterRoleBinding/prometheus-stf
+      set_fact:
+        def_prometheus_stf_crb: |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: prometheus-stf
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: prometheus-stf
+          subjects:
+          - kind: ServiceAccount
+            name: prometheus-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create ClusterRoleBinding/prometheus-stf
+      k8s:
+        definition:
+          "{{ def_prometheus_stf_crb }}"
+  rescue:
+    - name: Remove ClusterRoleBinding/prometheus-stf when fail to update
+      k8s:
+        state: absent
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: prometheus-stf
+
+    - name: Create ClusterRoleBinding/prometheus-stf
+      k8s:
+        definition:
+          "{{ def_prometheus_stf_crb }}"
 
 - name: Create Role/prometheus-stf for Prometheus operations
   k8s:
@@ -103,22 +124,44 @@
         verbs:
         - use
 
-- name: Create RoleBinding/prometheus-stf
-  k8s:
-    definition:
-      apiVersion: rbac.authorization.k8s.io/v1
-      kind: RoleBinding
-      metadata:
-        name: prometheus-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      roleRef:
-        apiGroup: rbac.authorization.k8s.io
-        kind: Role
-        name: prometheus-stf
-      subjects:
-      - kind: ServiceAccount
-        name: prometheus-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
+- name: Setup RoleBinding for Prometheus
+  block:
+    - name: Define RoleBinding/prometheus-stf
+      set_fact:
+        def_prometheus_stf_rb: |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: prometheus-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: Role
+            name: prometheus-stf
+          subjects:
+          - kind: ServiceAccount
+            name: prometheus-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create RoleBinding/prometheus-stf
+      k8s:
+        definition:
+          "{{ def_prometheus_stf_rb }}"
+  rescue:
+  - name: Remove RoleBinding/prometheus-stf on failure to update
+    k8s:
+      state: absent
+      definition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        metadata:
+          name: prometheus-stf
+          namespace: '{{ ansible_operator_meta.namespace }}'
+
+  - name: Create RoleBinding/prometheus-stf
+    k8s:
+      definition:
+        "{{ def_prometheus_stf_rb }}"
 
 - name: Remove old ClusterRoleBinding for prometheus-k8s using CMO roleRef
   k8s:

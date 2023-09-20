@@ -66,7 +66,7 @@
         kind: Route
         name: '{{ ansible_operator_meta.name }}-alertmanager-proxy'
 
-- name: Add a service account to used by Alertmanager
+- name: Create ServiceAccount/alertmanager-stf with oauth redirect annotation
   k8s:
     definition:
       apiVersion: v1
@@ -97,6 +97,53 @@
           - subjectaccessreviews
           verbs:
           - create
+
+- name: Setup ClusterRoleBinding for Alertmanager
+  block:
+    - name: Define ClusterRoleBinding/alertmanager-stf
+      set_fact:
+        def_alertmanager_stf_crb: |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: alertmanager-stf
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: alertmanager-stf
+          subjects:
+          - kind: ServiceAccount
+            name: alertmanager-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create ClusterRoleBinding/alertmanager-stf
+      k8s:
+        definition:
+          "{{ def_alertmanager_stf_crb }}"
+  rescue:
+    - name: Remove ClusterRoleBinding/alertmanager-stf when fail to update
+      k8s:
+        state: absent
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: alertmanager-stf
+
+    - name: Create ClusterRoleBinding/alertmanager-stf
+      k8s:
+        definition:
+          "{{ def_alertmanager_stf_crb }}"
+
+- name: Create Role/alertmanager-stf
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: alertmanager-stf
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      rules:
         - apiGroups:
           - security.openshift.io
           resourceNames:
@@ -106,23 +153,45 @@
           verbs:
           - use
 
-- name: Bind role
-  k8s:
-    definition:
-      apiVersion: rbac.authorization.k8s.io/v1
-      kind: RoleBinding
-      metadata:
-        name: alertmanager-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      roleRef:
-        apiGroup: rbac.authorization.k8s.io
-        kind: ClusterRole
-        name: alertmanager-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      subjects:
-      - kind: ServiceAccount
-        name: alertmanager-stf
-        namespace: '{{ ansible_operator_meta.namespace }}'
+- name: Setup RoleBinding for Alertmanager
+  block:
+    - name: Define RoleBinding/alertmanager-stf
+      set_fact:
+        def_alertmanager_stf_rb: |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: alertmanager-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: Role
+            name: alertmanager-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          subjects:
+          - kind: ServiceAccount
+            name: alertmanager-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create RoleBinding/alertmanager-stf
+      k8s:
+        definition:
+          "{{ def_alertmanager_stf_rb }}"
+  rescue:
+    - name: Remove RoleBinding/alertmanager-stf when fail to update
+      k8s:
+        state: absent
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: alertmanager-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create RoleBinding/alertmanager-stf
+      k8s:
+        definition:
+          "{{ def_alertmanager_stf_rb }}"
 
 - name: Set default alertmanager service template
   set_fact:
