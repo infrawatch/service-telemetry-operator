@@ -76,4 +76,3 @@ custom_templates:
               local:
                 host: "%{hiera('fqdn_canonical')}"
                 port: 11211
-# vim: ft=yaml
