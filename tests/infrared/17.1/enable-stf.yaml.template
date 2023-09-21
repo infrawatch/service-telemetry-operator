@@ -6,16 +6,14 @@ custom_templates:
     # matches the documentation for enable-stf.yaml in stable-1.3 documentation
     parameter_defaults:
         # only send to STF, not other publishers
-        EventPipelinePublishers: []
         PipelinePublishers: []
 
         # manage the polling and pipeline configuration files for Ceilometer agents
         ManagePolling: true
         ManagePipeline: true
 
-        # enable Ceilometer metrics and events
+        # enable Ceilometer metrics
         CeilometerQdrPublishMetrics: true
-        CeilometerQdrPublishEvents: true
 
         # enable collection of API status
         CollectdEnableSensubility: true
@@ -27,12 +25,12 @@ custom_templates:
         # set collectd overrides for higher telemetry resolution and extra plugins
         # to load
         CollectdConnectionType: amqp1
-        CollectdAmqpInterval: 5
-        CollectdDefaultPollingInterval: 5
+        CollectdAmqpInterval: 30
+        CollectdDefaultPollingInterval: 30
         CollectdExtraPlugins:
         - vmem
 
-        # set standard prefixes for where metrics and events are published to QDR
+        # set standard prefixes for where metrics are published to QDR
         MetricsQdrAddresses:
         - prefix: 'collectd'
           distribution: multicast
@@ -78,4 +76,4 @@ custom_templates:
               local:
                 host: "%{hiera('fqdn_canonical')}"
                 port: 11211
-
+# vim: ft=yaml
