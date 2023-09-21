@@ -103,3 +103,4 @@
 - name: Revert local change to role_binding.yaml
   ansible.builtin.shell:
     cmd: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
+    chdir: "{{ base_dir }}"
