@@ -46,6 +46,14 @@
     vars:
       scenario: "nightly-bundles"
 
+- job:
+    name: stf-crc-latest-local_build-index_deploy
+    parent: stf-base
+    description:
+      Build STF locally and deploy from index
+    vars:
+      scenario: "local_build-index_deploy"
+
 #stf-1.5-ocp-4.10
 #  parent: stf-base
 #  dependencies: [make-ocp-4.10]
@@ -71,3 +79,4 @@
       jobs:
         - stf-crc-latest-local_build
         - stf-crc-latest-nightly-bundles
+        - stf-crc-latest-local_build-index_deploy
