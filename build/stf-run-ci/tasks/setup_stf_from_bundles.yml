@@ -1,4 +1,4 @@
-- when: setup_bundle_registry_auth
+- when: setup_bundle_registry_auth | bool
   block:
   - name: Get existing Pull Secret from openshift config
     kubernetes.core.k8s_info:
@@ -50,7 +50,7 @@
         data:
           .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
 
-- when: setup_bundle_registry_tls_ca
+- when: setup_bundle_registry_tls_ca | bool
   name: Create registry CA Cert
   kubernetes.core.k8s:
     state: present
@@ -76,6 +76,17 @@
         value:
           - name: pull-secret
 
+  # When the task is skipped, pull_secret is still defined. It is set to the task output i.e.
+  # "pull_secret": {
+  #    "changed": false,
+  #    "skip_reason": "Conditional result was False",
+  #    "skipped": true
+  #  }
+- name: "Set pull_secret to a zero-length string, if setup_bundle_registry_auth is false"
+  when: not (setup_bundle_registry_auth | bool)
+  ansible.builtin.set_fact:
+    pull_secret: ''
+
 - name: "Ensure that the bundle paths are set."
   ansible.builtin.assert:
     that:
@@ -86,8 +97,8 @@
 
 - name: Deploy SGO via OLM bundle
   ansible.builtin.shell:
-    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} run bundle {{ __smart_gateway_bundle_image_path }} {% if pull_secret is defined %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
+    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __smart_gateway_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
 
 - name: Deploy STO via OLM bundle
   ansible.builtin.shell:
-    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} run bundle {{ __service_telemetry_bundle_image_path }} {% if pull_secret is defined %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
+    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __service_telemetry_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
