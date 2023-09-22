@@ -32,7 +32,7 @@
   ansible.builtin.set_fact:
     internal_registry: "{{ builder_dockercfg_auth_results['image-registry.openshift-image-registry.svc:5000'] | to_json }}"
 
-- name: "Get Secrets to check for service-telemetry-framework-index-dockercfg"
+- name: Get Secrets to check for service-telemetry-framework-index-dockercfg
   ansible.builtin.command:
     cmd: oc get secret -n {{ namespace }} service-telemetry-framework-index-dockercfg
   register: index_dockercfg_secret
@@ -62,14 +62,14 @@
   ansible.builtin.command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
   when: ose_op_registry_is.rc != 0
 
-- name: "Delete the existing imagestream, if it exists"
+- name: Delete the existing imagestream, if it exists
   ansible.builtin.command: oc delete imagestream -n {{ namespace }} service-telemetry-framework-index
   ignore_errors: true
 
 - name: Create ImageStream for service-telemetry-framework-index
   ansible.builtin.command: oc create imagestream -n {{ namespace }} service-telemetry-framework-index
 
-- name: "Get STF index image stream"
+- name: Get STF index image stream
   ansible.builtin.command:
     cmd: oc get -n {{ namespace }} ImageStream service-telemetry-framework-index
   register: stf_index_imagestream
