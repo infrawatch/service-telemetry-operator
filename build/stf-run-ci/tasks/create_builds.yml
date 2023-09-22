@@ -23,11 +23,25 @@
 
   - name: Kill first build since it will always fail (triggered on BuildConfig creation)
     ansible.builtin.shell: sleep 10 ; oc delete build {{ artifact.name }}-1 -n "{{ namespace }}"
+    ignore_errors: true
+    retries: 3
+    delay: 10
+    register: kill_build
+    until: kill_build.rc == 0
 
-- name: Start local image build
-  ansible.builtin.command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --wait --from-dir "{{ artifact.working_build_dir }}"
-  register: build_results
-  when: build_lookup.resources | length == 0
+- block:
+    - name: Start local image build
+      ansible.builtin.command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --follow --wait --from-dir "{{ artifact.working_build_dir }}"
+      register: build_results
+      when: build_lookup.resources | length == 0
+      ignore_errors: true
+      retries: 3
+      delay: 10
+      until: build_results.rc == 0
+  always:
+    - name: "Show build results"
+      ansible.builtin.debug:
+        var: build_results
 
 - name: Get latest build information for artifact
   ansible.builtin.command: oc get build --selector build={{ artifact.name }} -n "{{ namespace }}" -ojsonpath='{.items[-1:]}'
@@ -37,10 +51,12 @@
   ansible.builtin.set_fact:
     build_describe: "{{ build_describe_results.stdout | from_json }}"
 
-- ansible.builtin.debug:
+- name: Get the build results
+  ansible.builtin.debug:
     var: build_describe
 
-- ansible.builtin.debug:
+- name: Show the outputDockerImageReference, which will be used for the image reference name
+  ansible.builtin.debug:
     var: build_describe.status.outputDockerImageReference
 
 - name: Set unique image reference for this artifact
