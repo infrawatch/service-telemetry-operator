@@ -149,6 +149,32 @@
           sasldb_path: /tmp/qdrouterd.sasldb
   when: interconnect_manifest is not defined
 
+- when:
+  - servicetelemetry_vars.transports.qdr.auth == "basic"
+  block:
+    - name: Get QDR BasicAuth secret
+      k8s_info:
+        api_version: interconnectedcloud.github.io/v1alpha1
+        kind: Interconnect
+        name: "{{ ansible_operator_meta.name }}-interconnect"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      register: _qdr_basicauth_object
+
+    # Because https://github.com/interconnectedcloud/qdr-operator/blob/576d2b33dac71437ea2b165caaaf6413220767fe/pkg/controller/interconnect/interconnect_controller.go#L634
+    - name: Perform a one-time upgrade to the default generated password for QDR BasicAuth
+      k8s:
+        definition:
+          kind: Secret
+          apiVersion:
+          metadata:
+            name: "{{ ansible_operator_meta.name }}-interconnect-users"
+            namespace: "{{ ansible_operator_meta.namespace }}"
+            labels:
+              stf_one_time_upgrade: "{{ ansible_date_time.iso8601 }}"
+          stringData:
+            guest: "{{ lookup('password', '/dev/null') }}"
+      when:
+        - _qdr_basicauth_object[0] is defined and _qdr_basicauth_object[0].metadata.labels.stf_one_time_upgrade is not defined
 
 - name: Set default Interconnect manifest
   set_fact:
@@ -183,7 +209,12 @@
           - expose: true
             host: 0.0.0.0
             port: 5671
+      {% if servicetelemetry_vars.transports.qdr.auth == "basic" %}
+            saslMechanisms: PLAIN
+            authenticatePeer: true
+      {% elif servicetelemetry_vars.transports.qdr.auth == "none" %}
             saslMechanisms: ANONYMOUS
+      {% endif %}
             sslProfile: openstack
           - port: 5673
             linkCapacity: 25000

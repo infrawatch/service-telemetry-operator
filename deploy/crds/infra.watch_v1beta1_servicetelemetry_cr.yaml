@@ -110,6 +110,7 @@ spec:
   transports:
     qdr:
       enabled: true
+      auth: basic
       web:
         enabled: false
       certificates:
