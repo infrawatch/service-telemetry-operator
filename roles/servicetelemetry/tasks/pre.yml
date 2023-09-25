@@ -148,6 +148,7 @@
           transports:
             qdr:
               auth: none
+
   - name: Set auth=none for remainder of this run
     set_fact:
       servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'auth': 'none'}}}, recursive=True) }}" # noqa 206
