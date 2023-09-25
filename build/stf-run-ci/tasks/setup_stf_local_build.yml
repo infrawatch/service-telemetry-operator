@@ -6,7 +6,7 @@
 - block:
   - name: Generate Smart Gateway Operator CSV
     ansible.builtin.shell:
-      chdir: working/smart-gateway-operator/build
+      chdir: "{{ base_dir }}/working/smart-gateway-operator/build"
       cmd: |
         LOGFILE="{{ logfile_dir }}/sgo_gen_bundle.log" \
         OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
@@ -89,6 +89,7 @@
   - name: Load Service Telemetry Operator RBAC
     ansible.builtin.command:
       cmd: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+      chdir: "{{ base_dir }}"
     loop:
       - service_account.yaml
       - role.yaml
