@@ -61,17 +61,6 @@ metadata:
                   "version": "7.16.1"
                 }
               },
-              "logs": {
-                "loki": {
-                  "enabled": false,
-                  "flavor": "1x.extra-small",
-                  "replicationFactor": 1,
-                  "storage": {
-                    "objectStorageSecret": "test",
-                    "storageClass": "standard"
-                  }
-                }
-              },
               "metrics": {
                 "prometheus": {
                   "enabled": true,
@@ -253,6 +242,7 @@ spec:
           - watch
           - update
           - patch
+          - delete
         - apiGroups:
           - authorization.k8s.io
           resources:
@@ -387,7 +377,6 @@ spec:
           - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
           - integreatly.org
-          - loki.grafana.com
           resources:
           - '*'
           verbs:

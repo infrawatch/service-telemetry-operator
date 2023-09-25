@@ -67,24 +67,6 @@ servicetelemetry_defaults:
         certificates:
           endpoint_cert_duration: 70080h
           ca_cert_duration: 70080h
-    logs:
-      loki:
-        enabled: false
-        replication_factor: 1
-        flavor: 1x.extra-small
-        storage:
-          object_storage_secret: ""
-          storage_class: ""
-        compactor:
-          replicas: ""
-        distributor:
-          replicas: ""
-        ingester:
-          replicas: ""
-        querier:
-          replicas: ""
-        query_frontend:
-          replicas: ""
 
   transports:
     qdr:
