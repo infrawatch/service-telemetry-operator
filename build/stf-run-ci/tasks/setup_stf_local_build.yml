@@ -6,7 +6,7 @@
 - block:
   - name: Generate Smart Gateway Operator CSV
     ansible.builtin.shell:
-      chdir: working/smart-gateway-operator/build
+      chdir: "{{ base_dir }}/working/smart-gateway-operator/build"
       cmd: |
         LOGFILE="{{ logfile_dir }}/sgo_gen_bundle.log" \
         OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
@@ -42,7 +42,7 @@
   block:
   - name: Load Smart Gateway Operator RBAC
     ansible.builtin.command:
-      cmd: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
+      cmd: oc apply -f {{ base_dir }}/working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
     loop:
       - service_account.yaml
       - role.yaml
@@ -51,7 +51,7 @@
 
   - name: Load Smart Gateway Operator CSV
     ansible.builtin.shell:
-      cmd: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
+      cmd: oc apply -f {{ base_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # --- Service Telemetry Operator ---
 - name: Generate Service Telemetry Operator CSV
@@ -89,6 +89,7 @@
   - name: Load Service Telemetry Operator RBAC
     ansible.builtin.command:
       cmd: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+      chdir: "{{ base_dir }}"
     loop:
       - service_account.yaml
       - role.yaml
@@ -97,9 +98,10 @@
 
   - name: Load Service Telemetry Operator CSV
     ansible.builtin.shell:
-      cmd: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
+      cmd: oc apply -f {{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # cleanup
 - name: Revert local change to role_binding.yaml
   ansible.builtin.shell:
     cmd: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
+    chdir: "{{ base_dir }}"

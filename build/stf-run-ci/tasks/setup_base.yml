@@ -121,24 +121,24 @@
       when:
         - __service_telemetry_observability_strategy == "use_community"
 
-    - name: Subscribe to Red Hat Obervability Operator
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            labels:
-              operators.coreos.com/observability-operator.openshift-operators: ""
-            name: observability-operator
-            namespace: openshift-operators
-          spec:
-            channel: stable
-            installPlanApproval: Automatic
-            name: observability-operator
-            source: community-operators
-            sourceNamespace: openshift-marketplace
-      when:
-        - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']
+- name: Subscribe to Red Hat Obervability Operator
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        labels:
+          operators.coreos.com/observability-operator.openshift-operators: ""
+        name: observability-operator
+        namespace: openshift-operators
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: observability-operator
+        source: community-operators
+        sourceNamespace: openshift-marketplace
+  when:
+    - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']
 
 - name: Subscribe to Elastic Cloud on Kubernetes Operator
   kubernetes.core.k8s:
