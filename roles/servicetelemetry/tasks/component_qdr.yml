@@ -165,7 +165,7 @@
       k8s:
         definition:
           kind: Secret
-          apiVersion:
+          apiVersion: v1
           metadata:
             name: "{{ ansible_operator_meta.name }}-interconnect-users"
             namespace: "{{ ansible_operator_meta.namespace }}"
