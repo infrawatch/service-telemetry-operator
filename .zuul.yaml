@@ -17,6 +17,8 @@
       - name: openstack-k8s-operators/ci-framework
         override-checkout: main
     nodeset: centos-9-crc-xxl
+    # non-default crc bundles need more time to download
+    timeout: 3600
 
 - job:
     name: stf-crc-ocp410
@@ -30,9 +32,16 @@
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
 
+- job:
+    name: stf-crc-ocp413
+    parent: stf-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.12/crc_libvirt_4.13.12_amd64.crcbundle'
+
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
         - stf-crc-ocp410
         - stf-crc-ocp412
+        - stf-crc-ocp413
