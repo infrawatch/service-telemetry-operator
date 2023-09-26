@@ -13,6 +13,6 @@
       register: oc_version
 
     - name: "Fail if the version is not the expected one"
-      when: oc_version.std_out != ocp_version
+      when: oc_version.stdout != ocp_version
       fail:
         msg: "The ocp version ({{ oc_version.std_out }}) is not the expected one ({{ ocp_version }})"

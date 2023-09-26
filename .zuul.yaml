@@ -24,8 +24,8 @@
     name: stf-crc-ocp410
     parent: stf-base
     vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.10.9/crc_libvirt_4.10.9_amd64.crcbundle'
-      ocp_version: '4.10.9'
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.10.22/crc_libvirt_4.10.22_amd64.crcbundle'
+      ocp_version: '4.10.22'
 
 - job:
     name: stf-crc-ocp412
