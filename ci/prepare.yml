@@ -8,6 +8,15 @@
         state: latest
         extra_args: "-U"
 
+    - name: "Check for the requirements file"
+      ansible.builtin.shell:
+        ls {{ playbook_dir }}/../build/stf-run-ci
+      register: contents
+
+    - name: "Show the contents of the dir"
+      ansible.builtin.debug:
+        var: contents
+
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
         requirements: "{{ playbook_dir }}/../build/stf-run-ci/requirements.txt"
