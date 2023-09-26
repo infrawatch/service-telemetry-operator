@@ -10,9 +10,13 @@
 
     - name: "Check for the requirements file"
       ansible.builtin.shell:
-        ls {{ playbook_dir }}/../build/stf-run-ci
+        ls {{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/build/stf-run-ci
       register: contents
       ignore_errors: true
+
+    - name: "Set the value of sto_dir"
+      ansible.builtin.set_fact:
+        sto_dir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
 
     - name: "Show the contents of the dir"
       ansible.builtin.debug:
@@ -20,8 +24,8 @@
 
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
-        requirements: "../build/stf-run-ci/requirements.txt"
-        chdir: "{{ playbook_dir }}"
+        requirements: "build/stf-run-ci/requirements.txt"
+        chdir: "{{ sto_dir }}"
         state: present
 
     - name: "Install ansible collections"
