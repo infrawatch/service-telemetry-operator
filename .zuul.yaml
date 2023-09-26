@@ -10,6 +10,8 @@
       - zuul: github.com/openstack-k8s-operators/ci-framework
     run:
       - ci/check_ocp_version.yml
+    post-run:
+      - ci/post-collect_logs.yml
     # These are the additional repos that zuul will clone
     required-projects:
       - name: openstack-k8s-operators/ci-framework

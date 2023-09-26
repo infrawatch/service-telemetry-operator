@@ -1,0 +1,40 @@
+---
+# Based on https://raw.githubusercontent.com/openstack-k8s-operators/nova-operator/bc10c4f579f8538899ac7bc5f87bfdb62d7042a4/ci/nova-operator-base/playbooks/collect-logs.yaml
+- hosts: all
+  name: Create zuul-output log dir
+  gather_facts: false
+  tasks:
+    - name: Create log dir
+      ansible.builtin.file:
+        path: "{{ ansible_user_dir }}/zuul-output/logs"
+        state: directory
+        mode: "0755"
+
+- hosts: controller
+  name: Collect logs on the controller
+  gather_facts: false
+  tasks:
+    - name: "Create log dir"
+      ansible.builtin.file:
+        path: "{{ ansible_user_dir }}/zuul-output/logs/controller/"
+        state: directory
+        mode: "0755"
+
+    - name: Get crc deployment log
+      ansible.builtin.shell:
+        cmd: |
+          cp ~/crc-start.log {{ ansible_user_dir }}/zuul-output/logs/controller/
+
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+
+- hosts: all
+  name: Copy files from controller on node
+  gather_facts: false
+  tasks:
+    - name: Copy files from controller on node
+      ansible.builtin.include_role:
+        name: fetch-output
