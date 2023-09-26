@@ -170,7 +170,7 @@
             name: "{{ ansible_operator_meta.name }}-interconnect-users"
             namespace: "{{ ansible_operator_meta.namespace }}"
             labels:
-              stf_one_time_upgrade: "{{ ansible_date_time.iso8601 }}"
+              stf_one_time_upgrade: "{{ lookup('pipe', 'date +%s') }}"
           stringData:
             guest: "{{ lookup('password', '/dev/null') }}"
       when:
