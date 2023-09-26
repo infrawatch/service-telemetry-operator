@@ -1,4 +1,4 @@
-FROM quay.io/openshift/origin-ansible-operator:4.10
+FROM quay.io/openshift/origin-ansible-operator:4.12
 
 USER 0
 # Upstream CI builds need the additional EPEL sources for python3-passlib and python3-bcrypt but have no working repos to install epel-release
