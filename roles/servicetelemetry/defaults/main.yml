@@ -134,16 +134,6 @@ servicetelemetry_defaults:
               ring_buffer_size: 16384
               ring_buffer_count: 15000
               verbose: false
-      logs:
-        collectors:
-          - collector_type: rsyslog
-            subscription_address: rsyslog/cloud1-logs
-            debug_enabled: false
-            bridge:
-              ring_buffer_size: 135048
-              ring_buffer_count: 15000
-              verbose: false
-
 
 # These variables are outside of the defaults. Their values will be
 # auto-detected by the role and are not meant to be set by the user. However,
