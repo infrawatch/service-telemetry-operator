@@ -164,6 +164,7 @@ metadata:
             "observabilityStrategy": "use_redhat",
             "transports": {
               "qdr": {
+                "auth": "basic",
                 "certificates": {
                   "caCertDuration": "70080h",
                   "endpointCertDuration": "70080h"
