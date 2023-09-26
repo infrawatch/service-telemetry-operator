@@ -19,7 +19,8 @@
 
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
-        requirements: "{{ playbook_dir }}/../build/stf-run-ci/requirements.txt"
+        requirements: "../build/stf-run-ci/requirements.txt"
+        chdir: "{{ playbook_dir }}"
         state: present
 
     - name: "Install ansible collections"
