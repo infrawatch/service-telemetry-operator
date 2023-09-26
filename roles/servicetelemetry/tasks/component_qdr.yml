@@ -174,7 +174,7 @@
           stringData:
             guest: "{{ lookup('password', '/dev/null') }}"
       when:
-        - _qdr_basicauth_object[0] is defined and _qdr_basicauth_object[0].metadata.labels.stf_one_time_upgrade is not defined
+        - _qdr_basicauth_object.resources[0] is defined and _qdr_basicauth_object[0].metadata.labels.stf_one_time_upgrade is not defined
 
 - name: Set default Interconnect manifest
   set_fact:

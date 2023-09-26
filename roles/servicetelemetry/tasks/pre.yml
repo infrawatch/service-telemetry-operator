@@ -154,7 +154,7 @@
       servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'auth': 'none'}}}, recursive=True) }}" # noqa 206
   when:
     - _stf_object.resources[0].spec.transports.qdr.auth is not defined
-    - _qdr_object.resources[0].spec.edgeListeners[0].saslMechanisms == "ANONYMOUS"
+    - _qdr_object.resources[0] is defined and _qdr_object.resources[0].spec.edgeListeners[0].saslMechanisms == "ANONYMOUS"
 
 - name: Apply default auth for QDR if missing on a new STF object with no associated auth=none QDR
   k8s:
@@ -170,7 +170,7 @@
             auth: "{{ servicetelemetry_defaults.transports.qdr.auth }}"
   when:
     - _stf_object.resources[0].spec.transports.qdr.auth is not defined
-    - _qdr_object.resources[0].spec.edgeListeners[0].saslMechanisms != "ANONYMOUS"
+    - _qdr_object.resources[0] is defined and _qdr_object.resources[0].spec.edgeListeners[0].saslMechanisms != "ANONYMOUS"
 
 - name: Set ephemeral_storage_enabled to true when storage strategy is ephemeral
   set_fact:
