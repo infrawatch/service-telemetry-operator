@@ -11,3 +11,5 @@
   - name: Collect the logs
     import_role:
       name: stf-collect-logs
+    vars:
+      logfile_dir: "{{ playbook_dir }}/"
