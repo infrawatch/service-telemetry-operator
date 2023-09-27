@@ -2,17 +2,25 @@
 - name: "Prepare the environment for running stf"
   hosts: controller
   tasks:
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: "Get vars common to all jobs"
+      ansible.builtin.include_vars:
+        file: "vars-zuul-common.yml"
+
+    - name: "Get scenario-specific vars"
+      ansible.builtin.include_vars:
+        file: "vars-{{ scenario }}.yml"
+
     - name: "Update pip"
       ansible.builtin.pip:
         name: pip
         state: latest
         extra_args: "-U"
 
-    - name: "Set the value of sto_dir"
-      ansible.builtin.set_fact:
-        sto_dir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
-      when: not (sto_dir is defined)
-        
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
         requirements: "build/stf-run-ci/requirements.txt"
