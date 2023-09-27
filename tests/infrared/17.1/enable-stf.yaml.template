@@ -41,20 +41,7 @@ custom_templates:
             ceilometer::agent::polling::polling_interval: 30
             ceilometer::agent::polling::polling_meters:
             - cpu
-            - disk.*
-            - ip.*
-            - image.*
-            - memory
-            - memory.*
-            - network.services.vpn.*
-            - network.services.firewall.*
-            - perf.*
-            - port
-            - port.*
-            - switch
-            - switch.*
-            - storage.*
-            - volume.*
+            - memory.usage
 
             # to avoid filling the memory buffers if disconnected from the message bus
             # note: this may need an adjustment if there are many metrics to be sent.
