@@ -8,10 +8,6 @@
       Run the stf-run-ci role, and then test stf
     roles:  # adds in dependent roles i.e. put it in the role path
       - zuul: github.com/openstack-k8s-operators/ci-framework
-    run:
-      - ci/check_ocp_version.yml
-    post-run:
-      - ci/post-collect_logs.yml
     # These are the additional repos that zuul will clone
     required-projects:
       - name: openstack-k8s-operators/ci-framework
@@ -21,22 +17,40 @@
     timeout: 3600
 
 - job:
-    name: stf-crc-ocp410
+    name: stf-crc-base
+    abstract: true
+    description: |
+      Temperory base job for crc jobs; the crc jobs will eventually use stf-base as a job, once PR
     parent: stf-base
+    run:
+      - ci/check_ocp_version.yml
+    post-run:
+      - ci/post-collect_logs.yml
+
+- job:
+    name: stf-crc-ocp410
+    parent: stf-crc-base
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.10.22/crc_libvirt_4.10.22_amd64.crcbundle'
       ocp_version: '4.10.22'
 
 - job:
+    name: stf-crc-ocp411
+    parent: stf-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.11.13/crc_libvirt_4.11.13_amd64.crcbundle'
+      ocp_version: '4.11.18'
+
+- job:
     name: stf-crc-ocp412
-    parent: stf-base
+    parent: stf-crc-base
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
       ocp_version: '4.12.13'
 
 - job:
     name: stf-crc-ocp413
-    parent: stf-base
+    parent: stf-crc-base
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.12/crc_libvirt_4.13.12_amd64.crcbundle'
       ocp_version: '4.13.12'
@@ -46,5 +60,6 @@
     github-check:
       jobs:
         - stf-crc-ocp410
+        - stf-crc-ocp411
         - stf-crc-ocp412
         - stf-crc-ocp413
