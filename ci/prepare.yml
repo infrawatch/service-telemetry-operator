@@ -35,10 +35,6 @@
         - "kubernetes.core:2.3.2"
         - "community.general:6.2.0"
 
-    - name: "Get the value of namespace"
-      ansible.builtin.debug:
-        var: namespace
-
     - name: "Log into the cluster"
       ansible.builtin.import_role:
         name: rhol_crc
