@@ -1,5 +1,5 @@
 ---
-namespace: "service-telemetry"
+namespace: "service-telemetry-PR#{{ zuul.change }}-{{ zuul.build }}"
 setup_bundle_registry_tls_ca: false
 setup_bundle_registry_auth: false
 base_dir: "{{ sto_dir }}/build"

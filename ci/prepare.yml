@@ -36,7 +36,7 @@
       kubernetes.core.k8s:
         api_version: v1
         kind: Namespace
-        name: "service-telemetry"
+        name: "{{ namespace }}"
         state: present
       retries: 3
       delay: 30
