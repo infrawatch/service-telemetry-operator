@@ -121,7 +121,6 @@ rules:
   - monitoring.rhobs
   - elasticsearch.k8s.elastic.co
   - integreatly.org
-  - loki.grafana.com
   resources:
   - '*'
   verbs:

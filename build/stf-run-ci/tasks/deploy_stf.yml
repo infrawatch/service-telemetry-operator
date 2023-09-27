@@ -43,13 +43,6 @@
                 persistent:
                   storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
-          logs:
-            loki:
-              enabled: false
-              replicationFactor: 1
-              flavor: 1x.extra-small
-              storage:
-                objectStorageSecret: test
       {% if __service_telemetry_storage_persistent_storage_class is defined %}
                 storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
