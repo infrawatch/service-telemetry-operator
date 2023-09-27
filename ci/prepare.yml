@@ -11,6 +11,7 @@
     - name: "Set the value of sto_dir"
       ansible.builtin.set_fact:
         sto_dir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
+      when: not (sto_dir is defined)
         
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
@@ -25,6 +26,10 @@
       with_items:
         - "kubernetes.core:2.3.2"
         - "community.general:6.2.0"
+
+    - name: "Get the value of namespace"
+      ansible.builtin.debug:
+        var: namespace
 
     - name: "Log into the cluster"
       ansible.builtin.import_role:
