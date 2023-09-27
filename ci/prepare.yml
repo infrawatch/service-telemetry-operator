@@ -8,20 +8,10 @@
         state: latest
         extra_args: "-U"
 
-    - name: "Check for the requirements file"
-      ansible.builtin.shell:
-        ls {{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/build/stf-run-ci
-      register: contents
-      ignore_errors: true
-
     - name: "Set the value of sto_dir"
       ansible.builtin.set_fact:
         sto_dir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
-
-    - name: "Show the contents of the dir"
-      ansible.builtin.debug:
-        var: contents
-
+        
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
         requirements: "build/stf-run-ci/requirements.txt"
@@ -45,7 +35,7 @@
       kubernetes.core.k8s:
         api_version: v1
         kind: Namespace
-        name: "service-telemetry"
+        name: "{{ namespace }}"
         state: present
       retries: 3
       delay: 30
