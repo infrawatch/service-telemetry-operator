@@ -6,11 +6,12 @@ PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}
 ELASTICSEARCH=${ELASTICSEARCH:-"https://elasticsearch-es-http:9200"}
 ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
 PROMETHEUS_AUTH_PASS=${PROMETHEUS_AUTH_PASS:-""}
+QDR_AUTH_PASS=${QDR_AUTH_PASS:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
 
 # Render our config template
-sed -e "s/<<CLOUDNAME>>/${CLOUDNAME}/" /etc/minimal-collectd.conf.template > /tmp/collectd.conf
+sed -e "s/<<CLOUDNAME>>/${CLOUDNAME}/;s/<<QDR_AUTH_PASS>>/${QDR_AUTH_PASS}/" /etc/minimal-collectd.conf.template > /tmp/collectd.conf
 
 echo "*** [INFO] My pod is: ${POD}"
 

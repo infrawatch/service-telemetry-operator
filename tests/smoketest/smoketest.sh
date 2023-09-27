@@ -50,6 +50,9 @@ ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-templ
 echo "*** [INFO] Getting Prometheus authentication password"
 PROMETHEUS_AUTH_PASS=$(oc get secret default-prometheus-htpasswd -ogo-template='{{ .data.password | base64decode }}')
 
+echo "*** [INFO] Getting QDR authentication password"
+QDR_AUTH_PASS=$(oc get secret default-interconnect-users -ogo-template='{{ .data.guest | base64decode }}')
+
 echo "*** [INFO] Setting namepsace for collectd-sensubility config"
 sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g" "${REL}/collectd-sensubility.conf" > /tmp/collectd-sensubility.conf
 
@@ -62,10 +65,19 @@ oc create configmap stf-smoketest-collectd-entrypoint-script --from-file "${REL}
 oc create configmap stf-smoketest-ceilometer-publisher --from-file "${REL}/ceilometer_publish.py"
 oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${REL}/smoketest_ceilometer_entrypoint.sh"
 
+echo "*** [INFO] Building smoketest containers..."
+oc delete buildconfig openstack-collectd
+oc delete is openstack-collectd:latest
+oc delete buildconfig openstack-ceilometer-notification
+oc delete is openstack-ceilometer-notification
+
+oc new-build -D $'FROM quay.io/tripleomaster/openstack-collectd:current-tripleo\nUSER 0\nRUN rpm -i http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/cyrus-sasl-plain-2.1.27-5.el8.x86_64.rpm'
+oc new-build -D $'FROM quay.io/tripleomaster/openstack-ceilometer-notification:current-tripleo\nUSER 0\nRUN rpm -i http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/cyrus-sasl-plain-2.1.27-5.el8.x86_64.rpm'
+
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_PASS>>/${PROMETHEUS_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
+    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_PASS>>/${PROMETHEUS_AUTH_PASS}/;s/<<QDR_AUTH_PASS>>/${QDR_AUTH_PASS}/;s/<<NAMESPACE>>/${OCP_PROJECT}/;" ${REL}/smoketest_job.yaml.template)
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."

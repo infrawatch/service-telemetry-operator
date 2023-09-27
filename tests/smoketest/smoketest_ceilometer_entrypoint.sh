@@ -6,14 +6,14 @@ PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}
 ELASTICSEARCH=${ELASTICSEARCH:-"https://elasticsearch-es-http:9200"}
 ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
 PROMETHEUS_AUTH_PASS=${PROMETHEUS_AUTH_PASS:-""}
+QDR_AUTH_PASS=${QDR_AUTH_PASS:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
-
 
 echo "*** [INFO] My pod is: ${POD}"
 
 # Run ceilometer_publisher script
-python3 /ceilometer_publish.py default-interconnect:5671 'driver=amqp&topic=cloud1-metering' 'driver=amqp&topic=cloud1-event'
+python3 /ceilometer_publish.py "guest%40default-interconnect:${QDR_AUTH_PASS}@default-interconnect:5671" 'driver=amqp&topic=cloud1-metering' 'driver=amqp&topic=cloud1-event'
 
 # Sleeping to produce data
 echo "*** [INFO] Sleeping for 20 seconds to produce all metrics and events"

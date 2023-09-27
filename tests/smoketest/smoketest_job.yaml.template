@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: smoketest-collectd
-        image: quay.io/tripleomaster/openstack-collectd:current-tripleo
+        image: image-registry.openshift-image-registry.svc:5000/<<NAMESPACE>>/openstack-collectd:latest
         command:
         - /smoketest_collectd_entrypoint.sh
         env:
@@ -24,6 +24,8 @@ spec:
           value: "<<ELASTICSEARCH_AUTH_PASS>>"
         - name: PROMETHEUS_AUTH_PASS
           value: "<<PROMETHEUS_AUTH_PASS>>"
+        - name: QDR_AUTH_PASS
+          value: "<<QDR_AUTH_PASS>>"
         - name: OBSERVABILITY_STRATEGY
           value: "<<OBSERVABILITY_STRATEGY>>"
         volumeMounts:
@@ -43,7 +45,7 @@ spec:
           allowPrivilegeEscalation: false
 
       - name: smoketest-ceilometer
-        image: quay.io/tripleomaster/openstack-ceilometer-notification:current-tripleo
+        image: image-registry.openshift-image-registry.svc:5000/<<NAMESPACE>>/openstack-ceilometer-notification:latest
         command:
         - /smoketest_ceilometer_entrypoint.sh
         env:
@@ -53,6 +55,8 @@ spec:
           value: "<<ELASTICSEARCH_AUTH_PASS>>"
         - name: PROMETHEUS_AUTH_PASS
           value: "<<PROMETHEUS_AUTH_PASS>>"
+        - name: QDR_AUTH_PASS
+          value: "<<QDR_AUTH_PASS>>"
         - name: OBSERVABILITY_STRATEGY
           value: "<<OBSERVABILITY_STRATEGY>>"
         volumeMounts:
@@ -84,3 +88,4 @@ spec:
         configMap:
           name: stf-smoketest-ceilometer-publisher
           defaultMode: 0555
+

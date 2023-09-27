@@ -13,6 +13,8 @@ LoadPlugin amqp1
   <Transport "name">
     Host "default-interconnect"
     Port "5671"
+    User "guest@default-interconnect"
+    Password "<<QDR_AUTH_PASS>>"
     Address "collectd"
     <Instance "cloud1-telemetry">
         Format JSON
