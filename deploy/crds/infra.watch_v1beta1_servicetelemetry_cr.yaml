@@ -51,14 +51,6 @@ spec:
         certificates:
           endpointCertDuration: 70080h
           caCertDuration: 70080h
-    logs:
-      loki:
-        enabled: false
-        flavor: 1x.extra-small
-        replicationFactor: 1
-        storage:
-          objectStorageSecret: test
-          storageClass: standard
   clouds:
     - name: cloud1
       metrics:

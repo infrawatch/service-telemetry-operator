@@ -1,4 +1,31 @@
 ---
+- job:
+    name: stf-base
+    # defined in: https://review.rdoproject.org/cgit/config/tree/zuul.d/_jobs-crc.yaml
+    parent: base-simple-crc
+    abstract: true
+    description: |
+      Run the stf-run-ci role, and then test stf
+    roles:  # adds in dependent roles i.e. put it in the role path
+      - zuul: github.com/openstack-k8s-operators/ci-framework
+    # These are the additional repos that zuul will clone
+    required-projects:
+      - name: openstack-k8s-operators/ci-framework
+        override-checkout: main
+    pre-run:
+      - ci/prepare.yml
+    run:
+      - ci/deploy_stf.yml
+      - ci/test_stf.yml
+    post-run:
+      - ci/post-collect_logs.yml
+    nodeset: centos-9-crc-xxl
+    # The default (~30 minutes) is not enough to run through all the job stages
+    timeout: 3600
+    vars:
+      # Pass vars to crc cli https://review.rdoproject.org/cgit/config/tree/playbooks/crc/simple-start.yaml#n30
+      crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
+
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
