@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set +e
 
 # Executes inside the test harness container to start collectd and look for resulting metrics in prometheus
 PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}
@@ -28,8 +28,8 @@ echo "*** [INFO] Checking for recent image metrics..."
 
 echo "[DEBUG] Running the curl command to return a query"
 curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
-echo "[DEBUG] Query returned"
 metrics_result=$?
+echo "[DEBUG] Query returned"
 echo "[DEBUG] Set metrics_result to $metrics_result"
 
 if [ "$OBSERVABILITY_STRATEGY" != "use_redhat" ]; then
