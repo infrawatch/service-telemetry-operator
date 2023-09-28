@@ -126,7 +126,7 @@ metadata:
                     {
                       "bridge": {
                         "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
+                        "ringBufferSize": 65535,
                         "verbose": false
                       },
                       "collectorType": "sensubility",
