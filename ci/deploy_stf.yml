@@ -1,0 +1,25 @@
+---
+- name: "Deploy STF"
+  hosts: controller
+  tasks:
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: "Get vars common to all jobs"
+      ansible.builtin.include_vars:
+        file: "vars-zuul-common.yml"
+
+    - name: "Get scenario-specific vars"
+      ansible.builtin.include_vars:
+        file: "vars-{{ scenario }}.yml"
+
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+    - name: "Deploy STF using stf-run-ci"
+      ansible.builtin.import_role:
+        name: '../build/stf-run-ci'

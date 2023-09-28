@@ -26,7 +26,6 @@ __service_telemetry_snmptraps_alert_oid_label: "oid"
 __service_telemetry_snmptraps_trap_oid_prefix: "1.3.6.1.4.1.50495.15"
 __service_telemetry_snmptraps_trap_default_oid: "1.3.6.1.4.1.50495.15.1.2.1"
 __service_telemetry_snmptraps_trap_default_severity: ""
-__service_telemetry_logs_enabled: false
 __service_telemetry_observability_strategy: use_redhat
 __service_telemetry_transports_certificates_endpoint_cert_duration: 70080h
 __service_telemetry_transports_certificates_ca_cert_duration: 70080h

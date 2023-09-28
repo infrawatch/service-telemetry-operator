@@ -1,0 +1,42 @@
+---
+- name: "Prepare the environment for running stf"
+  hosts: controller
+  tasks:
+    - name: "Update pip"
+      ansible.builtin.pip:
+        name: pip
+        state: latest
+        extra_args: "-U"
+
+    - name: "Set the value of sto_dir, if it's not already defined"
+      ansible.builtin.set_fact:
+        sto_dir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
+      when: not (sto_dir is defined)
+
+    - name: "Install pre-reqs from pip"
+      ansible.builtin.pip:
+        requirements: "build/stf-run-ci/requirements.txt"
+        chdir: "{{ sto_dir }}"
+        state: present
+
+    - name: "Install ansible collections"
+      community.general.ansible_galaxy_install:
+        type: collection
+        name: "{{ item }}"
+      with_items:
+        - "kubernetes.core:2.3.2"
+        - "community.general:6.2.0"
+
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+    - name: "Create the service-telemetry project"
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: "{{ namespace }}"
+        state: present
+      retries: 3
+      delay: 30
