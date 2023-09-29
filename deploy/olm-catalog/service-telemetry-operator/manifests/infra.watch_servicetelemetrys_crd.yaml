@@ -429,6 +429,13 @@ spec:
                   qdr:
                     description: QDR configuration for data transport
                     properties:
+                      auth:
+                        description: Auth type to use for incoming OSP connections.
+                          Options are "none", or "basic"
+                        enum:
+                        - none
+                        - basic
+                        type: string
                       certificates:
                         properties:
                           caCertDuration:
