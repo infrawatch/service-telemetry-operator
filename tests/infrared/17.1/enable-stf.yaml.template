@@ -11,6 +11,7 @@ custom_templates:
         # manage the polling and pipeline configuration files for Ceilometer agents
         ManagePolling: true
         ManagePipeline: true
+        ManageEventPipeline: false
 
         # enable Ceilometer metrics
         CeilometerQdrPublishMetrics: true
