@@ -74,6 +74,7 @@ servicetelemetry_defaults:
       deployment_size: 1
       web:
         enabled: false
+      auth: basic
       certificates:
         endpoint_cert_duration: 70080h
         ca_cert_duration: 70080h
