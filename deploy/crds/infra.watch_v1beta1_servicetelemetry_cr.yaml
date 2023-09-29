@@ -73,7 +73,7 @@ spec:
             subscriptionAddress: sensubility/cloud1-telemetry
             debugEnabled: false
             bridge:
-              ringBufferSize: 16384
+              ringBufferSize: 65535
               ringBufferCount: 15000
               verbose: false
       events:
