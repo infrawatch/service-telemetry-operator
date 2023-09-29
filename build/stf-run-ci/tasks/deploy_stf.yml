@@ -49,9 +49,9 @@
         transports:
           qdr:
             enabled: true
-            {% if __service_telemetry_transports_qdr_auth is defined %}
+      {% if __service_telemetry_transports_qdr_auth is defined %}
             auth: "{{ __service_telemetry_transports_qdr_auth }}"
-            {% endif %}
+      {% endif %}
             certificates:
               endpointCertDuration: {{ __service_telemetry_transports_certificates_endpoint_cert_duration }}
               caCertDuration: {{ __service_telemetry_transports_certificates_ca_cert_duration }}
