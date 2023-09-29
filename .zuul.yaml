@@ -38,8 +38,8 @@
     name: stf-crc-ocp411
     parent: stf-crc-base
     vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.11.13/crc_libvirt_4.11.13_amd64.crcbundle'
-      ocp_version: '4.11.13'
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.11.18/crc_libvirt_4.11.18_amd64.crcbundle'
+      ocp_version: '4.11.18'
 
 - job:
     name: stf-crc-ocp412
