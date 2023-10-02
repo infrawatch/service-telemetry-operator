@@ -1,5 +1,5 @@
 ---
-namespace: "service-telemetry" #-pr{{ zuul.change }}-{{ zuul.build }}"
+namespace: "service-telemetry"
 setup_bundle_registry_tls_ca: false
 setup_bundle_registry_auth: false
 __service_telemetry_transports_qdr_auth: none
