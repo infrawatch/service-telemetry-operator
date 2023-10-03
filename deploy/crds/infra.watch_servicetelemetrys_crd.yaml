@@ -248,6 +248,12 @@ spec:
                       enabled:
                         description: Enable QDR data transort
                         type: boolean
+                      auth:
+                        description: 'Auth type to use for incoming OSP connections. Options are "none", or "basic"'
+                        type: string
+                        enum:
+                        - none
+                        - basic
                       web:
                         description: QDR web configuration
                         properties:
