@@ -51,14 +51,6 @@ spec:
         certificates:
           endpointCertDuration: 70080h
           caCertDuration: 70080h
-    logs:
-      loki:
-        enabled: false
-        flavor: 1x.extra-small
-        replicationFactor: 1
-        storage:
-          objectStorageSecret: test
-          storageClass: standard
   clouds:
     - name: cloud1
       metrics:
@@ -81,7 +73,7 @@ spec:
             subscriptionAddress: sensubility/cloud1-telemetry
             debugEnabled: false
             bridge:
-              ringBufferSize: 16384
+              ringBufferSize: 65535
               ringBufferCount: 15000
               verbose: false
       events:
@@ -110,6 +102,7 @@ spec:
   transports:
     qdr:
       enabled: true
+      auth: basic
       web:
         enabled: false
       certificates:

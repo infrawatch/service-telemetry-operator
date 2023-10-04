@@ -61,17 +61,6 @@ metadata:
                   "version": "7.16.1"
                 }
               },
-              "logs": {
-                "loki": {
-                  "enabled": false,
-                  "flavor": "1x.extra-small",
-                  "replicationFactor": 1,
-                  "storage": {
-                    "objectStorageSecret": "test",
-                    "storageClass": "standard"
-                  }
-                }
-              },
               "metrics": {
                 "prometheus": {
                   "enabled": true,
@@ -137,7 +126,7 @@ metadata:
                     {
                       "bridge": {
                         "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
+                        "ringBufferSize": 65535,
                         "verbose": false
                       },
                       "collectorType": "sensubility",
@@ -164,6 +153,7 @@ metadata:
             "observabilityStrategy": "use_redhat",
             "transports": {
               "qdr": {
+                "auth": "basic",
                 "certificates": {
                   "caCertDuration": "70080h",
                   "endpointCertDuration": "70080h"
@@ -388,7 +378,6 @@ spec:
           - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
           - integreatly.org
-          - loki.grafana.com
           resources:
           - '*'
           verbs:
