@@ -33,9 +33,18 @@
       Deploy STF nightly bundles
     vars:
       scenario: "nightly_bundles"
+    
+- job:
+    name: stf-crc-latest-local_build
+    parent: stf-base
+    description: |
+      Build images locally and deploy STF
+    vars:
+      scenario: "local_build"
 
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
         - stf-crc-latest-nightly_bundles
+        - stf-crc-latest-local_build
