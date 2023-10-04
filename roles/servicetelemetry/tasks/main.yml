@@ -73,17 +73,6 @@
     - observability_strategy in ['use_community', 'use_hybrid']
     - servicetelemetry_vars.backends.events.elasticsearch.enabled | bool
 
-# --> backends.logs
-- name: Check if we have loki API
-  set_fact:
-    has_loki_api: "{{ True if 'loki.grafana.com' in api_groups else False }}"
-
-- name: Create Loki instance
-  include_tasks: component_loki.yml
-  when:
-    - has_loki_api | bool
-    - observability_strategy in ['use_community', 'use_hybrid']
-
 # --> clouds
 - name: Get data about clouds
   debug:
