@@ -26,7 +26,6 @@ __service_telemetry_snmptraps_alert_oid_label: "oid"
 __service_telemetry_snmptraps_trap_oid_prefix: "1.3.6.1.4.1.50495.15"
 __service_telemetry_snmptraps_trap_default_oid: "1.3.6.1.4.1.50495.15.1.2.1"
 __service_telemetry_snmptraps_trap_default_severity: ""
-__service_telemetry_logs_enabled: false
 __service_telemetry_observability_strategy: use_redhat
 __service_telemetry_transports_certificates_endpoint_cert_duration: 70080h
 __service_telemetry_transports_certificates_ca_cert_duration: 70080h
@@ -47,7 +46,8 @@ prometheus_webhook_snmp_image_tag: latest
 sgo_bundle_image_tag: latest
 sto_bundle_image_tag: latest
 stf_index_image_tag: latest
-new_operator_sdk_version: v1.11.0
+operator_sdk_v0: v0.19.4
+operator_sdk_v1: v1.11.0
 namespace: service-telemetry
 pull_secret_registry:
 pull_secret_user:
@@ -66,3 +66,6 @@ sg_bridge_repository: https://github.com/infrawatch/sg-bridge
 prometheus_webhook_snmp_repository: https://github.com/infrawatch/prometheus-webhook-snmp
 
 base_dir: ''
+
+setup_bundle_registry_auth: true
+setup_bundle_registry_tls_ca: true

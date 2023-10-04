@@ -1,0 +1,52 @@
+---
+profile: null
+skip_list:
+  - args
+  - avoid-implicit
+  - command-instead-of-module
+  - command-instead-of-shell
+  - complexity
+  - deprecated-bare-vars
+  - deprecated-local-action
+  - deprecated-module
+  - empty-string-compare
+  - galaxy
+  - ignore-errors
+  - inline-env-var
+  - internal-error
+  - jinja
+  - key-order
+  - latest
+  - literal-compare
+  - loop-var-prefix
+  - meta-incorrect
+  - meta-no-tags
+  - meta-runtime
+  - meta-video-links
+  - name
+  - no-changed-when
+  - no-free-form
+  - no-handler
+  - no-jinja-when
+  - no-log-password
+  - no-prompting
+  - no-relative-paths
+  - no-same-owner
+  - no-tabs
+  - only-builtins
+  - package-latest
+  - parser-error
+  - partial-become
+  - playbook-extension
+  - risky-file-permissions
+  - risky-octal
+  - risky-shell-pipe
+  - role-name
+  - run-once
+  - sanity
+  - schema
+  - var-naming
+  - warning
+  - yaml
+
+# vimrc: ft=yaml

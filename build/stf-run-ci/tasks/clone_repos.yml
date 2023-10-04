@@ -6,57 +6,57 @@
 - name: Get Smart Gateway Operator
   block:
     - name: Try cloning same-named branch or override branch from SGO repository
-      git:
+      ansible.builtin.git:
         repo: "{{ sgo_repository }}"
-        dest: working/smart-gateway-operator
+        dest: "{{ base_dir }}/working/smart-gateway-operator"
         version: "{{ sgo_branch | default(branch, true) }}"
-        force: yes
+        force: true
   rescue:
     - name: "Get {{ version_branches.sgo }} upstream branch because specified branch or repository doesn't exist"
-      git:
+      ansible.builtin.git:
         repo: https://github.com/infrawatch/smart-gateway-operator
-        dest: working/smart-gateway-operator
+        dest: "{{ base_dir }}/working/smart-gateway-operator"
         version: "{{ version_branches.sgo }}"
 
 - name: Get sg-core
   block:
     - name: Try cloning same-named branch or override branch from sg-core repository
-      git:
+      ansible.builtin.git:
         repo: "{{ sg_core_repository }}"
-        dest: working/sg-core
+        dest: "{{ base_dir }}/working/sg-core"
         version: "{{ sg_core_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sg_core }} upstream branch because specified branch or repository doesn't exist"
-      git:
+      ansible.builtin.git:
         repo: https://github.com/infrawatch/sg-core
-        dest: working/sg-core
+        dest: "{{ base_dir }}/working/sg-core"
         version: "{{ version_branches.sg_core }}"
 
 - name: Get sg-bridge
   block:
     - name: Try cloning same-named branch or override branch from sg-bridge repository
-      git:
+      ansible.builtin.git:
         repo: "{{ sg_bridge_repository }}"
-        dest: working/sg-bridge
+        dest: "{{ base_dir }}/working/sg-bridge"
         version: "{{ sg_bridge_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sg_bridge }} upstream branch because specified branch or repository doesn't exist"
-      git:
+      ansible.builtin.git:
         repo: https://github.com/infrawatch/sg-bridge
-        dest: working/sg-bridge
+        dest: "{{ base_dir }}/working/sg-bridge"
         version: "{{ version_branches.sg_bridge }}"
 
 - name: Get prometheus-webhook-snmp
   block:
     - name: Try cloning same-named branch or override branch from prometheus-webhook-snmp repository
-      git:
+      ansible.builtin.git:
         repo: "{{ prometheus_webhook_snmp_repository }}"
-        dest: working/prometheus-webhook-snmp
+        dest: "{{ base_dir }}/working/prometheus-webhook-snmp"
         version: "{{ prometheus_webhook_snmp_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.prometheus_webhook_snmp }} upstream branch because specified branch or repository doesn't exist"
-      git:
+      ansible.builtin.git:
         repo: https://github.com/infrawatch/prometheus-webhook-snmp
-        dest: working/prometheus-webhook-snmp
+        dest: "{{ base_dir }}/working/prometheus-webhook-snmp"
         version: "{{ version_branches.prometheus_webhook_snmp }}"
 

@@ -1,6 +1,7 @@
-- block:
+- when: setup_bundle_registry_auth | bool
+  block:
   - name: Get existing Pull Secret from openshift config
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Secret
       namespace: openshift-config
@@ -8,11 +9,11 @@
     register: pull_secret
 
   - name: Decode docker config json
-    set_fact:
+    ansible.builtin.set_fact:
       dockerconfigjson: "{{ pull_secret.resources[0].data['.dockerconfigjson'] | b64decode }}"
 
   - name: Merge registry creds into auth section of docker config
-    set_fact:
+    ansible.builtin.set_fact:
       new_dockerauths: "{{ dockerconfigjson['auths'] | combine( {
         pull_secret_registry:{
               'auth': (pull_secret_user ~ ':' ~ pull_secret_pass) | b64encode
@@ -20,11 +21,11 @@
         }) }}"
 
   - name: Create new docker config
-    set_fact:
+    ansible.builtin.set_fact:
       new_dockerconfigjson: "{{ dockerconfigjson | combine({'auths': new_dockerauths}) }}"
 
   - name: Create Pull Secret for bundle registry access (in the local namespace)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition:
         apiVersion: v1
@@ -37,7 +38,7 @@
           .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
 
   - name: Create Pull Secret for bundle registry access (in the global namespace)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition:
         apiVersion: v1
@@ -49,11 +50,9 @@
         data:
           .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
 
-  tags:
-    - bundle_registry_auth
-
-- name: Create registry CA Cert
-  k8s:
+- when: setup_bundle_registry_tls_ca | bool
+  name: Create registry CA Cert
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -64,10 +63,9 @@
         namespace: "{{ namespace }}"
       data:
         cert.pem: "{{ lookup('file', 'CA.pem') | b64encode }}"
-  tags:
-    - bundle_registry_tls_ca
 
-- name: Patch the default service account to use our pull secret
+- when: setup_bundle_registry_tls_ca
+  name: Patch the default service account to use our pull secret
   kubernetes.core.k8s_json_patch:
     kind: ServiceAccount
     namespace: "{{ namespace }}"
@@ -77,8 +75,17 @@
         path: /imagePullSecrets
         value:
           - name: pull-secret
-  tags:
-    - bundle_registry_tls_ca
+
+  # When the task is skipped, pull_secret is still defined. It is set to the task output i.e.
+  # "pull_secret": {
+  #    "changed": false,
+  #    "skip_reason": "Conditional result was False",
+  #    "skipped": true
+  #  }
+- name: "Set pull_secret to a zero-length string, if setup_bundle_registry_auth is false"
+  when: not (setup_bundle_registry_auth | bool)
+  ansible.builtin.set_fact:
+    pull_secret: ''
 
 - name: "Ensure that the bundle paths are set."
   ansible.builtin.assert:
@@ -89,9 +96,9 @@
     success_msg: "Bundle paths are defined and not None"
 
 - name: Deploy SGO via OLM bundle
-  shell:
-    cmd: "{{ base_dir }}/working/operator-sdk run bundle {{__smart_gateway_bundle_image_path}} {% if pull_secret is defined %}--pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca{% endif %} --namespace={{ namespace }} --timeout 600s"
+  ansible.builtin.shell:
+    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __smart_gateway_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
 
 - name: Deploy STO via OLM bundle
-  shell:
-    cmd: "{{ base_dir }}/working/operator-sdk run bundle {{ __service_telemetry_bundle_image_path}} {% if pull_secret is defined %}--pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca{% endif %} --namespace={{ namespace }} --timeout 600s"
+  ansible.builtin.shell:
+    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __service_telemetry_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"

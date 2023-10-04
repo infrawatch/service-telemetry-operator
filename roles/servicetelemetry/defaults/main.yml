@@ -40,7 +40,7 @@ servicetelemetry_defaults:
       prometheus:
         enabled: true
         deployment_size: 1
-        scrape_interval: 10s
+        scrape_interval: 30s
         storage:
           strategy: persistent
           retention: 24h
@@ -67,24 +67,6 @@ servicetelemetry_defaults:
         certificates:
           endpoint_cert_duration: 70080h
           ca_cert_duration: 70080h
-    logs:
-      loki:
-        enabled: false
-        replication_factor: 1
-        flavor: 1x.extra-small
-        storage:
-          object_storage_secret: ""
-          storage_class: ""
-        compactor:
-          replicas: ""
-        distributor:
-          replicas: ""
-        ingester:
-          replicas: ""
-        querier:
-          replicas: ""
-        query_frontend:
-          replicas: ""
 
   transports:
     qdr:
@@ -92,6 +74,7 @@ servicetelemetry_defaults:
       deployment_size: 1
       web:
         enabled: false
+      auth: basic
       certificates:
         endpoint_cert_duration: 70080h
         ca_cert_duration: 70080h
@@ -133,7 +116,7 @@ servicetelemetry_defaults:
             subscription_address: sensubility/cloud1-telemetry
             debug_enabled: false
             bridge:
-              ring_buffer_size: 16384
+              ring_buffer_size: 65535
               ring_buffer_count: 15000
               verbose: false
       events:
@@ -152,16 +135,6 @@ servicetelemetry_defaults:
               ring_buffer_size: 16384
               ring_buffer_count: 15000
               verbose: false
-      logs:
-        collectors:
-          - collector_type: rsyslog
-            subscription_address: rsyslog/cloud1-logs
-            debug_enabled: false
-            bridge:
-              ring_buffer_size: 135048
-              ring_buffer_count: 15000
-              verbose: false
-
 
 # These variables are outside of the defaults. Their values will be
 # auto-detected by the role and are not meant to be set by the user. However,

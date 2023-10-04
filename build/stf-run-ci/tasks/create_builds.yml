@@ -1,6 +1,6 @@
 ---
 - name: Get current BuildConfig for artifact to check if it exists
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: build.openshift.io/v1
     kind: BuildConfig
     namespace: "{{ namespace }}"
@@ -8,7 +8,7 @@
   register: build_config_lookup
 
 - name: Get current Builds for artifact to check if it exists
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: build.openshift.io/v1
     kind: Build
     namespace: "{{ namespace }}"
@@ -19,33 +19,50 @@
 - when: build_config_lookup.resources | length == 0
   block:
   - name: Create BuildConfig and ImageStream
-    shell: oc new-build -n "{{ namespace }}" --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
+    ansible.builtin.shell: oc new-build -n "{{ namespace }}" --name {{ artifact.name }} --dockerfile - < {{ artifact.working_build_dir }}/{{ artifact.dockerfile_path }}
 
   - name: Kill first build since it will always fail (triggered on BuildConfig creation)
-    shell: sleep 10 ; oc delete build {{ artifact.name }}-1 -n "{{ namespace }}"
+    ansible.builtin.shell: sleep 10 ; oc delete build {{ artifact.name }}-1 -n "{{ namespace }}"
+    ignore_errors: true
+    retries: 3
+    delay: 10
+    register: kill_build
+    until: kill_build.rc == 0
 
-- name: Start local image build
-  command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --wait --from-dir "{{ artifact.working_build_dir }}"
-  register: build_results
-  when: build_lookup.resources | length == 0
+- block:
+    - name: Start local image build
+      ansible.builtin.command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --follow --wait --from-dir "{{ artifact.working_build_dir }}"
+      register: build_results
+      when: build_lookup.resources | length == 0
+      ignore_errors: true
+      retries: 3
+      delay: 10
+      until: build_results.rc == 0
+  always:
+    - name: "Show build results"
+      ansible.builtin.debug:
+        var: build_results
 
 - name: Get latest build information for artifact
-  command: oc get build --selector build={{ artifact.name }} -n "{{ namespace }}" -ojsonpath='{.items[-1:]}'
+  ansible.builtin.command: oc get build --selector build={{ artifact.name }} -n "{{ namespace }}" -ojsonpath='{.items[-1:]}'
   register: build_describe_results
 
 - name: Set build_describe from json results
-  set_fact:
+  ansible.builtin.set_fact:
     build_describe: "{{ build_describe_results.stdout | from_json }}"
 
-- debug:
+- name: Get the build results
+  ansible.builtin.debug:
     var: build_describe
 
-- debug:
+- name: Show the outputDockerImageReference, which will be used for the image reference name
+  ansible.builtin.debug:
     var: build_describe.status.outputDockerImageReference
 
 - name: Set unique image reference for this artifact
-  set_fact:
+  ansible.builtin.set_fact:
     "{{ artifact.image_reference_name }}": "{{ build_describe.status.outputDockerImageReference }}"
 
-- debug:
+- name: Show the image reference name for the build
+  ansible.builtin.debug:
     var: "{{ artifact.image_reference_name }}"

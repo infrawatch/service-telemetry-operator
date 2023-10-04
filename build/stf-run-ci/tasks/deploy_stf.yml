@@ -1,7 +1,7 @@
 # NOTE: be aware that if the API version changes for the ServiceTelemetry
 # object that it'll need to be updated here
 - name: Create default ServiceTelemetry manifest with a observabilityStrategy other than none
-  set_fact:
+  ansible.builtin.set_fact:
     service_telemetry_manifest: |
       apiVersion: infra.watch/v1beta1
       kind: ServiceTelemetry
@@ -43,19 +43,15 @@
                 persistent:
                   storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
-          logs:
-            loki:
-              enabled: false
-              replicationFactor: 1
-              flavor: 1x.extra-small
-              storage:
-                objectStorageSecret: test
       {% if __service_telemetry_storage_persistent_storage_class is defined %}
                 storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
         transports:
           qdr:
             enabled: true
+      {% if __service_telemetry_transports_qdr_auth is defined %}
+            auth: "{{ __service_telemetry_transports_qdr_auth }}"
+      {% endif %}
             certificates:
               endpointCertDuration: {{ __service_telemetry_transports_certificates_endpoint_cert_duration }}
               caCertDuration: {{ __service_telemetry_transports_certificates_ca_cert_duration }}
@@ -66,7 +62,7 @@
     - __service_telemetry_observability_strategy != "none"
 
 - name: Create default ServiceTelemetry manifest with observabilityStrategy none
-  set_fact:
+  ansible.builtin.set_fact:
     service_telemetry_manifest: |
       apiVersion: infra.watch/v1beta1
       kind: ServiceTelemetry
@@ -80,10 +76,10 @@
     - __service_telemetry_observability_strategy == "none"
 
 - name: Show ServiceTelemetry manifest
-  debug:
+  ansible.builtin.debug:
     var: service_telemetry_manifest | from_yaml
 
 - name: Create ServiceTelemetry instance
-  k8s:
+  kubernetes.core.k8s:
     definition:
       '{{ service_telemetry_manifest }}'
