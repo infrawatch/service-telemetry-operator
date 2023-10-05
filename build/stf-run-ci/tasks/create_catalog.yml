@@ -39,8 +39,8 @@
   ignore_errors: true
 
 # There's an error when the requested resource doesn't exist, so check the rc
-- when: index_dockercfg_secret.rc != 0
-  block:
+#- when: index_dockercfg_secret.rc != 0
+- block:
   - name: Create config.json to import as Secret
     ansible.builtin.template:
       variable_start_string: "<<"
@@ -75,8 +75,8 @@
   register: stf_index_imagestream
   ignore_errors: true
 
-- when: stf_index_imagestream.rc != 0
-  name: Create BuildConfig for service-telemetry-framework-index
+      #- when: stf_index_imagestream.rc != 0
+- name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
     definition:
       apiVersion: build.openshift.io/v1
@@ -151,7 +151,25 @@
       dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
 
   - name: Build service-telemetry-framework-index
-    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+    ignore_errors: true
+
+  - name: Kill the first build
+    ansible.builtin.shell:
+      oc delete build service-telemetry-framework-index-1 -n {{ namespace }}
+    ignore_errors: true
+    retries: 3
+    delay: 10
+    register: kill_build
+    until: kill_build.rc == 0
+
+  - name: Build service-telemetry-framework-index again
+    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --follow --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+    register: build_result
+    ignore_errors: true
+    retries: 3
+    delay: 10
+    until: build_result.rc == 0
 
 - name: Create CloudOps CatalogSource
   kubernetes.core.k8s:
