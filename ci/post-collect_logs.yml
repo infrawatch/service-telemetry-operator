@@ -55,6 +55,7 @@
           oc get subscriptions > {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
           oc describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
           cat {{ logfile_dir}}/post_oc_get_subscriptions.log
+      ignore_errors: true
 
     - name: "Get image infos"
       ansible.builtin.shell:
@@ -69,6 +70,7 @@
           oc get imagestream -oyaml >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
           cat {{ logfile_dir }}/post_oc_get_images.log 2>&1
       register: post_oc_get_images
+      ignore_errors: true
       retries: 3
       delay: 10
 
@@ -86,9 +88,10 @@
           echo "What images were created in the internal registry?" > {{ logfile_dir }}/post_question_deployment.log 2>&1
           oc get images | grep $(oc registry info --internal) >> {{ logfile_dir }}/post_question_deployment.log 2>&1
           echo "What state is the STO csv in?" >> {{ logfile_dir }}/post_question_deployment.log 2>&1
-          oc get csv -n service-telemetry | grep service-telemetry-operator >> {{ logfile_dir }}/post_question_deployment.log 2>&1
-          oc get csv -n service-telemetry-operator -oyaml >> {{ logfile_dir }}/post_question_deployment.log 2>&1
+          oc get csv -n {{ namespace }} | grep service-telemetry-operator >> {{ logfile_dir }}/post_question_deployment.log 2>&1
+          oc get csv -n {{ namespace }} service-telemetry-operator -oyaml >> {{ logfile_dir }}/post_question_deployment.log 2>&1
       register: output
+      ignore_errors: true
       retries: 3
       delay: 10
 

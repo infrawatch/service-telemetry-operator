@@ -74,6 +74,7 @@ servicetelemetry_defaults:
       deployment_size: 1
       web:
         enabled: false
+      auth: basic
       certificates:
         endpoint_cert_duration: 70080h
         ca_cert_duration: 70080h
@@ -115,7 +116,7 @@ servicetelemetry_defaults:
             subscription_address: sensubility/cloud1-telemetry
             debug_enabled: false
             bridge:
-              ring_buffer_size: 16384
+              ring_buffer_size: 65535
               ring_buffer_count: 15000
               verbose: false
       events:
