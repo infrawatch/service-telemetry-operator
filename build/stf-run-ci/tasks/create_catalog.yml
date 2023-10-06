@@ -108,7 +108,7 @@
   ansible.builtin.debug:
     var: stf_index_imagestream
 
-      #- when: stf_index_imagestream.rc != 0
+  # Since we're recreating the image stream each time, this should always be run
 - name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
     definition:
