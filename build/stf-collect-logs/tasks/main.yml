@@ -15,7 +15,7 @@
     cmd: |
       oc get subscriptions > {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
       oc describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
-      cat {{ logfile_dir}}/post_oc_get_subscriptions.log
+  ignore_errors: true
 
 - name: "Get image infos"
   ansible.builtin.shell:
@@ -24,13 +24,11 @@
       oc get images >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
       echo "[INFO] oc get imagestreams" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
       oc get imagestream >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      #echo "[INFO] oc get images -oyaml" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      #oc get images -oyaml >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
       echo "[INFO] oc get imagestream -oyaml" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
       oc get imagestream -oyaml >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      cat {{ logfile_dir }}/post_oc_get_images.log 2>&1
   retries: 3
   delay: 10
+  ignore_errors: true
 
 - name: "Get STO info"
   ansible.builtin.shell:
