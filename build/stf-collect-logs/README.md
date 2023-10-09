@@ -3,6 +3,8 @@ stf-collect-logs
 
 This role collects logs that are useful for debugging an STF deployment.
 
+Once the logs are collected, the user will need to fetch the logs themselves.
+
 Requirements
 ------------
 
@@ -10,6 +12,7 @@ Requirements
 Role Variables
 --------------
 
+* `logfile_dir` - The location that the logs will be created in on the remote host(s).
 
 Dependencies
 ------------
