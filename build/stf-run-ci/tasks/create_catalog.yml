@@ -135,6 +135,7 @@
           dockerfile: |
             # The base image is expected to contain
             # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
+
             FROM {{ operator_registry_image }}
 
             COPY --chmod=666 index.yaml /configs/
@@ -154,7 +155,7 @@
           dockerStrategy:
             from:
               kind: ImageStreamTag
-              name: ose-operator-registry:v4.13
+              name: "ose-operator-registry:{{default_operator_registry_image_tag}}"
             volumes:
             - mounts:
               - destinationPath: /opt/app-root/auth
