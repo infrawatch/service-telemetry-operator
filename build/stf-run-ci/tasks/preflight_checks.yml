@@ -1,5 +1,5 @@
 ---
-# Try for 10 minutes to get an output
+# Try for 30 minutes to get an output
 - block:
     - name: "Wait for up to 30 minutes for Service Telemetry Operator to be Succeeded"
       ansible.builtin.shell: |
@@ -17,8 +17,9 @@
 
     - name: "Get service-telemetry-operator CSV information"
       ansible.builtin.command:
-        oc describe csv $(oc get csv | grep "service-telemetry-operator" | awk '{print $1}') > {{ logfie_dir }}/oc_get_csv_sto.log 2>&1
-        cat {{ logfile_dir }}
+        cmd: |
+          oc describe csv $(oc get csv | grep "service-telemetry-operator" | awk '{print $1}') > {{ logfile_dir }}/oc_get_csv_sto.log 2>&1
+          cat {{ logfile_dir }}
 
     - name: "Show fail message if CSV isn't Succeeded after the alotted time"
       ansible.builtin.fail:
