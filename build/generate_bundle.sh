@@ -36,18 +36,6 @@ generate_bundle() {
     popd > /dev/null 2>&1
 
     sed -i -E "${REPLACE_REGEX}" "${WORKING_DIR}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"
-    cat >> "${WORKING_DIR}/metadata/annotations.yaml" << EOF
-  features.operators.openshift.io/disconnected: "false"
-  features.operators.openshift.io/fips-compliant: "false"
-  features.operators.openshift.io/proxy-aware: "false"
-  features.operators.openshift.io/cnf: "false"
-  features.operators.openshift.io/cni: "false"
-  features.operators.openshift.io/csi: "false"
-  features.operators.openshift.io/tls-profiles: "false"
-  features.operators.openshift.io/token-auth-aws: "false"
-  features.operators.openshift.io/token-auth-azure: "false"
-  features.operators.openshift.io/token-auth-gcp: "false"
-EOF
 }
 
 copy_extra_metadata() {
