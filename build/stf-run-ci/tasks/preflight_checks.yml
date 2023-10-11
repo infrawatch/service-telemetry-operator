@@ -1,12 +1,12 @@
 ---
-# Try for 30 minutes to get an output
+# Try for 10 minutes to get an output
 - block:
-    - name: "Wait for up to 30 minutes for Service Telemetry Operator to be Succeeded"
+    - name: "Wait for up to 10 minutes for Service Telemetry Operator to be Succeeded"
       ansible.builtin.shell: |
         oc get csv -n "{{ namespace }}" | grep service-telemetry-operator | grep Succeeded
       register: output
       retries: 60
-      delay: 30
+      delay: 10
       until: output.stdout | length != 0
       ignore_errors: true
   rescue:
@@ -23,5 +23,5 @@
 
     - name: "Show fail message if CSV isn't Succeeded after the alotted time"
       ansible.builtin.fail:
-        msg: "Service Telemetry Operator CSV not Succeeded after 30 minutes. Check {{ logfile_dir }}/oc_get_csv_sto.log for more information"
+        msg: "Service Telemetry Operator CSV not Succeeded after 10 minutes. Check {{ logfile_dir }}/oc_get_csv_sto.log for more information"
       when: output.rc != 0
