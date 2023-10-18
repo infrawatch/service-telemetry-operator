@@ -1,0 +1,15 @@
+galaxy_info:
+  role_name: stf-collect-logs
+  namespace: infrawatch
+
+  author: InfraWatch
+  description: Log collection role for Service Telemetry Framework
+  company: Red Hat
+
+  license: Apache-2.0
+
+  min_ansible_version: 2.1
+
+  galaxy_tags: []
+
+dependencies: []

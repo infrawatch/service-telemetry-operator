@@ -27,6 +27,14 @@
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
 - job:
+    name: stf-crc-latest-nightly_bundles
+    parent: stf-base
+    description:
+      Deploy STF nightly bundles
+    vars:
+      scenario: "nightly_bundles"
+    
+- job:
     name: stf-crc-latest-local_build
     parent: stf-base
     description: |
@@ -38,4 +46,5 @@
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
+        - stf-crc-latest-nightly_bundles
         - stf-crc-latest-local_build
