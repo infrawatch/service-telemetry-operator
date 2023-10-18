@@ -8,7 +8,7 @@ RUN bash -c -- 'if [ "${NO_PROXY:-__ZZZZZ}" == "__ZZZZZ" ]; then echo "Applying 
 
 # update the base image to allow forward-looking optimistic updates during the testing phase, with the added benefit of helping move closer to passing security scans.
 # -- excludes ansible so it remains at 2.9 tag as shipped with the base image
-# -- installs python3-passliv and python3-bcrypt for oauth-proxy interface
+# -- installs python3-passlib and python3-bcrypt for oauth-proxy interface
 # -- cleans up the cached data from dnf to keep the image as small as possible
 RUN dnf update -y --exclude=ansible* && dnf install -y python3-passlib python3-bcrypt && dnf clean all && rm -rf /var/cache/dnf
 
