@@ -108,6 +108,11 @@
   ansible.builtin.debug:
     var: stf_index_imagestream
 
+- name: Create index.yaml base for index image
+  ansible.builtin.template:
+    src: index-yaml.j2
+    dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
+
   # Since we're recreating the image stream each time, this should always be run
 - name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
@@ -155,7 +160,7 @@
           dockerStrategy:
             from:
               kind: ImageStreamTag
-              name: "ose-operator-registry:{{default_operator_registry_image_tag}}"
+              name: "ose-operator-registry:{{ default_operator_registry_image_tag }}"
             volumes:
             - mounts:
               - destinationPath: /opt/app-root/auth
@@ -168,42 +173,29 @@
           type: Docker
         successfulBuildsHistoryLimit: 5
 
-- name: Get builds of service-telemetry-framework-index
-  kubernetes.core.k8s_info:
-    api_version: build.openshift.io/v1
-    kind: Build
-    namespace: "{{ namespace }}"
-    label_selectors:
-      - "build=service-telemetry-framework-index"
-  register: index_builds
+#- when: index_builds.resources | length == 0
+#  block:
+#  - name: Create index.yaml base for index image
+#    ansible.builtin.template:
+#      src: index-yaml.j2
+#      dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
 
-- when: index_builds.resources | length == 0
-  block:
-  - name: Create index.yaml base for index image
-    ansible.builtin.template:
-      src: index-yaml.j2
-      dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
-
-  - name: Build service-telemetry-framework-index
-    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --from-dir {{ base_dir }}/working/service-telemetry-framework-index
-    ignore_errors: true
-
-  - name: Kill the first build
-    ansible.builtin.shell:
-      oc delete build service-telemetry-framework-index-1 -n {{ namespace }}
-    ignore_errors: true
-    retries: 3
-    delay: 10
-    register: kill_build
-    until: kill_build.rc == 0
-
-  - name: Build service-telemetry-framework-index again
-    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --follow --from-dir {{ base_dir }}/working/service-telemetry-framework-index
-    register: build_result
-    ignore_errors: true
-    retries: 3
-    delay: 10
-    until: build_result.rc == 0
+#  - name: Kill the first build
+#    ansible.builtin.shell:
+#      oc delete build service-telemetry-framework-index-1 -n {{ namespace }}
+#    ignore_errors: true
+#    retries: 3
+#    delay: 10
+#    register: kill_build
+#    until: kill_build.rc == 0
+#
+- name: Build service-telemetry-framework-index again
+  ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --follow --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+  register: build_result
+  ignore_errors: true
+  retries: 3
+  delay: 10
+  until: build_result.rc == 0
 
 - name: Create CloudOps CatalogSource
   kubernetes.core.k8s:
