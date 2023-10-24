@@ -76,22 +76,6 @@ spec:
               ringBufferSize: 65535
               ringBufferCount: 15000
               verbose: false
-      events:
-        collectors:
-          - collectorType: collectd
-            subscriptionAddress: collectd/cloud1-notify
-            debugEnabled: false
-            bridge:
-              ringBufferSize: 16384
-              ringBufferCount: 15000
-              verbose: false
-          - collectorType: ceilometer
-            subscriptionAddress: anycast/ceilometer/cloud1-event.sample
-            debugEnabled: false
-            bridge:
-              ringBufferSize: 16384
-              ringBufferCount: 15000
-              verbose: false
   graphing:
     enabled: false
     grafana:
