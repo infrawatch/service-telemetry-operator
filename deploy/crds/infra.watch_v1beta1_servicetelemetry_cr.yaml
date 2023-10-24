@@ -27,7 +27,7 @@ spec:
     metrics:
       prometheus:
         enabled: true
-        scrapeInterval: 10s
+        scrapeInterval: 30s
         storage:
           strategy: persistent
           retention: 24h
