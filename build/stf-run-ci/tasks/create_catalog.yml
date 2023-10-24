@@ -69,17 +69,11 @@
   ignore_errors: true
   register: image_info
 
-  # TODO: try docker pull on the image and set accordingly.
-  # i.e. if we can pull/query the registry.redhat.io image, use it, else use quay
-  # TODO: Fix this to actually honour the check.
-- name: "Test alternative operator image"
+- name: Test alternative operator image
   ansible.builtin.set_fact:
-    #operator_registry_image: "registry.redhat.io/openshift4/ose-operator-registry:v4.13"
     operator_registry_image: "quay.io/openshift/origin-operator-registry:4.13"
   when: image_info.rc != 0
 
-    # TODO: Clean up the naming and versioning, so we can have a source-agnostic image stream.
-    # TODO: Use the same tag as the image, using an appropriate filter to extract the version from the image.
 - name: Create ImageStream for ose-operator-registry, if it doesn't already exist
   ansible.builtin.command:
     cmd: |
@@ -113,7 +107,6 @@
     src: index-yaml.j2
     dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
 
-  # Since we're recreating the image stream each time, this should always be run
 - name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
     definition:
@@ -173,22 +166,6 @@
           type: Docker
         successfulBuildsHistoryLimit: 5
 
-#- when: index_builds.resources | length == 0
-#  block:
-#  - name: Create index.yaml base for index image
-#    ansible.builtin.template:
-#      src: index-yaml.j2
-#      dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
-
-#  - name: Kill the first build
-#    ansible.builtin.shell:
-#      oc delete build service-telemetry-framework-index-1 -n {{ namespace }}
-#    ignore_errors: true
-#    retries: 3
-#    delay: 10
-#    register: kill_build
-#    until: kill_build.rc == 0
-#
 - name: Build service-telemetry-framework-index again
   ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --follow --from-dir {{ base_dir }}/working/service-telemetry-framework-index
   register: build_result
