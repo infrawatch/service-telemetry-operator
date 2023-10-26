@@ -58,7 +58,7 @@ jobs:
         run: sudo mv operator-sdk /usr/local/bin
 
       - name: Generate bundle locally
-        run: operator-sdk generate bundle --manifests --metadata --default-channel unstable --channels unstable
+        run: operator-sdk generate bundle --manifests --metadata --default-channel stable-1.5 --channels stable-1.5
 
       - name: Check if bundle generation results in local changes
         run: git diff --exit-code

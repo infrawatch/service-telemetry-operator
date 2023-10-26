@@ -9,7 +9,7 @@
         namespace: openshift-marketplace
       spec:
         displayName: InfraWatch Operators
-        image: quay.io/infrawatch-operators/infrawatch-catalog:unstable
+        image: quay.io/infrawatch-operators/infrawatch-catalog:stable-1.5
         publisher: InfraWatch
         sourceType: grpc
         updateStrategy:
@@ -26,7 +26,7 @@
         name: smart-gateway-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: stable-1.5
         installPlanApproval: Automatic
         name: smart-gateway-operator
         source: infrawatch-operators
@@ -42,7 +42,7 @@
         name: service-telemetry-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: stable-1.5
         installPlanApproval: Automatic
         name: service-telemetry-operator
         source: infrawatch-operators
