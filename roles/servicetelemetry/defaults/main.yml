@@ -3,8 +3,11 @@
 #
 # remove SmartGateway object when cloud no longer in current `clouds` object list.
 clouds_remove_on_missing: false
-# default observability strategy (compatible with STF 1.3)
-observability_strategy: use_community
+observability_strategy: use_redhat
+
+# These get auto-discovered, but the code is simpler if they are never undefined
+prometheus_operator_api_string: ""
+prometheus_operator_label: ""
 
 certificate_duration: 70080h
 
@@ -39,7 +42,7 @@ servicetelemetry_defaults:
       prometheus:
         enabled: true
         deployment_size: 1
-        scrape_interval: 10s
+        scrape_interval: 30s
         storage:
           strategy: persistent
           retention: 24h
@@ -49,6 +52,13 @@ servicetelemetry_defaults:
     events:
       elasticsearch:
         enabled: false
+        forwarding:
+          host_url: https://elasticsearch-es-http:9200
+          tls_server_name: ""
+          tls_secret_name: elasticsearch-es-cert
+          user_secret_name: elasticsearch-es-elastic-user
+          use_basic_auth: true
+          use_tls: true
         version: 7.16.1
         node_count: 1
         storage:
@@ -59,24 +69,6 @@ servicetelemetry_defaults:
         certificates:
           endpoint_cert_duration: 70080h
           ca_cert_duration: 70080h
-    logs:
-      loki:
-        enabled: false
-        replication_factor: 1
-        flavor: 1x.extra-small
-        storage:
-          object_storage_secret: ""
-          storage_class: ""
-        compactor:
-          replicas: ""
-        distributor:
-          replicas: ""
-        ingester:
-          replicas: ""
-        querier:
-          replicas: ""
-        query_frontend:
-          replicas: ""
 
   transports:
     qdr:
@@ -84,6 +76,7 @@ servicetelemetry_defaults:
       deployment_size: 1
       web:
         enabled: false
+      auth: basic
       certificates:
         endpoint_cert_duration: 70080h
         ca_cert_duration: 70080h
@@ -125,7 +118,7 @@ servicetelemetry_defaults:
             subscription_address: sensubility/cloud1-telemetry
             debug_enabled: false
             bridge:
-              ring_buffer_size: 16384
+              ring_buffer_size: 65535
               ring_buffer_count: 15000
               verbose: false
       events:
@@ -144,16 +137,6 @@ servicetelemetry_defaults:
               ring_buffer_size: 16384
               ring_buffer_count: 15000
               verbose: false
-      logs:
-        collectors:
-          - collector_type: rsyslog
-            subscription_address: rsyslog/cloud1-logs
-            debug_enabled: false
-            bridge:
-              ring_buffer_size: 135048
-              ring_buffer_count: 15000
-              verbose: false
-
 
 # These variables are outside of the defaults. Their values will be
 # auto-detected by the role and are not meant to be set by the user. However,
@@ -161,19 +144,6 @@ servicetelemetry_defaults:
 
 is_k8s: false
 is_openshift: false
-
-# - This image works on OCP 4.6, 4.7, and 4.8 (v4.4 tag instead of 'latest' as I'd prefer above)
-oauth_proxy_image: image-registry.openshift-image-registry.svc:5000/openshift/oauth-proxy:v4.4
-
-# - Downstream, this one works, but there is a big red "Red Hat strongly recommends updating to the newest image version..." (4.9) which doesn't work
-# - See https://github.com/openshift/oauth-proxy/issues/229 for why 4.9 isn't working for us
-# oauth_proxy_image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.8
-
-# - This image works (probably upstream and down!), but is pinned back to the version we're strongly recommended not to use:
-# oauth_proxy_image: quay.io/openshift/origin-oauth-proxy:4.8
-
-# - For reference this is the image line I see in openshift-monitoring for the equivalent image:
-# oauth_proxy_image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ca37f5fc57643a353dcdcd6ad3a7bc8bb40fd4276a555fe5de2b8c7167d64020
 
 _ephemeral_storage_enabled: false
 

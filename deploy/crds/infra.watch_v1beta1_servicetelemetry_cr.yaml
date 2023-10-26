@@ -3,7 +3,7 @@ kind: ServiceTelemetry
 metadata:
   name: default
 spec:
-  observabilityStrategy: use_community
+  observabilityStrategy: use_redhat
   alerting:
     enabled: true
     alertmanager:
@@ -27,7 +27,7 @@ spec:
     metrics:
       prometheus:
         enabled: true
-        scrapeInterval: 10s
+        scrapeInterval: 30s
         storage:
           strategy: persistent
           retention: 24h
@@ -36,6 +36,13 @@ spec:
     events:
       elasticsearch:
         enabled: false
+        forwarding:
+          hostUrl: https://elasticsearch-es-http:9200
+          tlsServerName: ""
+          tlsSecretName: elasticsearch-es-cert
+          userSecretName: elasticsearch-es-elastic-user
+          useBasicAuth: true
+          useTls: true
         version: 7.16.1
         storage:
           strategy: persistent
@@ -44,14 +51,6 @@ spec:
         certificates:
           endpointCertDuration: 70080h
           caCertDuration: 70080h
-    logs:
-      loki:
-        enabled: false
-        flavor: 1x.extra-small
-        replicationFactor: 1
-        storage:
-          objectStorageSecret: test
-          storageClass: standard
   clouds:
     - name: cloud1
       metrics:
@@ -74,23 +73,7 @@ spec:
             subscriptionAddress: sensubility/cloud1-telemetry
             debugEnabled: false
             bridge:
-              ringBufferSize: 16384
-              ringBufferCount: 15000
-              verbose: false
-      events:
-        collectors:
-          - collectorType: collectd
-            subscriptionAddress: collectd/cloud1-notify
-            debugEnabled: false
-            bridge:
-              ringBufferSize: 16384
-              ringBufferCount: 15000
-              verbose: false
-          - collectorType: ceilometer
-            subscriptionAddress: anycast/ceilometer/cloud1-event.sample
-            debugEnabled: false
-            bridge:
-              ringBufferSize: 16384
+              ringBufferSize: 65535
               ringBufferCount: 15000
               verbose: false
   graphing:
@@ -103,6 +86,7 @@ spec:
   transports:
     qdr:
       enabled: true
+      auth: basic
       web:
         enabled: false
       certificates:

@@ -1,0 +1,28 @@
+---
+- name: "Run tests to verify that STF runs as expected"
+  hosts: controller
+  tasks:
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: "Get vars common to all jobs"
+      ansible.builtin.include_vars:
+        file: "vars-zuul-common.yml"
+
+    - name: "Get scenario-specific vars"
+      ansible.builtin.include_vars:
+        file: "vars-{{ scenario }}.yml"
+
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+    - name: "Run STF smoketests"
+      ansible.builtin.shell:
+        cmd: |
+          OCP_PROJECT={{ namespace }} CLEANUP=false ./tests/smoketest/smoketest.sh > {{ logfile_dir }}/smoketest.log 2>&1
+        chdir: "{{ sto_dir }}"
+      changed_when: false

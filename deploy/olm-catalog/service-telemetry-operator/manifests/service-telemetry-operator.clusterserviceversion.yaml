@@ -44,6 +44,14 @@ metadata:
                     "endpointCertDuration": "70080h"
                   },
                   "enabled": false,
+                  "forwarding": {
+                    "hostUrl": "https://elasticsearch-es-http:9200",
+                    "tlsSecretName": "elasticsearch-es-cert",
+                    "tlsServerName": "",
+                    "useBasicAuth": true,
+                    "useTls": true,
+                    "userSecretName": "elasticsearch-es-elastic-user"
+                  },
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20Gi"
@@ -53,21 +61,10 @@ metadata:
                   "version": "7.16.1"
                 }
               },
-              "logs": {
-                "loki": {
-                  "enabled": false,
-                  "flavor": "1x.extra-small",
-                  "replicationFactor": 1,
-                  "storage": {
-                    "objectStorageSecret": "test",
-                    "storageClass": "standard"
-                  }
-                }
-              },
               "metrics": {
                 "prometheus": {
                   "enabled": true,
-                  "scrapeInterval": "10s",
+                  "scrapeInterval": "30s",
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20G"
@@ -80,30 +77,6 @@ metadata:
             },
             "clouds": [
               {
-                "events": {
-                  "collectors": [
-                    {
-                      "bridge": {
-                        "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
-                        "verbose": false
-                      },
-                      "collectorType": "collectd",
-                      "debugEnabled": false,
-                      "subscriptionAddress": "collectd/cloud1-notify"
-                    },
-                    {
-                      "bridge": {
-                        "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
-                        "verbose": false
-                      },
-                      "collectorType": "ceilometer",
-                      "debugEnabled": false,
-                      "subscriptionAddress": "anycast/ceilometer/cloud1-event.sample"
-                    }
-                  ]
-                },
                 "metrics": {
                   "collectors": [
                     {
@@ -129,7 +102,7 @@ metadata:
                     {
                       "bridge": {
                         "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
+                        "ringBufferSize": 65535,
                         "verbose": false
                       },
                       "collectorType": "sensubility",
@@ -153,9 +126,10 @@ metadata:
             "highAvailability": {
               "enabled": false
             },
-            "observabilityStrategy": "use_community",
+            "observabilityStrategy": "use_redhat",
             "transports": {
               "qdr": {
+                "auth": "basic",
                 "certificates": {
                   "caCertDuration": "70080h",
                   "endpointCertDuration": "70080h"
@@ -177,6 +151,16 @@ metadata:
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
+    features.operators.openshift.io/cnf: "false"
+    features.operators.openshift.io/cni: "false"
+    features.operators.openshift.io/csi: "false"
+    features.operators.openshift.io/disconnected: "false"
+    features.operators.openshift.io/fips-compliant: "false"
+    features.operators.openshift.io/proxy-aware: "false"
+    features.operators.openshift.io/tls-profiles: "false"
+    features.operators.openshift.io/token-auth-aws: "false"
+    features.operators.openshift.io/token-auth-azure: "false"
+    features.operators.openshift.io/token-auth-gcp: "false"
     olm.skipRange: '>=<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
     operatorframework.io/suggested-namespace: service-telemetry
     operators.openshift.io/valid-subscription: '["OpenStack Platform", "Cloud Infrastructure",
@@ -218,12 +202,6 @@ spec:
         name: servicemonitors.monitoring.coreos.com
         version: v1
       version: v1beta1
-    required:
-    - description: Creation of Smart Gateways
-      displayName: Smart Gateway
-      kind: SmartGateway
-      name: smartgateways.smartgateway.infra.watch
-      version: v2
   description: Service Telemetry Operator for monitoring clouds
   displayName: Service Telemetry Operator
   icon:
@@ -251,6 +229,7 @@ spec:
           - watch
           - update
           - patch
+          - delete
         - apiGroups:
           - authorization.k8s.io
           resources:
@@ -261,6 +240,7 @@ spec:
           - security.openshift.io
           resourceNames:
           - nonroot
+          - nonroot-v2
           resources:
           - securitycontextconstraints
           verbs:
@@ -311,6 +291,8 @@ spec:
                   value: explicit
                 - name: RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE
                   value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
+                - name: RELATED_IMAGE_OAUTH_PROXY_IMAGE
+                  value: <<RELATED_IMAGE_OAUTH_PROXY>>:<<RELATED_IMAGE_OAUTH_PROXY_TAG>>
                 image: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
                 imagePullPolicy: Always
                 name: operator
@@ -379,15 +361,22 @@ spec:
           - interconnectedcloud.github.io
           - smartgateway.infra.watch
           - monitoring.coreos.com
+          - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
           - integreatly.org
-          - loki.grafana.com
           resources:
           - '*'
           verbs:
           - '*'
         - apiGroups:
           - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - monitoring.rhobs
           resources:
           - servicemonitors
           verbs:
@@ -419,6 +408,27 @@ spec:
           - '*'
           verbs:
           - '*'
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - roles
+          - rolebindings
+          verbs:
+          - create
+          - get
+          - list
+          - watch
+          - update
+          - patch
+        - apiGroups:
+          - extensions
+          - networking.k8s.io
+          resources:
+          - ingresses
+          verbs:
+          - get
+          - list
+          - watch
         serviceAccountName: service-telemetry-operator
     strategy: deployment
   installModes:

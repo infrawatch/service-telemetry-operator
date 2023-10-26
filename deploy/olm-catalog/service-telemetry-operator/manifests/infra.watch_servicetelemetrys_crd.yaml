@@ -122,53 +122,88 @@ spec:
                     description: Events related backend configuration.
                     properties:
                       elasticsearch:
-                        description: Events storage backend ElasticSearch
+                        description: Events storage backend Elasticsearch
                         properties:
                           certificates:
                             properties:
                               caCertDuration:
-                                description: The requested 'duration' (i.e. lifetime)
-                                  of the ElasticSearch CA Certificate. Minimum accepted
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) The requested 'duration' (i.e. lifetime)
+                                  of the Elasticsearch CA Certificate. Minimum accepted
                                   duration is 1 hour. Value must be in units accepted
                                   by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                                 pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                               endpointCertDuration:
-                                description: The requested 'duration' (i.e. lifetime)
-                                  of the ElasticSearch endpoint Certificate. Minimum
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) The requested 'duration' (i.e. lifetime)
+                                  of the Elasticsearch endpoint Certificate. Minimum
                                   accepted duration is 1 hour. Value must be in units
                                   accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                                 pattern: ^((([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                             type: object
                           enabled:
-                            description: Enable ElasticSearch as a storage backend
+                            description: Enable Elasticsearch as a storage backend
                               for events
                             type: boolean
+                          forwarding:
+                            description: Configuration for where to forward events
+                            properties:
+                              hostUrl:
+                                description: URL of Elasticsearch HTTP(S) endpoint
+                                type: string
+                              tlsSecretName:
+                                description: (if required) Name of the secret that
+                                  stores the CA cert and client cert/key
+                                type: string
+                              tlsServerName:
+                                description: (if required) Server Name expected to
+                                  match the certificate presented by the endpoint
+                                type: string
+                              useBasicAuth:
+                                description: Whether to provide HTTP Basic Auth headers
+                                type: boolean
+                              useTls:
+                                description: Whether to enable TLS
+                                type: boolean
+                              userSecretName:
+                                description: (if required) Name of the secret that
+                                  stores the Basic Auth credentials
+                                type: string
+                            type: object
                           nodeCount:
-                            description: Elasticsearch node count
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Elasticsearch node count
                             type: string
                           storage:
-                            description: Events storage configuration for ElasticSearch
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Events storage configuration for Elasticsearch
                             properties:
                               persistent:
-                                description: Persistent storage configuration for
-                                  ElasticSearch
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) Persistent storage configuration for
+                                  Elasticsearch
                                 properties:
                                   pvcStorageRequest:
-                                    description: How much storage space to request
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) How much storage space to request
                                       in the PVC
                                     type: string
                                   storageClass:
-                                    description: Storage class name used for ElasticSearch
-                                      PVC
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) Storage class name used for
+                                      Elasticsearch PVC
                                     type: string
                                   storageSelector:
-                                    description: Storage selector definition for ElasticSearch
+                                    description: (DEPRECATED - Use forwarding params
+                                      after STF 1.5.3) Storage selector definition
+                                      for Elasticsearch
                                     type: string
                                 type: object
                               strategy:
-                                description: Storage strategy. One of 'ephemeral'
+                                description: (DEPRECATED - Use forwarding params after
+                                  STF 1.5.3) Storage strategy. One of 'ephemeral'
                                   or 'persistent'. Persistent storage must be made
                                   available by the platform.
                                 enum:
@@ -177,82 +212,11 @@ spec:
                                 type: string
                             type: object
                           version:
-                            description: Version of ElasticSearch to deploy. Elasticsearch
+                            description: (DEPRECATED - Use forwarding params after
+                              STF 1.5.3) Version of Elasticsearch to deploy. Elasticsearch
                               licensing has changed as of version 7.11. See https://www.elastic.co/pricing/faq/licensing
                               for details.
                             type: string
-                        type: object
-                    type: object
-                  logs:
-                    description: Logs related backend configuration.
-                    properties:
-                      loki:
-                        description: Logs storage backend Loki
-                        properties:
-                          compactor:
-                            description: Template for the compactor microservice
-                            properties:
-                              replicas:
-                                description: Number of replicas for this microservice
-                                type: string
-                            type: object
-                          distributor:
-                            description: Template for the distributor microservice
-                            properties:
-                              replicas:
-                                description: Number of replicas for this microservice
-                                type: string
-                            type: object
-                          enabled:
-                            description: '[TESTING ONLY] Enable Loki as a storage
-                              backend for logs'
-                            type: boolean
-                          flavor:
-                            description: Loki flavor
-                            enum:
-                            - 1x.extra-small
-                            - 1x.small
-                            - 1x.medium
-                            type: string
-                          ingester:
-                            description: Template for the ingester microservice
-                            properties:
-                              replicas:
-                                description: Number of replicas for this microservice
-                                type: string
-                            type: object
-                          querier:
-                            description: Template for the querier microservice
-                            properties:
-                              replicas:
-                                description: Number of replicas for this microservice
-                                type: string
-                            type: object
-                          queryFrontend:
-                            description: Template for the query frontend microservice
-                            properties:
-                              replicas:
-                                description: Number of replicas for this microservice
-                                type: string
-                            type: object
-                          replicationFactor:
-                            description: Loki replication factor
-                            format: int32
-                            minimum: 1
-                            type: integer
-                          storage:
-                            description: Logs storage configuration for Loki
-                            properties:
-                              objectStorageSecret:
-                                description: Secret containing informaiton required
-                                  for S3 object storage
-                                type: string
-                              storageClass:
-                                description: Storage class used for temporary log
-                                  storage before they are forwarded to object storage
-                                  or when querying.
-                                type: string
-                            type: object
                         type: object
                     type: object
                   metrics:
@@ -342,48 +306,6 @@ spec:
                                 enum:
                                 - ceilometer
                                 - collectd
-                                type: string
-                              debugEnabled:
-                                description: Enable console debugging. Default is
-                                  'false'.
-                                type: boolean
-                              subscriptionAddress:
-                                description: Address to subscribe on the data transport
-                                  to receive notifications.
-                                type: string
-                            type: object
-                          type: array
-                      type: object
-                    logs:
-                      description: Logs related configuration for this cloud object.
-                      properties:
-                        collectors:
-                          description: List of available logs collectors for this
-                            cloud object.
-                          items:
-                            properties:
-                              bridge:
-                                description: Bridge configuration and tuning configurations.
-                                properties:
-                                  ringBufferCount:
-                                    description: sg-bridge ring buffer count. This
-                                      affects the potential number of messages in
-                                      queue, which can result in increased memory
-                                      usage within the sg-bridge container.
-                                    type: integer
-                                  ringBufferSize:
-                                    description: sg-bridge ring buffer size. This
-                                      affects the size of messages that can be passed
-                                      between sg-bridge and sg-core.
-                                    type: integer
-                                  verbose:
-                                    description: Enable verbosity for debugging purposes.
-                                    type: boolean
-                                type: object
-                              collectorType:
-                                description: Set the collector type, value of 'rsyslog'
-                                enum:
-                                - rsyslog
                                 type: string
                               debugEnabled:
                                 description: Enable console debugging. Default is
@@ -491,10 +413,14 @@ spec:
                 type: object
               observabilityStrategy:
                 description: The strategy to use for observability systems. Options
-                  are "none" (do not deploy any observability components), and "use_community"
-                  (community operators with administrator managed subscriptions).
+                  are "none" (do not deploy any observability components), "use_community"
+                  (community supported operators), "use_redhat" (Red Hat Observability
+                  Operator with no unsupported components), "use_hybrid" (Red Hat
+                  Observability Operator + community supported operators).
                 enum:
                 - use_community
+                - use_redhat
+                - use_hybrid
                 - none
                 type: string
               transports:
@@ -503,6 +429,13 @@ spec:
                   qdr:
                     description: QDR configuration for data transport
                     properties:
+                      auth:
+                        description: Auth type to use for incoming OSP connections.
+                          Options are "none", or "basic"
+                        enum:
+                        - none
+                        - basic
+                        type: string
                       certificates:
                         properties:
                           caCertDuration:

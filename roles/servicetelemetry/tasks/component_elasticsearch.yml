@@ -1,3 +1,10 @@
+# DEPRECATED
+#
+# This code in the servicetelemetry role is deprecated as of STF 1.5.3, after
+# which only forwarding to an external elasticsearch is supported.
+#
+# The code lives on in the stf-run-ci role for CI testing of the forwarding
+# feature.
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_elasticsearch.j2') | from_yaml }}"

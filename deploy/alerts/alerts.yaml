@@ -1,4 +1,4 @@
-apiVersion: monitoring.coreos.com/v1
+apiVersion: monitoring.rhobs/v1
 kind: PrometheusRule
 metadata:
   creationTimestamp: null
@@ -55,7 +55,6 @@ spec:
             severity: warn
           annotations:
             summary: IO read (warning)
-
         - alert: disk:time:read critical
           expr: >-
             (abs(job:disk:time:read:rate_5m - job:disk:time:read:rate_5m:avg_over_time_1h) / job:disk:time:read:rate_5m:stddev_over_time_1h) >6
@@ -64,6 +63,7 @@ spec:
             severity: critical
           annotations:
             summary: IO read (critical)
+
         - expr: 'rate(collectd_disk_disk_time_write_total[5m])'
           record: 'job:disk:time:write:rate_5m'
         - expr: 'stddev_over_time(job:disk:time:write:rate_5m[1h])'
@@ -78,7 +78,6 @@ spec:
             severity: warn
           annotations:
             summary: IO write (warning)
-
         - alert: disk:time:write critical
           expr: >-
             (abs(job:disk:time:write:rate_5m - job:disk:time:write:rate_5m:avg_over_time_1h) / job:disk:time:write:rate_5m:stddev_over_time_1h) >6
@@ -87,47 +86,47 @@ spec:
             severity: critical
           annotations:
             summary: IO write (critical)
+
         - expr: 'rate(collectd_disk_disk_ops_read_total[5m])'
-          record: 'job:disk:time:read:rate_5m'
-        - expr: 'stddev_over_time(job:disk:time:read:rate_5m[1h])'
-          record: 'job:disk:time:read:rate_5m:stddev_over_time_1h'
-        - expr: 'avg_over_time(job:disk:time:read:rate_5m[1h])'
-          record: 'job:disk:time:read:rate_5m:avg_over_time_1h'
-        - alert: disk:time:read warn
+          record: 'job:disk:ops:read:rate_5m'
+        - expr: 'stddev_over_time(job:disk:ops:read:rate_5m[1h])'
+          record: 'job:disk:ops:read:rate_5m:stddev_over_time_1h'
+        - expr: 'avg_over_time(job:disk:ops:read:rate_5m[1h])'
+          record: 'job:disk:ops:read:rate_5m:avg_over_time_1h'
+        - alert: disk:ops:read warn
           expr: >-
-            (abs(job:disk:time:read:rate_5m - job:disk:time:read:rate_5m:avg_over_time_1h) / job:disk:time:read:rate_5m:stddev_over_time_1h) >3
+            (abs(job:disk:ops:read:rate_5m - job:disk:ops:read:rate_5m:avg_over_time_1h) / job:disk:ops:read:rate_5m:stddev_over_time_1h) >3
           for: 10m
           labels:
             severity: warn
           annotations:
             summary: disk ops read (warning)
-
-        - alert: disk:time:read critical
+        - alert: disk:ops:read critical
           expr: >-
-            (abs(job:disk:time:read:rate_5m - job:disk:time:read:rate_5m:avg_over_time_1h) / job:disk:time:read:rate_5m:stddev_over_time_1h) >6
+            (abs(job:disk:ops:read:rate_5m - job:disk:ops:read:rate_5m:avg_over_time_1h) / job:disk:ops:read:rate_5m:stddev_over_time_1h) >6
           for: 10m
           labels:
             severity: critical
           annotations:
             summary: disk ops read (critical)
+
         - expr: 'rate(collectd_disk_disk_ops_write_total[5m])'
-          record: 'job:disk:time:write:rate_5m'
-        - expr: 'stddev_over_time(job:disk:time:write:rate_5m[1h])'
-          record: 'job:disk:time:write:rate_5m:stddev_over_time_1h'
-        - expr: 'avg_over_time(job:disk:time:write:rate_5m[1h])'
-          record: 'job:disk:time:write:rate_5m:avg_over_time_1h'
-        - alert: disk:time:write warn
+          record: 'job:disk:ops:write:rate_5m'
+        - expr: 'stddev_over_time(job:disk:ops:write:rate_5m[1h])'
+          record: 'job:disk:ops:write:rate_5m:stddev_over_time_1h'
+        - expr: 'avg_over_time(job:disk:ops:write:rate_5m[1h])'
+          record: 'job:disk:ops:write:rate_5m:avg_over_time_1h'
+        - alert: disk:ops:write warn
           expr: >-
-            (abs(job:disk:time:write:rate_5m - job:disk:time:write:rate_5m:avg_over_time_1h) / job:disk:time:write:rate_5m:stddev_over_time_1h) >3
+            (abs(job:disk:ops:write:rate_5m - job:disk:ops:write:rate_5m:avg_over_time_1h) / job:disk:ops:write:rate_5m:stddev_over_time_1h) >3
           for: 10m
           labels:
             severity: warn
           annotations:
             summary: disk ops write (warning)
-
-        - alert: disk:time:write critical
+        - alert: disk:ops:write critical
           expr: >-
-            (abs(job:disk:time:write:rate_5m - job:disk:time:write:rate_5m:avg_over_time_1h) / job:disk:time:write:rate_5m:stddev_over_time_1h) >6
+            (abs(job:disk:ops:write:rate_5m - job:disk:ops:write:rate_5m:avg_over_time_1h) / job:disk:ops:write:rate_5m:stddev_over_time_1h) >6
           for: 10m
           labels:
             severity: critical
@@ -183,7 +182,7 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: Hugepages (warning)
+            summary: Hugepages (critical)
           expr: >-
             sum without (type_instance) (collectd_hugepages_vmpage_number{type_instance="free"})/ sum without (type_instance) (collectd_hugepages_vmpage_number) < 0.1
           for: 10m

@@ -1,7 +1,7 @@
 FROM quay.io/openshift/origin-jenkins-agent-base:latest
 
 # pass --build-arg OC_CLIENT_VERSION=<version> to build stage to change client version
-ARG OC_CLIENT_VERSION="4.12"
+ARG OC_CLIENT_VERSION="4.13"
 
 RUN curl -LO "https://github.com/operator-framework/operator-sdk/releases/download/v0.19.4/operator-sdk-v0.19.4-x86_64-linux-gnu" && \
     chmod +x operator-sdk-v0.19.4-x86_64-linux-gnu && mv operator-sdk-v0.19.4-x86_64-linux-gnu /usr/local/bin/operator-sdk

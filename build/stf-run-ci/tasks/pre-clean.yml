@@ -1,6 +1,6 @@
 # NOTE: This cleanup step prevents parallel CI jobs
 - name: Clear out existing CRDs so we don't conflict or fail merge
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
@@ -14,7 +14,7 @@
 # The clusterroles and clusterrolebindings are global objects that can be left
 # behind by failed bundle installs
 - name: Remove all clusterrolebindings owned by OLM for this namespace
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_version: rbac.authorization.k8s.io/v1
     kind: clusterrolebindings
@@ -22,7 +22,7 @@
       - "olm.owner.namespace = {{ namespace }}"
 
 - name: Remove all clusterroles owned by OLM for this namespace
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_version: rbac.authorization.k8s.io/v1
     kind: clusterroles
@@ -34,7 +34,7 @@
 # been enabled. This avoids installing an additional CatalogSource which is no
 # longer required.
 - name: Remove OperatorHub.io CatalogSource if it installed
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     definition:
       apiVersion: operators.coreos.com/v1alpha1
@@ -48,13 +48,99 @@
         displayName: OperatorHub.io Operators
         publisher: OperatorHub.io
 
+# Upstream Source + Sub from https://github.com/rhobs/observability-operator/tree/main/hack/olm
+# Moved to using Community Operators Catalog, so no longer require upstream CatalogSource. Eventually move to Red Hat Operators CatalogSource.
+- name: Remove Red Hat Observability Operator CatalogSource if it is installed
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        annotations:
+        name: observability-operator
+        namespace: openshift-marketplace
+
+- name: Remove CloudOps CatalogSource if it is installed
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-framework-operators
+        namespace: "{{ namespace }}"
+      spec:
+        displayName: CloudOps Operators
+        publisher: CloudOps
+        sourceType: grpc
+
+- name: Remove Service Telemetry Operator bundle build
+  kubernetes.core.k8s:
+    state: absent
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=service-telemetry-operator-bundle"
+
+- name: Remove Smart Gateway Operator bundle build
+  kubernetes.core.k8s:
+    state: absent
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=smart-gateway-operator-bundle"
+
+- name: Remove Service Telemetry Framework index build
+  kubernetes.core.k8s:
+    state: absent
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=service-telemetry-framework-index"
+
+- name: Remove service-telemetry-operator-bundle CatalogSource (bundle deploy)
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-operator-catalog
+        namespace: "{{ namespace }}"
+
+- name: Remove smart-gateway-operator-bundle CatalogSource (bundle deploy)
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: smart-gateway-operator-catalog
+        namespace: "{{ namespace }}"
+
 # Remove the cert manager since we install it as part of the CI/documented pre-install process
 - name: Remove openshift-cert-manager-operator namespace
-  k8s:
+  kubernetes.core.k8s:
     state: absent
-    wait: yes
+    wait: true
     definition:
       apiVersion: project.openshift.io/v1
       kind: Project
       metadata:
         name: openshift-cert-manager-operator
+
+- name: Remove Elasticsearch
+  ignore_errors: true
+  kubernetes.core.k8s:
+    state: absent
+    wait: true
+    definition:
+      apiVersion: elasticsearch.k8s.elastic.co/v1
+      kind: Elasticsearch
+      metadata:
+        name: elasticsearch
+        namespace: "{{ namespace }}"
