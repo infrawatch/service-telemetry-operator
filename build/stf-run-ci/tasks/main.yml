@@ -113,7 +113,7 @@
   - name: Create base build list
     ansible.builtin.set_fact:
       build_list:
-        - {name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: "{{ base_dir }}/../"}
+        - {name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: "{{ sto_dir }}"}
         - {name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: "{{ sgo_dir }}"}
         - {name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: "{{ sg_core_dir }}"}
         - {name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: "{{ sg_bridge_dir }}"}
