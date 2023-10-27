@@ -71,6 +71,7 @@
 
 - name: Set the repo destination dirs, if not provided
   ansible.builtin.set_fact:
+    sto_dir: "{{ sto_dir if sto_dir is defined else base_dir + '/..' }}"
     sgo_dir: "{{ sgo_dir if sgo_dir is defined else base_dir + '/working/smart-gateway-operator' }}"
     sg_core_dir: "{{ sg_core_dir if sg_core_dir is defined else base_dir + '/working/sg-core' }}"
     sg_bridge_dir: "{{ sg_bridge_dir if sg_bridge_dir is defined else base_dir + '/working/sg-bridge'}}"
