@@ -2,8 +2,8 @@ name: CI
 on: push
 
 jobs:
-  linting:
-    name: Linting
+  operator-linting:
+    name: Operator Linting
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -16,10 +16,52 @@ jobs:
         run: ansible-galaxy collection install operator_sdk.util
 
       - name: Install ansible-lint
-        run: pip install 'ansible-lint < 6.0.0'
+        run: python -m pip install 'ansible-lint < 6.0.0'
 
       - name: Lint Ansible roles/servicetelemetry/ directory
         run: ${HOME}/.local/bin/ansible-lint roles/servicetelemetry
+
+  stf-run-ci-linting:
+    name: stf-run-ci Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Ansible
+        run: python -m pip install 'ansible'
+
+      - name: Install ansible-lint
+        run: python -m pip install 'ansible-lint'
+
+      - name: Lint Ansible build/stf-run-ci  directory
+        run: ${HOME}/.local/bin/ansible-lint .
+        working-directory: ./build/stf-run-ci
+
+  generate-bundle-diff-check:
+    name: Check if generating the bundle would result in local changes
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: v0.19.4
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get operator-sdk image 0.19.4
+        run: curl --output operator-sdk -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk-$RELEASE_VERSION-x86_64-linux-gnu
+
+      - name: Make operator-sdk executable
+        run: chmod +x operator-sdk
+
+      - name: Move operator-sdk binary
+        run: sudo mv operator-sdk /usr/local/bin
+
+      - name: Generate bundle locally
+        run: operator-sdk generate bundle --manifests --metadata --default-channel stable-1.5 --channels stable-1.5
+
+      - name: Check if bundle generation results in local changes
+        run: git diff --exit-code
 
   build-operator-check:
     name: Build Operator check

@@ -19,25 +19,68 @@
     - this_cloud.metrics.collectors is iterable
 
 - name: Events Smart Gateway deployment
+  when: servicetelemetry_vars.backends.events.elasticsearch.enabled
   block:
-    - name: Lookup ElasticSearch BasicAuth
+    - name: Lookup Elasticsearch BasicAuth
       k8s_info:
         api_version: v1
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
-        name: 'elasticsearch-es-elastic-user'
+        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.user_secret_name }}'
       register: elasticsearch_es_elastic_user
 
-    - name: Filter out ElasticSearch password for BasicAuth
+    - name: Set Elasticsearch user for BasicAuth
       set_fact:
-        elastic_pass: "{{ elasticsearch_es_elastic_user | json_query('resources[0].data.elastic') | b64decode }}"
+        elastic_user: "{{ elasticsearch_es_elastic_user.resources[0].data | dict2items | map(attribute='key') | list | first }}"
+
+    - name: Set Elasticsearch password for BasicAuth
+      set_fact:
+        elastic_pass: "{{ elasticsearch_es_elastic_user.resources[0].data[elastic_user] | b64decode }}"
       no_log: true
+
+    - name: Set elastic_tls_server_name from forwarding config if set
+      set_fact:
+        elastic_tls_server_name: "{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_server_name }}"
+      when: servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_server_name | length > 0
+
+    # This sets the server name based on the host part of the URL between // and : (https://elasticsearch-host:9200)
+    - name: Set elastic_tls_server_name by parsing the host_url if it's not set in the config
+      set_fact:
+        elastic_tls_server_name: "{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.host_url.rpartition('//')[-1].partition(':')[0] }}"
+      when: servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_server_name | length == 0
+
+    - name: Get the Elasticsearch TLS materials secret
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_secret_name }}'
+      register: es_certs
+
+    - when: es_certs.resources[0].data["user.key"] is not defined or es_certs.resources[0].data["user.crt"] is not defined
+      block:
+        - name: Load dummy certs
+          include_vars:
+            file: dummy_user_certs.yml
+
+        - name: Augment the secret with dummy TLS cert/key if no TLS user auth material provided
+          k8s:
+            definition:
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: '{{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.tls_secret_name }}'
+                namespace: '{{ ansible_operator_meta.namespace }}'
+              stringData:
+                user.crt: '{{ elastic_user_cert_dummy }}'
+                user.key: '{{ elastic_user_key_dummy }}'
 
     - name: Deploy Events Smart Gateway instance for each collector
       vars:
         data_type: 'events'
         manifest: './manifest_smartgateway_events.j2'
         this_smartgateway: "{{ ansible_operator_meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-event"
+        elasticsearch: "{{ servicetelemetry_vars.backends.events.elasticsearch | from_yaml }}"
       include_tasks: base_smartgateway.yml
       loop: "{{ this_cloud.events.collectors }}"
       loop_control:
@@ -47,29 +90,3 @@
         - this_cloud.events is defined
         - this_cloud.events.collectors is defined
         - this_cloud.events is iterable
-  # TODO: it should be possible to deploy the eventing SGs when ElasticSearch
-  # is not available, but currently the template for smartgateway_events
-  # expects to have information about a local ES instance on cluster.
-  # https://github.com/infrawatch/service-telemetry-operator/issues/274
-  when:
-    - has_elasticsearch_api | bool
-    - servicetelemetry_vars.backends.events.elasticsearch.enabled
-    - observability_strategy == 'use_community'
-
-- name: Deploy Logs Smart Gateway instance
-  vars:
-    data_type: 'logs'
-    manifest: './manifest_smartgateway_logs.j2'
-    this_smartgateway: "{{ ansible_operator_meta.name }}-{{ this_cloud.name }}-{{ this_collector.collector_type[:4] }}-log"
-  include_tasks: base_smartgateway.yml
-  loop: "{{ this_cloud.logs.collectors }}"
-  loop_control:
-    loop_var: this_collector
-    label: "{{ this_collector.collector_type }}"
-  when:
-    - has_loki_api | bool
-    - observability_strategy == 'use_community'
-    - servicetelemetry_vars.backends.logs.loki.enabled
-    - this_cloud.logs is defined
-    - this_cloud.logs.collectors is defined
-    - this_cloud.logs is iterable

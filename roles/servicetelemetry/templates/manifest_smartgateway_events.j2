@@ -1,27 +1,28 @@
 apiVersion: smartgateway.infra.watch/v2
 kind: SmartGateway
 metadata:
-  name: '{{ this_smartgateway }}'
-  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: {{ this_smartgateway }}
+  namespace: {{ ansible_operator_meta.namespace }}
 spec:
 {% if this_collector.debug_enabled is defined and this_collector.debug_enabled %}
-  logLevel: "debug"
+  logLevel: debug
 {% else %}
-  logLevel: "info"
+  logLevel: info
 {% endif %}
   handleErrors: true
   size: {{ smartgateway_deployment_size }}
   applications:
   - config: |
-      hostURL: https://elasticsearch-es-http.{{ ansible_operator_meta.namespace }}.svc.cluster.local:9200
-      useTLS: true
-      tlsClientCert: /config/certs/tls.crt
-      tlsClientKey: /config/certs/tls.key
+      hostURL: {{ elasticsearch.forwarding.host_url }}
+      useTLS: {{ elasticsearch.forwarding.use_tls }}
+      tlsClientCert: /config/certs/user.crt
+      tlsClientKey: /config/certs/user.key
       tlsCaCert: /config/certs/ca.crt
-      tlsServerName: 'elasticsearch-es-http.{{ ansible_operator_meta.namespace }}.svc.cluster.local'
-      user: '{{ elastic_user | default('elastic') }}'
-      password: '{{ elastic_pass | default('') }}'
-      useBasicAuth: true
+      tlsServerName: {{ elastic_tls_server_name }}
+      tlsSecretName: {{ elasticsearch.forwarding.tls_secret_name }}
+      user: {{ elastic_user | default('elastic') }}
+      password: {{ elastic_pass | default('') }}
+      useBasicAuth: {{ elasticsearch.forwarding.use_basic_auth }}
     name: elasticsearch
   bridge:
     amqpUrl: amqp://{{ ansible_operator_meta.name }}-interconnect.{{ ansible_operator_meta.namespace }}.svc.cluster.local:5673/{{ this_collector.subscription_address }}

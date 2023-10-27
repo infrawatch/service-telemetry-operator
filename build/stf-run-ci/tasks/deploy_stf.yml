@@ -1,7 +1,7 @@
 # NOTE: be aware that if the API version changes for the ServiceTelemetry
 # object that it'll need to be updated here
-- name: Create default ServiceTelemetry manifest with observabilityStrategy use_community
-  set_fact:
+- name: Create default ServiceTelemetry manifest with a observabilityStrategy other than none
+  ansible.builtin.set_fact:
     service_telemetry_manifest: |
       apiVersion: infra.watch/v1beta1
       kind: ServiceTelemetry
@@ -9,7 +9,7 @@
         name: default
         namespace: "{{ namespace }}"
       spec:
-        observabilityStrategy: "use_community"
+        observabilityStrategy: "{{ __service_telemetry_observability_strategy }}"
         alerting:
           alertmanager:
             storage:
@@ -34,15 +34,6 @@
           events:
             elasticsearch:
               enabled: {{ __service_telemetry_events_enabled }}
-              storage:
-                strategy: {{ "ephemeral" if __service_telemetry_storage_ephemeral_enabled else "persistent" }}
-      {% if __service_telemetry_storage_persistent_storage_class is defined %}
-                persistent:
-                  storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
-      {% endif %}
-              certificates:
-                endpointCertDuration: {{ __service_telemetry_events_certificates_endpoint_cert_duration }}
-                caCertDuration: {{ __service_telemetry_events_certificates_ca_cert_duration }}
           metrics:
             prometheus:
               enabled: {{ __service_telemetry_metrics_enabled }}
@@ -52,19 +43,15 @@
                 persistent:
                   storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
-          logs:
-            loki:
-              enabled: false
-              replicationFactor: 1
-              flavor: 1x.extra-small
-              storage:
-                objectStorageSecret: test
       {% if __service_telemetry_storage_persistent_storage_class is defined %}
                 storageClass: {{ __service_telemetry_storage_persistent_storage_class }}
       {% endif %}
         transports:
           qdr:
             enabled: true
+      {% if __service_telemetry_transports_qdr_auth is defined %}
+            auth: "{{ __service_telemetry_transports_qdr_auth }}"
+      {% endif %}
             certificates:
               endpointCertDuration: {{ __service_telemetry_transports_certificates_endpoint_cert_duration }}
               caCertDuration: {{ __service_telemetry_transports_certificates_ca_cert_duration }}
@@ -72,10 +59,10 @@
           enabled: {{ __service_telemetry_high_availability_enabled }}
   when:
     - service_telemetry_manifest is not defined
-    - __service_telemetry_observability_strategy == "use_community"
+    - __service_telemetry_observability_strategy != "none"
 
 - name: Create default ServiceTelemetry manifest with observabilityStrategy none
-  set_fact:
+  ansible.builtin.set_fact:
     service_telemetry_manifest: |
       apiVersion: infra.watch/v1beta1
       kind: ServiceTelemetry
@@ -89,10 +76,10 @@
     - __service_telemetry_observability_strategy == "none"
 
 - name: Show ServiceTelemetry manifest
-  debug:
+  ansible.builtin.debug:
     var: service_telemetry_manifest | from_yaml
 
 - name: Create ServiceTelemetry instance
-  k8s:
+  kubernetes.core.k8s:
     definition:
       '{{ service_telemetry_manifest }}'

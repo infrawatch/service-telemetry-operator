@@ -1,0 +1,173 @@
+---
+- name: Create service-telemetry-framework-index working directory
+  ansible.builtin.file:
+    path: "{{ base_dir }}/working/service-telemetry-framework-index"
+    state: directory
+    mode: '0755'
+
+# Updating to use stdout_lines[-1] so that any additional info that gets added to generate_bundles (e.g. for debug) doesn't break this task
+# Adding from_json so that the JSON output is parsed into a dictionary
+- name: Create info variables from bundle generation output
+  ansible.builtin.set_fact:
+    sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
+    sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
+
+- name: Get the builder-dockercfg Secret name
+  ansible.builtin.command: oc get secret -n {{ namespace }} --field-selector='type==kubernetes.io/dockercfg' -ojsonpath='{.items[?(@.metadata.annotations.kubernetes\.io/service-account\.name=="builder")].metadata.name}'
+  register: secret_builder_dockercfg_name
+
+- name: Get contents of builder Secret
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "{{ secret_builder_dockercfg_name.stdout }}"
+    namespace: "{{ namespace }}"
+  register: secret_builder_dockercfg_results
+
+- name: Get builder-dockercfg authentication contents
+  ansible.builtin.set_fact:
+    builder_dockercfg_auth_results: "{{ secret_builder_dockercfg_results.resources[0].data['.dockercfg'] | b64decode }}"
+
+- name: Set internal registry authentication
+  ansible.builtin.set_fact:
+    internal_registry: "{{ builder_dockercfg_auth_results['image-registry.openshift-image-registry.svc:5000'] | to_json }}"
+
+- name: Get Secrets to check for service-telemetry-framework-index-dockercfg
+  ansible.builtin.command:
+    cmd: oc get secret -n {{ namespace }} service-telemetry-framework-index-dockercfg
+  register: index_dockercfg_secret
+  ignore_errors: true
+
+# There's an error when the requested resource doesn't exist, so check the rc
+- when: index_dockercfg_secret.rc != 0
+  block:
+  - name: Create config.json to import as Secret
+    ansible.builtin.template:
+      variable_start_string: "<<"
+      variable_end_string: ">>"
+      src: config-json.j2
+      dest: "{{ base_dir }}/working/service-telemetry-framework-index/config.json"
+
+  - name: Create a Secret for the dockercfg
+    ansible.builtin.command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson={{ base_dir }}/working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
+    ignore_errors: true
+
+- name: Get the ose-operator-registry ImageStream
+  ansible.builtin.command:
+    cmd: oc get -n {{ namespace }} ImageStream ose-operator-registry
+  register: ose_op_registry_is
+  ignore_errors: true
+
+- name: Create ImageStream for ose-operator-registry
+  ansible.builtin.command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
+  when: ose_op_registry_is.rc != 0
+
+- name: Delete the existing imagestream, if it exists
+  ansible.builtin.command: oc delete imagestream -n {{ namespace }} service-telemetry-framework-index
+  ignore_errors: true
+
+- name: Create ImageStream for service-telemetry-framework-index
+  ansible.builtin.command: oc create imagestream -n {{ namespace }} service-telemetry-framework-index
+
+- name: Get STF index image stream
+  ansible.builtin.command:
+    cmd: oc get -n {{ namespace }} ImageStream service-telemetry-framework-index
+  register: stf_index_imagestream
+  ignore_errors: true
+
+- when: stf_index_imagestream.rc != 0
+  name: Create BuildConfig for service-telemetry-framework-index
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: build.openshift.io/v1
+      kind: BuildConfig
+      metadata:
+        annotations:
+          openshift.io/generated-by: stf-run-ci
+        labels:
+          build: service-telemetry-framework-index
+        name: service-telemetry-framework-index
+        namespace: "{{ namespace }}"
+      spec:
+        failedBuildsHistoryLimit: 5
+        nodeSelector: null
+        output:
+          to:
+            kind: ImageStreamTag
+            name: service-telemetry-framework-index:latest
+        postCommit: {}
+        resources: {}
+        runPolicy: Serial
+        source:
+          dockerfile: |
+            # The base image is expected to contain
+            # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
+            FROM {{default_operator_registry_image_base}}:{{default_operator_registry_image_tag}}
+
+            COPY --chmod=666 index.yaml /configs/
+
+            RUN mkdir /tmp/auth/
+            # we need the contents of the mounted build volume from secret placed into config.json
+            RUN cp /opt/app-root/auth/.dockerconfigjson /tmp/auth/config.json
+            RUN DOCKER_CONFIG=/tmp/auth /bin/opm --skip-tls-verify render {{ sto_bundle_image_path }} {{ sgo_bundle_image_path }} --output=yaml >> /configs/index.yaml
+
+            ENTRYPOINT ["/bin/opm"]
+            CMD ["serve", "/configs"]
+            # Set DC-specific label for the location of the DC root directory
+            # in the image
+            LABEL operators.operatorframework.io.index.configs.v1=/configs
+          type: Dockerfile
+        strategy:
+          dockerStrategy:
+            from:
+              kind: ImageStreamTag
+              name: "ose-operator-registry:{{default_operator_registry_image_tag}}"
+            volumes:
+            - mounts:
+              - destinationPath: /opt/app-root/auth
+              name: pull-secret
+              source:
+                secret:
+                  defaultMode: 420
+                  secretName: service-telemetry-framework-index-dockercfg
+                type: Secret
+          type: Docker
+        successfulBuildsHistoryLimit: 5
+
+- name: Get builds of service-telemetry-framework-index
+  kubernetes.core.k8s_info:
+    api_version: build.openshift.io/v1
+    kind: Build
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "build=service-telemetry-framework-index"
+  register: index_builds
+
+- when: index_builds.resources | length == 0
+  block:
+  - name: Create index.yaml base for index image
+    ansible.builtin.template:
+      src: index-yaml.j2
+      dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
+
+  - name: Build service-telemetry-framework-index
+    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+
+- name: Create CloudOps CatalogSource
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: service-telemetry-framework-operators
+        namespace: "{{ namespace }}"
+      spec:
+        displayName: CloudOps Operators
+        image: "{{ stf_index_image_path }}"
+        publisher: CloudOps
+        sourceType: grpc
+        grpcPodConfig:
+          securityContextConfig: legacy
+        updateStrategy:
+          registryPoll:
+            interval: 1m

@@ -34,6 +34,7 @@
 - name: "Set supporting container image paths"
   set_fact:
     prometheus_webhook_snmp_container_image_path: "{{ lookup('env', 'RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE') | default('quay.io/infrawatch/prometheus-webhook-snmp:latest', true) }}" # noqa 204
+    oauth_proxy_image: "{{ lookup('env', 'RELATED_IMAGE_OAUTH_PROXY_IMAGE') | default('quay.io/openshift/origin-oauth-proxy:latest', true) }}" # noqa 204
 
 - name: Adjust defaults when highAvailability.enabled is true
   block:
@@ -78,6 +79,99 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: smartgateways_loaded
 
+- name: Get current STF object
+  k8s_info:
+    api_version: infra.watch/v1beta1
+    kind: ServiceTelemetry
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: _stf_object
+
+- name: Get community Prometheus objects
+  k8s_info:
+    api_version: monitoring.coreos.com/v1
+    kind: Prometheus
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: _community_prom_object
+
+- block:
+  - name: Apply community observabilityStrategy if missing on an STF object with an existing community prometheus
+    k8s:
+      definition:
+        apiVersion: infra.watch/v1beta1
+        kind: ServiceTelemetry
+        metadata:
+          name: "{{ ansible_operator_meta.name }}"
+          namespace: "{{ ansible_operator_meta.namespace }}"
+        spec:
+          observabilityStrategy: use_community
+  - name: Set non-default community strategy for remainder of this run
+    set_fact:
+      observability_strategy: use_community
+  when:
+    - _community_prom_object.resources[0] is defined
+    - _stf_object.resources[0].spec.observabilityStrategy is not defined
+
+- name: Apply default observabilityStrategy if missing on a new STF object with no associated community prometheus
+  k8s:
+    definition:
+      apiVersion: infra.watch/v1beta1
+      kind: ServiceTelemetry
+      metadata:
+        name: "{{ ansible_operator_meta.name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      spec:
+        observabilityStrategy: "{{ observability_strategy }}"
+  when:
+    - _community_prom_object.resources[0] is not defined
+    - _stf_object.resources[0].spec.observabilityStrategy is not defined
+
+- name: Get QDR objects
+  k8s_info:
+    api_version: interconnectedcloud.github.io/v1alpha1
+    kind: Interconnect
+    name: "{{ ansible_operator_meta.name }}-interconnect"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: _qdr_object
+
+- block:
+  - name: Apply legacy auth=none for QDR if missing on the STF object and it's currently deployed that way
+    k8s:
+      definition:
+        apiVersion: infra.watch/v1beta1
+        kind: ServiceTelemetry
+        metadata:
+          name: "{{ ansible_operator_meta.name }}"
+          namespace: "{{ ansible_operator_meta.namespace }}"
+        spec:
+          transports:
+            qdr:
+              auth: none
+
+  - name: Set auth=none for remainder of this run
+    set_fact:
+      servicetelemetry_vars: "{{ servicetelemetry_vars|combine({'transports':{'qdr':{'auth': 'none'}}}, recursive=True) }}" # noqa 206
+  when:
+    - _stf_object.resources[0].spec.transports.qdr.auth is not defined
+    - _qdr_object.resources[0] is defined and _qdr_object.resources[0].spec.edgeListeners[0].saslMechanisms == "ANONYMOUS"
+
+- name: Apply default auth for QDR if missing on a new STF object with no associated auth=none QDR
+  k8s:
+    definition:
+      apiVersion: infra.watch/v1beta1
+      kind: ServiceTelemetry
+      metadata:
+        name: "{{ ansible_operator_meta.name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      spec:
+        transports:
+          qdr:
+            auth: "{{ servicetelemetry_defaults.transports.qdr.auth }}"
+  when:
+    - _stf_object.resources[0].spec.transports.qdr.auth is not defined
+    - _qdr_object.resources[0] is defined and _qdr_object.resources[0].spec.edgeListeners[0].saslMechanisms != "ANONYMOUS"
+
 - name: Set ephemeral_storage_enabled to true when storage strategy is ephemeral
   set_fact:
     _ephemeral_storage_enabled: true
@@ -85,14 +179,6 @@
     - servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "ephemeral" or
       servicetelemetry_vars.backends.events.elasticsearch.storage.strategy == "ephemeral" or
       servicetelemetry_vars.alerting.alertmanager.storage.strategy == "ephemeral"
-
-- name: Get current ephemeralStorageEnabled status
-  k8s_info:
-    api_version: infra.watch/v1beta1
-    kind: ServiceTelemetry
-    name: "{{ ansible_operator_meta.name }}"
-    namespace: "{{ ansible_operator_meta.namespace }}"
-  register: _stf_object
 
 - name: Set ServiceTelemetry object status to have ephemeralStorageEnabled status
   operator_sdk.util.k8s_status:

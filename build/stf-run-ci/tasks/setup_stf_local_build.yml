@@ -1,83 +1,109 @@
 ---
-# NOTE: the split filter cuts the image path (quay.io:443/infrawatch/container_image:tag_name) on the colon. Field :-1 (everything but the final field) is the image path, field -1 (final field) is the image tag
-# --- Smart Gateway Operator ---
-- name: Generate Smart Gateway Operator CSV
-  shell:
-    chdir: working/smart-gateway-operator/build
-    cmd: |
-      WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
-      RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
-      RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
-      RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
-      OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
-      OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
-      ./generate_bundle.sh
-  register: generate_bundle_sgo
+# WARNING: generation of bundles is not idempotent from the point of being able
+# to use the generate_bundle_<name> content for use in other places
 
-- name: Results of bundle generation
-  debug:
-    var: generate_bundle_sgo.stdout_lines
+# --- Smart Gateway Operator ---
+- block:
+  - name: Generate Smart Gateway Operator CSV
+    ansible.builtin.shell:
+      chdir: "{{ base_dir }}/working/smart-gateway-operator/build"
+      cmd: |
+        LOGFILE="{{ logfile_dir }}/sgo_gen_bundle.log" \
+        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
+        WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
+        RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
+        RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
+        RELATED_IMAGE_CORE_SMARTGATEWAY_TAG={{ sg_core_image_path | parse_tag | quote }} \
+        RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
+        OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
+        OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
+        ./generate_bundle.sh
+    register: generate_bundle_sgo
+  rescue:
+    # "|| true" is needed until https://github.com/infrawatch/smart-gateway-operator/pull/143 is merged
+  - name: Show generate bundle log
+    ansible.builtin.shell:
+      cmd: |
+        cat {{ logfile_dir }}/sgo_gen_bundle.log || true
 
 - name: Replace namespace in SGO role binding
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/working/smart-gateway-operator/deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
-- name: Load Smart Gateway Operator RBAC
-  command: oc apply -f working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
-  loop:
-    - service_account.yaml
-    - role.yaml
-    - role_binding.yaml
-    - olm-catalog/smart-gateway-operator/manifests/smartgateway.infra.watch_smartgateways_crd.yaml
-
 - name: Replace namespace in SGO CSV
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
-- name: Load Smart Gateway Operator CSV
-  shell: oc apply -f working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
+- when: not __deploy_from_index_enabled | bool
+  block:
+  - name: Load Smart Gateway Operator RBAC
+    ansible.builtin.command:
+      cmd: oc apply -f {{ base_dir }}/working/smart-gateway-operator/deploy/{{ item }} -n "{{ namespace }}"
+    loop:
+      - service_account.yaml
+      - role.yaml
+      - role_binding.yaml
+      - olm-catalog/smart-gateway-operator/manifests/smartgateway.infra.watch_smartgateways_crd.yaml
+
+  - name: Load Smart Gateway Operator CSV
+    ansible.builtin.shell:
+      cmd: oc apply -f {{ base_dir }}/working/smart-gateway-operator-bundle/manifests/smart-gateway-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
 # --- Service Telemetry Operator ---
-- name: Generate Service Telemetry Operator CSV
-  shell:
-    chdir: "{{ base_dir }}"
-    cmd: |
-      WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
-      RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
-      RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
-      OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
-      OPERATOR_TAG={{ sto_image_path | parse_tag | quote }} \
-      ./generate_bundle.sh
+- block:
+  - name: Generate Service Telemetry Operator CSV
+    ansible.builtin.shell:
+      chdir: "{{ base_dir }}"
+      cmd: |
+        LOGFILE="{{ logfile_dir }}/sto_gen_bundle.log" \
+        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
+        WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
+        RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
+        RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
+        OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
+        OPERATOR_TAG={{ sto_image_path | parse_tag | quote }} \
+        ./generate_bundle.sh
+    register: generate_bundle_sto
+  rescue:
+  - name: Results of STO bundle generation
+    ansible.builtin.shell:
+      cmd: |
+        cat {{ logfile_dir }}/sto_gen_bundle.log || true
 
 - name: Replace namespace in STO role binding
-  replace:
+  ansible.builtin.replace:
     path: "{{ base_dir }}/../deploy/role_binding.yaml"
     regexp: 'placeholder'
     replace: '{{ namespace }}'
 
-- block:
+- name: Replace namespace in STO CSV
+  ansible.builtin.replace:
+    path: "{{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
+    regexp: 'placeholder'
+    replace: '{{ namespace }}'
+
+- when: not __deploy_from_index_enabled | bool
+  block:
   - name: Load Service Telemetry Operator RBAC
-    command: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+    ansible.builtin.command:
+      cmd: oc apply -f ../deploy/{{ item }} -n "{{ namespace }}"
+      chdir: "{{ base_dir }}"
     loop:
       - service_account.yaml
       - role.yaml
       - role_binding.yaml
       - olm-catalog/service-telemetry-operator/manifests/infra.watch_servicetelemetrys_crd.yaml
 
-  - name: Revert local change to role_binding.yaml
-    shell: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
+  - name: Load Service Telemetry Operator CSV
+    ansible.builtin.shell:
+      cmd: oc apply -f {{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
 
-- name: Replace namespace in STO CSV
-  replace:
-    path: "{{ base_dir }}/working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml"
-    regexp: 'placeholder'
-    replace: '{{ namespace }}'
-
-- name: Load Service Telemetry Operator CSV
-  shell: oc apply -f working/service-telemetry-operator-bundle/manifests/service-telemetry-operator.clusterserviceversion.yaml -n "{{ namespace }}"
-
+# cleanup
+- name: Revert local change to role_binding.yaml
+  ansible.builtin.shell:
+    cmd: git checkout -- "{{ base_dir }}/../deploy/role_binding.yaml"
+    chdir: "{{ base_dir }}"

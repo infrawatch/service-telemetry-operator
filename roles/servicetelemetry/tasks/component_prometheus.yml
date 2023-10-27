@@ -7,32 +7,170 @@
         kind: Route
         name: '{{ ansible_operator_meta.name }}-prometheus-proxy'
 
-- name: Add oauth redirect annotation to prometheus-k8s service account
+- name: Create ServiceAccount/prometheus-stf with oauth redirect annotation
   k8s:
     definition:
       apiVersion: v1
       kind: ServiceAccount
       metadata:
-        name: prometheus-k8s
+        name: prometheus-stf
         namespace: '{{ ansible_operator_meta.namespace }}'
         annotations:
           serviceaccounts.openshift.io/oauth-redirectreference.prometheus: '{{ prom_oauth_redir_ref | to_json }}'
 
-- name: Bind the local prometheus SA to prometheus cluster role
+- name: Create ClusterRole/prometheus-stf for non-resource URL /metrics access
   k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: prometheus-stf
+      rules:
+      - nonResourceURLs:
+        - /metrics
+        verbs:
+        - get
+      - apiGroups:
+        - authentication.k8s.io
+        resources:
+        - tokenreviews
+        verbs:
+        - create
+      - apiGroups:
+        - authorization.k8s.io
+        resources:
+        - subjectaccessreviews
+        verbs:
+        - create
+      - apiGroups:
+        - ""
+        resources:
+        - namespaces
+        verbs:
+        - get
+
+- name: Setup ClusterRoleBinding for Prometheus
+  block:
+    - name: Define ClusterRoleBinding/prometheus-stf
+      set_fact:
+        def_prometheus_stf_crb: |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: prometheus-stf
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: prometheus-stf
+          subjects:
+          - kind: ServiceAccount
+            name: prometheus-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create ClusterRoleBinding/prometheus-stf
+      k8s:
+        definition:
+          "{{ def_prometheus_stf_crb }}"
+  rescue:
+    - name: Remove ClusterRoleBinding/prometheus-stf when fail to update
+      k8s:
+        state: absent
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: prometheus-stf
+
+    - name: Create ClusterRoleBinding/prometheus-stf
+      k8s:
+        definition:
+          "{{ def_prometheus_stf_crb }}"
+
+- name: Create Role/prometheus-stf for Prometheus operations
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: prometheus-stf
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      rules:
+      - apiGroups:
+        - ""
+        resources:
+        - services
+        - endpoints
+        - pods
+        verbs:
+        - get
+        - list
+        - watch
+      - apiGroups:
+        - extensions
+        - networking.k8s.io
+        resources:
+        - ingresses
+        verbs:
+        - get
+        - list
+        - watch
+      - apiGroups:
+        - security.openshift.io
+        resourceNames:
+        - nonroot
+        - nonroot-v2
+        resources:
+        - securitycontextconstraints
+        verbs:
+        - use
+
+- name: Setup RoleBinding for Prometheus
+  block:
+    - name: Define RoleBinding/prometheus-stf
+      set_fact:
+        def_prometheus_stf_rb: |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: prometheus-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: Role
+            name: prometheus-stf
+          subjects:
+          - kind: ServiceAccount
+            name: prometheus-stf
+            namespace: '{{ ansible_operator_meta.namespace }}'
+
+    - name: Create RoleBinding/prometheus-stf
+      k8s:
+        definition:
+          "{{ def_prometheus_stf_rb }}"
+  rescue:
+  - name: Remove RoleBinding/prometheus-stf on failure to update
+    k8s:
+      state: absent
+      definition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        metadata:
+          name: prometheus-stf
+          namespace: '{{ ansible_operator_meta.namespace }}'
+
+  - name: Create RoleBinding/prometheus-stf
+    k8s:
+      definition:
+        "{{ def_prometheus_stf_rb }}"
+
+- name: Remove old ClusterRoleBinding for prometheus-k8s using CMO roleRef
+  k8s:
+    state: absent
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRoleBinding
       metadata:
         name: prometheus-k8s-{{ ansible_operator_meta.namespace }}
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      roleRef:
-        apiGroup: rbac.authorization.k8s.io
-        kind: ClusterRole
-        name: prometheus-k8s
-      subjects:
-      - kind: ServiceAccount
-        name: prometheus-k8s
         namespace: '{{ ansible_operator_meta.namespace }}'
 
 - name: Check for existing prometheus htpasswd user secret
@@ -62,8 +200,10 @@
             namespace: '{{ ansible_operator_meta.namespace }}'
           type: Opaque
           stringData:
-            auth: 'internal:{{ prom_basicauth_passwd | htpasswd_sha1 }}'  # SHA1 is deprecated, bcrypt is available in OCP 4.8+ only https://bugzilla.redhat.com/show_bug.cgi?id=1874322
+            auth: 'internal:{{ prom_basicauth_passwd | password_hash("bcrypt") | replace("$2b$","$2y$", 1)}}'
             password: '{{ prom_basicauth_passwd }}'
+      tags:
+        - skip_ansible_lint
 
     - name: Re-register new object for use in the annotation
       k8s_info:
@@ -87,6 +227,26 @@
     state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
       '{{ prometheus_manifest }}'
+
+- name: Ensure no community Prometheus is installed if not using community operator
+  k8s:
+    state: absent
+    api_version: monitoring.coreos.com/v1
+    kind: prometheus
+    name: '{{ ansible_operator_meta.name }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy != "use_community"
+
+- name: Ensure no rhobs Prometheus is installed if not using it
+  k8s:
+    state: absent
+    api_version: monitoring.rhobs/v1
+    kind: prometheus
+    name: '{{ ansible_operator_meta.name }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+  when:
+    - observability_strategy not in ['use_redhat', 'use_hybrid']
 
 - name: Set default prometheus service template
   set_fact:

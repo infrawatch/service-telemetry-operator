@@ -1,15 +1,17 @@
-apiVersion: monitoring.coreos.com/v1
+apiVersion: {{ prometheus_operator_api_string }}
 kind: Prometheus
 metadata:
   labels:
     prometheus: '{{ ansible_operator_meta.name }}'
+    {{ prometheus_operator_label }}
   name: '{{ ansible_operator_meta.name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
+  version: v2.43.0
   replicas: {{ servicetelemetry_vars.backends.metrics.prometheus.deployment_size }}
   ruleSelector: {}
   securityContext: {}
-  serviceAccountName: prometheus-k8s
+  serviceAccountName: prometheus-stf
   serviceMonitorSelector:
     matchLabels:
       app: smart-gateway
@@ -42,7 +44,7 @@ spec:
     - -upstream=http://localhost:9090/
     - -htpasswd-file=/etc/proxy/htpasswd/auth
     - -cookie-secret-file=/etc/proxy/secrets/session_secret
-    - -openshift-service-account=prometheus-k8s
+    - -openshift-service-account=prometheus-stf
     - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
     ports:
       - containerPort: 9092

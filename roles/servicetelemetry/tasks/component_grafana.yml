@@ -7,8 +7,43 @@
         kind: Route
         name: 'grafana-route'
 
-- name: Create htpasswd secret for grafana admin
+- name: Check for existing grafana htpasswd secret
   no_log: true
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
+  register: grafana_htpasswd_secret
+
+- block:
+    - name: Parse current Grafana htpasswd salt from secret
+      no_log: true
+      set_fact:
+        grafana_htpasswd_salt: "{{ ((grafana_htpasswd_secret.resources[0].data.auth | b64decode).split('$')[-1])[0:22] }}"
+  rescue:
+    - name: Generate initial Grafana htpasswd bcrypt string from grafana.admin_password
+      no_log: true
+      set_fact:
+        init_grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt') | replace('$2b$','$2y$', 1)) }}"
+
+    - name: Read newly generated Grafana htpasswd salt
+      no_log: true
+      set_fact:
+        grafana_htpasswd_salt: "{{ (init_grafana_htpasswd_bcrypt_string.split('$')[-1])[0:22] }}"
+  always:
+    - name: Generate Grafana htpasswd bcrypt string from grafana.adminPassword using salt
+      no_log: true
+      set_fact:
+        grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt', grafana_htpasswd_salt) | replace('$2b$','$2y$', 1)) }}"
+
+    - name: Generate Grafana auth string from grafana.adminUser and grafana_htpasswd_bcrypt_string
+      no_log: true
+      set_fact:
+        grafana_htpasswd_auth_string: "{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ grafana_htpasswd_bcrypt_string }}"
+
+- name: Create or patch htpasswd secret for grafana admin
+  no_log: false
   k8s:
     definition:
       api_version: v1
@@ -18,7 +53,7 @@
         namespace: '{{ ansible_operator_meta.namespace }}'
       type: Opaque
       stringData:
-        auth: '{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ servicetelemetry_vars.graphing.grafana.admin_password | htpasswd_sha1 }}'
+        auth: '{{ grafana_htpasswd_auth_string }}'
 
 - name: Lookup template
   debug:
@@ -34,63 +69,49 @@
     state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
     definition:
       '{{ grafana_manifest }}'
-  when: servicetelemetry_vars.graphing.enabled
 
 - when: servicetelemetry_vars.graphing.enabled
   block:
-  - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
-    block:
-    - name: Retrieve configmap for OAUTH CA certs
-      k8s_info:
-        api_version: v1
-        kind: ConfigMap
-        name: serving-certs-ca-bundle
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      register: serving_certs_ca
+    - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
+      block:
+        - name: Retrieve configmap for OAUTH CA certs
+          k8s_info:
+            api_version: v1
+            kind: ConfigMap
+            name: serving-certs-ca-bundle
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          register: serving_certs_ca
 
-    - name: Retrieve prometheus secret
-      k8s_info:
-        api_version: v1
-        kind: Secret
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
-      register: prometheus_secret
+        - name: Retrieve prometheus secret
+          k8s_info:
+            api_version: v1
+            kind: Secret
+            namespace: '{{ ansible_operator_meta.namespace }}'
+            name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
+          register: prometheus_secret
 
-    - name: Decode prometheus password
-      no_log: true
+        - name: Decode prometheus password
+          no_log: true
+          set_fact:
+            prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
+
+    # Lookup existing datasources
+    - name: Remove legacy datasources
+      k8s:
+        api_version: integreatly.org/v1alpha1
+        name: '{{ ansible_operator_meta.name }}-ds-prometheus'
+        kind: GrafanaDataSource
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        state: absent
+
+    # NOTE: this can fail if you enable grafana without prometheus due to missing resources referenced in the template
+    - name: Set datasources
       set_fact:
-        prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
+        ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
+      when: ds_manifest is not defined
 
-  - when: servicetelemetry_vars.backends.events.elasticsearch.enabled
-    block:
-    - name: Retrieve elastic search secret
-      k8s_info:
-        api_version: v1
-        kind: Secret
-        name: elasticsearch-es-elastic-user
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      register: es_secret
-
-    - name: Decode elasticsearch password
-      set_fact:
-        elasticsearch_pass: '{{ es_secret.resources[0].data.elastic | b64decode }}'
-
-  # Lookup existing datasources
-  - name: Remove legacy datasources
-    k8s:
-      api_version: integreatly.org/v1alpha1
-      name: '{{ ansible_operator_meta.name }}-ds-prometheus'
-      kind: GrafanaDataSource
-      namespace: '{{ ansible_operator_meta.namespace }}'
-      state: absent
-
-  - name: Set datasources
-    set_fact:
-      ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
-    when: ds_manifest is not defined
-
-  - name: Create the datasources
-    k8s:
-      state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
-      definition:
-        '{{ ds_manifest }}'
+    - name: Create the datasources
+      k8s:
+        state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
+        definition:
+          '{{ ds_manifest }}'

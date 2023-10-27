@@ -1,9 +1,15 @@
 ---
 # run STF CI setup in CRC (already provisioned)
 - hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   connection: local
   tasks:
   - name: Run the STF CI system
     import_role:
-        name: stf-run-ci
+      name: stf-run-ci
+          
+  - name: Collect the logs
+    import_role:
+      name: stf-collect-logs
+    vars:
+      logfile_dir: "{{ playbook_dir }}/"

@@ -29,11 +29,11 @@ spec:
       access: proxy
       editable: true
       isDefault: false
-      url: 'https://elasticsearch-es-http:9200'
+      url: {{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.host_url }}
       type: elasticsearch
-      basicAuth: true
-      basicAuthUser: elastic
-      basicAuthPassword: {{ elasticsearch_pass }}
+      basicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.use_basic_auth }}
+      basicAuthUser: {{ elastic_user }}
+      basicAuthPassword: {{ elastic_pass }}
       database: collectd_*
       jsonData:
         tlsSkipVerify: true
@@ -44,25 +44,15 @@ spec:
       access: proxy
       editable: true
       isDefault: false
-      url: 'https://elasticsearch-es-http:9200'
+      url: {{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.host_url }}
       type: elasticsearch
-      basicAuth: true
-      basicAuthUser: elastic
-      basicAuthPassword: {{ elasticsearch_pass }}
+      basicAuth: {{ servicetelemetry_vars.backends.events.elasticsearch.forwarding.use_basic_auth }}
+      basicAuthUser: {{ elastic_user }}
+      basicAuthPassword: {{ elastic_pass }}
       database: ceilometer_*
       jsonData:
         tlsSkipVerify: true
         timeField: generated
         esVersion: 70
-{% endif %}
-
-{% if servicetelemetry_vars.backends.logs.loki.enabled %}
-    - access: proxy
-      editable: true
-      isDefault: false
-      name: STFLoki
-      type: loki
-      url: 'http://loki-query-frontend-http-lokistack:3100'
-      version: 1
 {% endif %}
   name: {{ ansible_operator_meta.name }}-ds-stf.yaml

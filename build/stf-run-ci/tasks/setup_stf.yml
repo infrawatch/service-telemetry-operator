@@ -1,6 +1,6 @@
 ---
 - name: Set default InfraWatch OperatorSource manifest
-  set_fact:
+  ansible.builtin.set_fact:
     infrawatch_catalog_source_manifest: |
       apiVersion: operators.coreos.com/v1alpha1
       kind: CatalogSource
@@ -9,7 +9,7 @@
         namespace: openshift-marketplace
       spec:
         displayName: InfraWatch Operators
-        image: quay.io/infrawatch-operators/infrawatch-catalog:unstable
+        image: quay.io/infrawatch-operators/infrawatch-catalog:stable-1.5
         publisher: InfraWatch
         sourceType: grpc
         updateStrategy:
@@ -18,7 +18,7 @@
   when: infrawatch_catalog_source_manifest is not defined
 
 - name: Set default Smart Gateway Operator Subscription manifest
-  set_fact:
+  ansible.builtin.set_fact:
     smart_gateway_operator_subscription_manifest: |
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
@@ -26,7 +26,7 @@
         name: smart-gateway-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: stable-1.5
         installPlanApproval: Automatic
         name: smart-gateway-operator
         source: infrawatch-operators
@@ -34,7 +34,7 @@
   when: smart_gateway_operator_subscription_manifest is not defined
 
 - name: Set default Service Telemetry Operator Subscription manifest
-  set_fact:
+  ansible.builtin.set_fact:
     service_telemetry_operator_subscription_manifest: |
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
@@ -42,7 +42,7 @@
         name: service-telemetry-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: stable-1.5
         installPlanApproval: Automatic
         name: service-telemetry-operator
         source: infrawatch-operators
@@ -50,16 +50,16 @@
   when: service_telemetry_operator_subscription_manifest is not defined
 
 - name: Subscribe to Smart Gateway Operator
-  k8s:
+  kubernetes.core.k8s:
     definition:
       '{{ smart_gateway_operator_subscription_manifest }}'
 
 - name: Subscribe to Service Telemetry Operator
-  k8s:
+  kubernetes.core.k8s:
     definition:
       '{{ service_telemetry_operator_subscription_manifest }}'
 
 - name: Enable InfraWatch Catalog Source
-  k8s:
+  kubernetes.core.k8s:
     definition:
       '{{ infrawatch_catalog_source_manifest }}'
