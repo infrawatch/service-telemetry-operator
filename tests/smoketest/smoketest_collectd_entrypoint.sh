@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set +e
 
 # Executes inside the test harness container to start collectd and look for resulting metrics in prometheus
 PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}

@@ -27,6 +27,13 @@ if [ "${OC_CLIENT_VERSION_Y}" -lt "${OC_CLIENT_VERSION_Y_REQUIRED}" ] || [ "${OC
     exit 1
 fi
 
+if [ "$(oc get stf default -o=jsonpath='{.spec.transports.qdr.auth}')" != "none" ]; then
+    echo "*** QDR authentication is currently not supported in smoketests."
+    echo "To disable it, use: oc patch stf default --patch '{\"spec\":{\"transports\":{\"qdr\":{\"auth\":\"none\"}}}}' --type=merge"
+    echo "For more info: https://github.com/infrawatch/service-telemetry-operator/pull/492"
+    exit 1
+fi
+
 CLEANUP=${CLEANUP:-true}
 SMOKETEST_VERBOSE=${SMOKETEST_VERBOSE:-true}
 

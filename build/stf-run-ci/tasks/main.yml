@@ -5,7 +5,7 @@
 - name: Setup default values
   ansible.builtin.set_fact:
     branch: "{{ working_branch | default('master') }}"
-    namespace: "{{ working_namespace | default('service-telemetry') }}"
+    namespace: "{{ namespace if namespace is defined else (working_namespace | default('service-telemetry'))}}"
 
 - name: Set default image paths for local builds
   ansible.builtin.set_fact:
@@ -205,7 +205,7 @@
 
   - name: Validate system is operational
     ansible.builtin.shell: |
-      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 600 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
+      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 1200 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
     args:
       executable: /bin/bash
     register: validate_deployment

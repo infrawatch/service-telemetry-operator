@@ -87,7 +87,7 @@ ir_create_undercloud() {
       --build "${OSP_BUILD}" \
       --images-task rpm \
       --images-update no \
-      --tls-ca https://password.corp.redhat.com/RH-IT-Root-CA.crt \
+      --tls-ca https://certs.corp.redhat.com/certs/2022-IT-Root-CA.pem \
       --overcloud-domain "${OVERCLOUD_DOMAIN}" \
       --config-options DEFAULT.undercloud_timezone=UTC
 }
