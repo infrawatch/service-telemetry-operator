@@ -4,7 +4,7 @@
   tasks:
     - name: "Set the sto_dir if it isn't already set"
       ansible.builtin.set_fact:
-        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}'
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
     - name: "Get vars common to all jobs"
