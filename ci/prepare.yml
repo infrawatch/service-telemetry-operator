@@ -23,7 +23,7 @@
 
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
-        requirements: "build/stf-run-ci/requirements.txt"
+        requirements: "{{ sto_dir }}/build/stf-run-ci/requirements.txt"
         chdir: "{{ sto_dir }}"
         state: present
 
