@@ -48,6 +48,9 @@
     description: |
       Temperory base job for crc jobs; the crc jobs will eventually use stf-base as a job, once PR
     parent: stf-base
+    # Little hacky-hack so it won't complain about scenario not being defined.
+    vars:
+      scenario: "zuul-common"
     run:
       - ci/check_ocp_version.yml
     post-run:
