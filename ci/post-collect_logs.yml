@@ -16,7 +16,7 @@
   tasks:
     - name: "Set the sto_dir if it isn't already set"
       ansible.builtin.set_fact:
-        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}'
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
     - name: "Get vars common to all jobs"
@@ -38,67 +38,9 @@
         name: rhol_crc
         tasks_from: add_crc_creds.yml
 
-    - name: "Log into the cluster"
+    - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
-        name: rhol_crc
-        tasks_from: add_crc_creds.yml
-
-    - name: "Get builds"
-      ansible.builtin.shell:
-        cmd: |
-          echo "*** [INFO] Showing oc get builds" > {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-          oc get builds -oyaml >> {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-          echo "*** [INFO] Showing oc get builds -oyaml" >> {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-          oc get builds -oyaml >> {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-          cat {{ logfile_dir }}/post_oc_get_builds.log
-      ignore_errors: true
-      changed_when: false
-
-    - name: "Get subscription details"
-      ansible.builtin.shell:
-        cmd: |
-          oc get subscriptions > {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
-          oc describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
-          cat {{ logfile_dir}}/post_oc_get_subscriptions.log
-      ignore_errors: true
-
-    - name: "Get image infos"
-      ansible.builtin.shell:
-        cmd: |
-          echo "[INFO] oc get images" > {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          oc get images >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          echo "[INFO] oc get imagestreams" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          oc get imagestream >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          #echo "[INFO] oc get images -oyaml" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          #oc get images -oyaml >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          echo "[INFO] oc get imagestream -oyaml" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          oc get imagestream -oyaml >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-          cat {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      register: post_oc_get_images
-      ignore_errors: true
-      retries: 3
-      delay: 10
-
-    - name: "Get STO info"
-      ansible.builtin.shell:
-        cmd: |
-          oc describe pod $(oc get pod -l name=service-telemetry-operator -ojsonpath='{ .items[].metadata.name }') >> {{ logfile_dir }}/describe_sto.log 2>&1
-      ignore_errors: true
-      retries: 3
-      delay: 10
-
-    - name: "Question the deployment"
-      ansible.builtin.shell:
-        cmd: |
-          echo "What images were created in the internal registry?" > {{ logfile_dir }}/post_question_deployment.log 2>&1
-          oc get images | grep $(oc registry info --internal) >> {{ logfile_dir }}/post_question_deployment.log 2>&1
-          echo "What state is the STO csv in?" >> {{ logfile_dir }}/post_question_deployment.log 2>&1
-          oc get csv -n {{ namespace }} | grep service-telemetry-operator >> {{ logfile_dir }}/post_question_deployment.log 2>&1
-          oc get csv -n {{ namespace }} service-telemetry-operator -oyaml >> {{ logfile_dir }}/post_question_deployment.log 2>&1
-      register: output
-      ignore_errors: true
-      retries: 3
-      delay: 10
+        name: '../build/stf-collect-logs'
 
     - name: "Copy generated logs"
       ansible.builtin.shell: |

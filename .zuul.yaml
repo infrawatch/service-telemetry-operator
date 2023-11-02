@@ -14,8 +14,11 @@
     required-projects:
       - name: openstack-k8s-operators/ci-framework
         override-checkout: main
-    # requires:  # defines a resource that needs to be available e.g. a content-provide job will provide a resource
-    # dependencies:  # list a job that needs to run successfully for this one
+      - name: github.com/infrawatch/smart-gateway-operator
+      - name: github.com/infrawatch/sg-bridge
+      - name: github.com/infrawatch/sg-core
+      - name: github.com/infrawatch/prometheus-webhook-snmp
+
     pre-run:
       - ci/prepare.yml
     run:
@@ -39,14 +42,6 @@
       # all jobs would depend on a combo of the stf and ocp content providers
 
 - job:
-    name: stf-crc-latest-nightly-bundles
-    parent: stf-base
-    description:
-      Deploy STF nightly bundles
-    vars:
-      scenario: "nightly-bundles"
-
-- job:
     name: stf-crc-latest-local_build-index_deploy
     parent: stf-base
     description:
@@ -66,6 +61,14 @@
 #  parent: stf-base
 
 - job:
+    name: stf-crc-latest-nightly_bundles
+    parent: stf-base
+    description:
+      Deploy STF nightly bundles
+    vars:
+      scenario: "nightly_bundles"
+    
+- job:
     name: stf-crc-latest-local_build
     parent: stf-base
     description: |
@@ -77,6 +80,6 @@
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
+        - stf-crc-latest-nightly_bundles
         - stf-crc-latest-local_build
-        - stf-crc-latest-nightly-bundles
         - stf-crc-latest-local_build-index_deploy

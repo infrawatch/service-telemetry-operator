@@ -39,3 +39,6 @@ properties:
           - package:
               packageName: observability-operator
               versionRange: '>=0.0.1'
+          - package:
+              packageName: cluster-observability-operator
+              versionRange: '>=0.0.1'

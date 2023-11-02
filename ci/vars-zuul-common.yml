@@ -5,3 +5,8 @@ setup_bundle_registry_auth: false
 __service_telemetry_transports_qdr_auth: none
 base_dir: "{{ sto_dir }}/build"
 logfile_dir: "{{ ansible_user_dir }}/zuul-output/logs/controller"
+clone_repos: false
+sgo_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/smart-gateway-operator'].src_dir }}"
+sg_core_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/sg-core'].src_dir }}"
+sg_bridge_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/sg-bridge'].src_dir }}"
+prometheus_webhook_snmp_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/prometheus-webhook-snmp'].src_dir }}"

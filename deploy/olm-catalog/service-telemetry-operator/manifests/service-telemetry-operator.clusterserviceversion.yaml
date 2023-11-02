@@ -64,7 +64,7 @@ metadata:
               "metrics": {
                 "prometheus": {
                   "enabled": true,
-                  "scrapeInterval": "10s",
+                  "scrapeInterval": "30s",
                   "storage": {
                     "persistent": {
                       "pvcStorageRequest": "20G"
@@ -77,30 +77,6 @@ metadata:
             },
             "clouds": [
               {
-                "events": {
-                  "collectors": [
-                    {
-                      "bridge": {
-                        "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
-                        "verbose": false
-                      },
-                      "collectorType": "collectd",
-                      "debugEnabled": false,
-                      "subscriptionAddress": "collectd/cloud1-notify"
-                    },
-                    {
-                      "bridge": {
-                        "ringBufferCount": 15000,
-                        "ringBufferSize": 16384,
-                        "verbose": false
-                      },
-                      "collectorType": "ceilometer",
-                      "debugEnabled": false,
-                      "subscriptionAddress": "anycast/ceilometer/cloud1-event.sample"
-                    }
-                  ]
-                },
                 "metrics": {
                   "collectors": [
                     {
@@ -175,6 +151,16 @@ metadata:
     description: Service Telemetry Framework. Umbrella Operator for instantiating
       the required dependencies and configuration of various components to build a
       Service Telemetry platform for telco grade monitoring.
+    features.operators.openshift.io/cnf: "false"
+    features.operators.openshift.io/cni: "false"
+    features.operators.openshift.io/csi: "false"
+    features.operators.openshift.io/disconnected: "false"
+    features.operators.openshift.io/fips-compliant: "false"
+    features.operators.openshift.io/proxy-aware: "false"
+    features.operators.openshift.io/tls-profiles: "false"
+    features.operators.openshift.io/token-auth-aws: "false"
+    features.operators.openshift.io/token-auth-azure: "false"
+    features.operators.openshift.io/token-auth-gcp: "false"
     olm.skipRange: '>=<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>> <<<OPERATOR_BUNDLE_VERSION>>'
     operatorframework.io/suggested-namespace: service-telemetry
     operators.openshift.io/valid-subscription: '["OpenStack Platform", "Cloud Infrastructure",
