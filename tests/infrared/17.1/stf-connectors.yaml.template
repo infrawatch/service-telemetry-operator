@@ -16,6 +16,8 @@ custom_templates:
               role: edge
               verifyHostname: false
               sslProfile: sslProfile
+              saslUsername: guest@default-interconnect
+              saslPassword: pass:<<AMQP_PASS>>
 
         MetricsQdrSSLProfiles:
             - name: sslProfile
