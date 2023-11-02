@@ -64,7 +64,7 @@
       data:
         cert.pem: "{{ lookup('file', 'CA.pem') | b64encode }}"
 
-- when: setup_bundle_registry_tls_ca
+- when: setup_bundle_registry_tls_ca | bool
   name: Patch the default service account to use our pull secret
   kubernetes.core.k8s_json_patch:
     kind: ServiceAccount
