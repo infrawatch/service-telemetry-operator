@@ -58,5 +58,7 @@
 
 - project:
     name: infrawatch/service-telemetry-operator
-    templates:
-      - stf-crc-jobs
+    github-check:
+      jobs:
+        - stf-crc-latest-nightly_bundles
+        - stf-crc-latest-local_build
