@@ -47,11 +47,12 @@
     vars:
       scenario: "local_build"
 
+  # this will go away eventually
 - job:
     name: stf-multi-crc-base
     abstract: true
     description: |
-      Temperory base job for crc jobs; the crc jobs will eventually use stf-base as a job, once PR
+      Temperory base job for crc jobs; the crc jobs will eventually use stf-base as a job, once PRs have merged
     parent: stf-base
     # Little hacky-hack so it won't complain about scenario not being defined.
     vars:
@@ -61,13 +62,7 @@
     post-run:
       - ci/post-collect_logs.yml
 
-- job:
-    name: stf-crc-ocp410
-    parent: stf-multi-crc-base
-    vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.10.22/crc_libvirt_4.10.22_amd64.crcbundle'
-      ocp_version: '4.10.22'
-
+  # this will go away eventually
 - job:
     name: stf-crc-ocp411
     parent: stf-multi-crc-base
@@ -75,6 +70,7 @@
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.11.18/crc_libvirt_4.11.18_amd64.crcbundle'
       ocp_version: '4.11.18'
 
+  # this will go away eventually
 - job:
     name: stf-crc-ocp412
     parent: stf-multi-crc-base
@@ -82,6 +78,7 @@
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
       ocp_version: '4.12.13'
 
+  # this will go away eventually
 - job:
     name: stf-crc-ocp413
     parent: stf-multi-crc-base
@@ -89,13 +86,43 @@
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
       ocp_version: '4.13.14'
 
+- job:
+    name: stf-crc-microshift_413
+    parent: stf-multi-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/microshift/4.13.14/crc_microshift_libvirt_4.13.14_amd64.crcbundle'
+      ocp_version: '4.13.14'
+
+
+- job:
+    name: stf-crc-ocp_412-nightly_bundles
+    parent: stf-crc-latest-nightly_bundles
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_413-nightly_bundles
+    parent: stf-crc-latest-nightly_bundles
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+
+- job:
+    name: stf-crc-microshift_413-nightly_bundles
+    parent: stf-crc-latest-nightly_bundles
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/microshift/4.13.14/crc_microshift_libvirt_4.13.14_amd64.crcbundle'
+
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
+        - stf-crc-ocp_412-nightly_bundles
+        - stf-crc-ocp_413-nightly_bundles
+        - stf-crc-microshift_413-nightly_bundles
         #- stf-crc-latest-nightly_bundles
         #- stf-crc-latest-local_build
         - stf-crc-ocp411
         - stf-crc-ocp412
         - stf-crc-ocp413
+        - stf-crc-microshift_413
 
