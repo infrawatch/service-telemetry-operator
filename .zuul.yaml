@@ -64,14 +64,6 @@
 
   # this will go away eventually
 - job:
-    name: stf-crc-ocp411
-    parent: stf-multi-crc-base
-    vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.11.18/crc_libvirt_4.11.18_amd64.crcbundle'
-      ocp_version: '4.11.18'
-
-  # this will go away eventually
-- job:
     name: stf-crc-ocp412
     parent: stf-multi-crc-base
     vars:
@@ -121,7 +113,6 @@
         - stf-crc-microshift_413-nightly_bundles
         #- stf-crc-latest-nightly_bundles
         #- stf-crc-latest-local_build
-        - stf-crc-ocp411
         - stf-crc-ocp412
         - stf-crc-ocp413
         - stf-crc-microshift_413
