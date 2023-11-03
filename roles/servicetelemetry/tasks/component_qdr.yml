@@ -172,7 +172,7 @@
             labels:
               stf_one_time_upgrade: "{{ lookup('pipe', 'date +%s') }}"
           stringData:
-            guest: "{{ lookup('password', '/dev/null') }}"
+            guest: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
       when:
         - _qdr_basicauth_object.resources[0] is defined and _qdr_basicauth_object.resources[0].metadata.labels.stf_one_time_upgrade is not defined
 
