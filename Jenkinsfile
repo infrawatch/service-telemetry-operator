@@ -36,7 +36,7 @@ spec:
           strategy: ephemeral
   transports:
     qdr:
-      auth: none
+      auth: basic
       enabled: true
       deploymentSize: 1
       web:
