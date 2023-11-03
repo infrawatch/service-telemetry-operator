@@ -85,7 +85,6 @@
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/microshift/4.13.14/crc_microshift_libvirt_4.13.14_amd64.crcbundle'
       ocp_version: '4.13.14'
 
-
 - job:
     name: stf-crc-ocp_412-nightly_bundles
     parent: stf-crc-latest-nightly_bundles
@@ -95,6 +94,18 @@
 - job:
     name: stf-crc-ocp_413-nightly_bundles
     parent: stf-crc-latest-nightly_bundles
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_412-local_build
+    parent: stf-crc-latest-local_build
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_413-local_build
+    parent: stf-crc-latest-local_build
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
@@ -109,8 +120,9 @@
     github-check:
       jobs:
         - stf-crc-ocp_412-nightly_bundles
+        - stf-crc-ocp_412-local_build
         - stf-crc-ocp_413-nightly_bundles
-        - stf-crc-microshift_413-nightly_bundles
+        - stf-crc-ocp_413-local_build
         #- stf-crc-latest-nightly_bundles
         #- stf-crc-latest-local_build
         - stf-crc-ocp412
