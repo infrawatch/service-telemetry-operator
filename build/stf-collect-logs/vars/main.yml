@@ -1,2 +1,8 @@
 ---
 # vars file for stf-collect-logs
+resource_types:
+  - builds
+  - subscriptions
+  - images
+  - imagestream
+  - pods
