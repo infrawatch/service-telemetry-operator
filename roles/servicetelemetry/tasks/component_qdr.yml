@@ -154,9 +154,9 @@
   block:
     - name: Get QDR BasicAuth secret
       k8s_info:
-        api_version: interconnectedcloud.github.io/v1alpha1
-        kind: Interconnect
-        name: "{{ ansible_operator_meta.name }}-interconnect"
+        api_version: v1
+        kind: Secret
+        name: "{{ ansible_operator_meta.name }}-interconnect-users"
         namespace: "{{ ansible_operator_meta.namespace }}"
       register: _qdr_basicauth_object
 
@@ -172,9 +172,9 @@
             labels:
               stf_one_time_upgrade: "{{ lookup('pipe', 'date +%s') }}"
           stringData:
-            guest: "{{ lookup('password', '/dev/null') }}"
+            guest: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
       when:
-        - _qdr_basicauth_object.resources[0] is defined and _qdr_basicauth_object[0].metadata.labels.stf_one_time_upgrade is not defined
+        - _qdr_basicauth_object.resources[0] is defined and _qdr_basicauth_object.resources[0].metadata.labels.stf_one_time_upgrade is not defined
 
 - name: Set default Interconnect manifest
   set_fact:
