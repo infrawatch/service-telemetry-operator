@@ -54,8 +54,28 @@
   ansible.builtin.command:
     cmd: |
       oc -n {{ namespace }} get pods > {{ logfile_dir }}/post_oc_get_pods.log 2>&1
-      echo "Additional information" >> {{ logfile_dir }}/post_oc_get_pods.log
-      oc -n {{ namespace }} describe pods >> {{ logfile_dir }}/post_oc_get_pods.log 2>&1
+  ignore_errors: true
+  retries: 3
+  delay: 10
+
+- name: "Describe non-completed, non-running pods"
+  ansible.builtin.shell:
+    cmd: |
+      for pod in $(oc get pods | grep -v NAME | grep -v Running | awk '{ print $1 }');
+      do
+        oc -n {{ namespace }} describe pod $pod > {{ logfile_dir }}/post_oc_describe_pod_${pod}.log 2>&1
+      done
+  ignore_errors: true
+  retries: 3
+  delay: 10
+
+- name: "Describe builds"
+  ansible.builtin.shell:
+    cmd: |
+      for build in $(oc -n {{ namespace }} get builds -o json | jq -r '.items[].metadata.name');
+      do
+        oc -n {{ namespace }} describe build $build > {{ logfile_dir }}/post_oc_describe_build_${build}.log 2>&1
+      done
   ignore_errors: true
   retries: 3
   delay: 10

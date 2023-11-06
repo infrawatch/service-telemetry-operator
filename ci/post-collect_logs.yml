@@ -16,7 +16,7 @@
   tasks:
     - name: "Set the sto_dir if it isn't already set"
       ansible.builtin.set_fact:
-        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}'
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
     - name: "Get vars common to all jobs"
@@ -41,25 +41,6 @@
     - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
         name: '../build/stf-collect-logs'
-
-    - name: "Get pods and describe non-completed, non-running pods"
-      ansible.builtin.shell:
-        cmd: |
-          echo "*** oc get pods ***" > {{ logfile_dir }}/oc_get_pods.log 2>&1
-          oc -n {{ namespace }} get pods >> {{ logfile_dir }}/oc_get_pods.log 2>&1
-
-          for pod in $(oc get pods | grep -v NAME | grep -v Running | awk '{ print $1 }');
-          do
-            oc -n {{ namespace }} describe pod $pod > {{ logfile_dir }}/post_oc_describe_pod_${pod}.log 2>&1
-          done
-      ignore_errors: true
-      retries: 3
-      delay: 10
-
-    - name: "Get build details"
-      ansible.builtin.shell:
-        cmd: |
-          for build in $(oc -n {{ namespace }} get builds  -o json| jq -r '.items[].metadata.name'); do oc -n {{ namespace }} describe build $build > {{ logfile_dir }}/post_oc_describe_build_${build}.log 2>&1; done
 
     - name: "Copy generated logs"
       ansible.builtin.shell: |
