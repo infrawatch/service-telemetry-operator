@@ -109,12 +109,6 @@
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
-- job:
-    name: stf-crc-microshift_413-nightly_bundles
-    parent: stf-crc-latest-nightly_bundles
-    vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/microshift/4.13.14/crc_microshift_libvirt_4.13.14_amd64.crcbundle'
-
 - project:
     name: infrawatch/service-telemetry-operator
     github-check:
@@ -127,5 +121,4 @@
         #- stf-crc-latest-local_build
         - stf-crc-ocp412
         - stf-crc-ocp413
-        - stf-crc-microshift_413
 
