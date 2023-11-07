@@ -34,14 +34,16 @@
 - job:
     name: stf-crc-latest-nightly_bundles
     parent: stf-base
-    description:
-      Deploy STF nightly bundles
+    abstract: true
+    description: |
+      Deploy STF using the nightly bundles
     vars:
       scenario: "nightly_bundles"
     
 - job:
     name: stf-crc-latest-local_build
     parent: stf-base
+    abstract: true
     description: |
       Build images locally and deploy STF
     vars:
@@ -50,24 +52,32 @@
 - job:
     name: stf-crc-ocp_412-nightly_bundles
     parent: stf-crc-latest-nightly_bundles
+    description: |
+      Deploy STF using the nightly bundles on OCP 4.12
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
 
 - job:
     name: stf-crc-ocp_413-nightly_bundles
     parent: stf-crc-latest-nightly_bundles
+    description: |
+      Deploy STF using the nightly bundles on OCP 4.13
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
 - job:
     name: stf-crc-ocp_412-local_build
     parent: stf-crc-latest-local_build
+    description: |
+      Build images locally and deploy STF on OCP 4.12
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
 
 - job:
     name: stf-crc-ocp_413-local_build
     parent: stf-crc-latest-local_build
+    description: |
+      Build images locally and deploy STF on OCP 4.13
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
