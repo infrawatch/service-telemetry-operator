@@ -31,29 +31,6 @@
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
 - job:
-    name: stf-crc
-    abstract: true
-    parent: stf-base
-    run:
-      - ci/check_ocp_version.yml
-    vars:
-      scenario: "zuul-common"
-
-- job:
-    name: stf-crc-ocp413
-    parent: stf-crc
-    vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14.1_amd64.crcbundle'
-      ocp_version: '4.13.14'
-
-- job:
-    name: stf-crc-ocp414
-    parent: stf-crc
-    vars:
-      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
-      ocp_version: '4.14.1'
-
-- job:
     name: stf-crc-latest-nightly_bundles
     parent: stf-base
     description:
@@ -68,6 +45,52 @@
       Build images locally and deploy STF
     vars:
       scenario: "local_build"
+
+  # this will go away eventually
+- job:
+    name: stf-multi-crc-base
+    abstract: true
+    description: |
+      Temperory base job for crc jobs; the crc jobs will eventually use stf-base as a job, once PRs have merged
+    parent: stf-base
+    # Little hacky-hack so it won't complain about scenario not being defined.
+    vars:
+      scenario: "zuul-common"
+    run:
+      - ci/check_ocp_version.yml
+    post-run:
+      - ci/post-collect_logs.yml
+
+  # this will go away eventually
+- job:
+    name: stf-crc-ocp412
+    parent: stf-multi-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+      ocp_version: '4.12.13'
+
+  # this will go away eventually
+- job:
+    name: stf-crc-ocp413
+    parent: stf-multi-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+      ocp_version: '4.13.14'
+
+- job:
+    name: stf-crc-ocp413
+    parent: stf-multi-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
+      ocp_version: '4.14.1'
+
+
+- job:
+    name: stf-crc-microshift_413
+    parent: stf-multi-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/microshift/4.13.14/crc_microshift_libvirt_4.13.14_amd64.crcbundle'
+      ocp_version: '4.13.14'
 
 - job:
     name: stf-crc-ocp_412-nightly_bundles
