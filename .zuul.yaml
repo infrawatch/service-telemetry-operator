@@ -78,7 +78,7 @@
       ocp_version: '4.13.14'
 
 - job:
-    name: stf-crc-ocp413
+    name: stf-crc-ocp414
     parent: stf-multi-crc-base
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
