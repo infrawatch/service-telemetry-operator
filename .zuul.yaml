@@ -36,6 +36,8 @@
     parent: stf-base
     run:
       - ci/check_ocp_version.yml
+    vars:
+      scenario: "zuul-common"
 
 - job:
     name: stf-crc-ocp413
