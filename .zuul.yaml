@@ -31,6 +31,27 @@
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
 - job:
+    name: stf-crc
+    abstract: true
+    parent: stf-base
+    run:
+      - ci/check_ocp_version.yml
+
+- job:
+    name: stf-crc-ocp413
+    parent: stf-crc
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14.1_amd64.crcbundle'
+      ocp_version: '4.13.14'
+
+- job:
+    name: stf-crc-ocp414
+    parent: stf-crc
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
+      ocp_version: '4.14.1'
+
+- job:
     name: stf-crc-latest-nightly_bundles
     parent: stf-base
     description:
@@ -86,10 +107,11 @@
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
-        - stf-crc-ocp_412-nightly_bundles
-        - stf-crc-ocp_412-local_build
-        - stf-crc-ocp_413-nightly_bundles
-        - stf-crc-ocp_413-local_build
-        - stf-crc-ocp_414-nightly_bundles
-        - stf-crc-ocp_414-local_build
-
+        # - stf-crc-ocp_412-nightly_bundles
+        # - stf-crc-ocp_412-local_build
+        # - stf-crc-ocp_413-nightly_bundles
+        # - stf-crc-ocp_413-local_build
+        # - stf-crc-ocp_414-nightly_bundles
+        # - stf-crc-ocp_414-local_build
+        - stf-crc-ocp413
+        - stf-crc-ocp414
