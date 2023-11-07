@@ -59,6 +59,12 @@
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
 - job:
+    name: stf-crc-ocp_414-nightly_bundles
+    parent: stf-crc-latest-nightly_bundles
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
+
+- job:
     name: stf-crc-ocp_412-local_build
     parent: stf-crc-latest-local_build
     vars:
@@ -69,6 +75,12 @@
     parent: stf-crc-latest-local_build
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_414-local_build
+    parent: stf-crc-latest-local_build
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
 
 - project:
     name: infrawatch/service-telemetry-operator
