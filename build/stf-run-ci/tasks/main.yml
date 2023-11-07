@@ -221,6 +221,5 @@
     register: validate_deployment
 
   - name: Show the result of the validate_deployment script
-    ansible.builtin.shell:
-      cmd: |
-        cat {{ logfile_dir }}/validate_deployment.log
+    ansible.builtin.debug:
+      msg: "{{lookup('ansible.builtin.file', '{{ logfile_dir }}/validate_deployment.log') }}"
