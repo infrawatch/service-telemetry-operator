@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    openshift.io/scc: restricted-v2
+  name: qdr-test
+  labels:
+    qdr: qdr-test
+spec:
+  containers:
+    - name: qdr
+      image: quay.io/tripleowallabycentos9/openstack-qdrouterd:current-tripleo
+      imagePullPolicy: IfNotPresent
+      command: ['/usr/sbin/qdrouterd','-c','/etc/qpid-dispatch/qdrouterd.conf']
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+      ports:
+      - containerPort: 5672
+        name: amqp
+        protocol: TCP
+      volumeMounts:
+      - mountPath: /etc/pki/tls/certs/
+        name: default-interconnect-selfsigned-cert
+      - mountPath: /etc/qpid-dispatch/
+        name: qdr-test-config
+      resources: {}
+  volumes:
+  - name: default-interconnect-selfsigned-cert
+    secret:
+      defaultMode: 420
+      secretName: default-interconnect-selfsigned
+  - name: qdr-test-config
+    configMap:
+      defaultMode: 420
+      name: qdr-test-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdr-test
+spec:
+  ports:
+  - name: amqp
+    port: 5672
+    targetPort: amqp
+  selector:
+    qdr: qdr-test
