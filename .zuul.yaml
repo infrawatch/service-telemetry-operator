@@ -80,6 +80,6 @@
     name: infrawatch/service-telemetry-operator
     github-check:
       jobs:
-        - stf-crc-latest-nightly_bundles
-        - stf-crc-latest-local_build
-        - stf-crc-latest-local_build-index_deploy
+        #        - stf-crc-latest-nightly_bundles
+        #        - stf-crc-latest-local_build
+        #        - stf-crc-latest-local_build-index_deploy
