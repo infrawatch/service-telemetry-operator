@@ -64,8 +64,8 @@ oc delete pod qdr-test
 oc delete service qdr-test
 oc delete configmap qdr-test-config
 AMQP_PASS=$(oc get secret default-interconnect-users -o json | jq -r .data.guest | base64 -d)
-oc create -f <(sed -e "s/<<AMQP_PASS>>/${AMQP_PASS}/;" ./qdr-test.conf.yaml.template)
-oc create -f qdr-test.yaml
+oc create -f <(sed -e "s/<<AMQP_PASS>>/${AMQP_PASS}/;" "${REL}/qdr-test.conf.yaml.template")
+oc create -f "${REL}/qdr-test.yaml"
 
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
