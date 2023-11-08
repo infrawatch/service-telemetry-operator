@@ -7,7 +7,12 @@
   - name: Run the STF CI system
     import_role:
       name: stf-run-ci
-          
+
+  - name: Create Log directory
+    file:
+      path: build/working/logs
+      state: directory
+
   - name: Collect the logs
     import_role:
       name: stf-collect-logs
