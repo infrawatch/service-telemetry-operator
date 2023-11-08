@@ -13,11 +13,11 @@ POD=$(hostname)
 echo "*** [INFO] My pod is: ${POD}"
 
 # Run ceilometer_publisher script
-python3 /ceilometer_publish.py default-interconnect:5671 'driver=amqp&topic=cloud1-metering' 'driver=amqp&topic=cloud1-event'
+python3 /ceilometer_publish.py qdr-test:5672 'driver=amqp&topic=cloud1-metering' 'driver=amqp&topic=cloud1-event'
 
 # Sleeping to produce data
-echo "*** [INFO] Sleeping for 20 seconds to produce all metrics and events"
-sleep 20
+echo "*** [INFO] Sleeping for 30 seconds to produce all metrics and events"
+sleep 30
 
 echo "*** [INFO] List of metric names for debugging..."
 curl -sk -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
