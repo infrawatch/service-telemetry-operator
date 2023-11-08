@@ -95,26 +95,10 @@
     fail_msg: "Bundle path(s) not set. __smart_gateway_bundle_image_path is '{{ __smart_gateway_bundle_image_path }}' and __service_telemetry_bundle_image_path is '{{ __service_telemetry_bundle_image_path }}'. Both values need to be set."
     success_msg: "Bundle paths are defined and not None"
 
-# TODO: Fix this check
-- name: "Is pull_secret defined?"
-  ansible.builtin.debug:
-    msg: "{{ pull_secret is defined }}"
-
-- name: "What is the value of pull_secret?"
-  ansible.builtin.debug:
-    var: pull_secret
-
-- name: "Unset pull_secret, if setup_bundle_registry_auth is false"
-  when: not (setup_bundle_registry_auth | default(true))
-  ansible.builtin.set_fact:
-    pull_secret: ''
 # In order to deploy from bundles, the images need to exist locally.
 # we can try an oc get image or a docker pull image to check that they exist.
 # then give a message warning the user
 
-      #:
-# I can use sto_bundle_image_path and sgo_bundle_image_path if they are defined. Ideally, we can phase out __smart_gateway_bundle_image_path and __service_telemetry_bundle_image_path
-# we don't want duplicates
 - name: Deploy SGO via OLM bundle
   ansible.builtin.shell:
     cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __smart_gateway_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
