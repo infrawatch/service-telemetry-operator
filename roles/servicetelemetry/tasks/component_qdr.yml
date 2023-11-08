@@ -160,21 +160,40 @@
         namespace: "{{ ansible_operator_meta.namespace }}"
       register: _qdr_basicauth_object
 
-    # Because https://github.com/interconnectedcloud/qdr-operator/blob/576d2b33dac71437ea2b165caaaf6413220767fe/pkg/controller/interconnect/interconnect_controller.go#L634
-    - name: Perform a one-time upgrade to the default generated password for QDR BasicAuth
-      k8s:
-        definition:
-          kind: Secret
-          apiVersion: v1
-          metadata:
-            name: "{{ ansible_operator_meta.name }}-interconnect-users"
+    - when:
+      - _qdr_basicauth_object.resources[0] is defined and _qdr_basicauth_object.resources[0].metadata.labels.stf_one_time_upgrade is not defined
+      block:
+        # Because https://github.com/interconnectedcloud/qdr-operator/blob/576d2b33dac71437ea2b165caaaf6413220767fe/pkg/controller/interconnect/interconnect_controller.go#L634
+        - name: Perform a one-time upgrade to the default generated password for QDR BasicAuth
+          k8s:
+            definition:
+              kind: Secret
+              apiVersion: v1
+              metadata:
+                name: "{{ ansible_operator_meta.name }}-interconnect-users"
+                namespace: "{{ ansible_operator_meta.namespace }}"
+                labels:
+                  stf_one_time_upgrade: "{{ lookup('pipe', 'date +%s') }}"
+              stringData:
+                guest: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
+
+        - name: Get name of QDR pod (label_selectors on the k8s object need kubernetes.core>=2.2.0)
+          k8s_info:
+            api_version: v1
+            kind: Pod
             namespace: "{{ ansible_operator_meta.namespace }}"
-            labels:
-              stf_one_time_upgrade: "{{ lookup('pipe', 'date +%s') }}"
-          stringData:
-            guest: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
-      when:
-        - _qdr_basicauth_object.resources[0] is defined and _qdr_basicauth_object.resources[0].metadata.labels.stf_one_time_upgrade is not defined
+            label_selectors:
+              - application={{ ansible_operator_meta.name }}-interconnect
+          register: _qdr_pod
+
+        - name: Restart QDR pod to pick up new password
+          k8s:
+            state: absent
+            api_version: v1
+            kind: Pod
+            namespace: "{{ ansible_operator_meta.namespace }}"
+            name: "{{_qdr_pod.resources[0].metadata.name }}"
+          when: _qdr_pod.resources[0] is defined
 
 - name: Set default Interconnect manifest
   set_fact:
