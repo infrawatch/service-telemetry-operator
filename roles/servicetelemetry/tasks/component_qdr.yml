@@ -178,7 +178,7 @@
                 guest: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
 
         # label_selectors on the k8s object need kubernetes.core>=2.2.0
-        - name: Get name of QDR pod
+        - name: Get the list of QDR pods
           k8s_info:
             api_version: v1
             kind: Pod
@@ -187,14 +187,14 @@
               - application={{ ansible_operator_meta.name }}-interconnect
           register: _qdr_pod
 
-        - name: Restart QDR pod to pick up new password
+        - name: Restart QDR pods to pick up new password
           k8s:
             state: absent
             api_version: v1
             kind: Pod
             namespace: "{{ ansible_operator_meta.namespace }}"
-            name: "{{ _qdr_pod.resources[0].metadata.name }}"
-          when: _qdr_pod.resources[0] is defined
+            name: "{{ item.metadata.name }}"
+          loop: "{{ _qdr_pod.resources }}"
 
 - name: Set default Interconnect manifest
   set_fact:
