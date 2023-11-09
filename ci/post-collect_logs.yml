@@ -51,7 +51,7 @@
     - name: "Get the cache dir for crc"
       ansible.builtin.shell:
         cmd: |
-          crc status | grep "Cache Directory" | cut -d: -f
+          crc status | grep "Cache Directory" | cut -d: -f2
       register: cache_dir
 
     - name: "Show the contents of of cache dir"
