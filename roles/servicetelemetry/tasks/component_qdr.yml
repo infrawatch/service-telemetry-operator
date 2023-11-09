@@ -192,7 +192,7 @@
             api_version: v1
             kind: Pod
             namespace: "{{ ansible_operator_meta.namespace }}"
-            name: "{{_qdr_pod.resources[0].metadata.name }}"
+            name: "{{ _qdr_pod.resources[0].metadata.name }}"
           when: _qdr_pod.resources[0] is defined
 
 - name: Set default Interconnect manifest
