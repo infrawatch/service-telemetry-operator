@@ -9,13 +9,14 @@
       oc -n {{ namespace }} get "$resource" -oyaml >> "$log_file" 2>&1
     done
   delay: 10
+  retries: 3
   ignore_errors: true
   changed_when: false
 
 - name: "Get Additional Information  details"
   ansible.builtin.shell:
     cmd: |
-      oc -n {{ namespace }} describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
+      oc -n {{ namespace }} describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_describe_subscriptions_STO.log 2>&1
   ignore_errors: true
 
 - name: "Get STO info"

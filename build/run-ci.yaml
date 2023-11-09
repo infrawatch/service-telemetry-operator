@@ -10,11 +10,11 @@
 
   - name: Create Log directory
     file:
-      path: build/working/logs
+      path: "{{ playbook_dir }}/working/logs"
       state: directory
 
   - name: Collect the logs
     import_role:
       name: stf-collect-logs
     vars:
-      logfile_dir: "build/working/logs/"
+      logfile_dir: "{{ playbook_dir }}/working/logs/"
