@@ -177,7 +177,8 @@
               stringData:
                 guest: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
 
-        - name: Get name of QDR pod (label_selectors on the k8s object need kubernetes.core>=2.2.0)
+        # label_selectors on the k8s object need kubernetes.core>=2.2.0
+        - name: Get name of QDR pod
           k8s_info:
             api_version: v1
             kind: Pod
