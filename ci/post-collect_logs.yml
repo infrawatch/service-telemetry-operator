@@ -43,6 +43,22 @@
         cmd: |
           crc version
 
+    - name: "Run crc status"
+      ansible.builtin.shell:
+        cmd: |
+          crc status
+
+    - name: "Get the cache dir for crc"
+      ansible.builtin.shell:
+        cmd: |
+          crc status | grep "Cache Directory" | cut -d: -f2 | trim
+      register: cache_dir
+
+    - name: "Show the contents of of cache dir"
+      ansible.builtin.shell:
+        cmd: |
+          ls cache_dir.stdout | grep {{ crc_ocp_bundle | basename }}
+
     - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
         name: '../build/stf-collect-logs'
