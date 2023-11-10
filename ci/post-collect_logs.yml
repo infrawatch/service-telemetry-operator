@@ -11,33 +11,8 @@
         mode: "0755"
 
 - hosts: controller
-  name: Collect logs on the controller
-  gather_facts: false
+  name: "Wait for 4.14 to work"
   tasks:
-    - name: "Set the sto_dir if it isn't already set"
-      ansible.builtin.set_fact:
-        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
-      when: sto_dir | default('') | length == 0
-
-    - name: "Get vars common to all jobs"
-      ansible.builtin.include_vars:
-        file: "vars-zuul-common.yml"
-
-    - name: "Get scenario-specific vars"
-      ansible.builtin.include_vars:
-        file: "vars-{{ scenario }}.yml"
-
-    - name: "Create log dir"
-      ansible.builtin.file:
-        path: "{{ logfile_dir }}"
-        state: directory
-        mode: "0755"
-
-    - name: "Log into the cluster"
-      ansible.builtin.import_role:
-        name: rhol_crc
-        tasks_from: add_crc_creds.yml
-
     - name: "Get crc info"
       ansible.builtin.shell:
         cmd: |
@@ -85,14 +60,42 @@
         cmd: |
           oc status
 
-    - name: "Cheat and try prepare STF now"
-      ansible.builtin.include_playbook: 'prepare.yml'
+- name: "Cheat and try prepare STF now"
+  ansible.builtin.import_playbook: 'prepare.yml'
 
-    - name: "Deploy STF"
-      ansible.builtin.include_playbook: 'deploy_stf.yml'
+- name: "Deploy STF"
+  ansible.builtin.import_playbook: 'deploy_stf.yml'
 
-    - name: "Test STF"
-      ansible.builtin.include_playbook: 'test_stf.yml'
+- name: "Test STF"
+  ansible.builtin.import_playbook: 'test_stf.yml'
+
+- hosts: controller
+  name: Collect logs on the controller
+  gather_facts: false
+  tasks:
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: "Get vars common to all jobs"
+      ansible.builtin.include_vars:
+        file: "vars-zuul-common.yml"
+
+    - name: "Get scenario-specific vars"
+      ansible.builtin.include_vars:
+        file: "vars-{{ scenario }}.yml"
+
+    - name: "Create log dir"
+      ansible.builtin.file:
+        path: "{{ logfile_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
 
     - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
