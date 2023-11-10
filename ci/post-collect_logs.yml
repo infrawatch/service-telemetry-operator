@@ -76,6 +76,7 @@
     - name: "Link the KUBECONFIG file to ~/.kube/config"
       ansible.builtin.shell:
         cmd: |
+          unlink ~/.kube/config || true
           ln -s {{ kubeconfig }} ~/.kube/config
       ignore_errors: true
 
