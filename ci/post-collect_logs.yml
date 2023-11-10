@@ -85,6 +85,15 @@
         cmd: |
           oc status
 
+    - name: "Cheat and try prepare STF now"
+      ansible.builtin.include_playbook: 'prepare.yml'
+
+    - name: "Deploy STF"
+      ansible.builtin.include_playbook: 'deploy_stf.yml'
+
+    - name: "Test STF"
+      ansible.builtin.include_playbook: 'test_stf.yml'
+
     - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
         name: '../build/stf-collect-logs'
