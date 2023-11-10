@@ -65,17 +65,19 @@
         cmd: |
           KUBECONFIG={{ cache_dir.stdout | trim }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig oc status
       register: output
+      ignore_errors: true
       retries: 100
       delay: 6
       until: output.rc == 0
 
     - ansible.builtin.set_fact:
-          kubeconfig: "{{ cache_dir.stdout | trim }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig"
+        kubeconfig: "{{ cache_dir.stdout | trim }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig"
 
     - name: "Link the KUBECONFIG file to ~/.kube/config"
       ansible.builtin.shell:
         cmd: |
           ln -s {{ kubeconfig }} ~/.kube/config
+      ignore_errors: true
 
     - name: "Get oc status"
       ansible.builtin.shell:
