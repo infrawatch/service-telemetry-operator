@@ -58,6 +58,25 @@
       ansible.builtin.shell:
         cmd: |
           ls {{ cache_dir.stdout }} | grep {{ crc_ocp_bundle | basename }}
+          ls {{ cache_dir.stdout }}/{{ crc_ocp_bundle | basename | splittext | first }}/
+
+    - name: "Get oc status"
+      ansible.builtin.shell:
+        cmd: |
+          KUBECONFIG={{ cache_dir.stdout }}/{{ crc_ocp_bundle | basename | splittext | first }}/kubeconfig oc status
+
+    - ansible.builtin.set_fact:
+          kubeconfig: "{{ cache_dir.stdout }}/{{ crc_ocp_bundle | basename | splittext | first }}/kubeconfig"
+
+    - name: "Link the KUBECONFIG file to ~/.kube/config"
+      ansible.builtin.shell:
+        cmd: |
+          ln -s {{ kubeconfig }} ~/.kube/config
+
+    - name: "Get oc status"
+      ansible.builtin.shell:
+        cmd: |
+          oc status
 
     - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
