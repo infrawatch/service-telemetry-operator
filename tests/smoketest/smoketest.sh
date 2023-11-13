@@ -60,8 +60,12 @@ oc create configmap stf-smoketest-ceilometer-publisher --from-file "${REL}/ceilo
 oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${REL}/smoketest_ceilometer_entrypoint.sh"
 
 echo "*** [INFO] Waiting for QDR password upgrade"
-AMQP_PASS=''
-while [ ${#AMQP_PASS} -lt 32 ]; do AMQP_PASS=$(oc get secret default-interconnect-users -o json | jq -r .data.guest | base64 -d); sleep 3; done
+sleep 300
+AMQP_PASS=$(oc get secret default-interconnect-users -o json | jq -r .data.guest | base64 -d)
+echo "${AMQP_PASS}"
+oc get secret default-interconnect-users -o yaml
+oc logs -l 'name=service-telemetry-operator' --tail=-1
+#while [ ${#AMQP_PASS} -lt 32 ]; do AMQP_PASS=$(oc get secret default-interconnect-users -o json | jq -r .data.guest | base64 -d); sleep 30; echo "${AMQP_PASS}"; done
 
 echo "*** [INFO] Creating Mock OSP Metrics QDR..."
 oc delete pod qdr-test
