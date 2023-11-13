@@ -48,9 +48,16 @@
     vars:
       scenario: "local_build"
 
-- project:
-    name: infrawatch/service-telemetry-operator
+- project-template:
+    name: stf-crc-jobs
+    description: |
+      STF CRC jobs that build and deploy STF
     github-check:
       jobs:
         - stf-crc-latest-nightly_bundles
         - stf-crc-latest-local_build
+
+- project:
+    name: infrawatch/service-telemetry-operator
+    templates:
+      - stf-crc-jobs
