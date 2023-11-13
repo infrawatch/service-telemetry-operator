@@ -2,6 +2,5 @@
 namespace: "service-telemetry"
 setup_bundle_registry_tls_ca: false
 setup_bundle_registry_auth: false
-__service_telemetry_transports_qdr_auth: none
 base_dir: "{{ sto_dir }}/build"
 logfile_dir: "{{ ansible_user_dir }}/zuul-output/logs/controller"
