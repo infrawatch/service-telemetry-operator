@@ -46,7 +46,7 @@
       ansible.builtin.shell: |
         cp {{ ansible_env.HOME }}/*.log .
       args:
-        chdir: "{{ ansible_user_dir }}/zuul-output/logs/controller"
+        chdir: "{{ logfile_dir }}"
       changed_when: true
       ignore_errors: true
 
