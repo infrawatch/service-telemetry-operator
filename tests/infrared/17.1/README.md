@@ -8,7 +8,7 @@ A basic deployment can be deployed and connected to an existing STF deployment a
 
 * Logged into the host system where you'll deploy the virtualized OpenStack infrastructure.
 * Installed infrared and cloned the infrawatch/service-telemetry-operator repository.
-* DNS resolution (or `/etc/hosts` entry) of the OpenShift cluster API endpoint
+* DNS resolution (or `/etc/hosts` entry) of the OpenShift cluster API endpoint.
 * Downloaded the `oc` binary, made it executable, and placed in $PATH.
 * Logged into the OpenShift hosting STF and changed to the `service-telemetry` project from the host system.
 
