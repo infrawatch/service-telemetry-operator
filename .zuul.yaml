@@ -45,6 +45,8 @@
       - ci/check_ocp_version.yml
     post-run:
       - ci/post-collect_logs.yml
+      - ci/deploy_stf.yml
+      - ci/test_stf.yml
 
 - job:
     name: stf-crc-nightly_bundles

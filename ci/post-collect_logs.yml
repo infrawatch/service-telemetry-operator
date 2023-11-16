@@ -60,14 +60,14 @@
         cmd: |
           oc status
 
-- name: "Cheat and try prepare STF now"
-  ansible.builtin.import_playbook: 'prepare.yml'
-
-- name: "Deploy STF"
-  ansible.builtin.import_playbook: 'deploy_stf.yml'
-
-- name: "Test STF"
-  ansible.builtin.import_playbook: 'test_stf.yml'
+#- name: "Cheat and try prepare STF now"
+#  ansible.builtin.import_playbook: 'prepare.yml'
+#
+#- name: "Deploy STF"
+#  ansible.builtin.import_playbook: 'deploy_stf.yml'
+#
+#- name: "Test STF"
+#  ansible.builtin.import_playbook: 'test_stf.yml'
 
 - hosts: controller
   name: Collect logs on the controller
