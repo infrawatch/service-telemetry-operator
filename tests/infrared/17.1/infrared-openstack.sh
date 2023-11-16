@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-# Usage:
-#  VIRTHOST=my.big.hypervisor.net
-#  ./infrared-openstack.sh
+# Usage: See README.md
 VIRTHOST=${VIRTHOST:-localhost}
 AMQP_HOST=${AMQP_HOST:-stf-default-interconnect-5671-service-telemetry.apps-crc.testing}
 AMQP_PORT=${AMQP_PORT:-443}
+AMQP_PASS=${AMQP_PASS:-}
 SSH_KEY="${SSH_KEY:-${HOME}/.ssh/id_rsa}"
 NTP_SERVER="${NTP_SERVER:-clock.redhat.com,10.5.27.10,10.11.160.238}"
 CLOUD_NAME="${CLOUD_NAME:-cloud1}"
@@ -97,7 +96,7 @@ ir_create_undercloud() {
 }
 
 stf_create_config() {
-  sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${STF_ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
+  sed -r "s/<<AMQP_HOST>>/${AMQP_HOST}/;s/<<AMQP_PORT>>/${AMQP_PORT}/;s/<<AMQP_PASS>>/${AMQP_PASS}/;s/<<CLOUD_NAME>>/${CLOUD_NAME}/;s%<<CA_CERT_FILE_CONTENT>>%${CA_CERT_FILE_CONTENT//$'\n'/<@@@>}%;s/<@@@>/\n                /g" ${STF_ENVIRONMENT_TEMPLATE} > outputs/stf-connectors.yaml
 }
 
 gnocchi_create_config() {
@@ -164,6 +163,11 @@ ir_run_workload() {
 
 if [ -z "${CA_CERT_FILE_CONTENT}" ]; then
     echo "CA_CERT_FILE_CONTENT must be set and passed to the deployment, or QDR will fail to connect."
+    exit 1
+fi
+
+if [ -z "${AMQP_PASS}" ]; then
+    echo "AMQP_PASS must be set and passed to the deployment, or QDR will fail to connect."
     exit 1
 fi
 
