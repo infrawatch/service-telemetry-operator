@@ -31,6 +31,21 @@
       # Pass vars to crc cli https://review.rdoproject.org/cgit/config/tree/playbooks/crc/simple-start.yaml#n30
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
+  # this will go away eventually
+- job:
+    name: stf-multi-crc-base
+    abstract: true
+    description: |
+      Temperory base job for crc jobs; the crc jobs will eventually use stf-base as a job, once PRs have merged
+    parent: stf-base
+    # Little hacky-hack so it won't complain about scenario not being defined.
+    vars:
+      scenario: "zuul-common"
+    run:
+      - ci/check_ocp_version.yml
+    post-run:
+      - ci/post-collect_logs.yml
+
 - job:
     name: stf-crc-nightly_bundles
     parent: stf-base
@@ -81,6 +96,13 @@
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
+- job:
+    name: stf-crc-ocp414
+    parent: stf-multi-crc-base
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
+      ocp_version: '4.14.1'
+
 - project-template:
     name: stf-crc-jobs
     description: |
@@ -94,5 +116,9 @@
 
 - project:
     name: infrawatch/service-telemetry-operator
-    templates:
-      - stf-crc-jobs
+    #templates:
+    #  - stf-crc-jobs
+    github-check:
+      jobs:
+        - stf-crc-ocp_413-nightly_bundles
+        - stf-crc-ocp414
