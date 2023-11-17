@@ -36,6 +36,7 @@
       oc -n {{ namespace }} get csv | grep service-telemetry-operator >> {{ logfile_dir }}/post_question_deployment.log 2>&1
       oc -n {{ namespace }} get csv $(oc -n {{ namespace }} get csv | grep "service-telemetry-operator" | awk '{ print $1}') -oyaml >> {{ logfile_dir }}/post_question_deployment.log 2>&1
   register: output
+  ignore_errors: true
   retries: 3
   delay: 10
 
