@@ -30,5 +30,3 @@
       ansible.builtin.fail:
         msg: "Service Telemetry Operator CSV not Succeeded after 10 minutes. Check {{ logfile_dir }}/oc_get_csv_sto.log for more information"
       when: output.rc != 0
-
-    
