@@ -1,0 +1,19 @@
+---
+- hosts: controller
+  name: Get some info about the environment
+  gather_facts: true
+  ignore_errors: true
+  tasks:
+    - name: Show hostvars
+      ansible.builtin.debug:
+        var: hostvars.keys()
+
+    - name: Show hostvars
+      ansible.builtin.debug:
+        var: hostvars
+
+    - ansible.builtin.shell: which oc
+      ignore_errors: true
+
+    - ansible.builtin.shell: oc version
+      ignore_errors: true
