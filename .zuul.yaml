@@ -17,7 +17,6 @@
       - name: github.com/infrawatch/sg-bridge
       - name: github.com/infrawatch/sg-core
       - name: github.com/infrawatch/prometheus-webhook-snmp
-
     pre-run:
       - ci/prepare.yml
     run:
@@ -33,24 +32,67 @@
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
 - job:
-    name: stf-crc-latest-nightly_bundles
+    name: stf-crc-nightly_bundles
     parent: stf-base
-    description:
-      Deploy STF nightly bundles
+    abstract: true
+    description: |
+      Deploy STF using the nightly bundles
     vars:
       scenario: "nightly_bundles"
     
 - job:
-    name: stf-crc-latest-local_build
+    name: stf-crc-local_build
     parent: stf-base
+    abstract: true
     description: |
       Build images locally and deploy STF
     vars:
       scenario: "local_build"
 
-- project:
-    name: infrawatch/service-telemetry-operator
+- job:
+    name: stf-crc-ocp_412-nightly_bundles
+    parent: stf-crc-nightly_bundles
+    description: |
+      Deploy STF using the nightly bundles on OCP 4.12
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_413-nightly_bundles
+    parent: stf-crc-nightly_bundles
+    description: |
+      Deploy STF using the nightly bundles on OCP 4.13
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_412-local_build
+    parent: stf-crc-local_build
+    description: |
+      Build images locally and deploy STF on OCP 4.12
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_413-local_build
+    parent: stf-crc-local_build
+    description: |
+      Build images locally and deploy STF on OCP 4.13
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+
+- project-template:
+    name: stf-crc-jobs
+    description: |
+      STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-latest-nightly_bundles
-        - stf-crc-latest-local_build
+        - stf-crc-ocp_412-nightly_bundles
+        - stf-crc-ocp_412-local_build
+        - stf-crc-ocp_413-nightly_bundles
+        - stf-crc-ocp_413-local_build
+
+- project:
+    name: infrawatch/service-telemetry-operator
+    templates:
+      - stf-crc-jobs
