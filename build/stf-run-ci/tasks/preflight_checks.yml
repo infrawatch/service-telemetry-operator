@@ -19,12 +19,13 @@
       ansible.builtin.command:
         cmd: |
           oc describe csv $(oc get csv | grep "service-telemetry-operator" | awk '{print $1}') > {{ logfile_dir }}/oc_get_csv_sto.log 2>&1
-          cat {{ logfile_dir }}
+          cat {{ logfile_dir }}/oc_get_csv_sto.log
+      register: csv_sto
 
     - name: "Show service-telemetry-operator CSV information"
       ansible.builtin.debug:
         var: csv_sto.stdout
-
+          
     - name: "Show fail message if CSV isn't Succeeded after the alotted time"
       ansible.builtin.fail:
         msg: "Service Telemetry Operator CSV not Succeeded after 10 minutes. Check {{ logfile_dir }}/oc_get_csv_sto.log for more information"
