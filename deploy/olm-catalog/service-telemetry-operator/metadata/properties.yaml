@@ -27,7 +27,7 @@ properties:
           - failureMessage: Package openshift-cert-manager-operator is needed for AMQ Interconnect setup
             package:
               packageName: openshift-cert-manager-operator
-              versionRange: '>=1.10.0'
+              versionRange: '>=1.7.0'
   - type: olm.constraint
     value:
       failureMessage: Require Prometheus backend for data storage of metrics for Service Telemetry Framework
@@ -38,7 +38,7 @@ properties:
               versionRange: '>=0.56.0'
           - package:
               packageName: observability-operator
-              versionRange: '>=0.0.1'
+              versionRange: '>=0.0.25'
           - package:
               packageName: cluster-observability-operator
-              versionRange: '>=0.0.1'
+              versionRange: '>=0.1.0'
