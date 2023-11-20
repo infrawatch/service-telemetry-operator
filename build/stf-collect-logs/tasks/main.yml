@@ -17,11 +17,6 @@
   ansible.builtin.shell:
     cmd: |
       oc -n {{ namespace }} describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_describe_subscriptions_STO.log 2>&1
-  ignore_errors: true
-
-- name: "Get STO info"
-  ansible.builtin.shell:
-    cmd: |
       oc -n {{ namespace }} describe pod $(oc -n {{ namespace }} get pod -l name=service-telemetry-operator -ojsonpath='{ .items[].metadata.name }') >> {{ logfile_dir }}/describe_sto.log 2>&1
   ignore_errors: true
   retries: 3
