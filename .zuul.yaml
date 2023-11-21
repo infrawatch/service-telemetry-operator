@@ -33,7 +33,7 @@
 
 - job:
     name: pvs_crc
-    parent: base-simple-crc
+    parent: stf-base
     description: |
       Create Pvs in crc Cluster
     run:
