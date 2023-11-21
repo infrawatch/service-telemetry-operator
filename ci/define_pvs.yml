@@ -1,6 +1,8 @@
 ---
 - name: "Define Pvs"
   hosts: controller
+  vars:
+   base_dir: "{{ ansible_user_dir }}"
   tasks:
     - name: "Log into the cluster"
       ansible.builtin.import_role:
