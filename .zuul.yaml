@@ -32,6 +32,17 @@
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
 - job:
+    name: pvs_crc
+    parent: base-simple-crc
+    abstract: true
+    description: |
+      Create Pvs in crc Cluster
+    run:
+      - ci/define_pvs.yml
+    vars:
+      scenario: "nightly_bundles"
+
+- job:
     name: stf-crc-nightly_bundles
     parent: stf-base
     abstract: true

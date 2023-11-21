@@ -1,0 +1,45 @@
+---
+- hosts: controller
+  tasks:
+    - name: "Log into the cluster"
+      ansible.builtin.import_role:
+        name: rhol_crc
+        tasks_from: add_crc_creds.yml
+
+    - name: Check if the install_yamls already exists
+      ansible.builtin.stat:
+        path: "{{ base_dir }}/install_yamls"
+      register: check_install_yamls_dir
+
+    - name: "Get Install yaml repo"
+      when: not check_install_yamls_dir.stat.exists
+      ansible.builtin.git:
+        repo: https://github.com/openstack-k8s-operators/install_yamls
+        dest: "{{ base_dir }}/install_yamls"
+   
+    - name: Check if make command exists
+      command: "command -v make"
+      register: make_check_result
+      ignore_errors: true
+
+    - name: Install make if not present
+      package:
+        name: make
+        state: present
+      when: make_check_result.rc != 0
+    - name: Creating the Pvs 
+      ansible.builtin.shell: make crc_storage
+      args:
+        chdir: "{{ base_dir }}/install_yamls/"
+
+    - name: Print make result
+      debug:
+        var: make_output
+
+    - name: Confirm  Pvs exist
+      ansible.builtin.shell: 
+        cmd: |
+          oc get pv | grep "storage..-crc"| wc -l
+      register: cmd_output
+      failed_when: "cmd_output.stdout|int !=12"
+      
