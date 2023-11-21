@@ -19,23 +19,23 @@
         dest: "{{ base_dir }}/install_yamls"
    
     - name: Check if make command exists
-      command: "command -v make"
+      ansible.builtin.command: "command -v make"
       register: make_check_result
       ignore_errors: true
 
     - name: Install make if not present
-      package:
+      ansible.builtin.package:
         name: make
         state: present
       when: make_check_result.rc != 0
-      
+
     - name: Creating the Pvs 
       ansible.builtin.shell: make crc_storage
       args:
         chdir: "{{ base_dir }}/install_yamls/"
 
     - name: Print make result
-      debug:
+      ansible.builtin.debug:
         var: make_output
 
     - name: Confirm  Pvs exist
