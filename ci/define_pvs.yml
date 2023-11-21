@@ -1,5 +1,6 @@
 ---
-- hosts: controller
+- name: "Define Pvs"
+  hosts: controller
   tasks:
     - name: "Log into the cluster"
       ansible.builtin.import_role:
@@ -27,6 +28,7 @@
         name: make
         state: present
       when: make_check_result.rc != 0
+      
     - name: Creating the Pvs 
       ansible.builtin.shell: make crc_storage
       args:
