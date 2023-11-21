@@ -98,6 +98,7 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
+        - pvs_crc
         - stf-crc-ocp_412-nightly_bundles
         - stf-crc-ocp_412-local_build
         - stf-crc-ocp_413-nightly_bundles
