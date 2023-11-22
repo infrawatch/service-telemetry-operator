@@ -3,13 +3,14 @@
   hosts: controller
   vars:
    base_dir: "{{ ansible_user_dir }}"
+   namespace: "service-telemetry" 
   tasks:
     - name: "Log into the cluster"
       ansible.builtin.import_role:
         name: rhol_crc
         tasks_from: add_crc_creds.yml
 
-    - name: Check if the install_yamls already exists
+    - name: "Check if the install_yamls already exists"
       ansible.builtin.stat:
         path: "{{ base_dir }}/install_yamls"
       register: check_install_yamls_dir
@@ -20,30 +21,33 @@
         repo: https://github.com/openstack-k8s-operators/install_yamls
         dest: "{{ base_dir }}/install_yamls"
    
-    - name: Check if make command exists
-      ansible.builtin.command: "command -v make"
-      register: make_check_result
-      ignore_errors: true
-
-    - name: Install make if not present
+    - name: "Install make if not present"
       ansible.builtin.package:
         name: make
         state: present
-      when: make_check_result.rc != 0
 
-    - name: Creating the Pvs 
+    - name: "Creating the Pvs" 
       ansible.builtin.shell: make crc_storage
+      register: make_output
       args:
         chdir: "{{ base_dir }}/install_yamls/"
 
-    - name: Print make result
+    - name: "Print make result"
       ansible.builtin.debug:
         var: make_output
 
-    - name: Confirm  Pvs exist
+    - name: "Get Pvs in '{{ namespace }}'"
       ansible.builtin.shell: 
         cmd: |
-          oc get pv | grep "storage..-crc"| wc -l
-      register: cmd_output
-      failed_when: "cmd_output.stdout|int !=12"
+          oc get pv -n {{ namespace }}| grep "local-storage"
+      register: pv_output
+
+    - name: "Print get Pvs result"
+      ansible.builtin.debug:
+        var: pv_output.stdout_lines
+
+    - name: "Show fail message if no pvs with type local_storage available"
+      ansible.builtin.fail:
+        msg: "Failed to create Pvs"
+      when: pv_output.stdout_lines | length == 0
       
