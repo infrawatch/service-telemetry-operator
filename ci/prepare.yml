@@ -1,4 +1,37 @@
 ---
+- name: "Do pre-work to get kubeconfig"
+  hosts: controller
+  vars:
+    ci_framework_dir: "{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].src_dir }}"
+  tasks:
+      # this task is temperory, eventually, this whole play will be in a separate file, which will do the common tasks already.
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: "Run bootstrap playbook"
+      ansible.builtin.shell:
+        cmd: |
+          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/ci_framework/playbooks/01-bootstrap.yml
+        chdir: "{{ ci_framework_dir }}"
+
+    # need -e zuul-parameters-file
+    # in $HOME/zuul-output-logs/ ## should be my logfile dir in jobs
+    - ansible.builtin.copy:
+        src: "{{ playbook_dir }}/pre-get_kubeconfig.yml"
+        dest: "{{ ansible_user_dir }}/login.yml"
+
+    - name: "Run the login role"
+      ansible.builtin.shell:
+        cmd: |
+         ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ansible_user_dir }}/login.yml
+
+    - name: Check for the kubeconfig file
+      ansible.builtin.shell:
+        cmd: |
+          ls {{ cifmw_openshift_kubeconfig }}
+
 - name: "Prepare the environment for running stf"
   hosts: controller
   tasks:
