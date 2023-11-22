@@ -36,6 +36,8 @@
         override-checkout: main
       - name: openstack-k8s-operators/openstack-must-gather
         override-checkout: main
+    pre-run:
+      - ci/pre-2node.yml
     vars:
       cifmw_deploy_edpm: false
       podified_validation: true
