@@ -82,15 +82,16 @@
 
   - name: Create OperatorGroup for cert-manager for Red hat OpenShift
     kubernetes.core.k8s:
-      apiVersion: operators.coreos.com/v1
-      kind: OperatorGroup
-      metadata:
-        name: cert-manager-operator
-        namespace: cert-manager-operator
-      spec:
-        targetNamespaces:
-        - cert-manager-operator
-        upgradeStrategy: Default
+      definition:
+        apiVersion: operators.coreos.com/v1
+        kind: OperatorGroup
+        metadata:
+          name: cert-manager-operator
+          namespace: cert-manager-operator
+        spec:
+          targetNamespaces:
+          - cert-manager-operator
+          upgradeStrategy: Default
 
   - name: Subscribe to cert-manager for Red Hat OpenShift Operator
     kubernetes.core.k8s:
