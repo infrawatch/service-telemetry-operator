@@ -28,47 +28,7 @@
         targetNamespaces:
         - "{{ namespace }}"
 
-# deploy cert-manager from tech-preview when using versions of OCP < 4.12
-- when: not __deploy_from_index_enabled | bool and ocp_ver.stdout is version ('4.12', '<')
-  block:
-    - name: Create openshift-cert-manager-operator namespace
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: project.openshift.io/v1
-          kind: Project
-          metadata:
-            name: openshift-cert-manager-operator
-          spec:
-            finalizers:
-            - kubernetes
-
-    - name: Create openshift-cert-manager-operator OperatorGroup
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1
-          kind: OperatorGroup
-          metadata:
-            name: openshift-cert-manager-operator
-            namespace: openshift-cert-manager-operator
-          spec: {}
-
-    - name: Subscribe to Cert Manager for OpenShift Operator
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            name: openshift-cert-manager-operator
-            namespace: openshift-cert-manager-operator
-          spec:
-            channel: "tech-preview"
-            installPlanApproval: Automatic
-            name: openshift-cert-manager-operator
-            source: redhat-operators
-            sourceNamespace: openshift-marketplace
-
-# deploy cert-manager from stable-v1 in 4.12 and later using namespace scoped operator
-- when: not __deploy_from_index_enabled | bool and ocp_ver.stdout is version ('4.12', '>=')
+- when: not __deploy_from_index_enabled | bool
   block:
     - name: Subscribe to Cert Manager for OpenShift Operator
       kubernetes.core.k8s:
@@ -87,8 +47,6 @@
             source: redhat-operators
             sourceNamespace: openshift-marketplace
 
-- when: not __deploy_from_index_enabled | bool
-  block:
     - name: Subscribe to AMQ Interconnect Operator
       kubernetes.core.k8s:
         definition:
@@ -129,13 +87,13 @@
       metadata:
         labels:
           operators.coreos.com/observability-operator.openshift-operators: ""
-        name: observability-operator
+        name: cluster-observability-operator
         namespace: openshift-operators
       spec:
-        channel: stable
+        channel: development
         installPlanApproval: Automatic
-        name: observability-operator
-        source: community-operators
+        name: cluster-observability-operator
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']
