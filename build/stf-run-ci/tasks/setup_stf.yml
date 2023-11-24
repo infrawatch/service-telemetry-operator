@@ -9,7 +9,7 @@
         namespace: openshift-marketplace
       spec:
         displayName: InfraWatch Operators
-        image: quay.io/infrawatch-operators/infrawatch-catalog:stable-1.5
+        image: quay.io/infrawatch-operators/infrawatch-catalog:nightly-1.5
         publisher: InfraWatch
         sourceType: grpc
         updateStrategy:
@@ -49,6 +49,14 @@
         sourceNamespace: openshift-marketplace
   when: service_telemetry_operator_subscription_manifest is not defined
 
+# enable catalogsource
+- name: Enable InfraWatch Catalog Source
+  kubernetes.core.k8s:
+    definition:
+      '{{ infrawatch_catalog_source_manifest }}'
+
+# subscribe to the Operators from the defined CatalogSource sources.
+# STO will automatically install SGO via dependencies but pre-subscribe in case deployment from different CatalogSources is specified in an override (for testing purposes).
 - name: Subscribe to Smart Gateway Operator
   kubernetes.core.k8s:
     definition:
@@ -58,8 +66,3 @@
   kubernetes.core.k8s:
     definition:
       '{{ service_telemetry_operator_subscription_manifest }}'
-
-- name: Enable InfraWatch Catalog Source
-  kubernetes.core.k8s:
-    definition:
-      '{{ infrawatch_catalog_source_manifest }}'
