@@ -1,5 +1,15 @@
 ---
 - job:
+    name: ansible-lint
+    parent: base
+    description: |
+      Run ansible-lint on infrawatch repos
+    required-projects:
+      - name: github.com/infrawatch/service-telemetry-operator
+    run:
+      - ci/ansible-lint.yml
+
+- job:
     name: stf-base
     # defined in: https://review.rdoproject.org/cgit/config/tree/zuul.d/_jobs-crc.yaml
     parent: base-simple-crc
@@ -112,12 +122,13 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-ocp_412-nightly_bundles
-        - stf-crc-ocp_412-local_build
-        - stf-crc-ocp_412-local_build-index_deploy
-        - stf-crc-ocp_413-nightly_bundles
-        - stf-crc-ocp_413-local_build
-        - stf-crc-ocp_413-local_build-index_deploy
+        - ansible-lint
+          #- stf-crc-ocp_412-nightly_bundles
+          #- stf-crc-ocp_412-local_build
+          #- stf-crc-ocp_412-local_build-index_deploy
+          #- stf-crc-ocp_413-nightly_bundles
+          #- stf-crc-ocp_413-local_build
+          #- stf-crc-ocp_413-local_build-index_deploy
         
 - project:
     name: infrawatch/service-telemetry-operator

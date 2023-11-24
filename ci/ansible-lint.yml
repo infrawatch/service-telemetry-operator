@@ -1,0 +1,14 @@
+---
+- name: Run ansible-lint
+  hosts: all
+  tasks:
+    - name: Install ansible-lint
+      ansible.builtin.pip:
+        package: ansible-lint
+        state: latest
+
+    - name: Run ansible-lint
+      ansible.builtin.shell:
+        cmd: |
+          ansible-lint
+      chdir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
