@@ -134,6 +134,7 @@
   loop:
     - openshift-cert-manager-operator
     - cert-manager-operator
+    - cert-manager
 
 - name: Remove Elasticsearch
   ignore_errors: true
