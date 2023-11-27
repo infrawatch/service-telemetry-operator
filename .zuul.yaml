@@ -47,9 +47,9 @@
     post-run:
       - ci/post-collect_logs.yml
         # Add these steps so we can work around the pre stage failing, and investigate whether CRC actually comes up, and whether it runs STF
-      - ci/prepare.yml
-      - ci/deploy_stf.yml
-      - ci/test_stf.yml
+      #- ci/prepare.yml
+      #- ci/deploy_stf.yml
+      #- ci/test_stf.yml
 
 - job:
     name: stf-crc-nightly_bundles
@@ -104,7 +104,9 @@
 - job:
     name: stf-crc-ocp414
     parent: stf-multi-crc-base
+    nodeset: centos-9-stream-crc-3xl
     vars:
+      crc_parameters: '--memory 20000 --disk-size 80 --cpus 8'
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
       ocp_version: '4.14.1'
 
