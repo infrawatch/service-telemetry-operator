@@ -70,6 +70,15 @@
       scenario: "local_build"
 
 - job:
+    name: stf-crc-local_build-index_deploy
+    parent: stf-base
+    abstract: true
+    description: |
+      Build STF locally and deploy from index
+    vars:
+      scenario: "local_build-index_deploy"
+
+- job:
     name: stf-crc-ocp_412-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
@@ -102,6 +111,22 @@
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
 - job:
+    name: stf-crc-ocp_412-local_build-index_deploy
+    parent: stf-crc-local_build-index_deploy
+    description: |
+      Build STF locally and deploy from index on OCP 4.12
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.12.13/crc_libvirt_4.12.13_amd64.crcbundle'
+
+- job:
+    name: stf-crc-ocp_413-local_build-index_deploy
+    parent: stf-crc-local_build-index_deploy
+    description: |
+      Build STF locally and deploy from index on OCP 4.13
+    vars:
+      crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
+
+- job:
     name: stf-crc-ocp414
     parent: stf-multi-crc-base
     nodeset: centos-9-stream-crc-3xl
@@ -118,9 +143,11 @@
       jobs:
         - stf-crc-ocp_412-nightly_bundles
         - stf-crc-ocp_412-local_build
+        - stf-crc-ocp_412-local_build-index_deploy
         - stf-crc-ocp_413-nightly_bundles
         - stf-crc-ocp_413-local_build
-
+        - stf-crc-ocp_413-local_build-index_deploy
+        
 - project:
     name: infrawatch/service-telemetry-operator
     #templates:
