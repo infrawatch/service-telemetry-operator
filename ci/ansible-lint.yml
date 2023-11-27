@@ -19,5 +19,5 @@
         cmd: |
           python -m ansible-lint -c .ansible-lint
         chdir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
-        environment:
-          PATH: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv/bin/"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv/bin/"
