@@ -2,6 +2,15 @@
 - hosts: controller
   name: "Wait for 4.14 to work"
   tasks:
+    - name: Get crc logs
+      ansible.builtin.shell:
+        cmd: |
+          cat ~/crc-start.log
+      register: cat
+
+    - ansible.builtin.debug:
+        var: cat.stdout
+
     - name: "Get crc info"
       ansible.builtin.shell:
         cmd: |
