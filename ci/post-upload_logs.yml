@@ -1,0 +1,35 @@
+---
+- hosts: all
+  name: Copy files from controller on node
+  gather_facts: false
+  tasks:
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: "Get vars common to all jobs"
+      ansible.builtin.include_vars:
+        file: "vars-zuul-common.yml"
+
+    - name: "Get scenario-specific vars"
+      ansible.builtin.include_vars:
+        file: "vars-{{ scenario }}.yml"
+
+    - name: "Create log dir"
+      ansible.builtin.file:
+        path: "{{ logfile_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: "Copy generated logs"
+      ansible.builtin.shell: |
+        cp {{ ansible_env.HOME }}/*.log .
+      args:
+        chdir: "{{ logfile_dir }}"
+      changed_when: true
+      ignore_errors: true
+
+    - name: Copy files from controller on node
+      ansible.builtin.include_role:
+        name: fetch-output
