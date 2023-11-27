@@ -2,4 +2,5 @@
 __deploy_stf: true
 __local_build_enabled: true
 __service_telemetry_snmptraps_enabled: true
-__service_telemetry_storage_ephemeral_enabled: true
+__service_telemetry_storage_ephemeral_enabled: false
+__service_telemetry_storage_persistent_storage_class: "crc_storage"

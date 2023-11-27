@@ -1,25 +1,16 @@
 ---
 - name: "Define Pvs"
   hosts: controller
-  vars:
-   base_dir: "{{ ansible_user_dir }}"
-   namespace: "service-telemetry" 
   tasks:
     - name: "Log into the cluster"
       ansible.builtin.import_role:
         name: rhol_crc
         tasks_from: add_crc_creds.yml
-
-    - name: "Check if the install_yamls already exists"
-      ansible.builtin.stat:
-        path: "{{ base_dir }}/install_yamls"
-      register: check_install_yamls_dir
-
-    - name: "Get Install yaml repo"
-      when: not check_install_yamls_dir.stat.exists
-      ansible.builtin.git:
-        repo: https://github.com/openstack-k8s-operators/install_yamls
-        dest: "{{ base_dir }}/install_yamls"
+    
+    # For testing only , will be removed when integrated with prepare.yml
+    - name: "Get vars common to all jobs"
+      ansible.builtin.include_vars:
+        file: "vars-zuul-common.yml"
    
     - name: "Install make if not present"
       ansible.builtin.package:
@@ -28,10 +19,12 @@
       become: true
 
     - name: "Creating the Pvs" 
-      ansible.builtin.shell: make crc_storage
+      ansible.builtin.shell: 
+        cmd: |
+          STORAGE_CLASS= {{ __service_telemetry_storage_persistent_storage_class }} make crc_storage
       register: make_output
       args:
-        chdir: "{{ base_dir }}/install_yamls/"
+        chdir: "{{ install_yamls_dir }}"
 
     - name: "Print make result"
       ansible.builtin.debug:
@@ -40,7 +33,7 @@
     - name: "Get Pvs in '{{ namespace }}'"
       ansible.builtin.shell: 
         cmd: |
-          oc get pv -n {{ namespace }}| grep "local-storage"
+          oc get pv -n {{ namespace }}| grep {{ __service_telemetry_storage_persistent_storage_class }}
       register: pv_output
 
     - name: "Print get Pvs result"
@@ -51,4 +44,29 @@
       ansible.builtin.fail:
         msg: "Failed to create Pvs"
       when: pv_output.stdout_lines | length == 0
+
+    - name: Get list of PVs
+      ansible.builtin.shell:
+        cmd: |
+          oc get pv --no-headers -o custom-columns=":metadata.name" | grep {{ __service_telemetry_storage_persistent_storage_class }}
+      register: pvs_result
+
+    - name: Get the current default StorageClass
+      ansible.builtin.shell:
+        cmd: |
+          oc get storageclass | grep "(default)" | awk '{print $1}'
+      register: current_default_storageclass
+      changed_when: false
+
+    - name: Replace default StorageClass
+      ansible.builtin.shell:
+        cmd: |
+          oc patch storageclass {{ current_default_storageclass.stdout }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+      when: current_default_storageclass.stdout is defined
+
+    - name: Set new StorageClass as default
+      ansible.builtin.shell:
+        cmd: |
+         oc patch storageclass {{ __service_telemetry_storage_persistent_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
       
