@@ -10,7 +10,9 @@
 
     - name: Install ansible-lint
       ansible.builtin.pip:
-        name: ansible-lint
+        name:
+          - ansible-core
+          - ansible-lint
         state: latest
         virtualenv: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv"
 
