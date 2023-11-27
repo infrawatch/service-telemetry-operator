@@ -11,4 +11,4 @@
       ansible.builtin.shell:
         cmd: |
           ansible-lint
-      chdir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
+        chdir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
