@@ -1,0 +1,4 @@
+---
+exclude_paths:
+  - molecule 
+  - build/stf-run-ci/tests
