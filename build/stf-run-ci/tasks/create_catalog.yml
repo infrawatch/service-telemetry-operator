@@ -170,4 +170,4 @@
           securityContextConfig: legacy
         updateStrategy:
           registryPoll:
-            interval: 1m
+            interval: 5m

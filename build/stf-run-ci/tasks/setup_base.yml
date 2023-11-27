@@ -16,6 +16,7 @@
         - disabled: false
           name: community-operators
 
+# documented procedure: https://infrawatch.github.io/documentation/#deploying-service-telemetry-operator_assembly-installing-the-core-components-of-stf
 - name: Create OperatorGroup for service-telemetry
   kubernetes.core.k8s:
     definition:
@@ -28,99 +29,7 @@
         targetNamespaces:
         - "{{ namespace }}"
 
-# deploy cert-manager from tech-preview when using versions of OCP < 4.12
-- when: not __deploy_from_index_enabled | bool and ocp_ver.stdout is version ('4.12', '<')
-  block:
-    - name: Create openshift-cert-manager-operator namespace
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: project.openshift.io/v1
-          kind: Project
-          metadata:
-            name: openshift-cert-manager-operator
-          spec:
-            finalizers:
-            - kubernetes
-
-    - name: Create openshift-cert-manager-operator OperatorGroup
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1
-          kind: OperatorGroup
-          metadata:
-            name: openshift-cert-manager-operator
-            namespace: openshift-cert-manager-operator
-          spec: {}
-
-    - name: Subscribe to Cert Manager for OpenShift Operator
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            name: openshift-cert-manager-operator
-            namespace: openshift-cert-manager-operator
-          spec:
-            channel: "tech-preview"
-            installPlanApproval: Automatic
-            name: openshift-cert-manager-operator
-            source: redhat-operators
-            sourceNamespace: openshift-marketplace
-
-# deploy cert-manager from stable-v1 in 4.12 and later using namespace scoped operator
-- when: not __deploy_from_index_enabled | bool and ocp_ver.stdout is version ('4.12', '>=')
-  block:
-    - name: Subscribe to Cert Manager for OpenShift Operator
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            labels:
-              operators.coreos.com/openshift-cert-manager-operator.service-telemetry: ""
-            name: openshift-cert-manager-operator-stable-v1-redhat-operators-openshift-marketplace
-            namespace: "{{ namespace }}"
-          spec:
-            channel: stable-v1
-            installPlanApproval: Automatic
-            name: openshift-cert-manager-operator
-            source: redhat-operators
-            sourceNamespace: openshift-marketplace
-
-- when: not __deploy_from_index_enabled | bool
-  block:
-    - name: Subscribe to AMQ Interconnect Operator
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            name: amq7-interconnect-operator
-            namespace: "{{ namespace }}"
-          spec:
-            channel: 1.10.x
-            installPlanApproval: Automatic
-            name: amq7-interconnect-operator
-            source: redhat-operators
-            sourceNamespace: openshift-marketplace
-
-    - name: Subscribe to Prometheus Operator
-      kubernetes.core.k8s:
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            name: prometheus
-            namespace: "{{ namespace }}"
-          spec:
-            channel: beta
-            installPlanApproval: Automatic
-            name: prometheus
-            source: community-operators
-            sourceNamespace: openshift-marketplace
-      when:
-        - __service_telemetry_observability_strategy == "use_community"
-
+# documented procedure: https://infrawatch.github.io/documentation/#deploying-observability-operator_assembly-installing-the-core-components-of-stf
 - name: Subscribe to Red Hat Obervability Operator
   kubernetes.core.k8s:
     definition:
@@ -140,27 +49,108 @@
   when:
     - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']
 
-- name: Subscribe to Elastic Cloud on Kubernetes Operator
+# undocumented procedure, used for testing updates or old deployment models
+- name: Subscribe to Prometheus Operator
   kubernetes.core.k8s:
     definition:
       apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
-        name: elasticsearch-eck-operator-certified
+        name: prometheus
         namespace: "{{ namespace }}"
       spec:
-        channel: stable
+        channel: beta
         installPlanApproval: Automatic
-        name: elasticsearch-eck-operator-certified
-        source: certified-operators
+        name: prometheus
+        source: community-operators
         sourceNamespace: openshift-marketplace
+  when:
+    - __service_telemetry_observability_strategy == "use_community"
 
-- name: Wait for Elasticsearch CRD to appear
-  kubernetes.core.k8s_info:
-    api_version: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
-    name: elasticsearches.elasticsearch.k8s.elastic.co
-  register: eckCRD
-  until: eckCRD.resources[0] is defined
-  retries: 5
-  delay: 30
+# documented procedure: https://infrawatch.github.io/documentation/#deploying-certificate-manager-for-openshift-operator_assembly-installing-the-core-components-of-stf
+- block:
+  - name: Create project for cert-manager for Red Hat OpenShift
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: project.openshift.io/v1
+        kind: Project
+        metadata:
+          name: cert-manager-operator
+        spec:
+          finalizers:
+          - kubernetes
+
+  - name: Create OperatorGroup for cert-manager for Red hat OpenShift
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: operators.coreos.com/v1
+        kind: OperatorGroup
+        metadata:
+          name: cert-manager-operator
+          namespace: cert-manager-operator
+        spec:
+          targetNamespaces:
+          - cert-manager-operator
+          upgradeStrategy: Default
+
+  - name: Subscribe to cert-manager for Red Hat OpenShift Operator
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: operators.coreos.com/v1alpha1
+        kind: Subscription
+        metadata:
+          labels:
+            operators.coreos.com/openshift-cert-manager-operator.service-telemetry: ""
+          name: openshift-cert-manager-operator
+          namespace: cert-manager-operator
+        spec:
+          channel: stable-v1
+          installPlanApproval: Automatic
+          name: openshift-cert-manager-operator
+          source: redhat-operators
+          sourceNamespace: openshift-marketplace
+
+# installed by properties.yaml definition as of STF 1.5.3
+- when: not __deploy_from_index_enabled | bool
+  block:
+    - name: Subscribe to AMQ Interconnect Operator
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: amq7-interconnect-operator
+            namespace: "{{ namespace }}"
+          spec:
+            channel: 1.10.x
+            installPlanApproval: Automatic
+            name: amq7-interconnect-operator
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+
+# undocumented procedure: used for backwards compatilibity verification
+- block:
+    - name: Subscribe to Elastic Cloud on Kubernetes Operator
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: elasticsearch-eck-operator-certified
+            namespace: "{{ namespace }}"
+          spec:
+            channel: stable
+            installPlanApproval: Automatic
+            name: elasticsearch-eck-operator-certified
+            source: certified-operators
+            sourceNamespace: openshift-marketplace
+
+    - name: Wait for Elasticsearch CRD to appear
+      kubernetes.core.k8s_info:
+        api_version: apiextensions.k8s.io/v1
+        kind: CustomResourceDefinition
+        name: elasticsearches.elasticsearch.k8s.elastic.co
+      register: eckCRD
+      until: eckCRD.resources[0] is defined
+      retries: 5
+      delay: 30
