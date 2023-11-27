@@ -2,14 +2,22 @@
 - name: Run ansible-lint
   hosts: all
   tasks:
+    - name: install virtualenv
+      ansible.builtin.pip:
+        name: virtualenv
+        state: latest
+        extra_args: "--user"
+
     - name: Install ansible-lint
       ansible.builtin.pip:
         name: ansible-lint
         state: latest
-        extra_args: '--user'
+        virtual_env: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv"
 
     - name: Run ansible-lint
       ansible.builtin.shell:
         cmd: |
-          ansible-lint
+          python -m ansible-lint -c .ansible-lint
         chdir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
+        environment:
+          PATH: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv/bin/"
