@@ -122,7 +122,6 @@
         name: smart-gateway-operator-catalog
         namespace: "{{ namespace }}"
 
-# Remove the cert manager since we install it as part of the CI/documented pre-install process
 - name: Remove openshift-cert-manager-operator namespace
   kubernetes.core.k8s:
     state: absent
@@ -131,7 +130,11 @@
       apiVersion: project.openshift.io/v1
       kind: Project
       metadata:
-        name: openshift-cert-manager-operator
+        name: "{{ item }}"
+  loop:
+    - openshift-cert-manager-operator
+    - cert-manager-operator
+    - cert-manager
 
 - name: Remove Elasticsearch
   ignore_errors: true
