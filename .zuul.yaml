@@ -46,6 +46,7 @@
     run:
       - ci/check_ocp_version.yml
     post-run:
+      - ci/post-debug_crc.yml
       - ci/post-collect_logs.yml
         # Add these steps so we can work around the pre stage failing, and investigate whether CRC actually comes up, and whether it runs STF
       #- ci/prepare.yml

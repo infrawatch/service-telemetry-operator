@@ -1,0 +1,61 @@
+---
+- hosts: controller
+  name: "Wait for 4.14 to work"
+  tasks:
+    - name: "Get crc info"
+      ansible.builtin.shell:
+        cmd: |
+          crc version
+
+    - name: "Run crc status"
+      ansible.builtin.shell:
+        cmd: |
+          crc status
+
+    - name: "Get the cache dir for crc"
+      ansible.builtin.shell:
+        cmd: |
+          crc status | grep "Cache Directory" | cut -d: -f2
+      register: cache_dir
+
+    - name: "Show the contents of of cache dir"
+      ansible.builtin.shell:
+        cmd: |
+          ls {{ cache_dir.stdout }} | grep {{ crc_ocp_bundle | basename }}
+          ls {{ cache_dir.stdout }}/{{ crc_ocp_bundle | basename | splitext | first }}/
+
+    - name: "Get oc status"
+      ansible.builtin.shell:
+        cmd: |
+          KUBECONFIG={{ cache_dir.stdout | trim }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig oc status
+      register: output
+      ignore_errors: true
+      retries: 100
+      delay: 6
+      until: output.rc == 0
+
+    - ansible.builtin.set_fact:
+        kubeconfig: "{{ cache_dir.stdout | trim }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig"
+
+    - name: "Link the KUBECONFIG file to ~/.kube/config"
+      ansible.builtin.shell:
+        cmd: |
+          unlink ~/.kube/config || true
+          ln -s {{ kubeconfig }} ~/.kube/config
+      ignore_errors: true
+
+    - name: "Get oc status"
+      ansible.builtin.shell:
+        cmd: |
+          oc status
+
+#- name: "Cheat and try prepare STF now"
+#  ansible.builtin.import_playbook: 'prepare.yml'
+#
+#- name: "Deploy STF"
+#  ansible.builtin.import_playbook: 'deploy_stf.yml'
+#
+#- name: "Test STF"
+#  ansible.builtin.import_playbook: 'test_stf.yml'
+
+
