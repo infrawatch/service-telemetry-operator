@@ -2,8 +2,9 @@
 - job:
     name: stf-base
     # defined in: https://review.rdoproject.org/cgit/config/tree/zuul.d/_jobs-crc.yaml
-    #parent: base-simple-crc
-    parent: base-crc
+    parent: base-simple-crc
+    #This can't be used because the bundle can't be passed
+    #parent: base-crc
     abstract: true
     description: |
       Run the stf-run-ci role, and then test stf
