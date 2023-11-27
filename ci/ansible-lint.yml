@@ -4,7 +4,7 @@
   tasks:
     - name: Install ansible-lint
       ansible.builtin.pip:
-        package: ansible-lint
+        name: ansible-lint
         state: latest
 
     - name: Run ansible-lint
