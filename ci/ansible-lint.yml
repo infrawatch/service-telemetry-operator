@@ -12,7 +12,7 @@
       ansible.builtin.pip:
         name: ansible-lint
         state: latest
-        virtual_env: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv"
+        virtualenv: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv"
 
     - name: Run ansible-lint
       ansible.builtin.shell:
