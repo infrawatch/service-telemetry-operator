@@ -142,7 +142,7 @@
       # https://review.rdoproject.org/zuul/build/78feca3ce9e5495fbb3ebf811fabaa78/console#4/1/4/controller
       # 16 attempts/1m36s
       # crc_parameters: '--memory 25000 --disk-size 80 --cpus 8'
-      crc_parameters: '--memory 50000 --disk-size 80 --cpus 8'
+      crc_parameters: '--memory 40000 --disk-size 80 --cpus 8'
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.14.1/crc_libvirt_4.14.1_amd64.crcbundle'
       ocp_version: '4.14.1'
 
