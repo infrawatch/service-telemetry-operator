@@ -14,16 +14,12 @@
           - ansible-core
           - ansible-lint
         state: latest
-        extra_args: "--user"
-          #virtualenv: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv"
+        virtualenv: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv"
 
     - name: Run ansible-lint
       ansible.builtin.shell:
         cmd: |
-          python -m ansiblelint -c .ansible-lint {{ item }}
+          python -m ansiblelint -c .ansible-lint build/ ci/
         chdir: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}"
-          #environment:
-          #  PATH: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv/bin/"
-      with_items:
-        - "build"
-        - "ci"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/{{ zuul.project.src_dir }}/.venv/bin/"
