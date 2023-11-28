@@ -132,7 +132,7 @@
 - job:
     name: stf-crc-ocp414
     parent: stf-multi-crc-base
-    nodeset: centos-9-crc-4xl
+    nodeset: centos-9-crc-3xl
     vars:
       # get oc status took 25 attempts/2min 39 sec with 16GB ram
       # https://review.rdoproject.org/zuul/build/6162196471fe4db6891635f324eb8c30/console#4/1/4/controller
