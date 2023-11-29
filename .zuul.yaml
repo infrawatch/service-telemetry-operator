@@ -47,12 +47,12 @@
       - ci/check_ocp_version.yml
     post-run:
       - ci/post-debug_crc.yml
-      - ci/post-collect_logs.yml
-      - ci/post-upload_logs.yml
-        # Add these steps so we can work around the pre stage failing, and investigate whether CRC actually comes up, and whether it runs STF
+      # Add these steps so we can work around the pre stage failing, and investigate whether CRC actually comes up, and whether it runs STF
       #- ci/prepare.yml
       #- ci/deploy_stf.yml
       #- ci/test_stf.yml
+      - ci/post-collect_logs.yml
+      - ci/post-upload_logs.yml
 
 - job:
     name: stf-crc-nightly_bundles
@@ -62,7 +62,7 @@
       Deploy STF using the nightly bundles
     vars:
       scenario: "nightly_bundles"
-    
+
 - job:
     name: stf-crc-local_build
     parent: stf-base
