@@ -160,12 +160,11 @@
         - stf-crc-ocp_413-nightly_bundles
         - stf-crc-ocp_413-local_build
         - stf-crc-ocp_413-local_build-index_deploy
-        
+
 - project:
     name: infrawatch/service-telemetry-operator
     #templates:
     #  - stf-crc-jobs
     github-check:
       jobs:
-        - stf-crc-ocp_413-nightly_bundles
         - stf-crc-ocp414

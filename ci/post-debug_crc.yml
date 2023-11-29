@@ -25,8 +25,13 @@
     - name: "Get the cache dir for crc"
       ansible.builtin.shell:
         cmd: |
-          crc status | grep "Cache Directory" | cut -d: -f2
+          crc status | grep "Cache Directory" | cut -d' ' -f3
       register: cache_dir
+
+    - name: Get crc status in json format
+      ansible.builtin.shell:
+        cmd: |
+          crc status -o json
 
     - name: "Show the contents of of cache dir"
       ansible.builtin.shell:
@@ -36,7 +41,12 @@
 
     - name: "Set the name for kubeconfig"
       ansible.builtin.set_fact:
-        kubeconfig: "{{ cache_dir.stdout | trim }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig"
+        kubeconfig: "{{ cache_dir.stdout }}/{{ crc_ocp_bundle | basename | splitext | first }}/kubeconfig"
+
+    - name: Get oc status from crc
+      ansible.builtin.shell:
+        cmd:
+          crc status -o json
 
     - name: "Get oc status"
       ansible.builtin.shell:
@@ -47,6 +57,18 @@
       retries: 100
       delay: 6
       until: output.rc == 0
+
+    - name: Get oc status from crc
+      ansible.builtin.shell:
+        cmd:
+          crc status -o json
+      register: crc_status
+
+    - ansible.builtin.debug:
+        var: crc_status | from_json
+
+    - ansible.builtin.set_fact:
+        crc_status_json: "{{ crc_status | from_json }}"
 
     - name: "Link the KUBECONFIG file to ~/.kube/config"
       ansible.builtin.shell:
@@ -59,4 +81,3 @@
       ansible.builtin.shell:
         cmd: |
           oc status
-
