@@ -82,18 +82,18 @@
             namespace: '{{ ansible_operator_meta.namespace }}'
           register: serving_certs_ca
 
-        - name: Retrieve prometheus secret
+        - name: Retrieve prometheus reader token
           k8s_info:
             api_version: v1
             kind: Secret
             namespace: '{{ ansible_operator_meta.namespace }}'
-            name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
-          register: prometheus_secret
+            name: stf-prometheus-reader-token
+          register: prometheus_reader_secret
 
-        - name: Decode prometheus password
+        - name: Decode prometheus reader token
           no_log: true
           set_fact:
-            prom_basicauth_passwd: '{{ prometheus_secret.resources[0].data.password | b64decode }}'
+            prometheus_reader_token: '{{ prometheus_reader_secret.resources[0].data.token | b64decode }}'
 
     # Lookup existing datasources
     - name: Remove legacy datasources

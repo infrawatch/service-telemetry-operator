@@ -1,0 +1,54 @@
+- name: Create ServiceAccount/stf-prometheus-reader
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: stf-prometheus-reader
+        namespace: '{{ ansible_operator_meta.namespace }}'
+
+- name: Create prometheus-reader Role
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: prometheus-reader
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      rules:
+      - apiGroups:
+        - '{{ prometheus_operator_api_string | replace("/v1","") }}'
+        resources:
+        - prometheus
+        verbs:
+        - get
+        namespaces:
+        - '{{ ansible_operator_meta.namespace }}'
+
+- name: Create prometheus-reader RoleBinding for stf-prometheus-reader
+  k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: stf-prometheus-reader
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: Role
+        name: prometheus-reader
+      subjects:
+      - kind: ServiceAccount
+        name: stf-prometheus-reader
+
+- name: Create an access token for stf-prometheus-reader
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: stf-prometheus-reader-token
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        annotations:
+          kubernetes.io/service-account.name: stf-prometheus-reader
+      type: kubernetes.io/service-account-token

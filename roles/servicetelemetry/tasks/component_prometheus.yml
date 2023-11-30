@@ -173,46 +173,6 @@
         name: prometheus-k8s-{{ ansible_operator_meta.namespace }}
         namespace: '{{ ansible_operator_meta.namespace }}'
 
-- name: Check for existing prometheus htpasswd user secret
-  k8s_info:
-    api_version: v1
-    kind: Secret
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
-  register: prometheus_htpasswd
-
-- name: Create a new prometheus password if it doesn't exist yet
-  when: prometheus_htpasswd.resources|length == 0
-  block:
-    - name: Set prometheus htpasswd
-      no_log: true
-      set_fact:
-        prom_basicauth_passwd: "{{ lookup('password', '/dev/null') }}"
-
-    - name: Create htpasswd secret  # Contains both the htpasswd version and plaintext for lookup
-      no_log: true
-      k8s:
-        definition:
-          api_version: v1
-          kind: Secret
-          metadata:
-            name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
-            namespace: '{{ ansible_operator_meta.namespace }}'
-          type: Opaque
-          stringData:
-            auth: 'internal:{{ prom_basicauth_passwd | password_hash("bcrypt") | replace("$2b$","$2y$", 1)}}'
-            password: '{{ prom_basicauth_passwd }}'
-      tags:
-        - skip_ansible_lint
-
-    - name: Re-register new object for use in the annotation
-      k8s_info:
-        api_version: v1
-        kind: Secret
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        name: '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
-      register: prometheus_htpasswd
-
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_prometheus.j2') | from_yaml }}"
