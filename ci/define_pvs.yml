@@ -21,7 +21,7 @@
     - name: "Creating the Pvs" 
       ansible.builtin.shell: 
         cmd: |
-          STORAGE_CLASS="{{ __service_telemetry_storage_persistent_storage_class }}" STORAGE_CAPACITY=40 make crc_storage
+          STORAGE_CLASS="{{ __service_telemetry_storage_persistent_storage_class }}" STORAGE_CAPACITY=30 make crc_storage
       register: make_output
       args:
         chdir: "{{ install_yamls_dir }}"
