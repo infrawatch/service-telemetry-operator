@@ -39,7 +39,7 @@
       Deploy STF using the nightly bundles
     vars:
       scenario: "nightly_bundles"
-    
+
 - job:
     name: stf-crc-local_build
     parent: stf-base
@@ -106,19 +106,36 @@
     vars:
       crc_ocp_bundle: 'https://mirror.openshift.com/pub/openshift-v4/clients/crc/bundles/openshift/4.13.14/crc_libvirt_4.13.14_amd64.crcbundle'
 
+- job:
+    name: stf-crc-provider
+    parent: base-simple-crc
+    run:
+      - ci/expose_crc_info.yml
+    provides: openshift_cluster
+    vars:
+      test_input: "Hello world!"
+
+- job:
+    name: stf-crc-consumer
+    parent: base
+    requires:
+      - openshift_cluster
+    dependencies:
+      - stf-crc-provider
+    run:
+      # this playbook will consume the cluster info to log into the cluster.
+      # Or ping the host... Or something like that
+      - ci/debug_crc.yml
+
 - project-template:
     name: stf-crc-jobs
     description: |
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-ocp_412-nightly_bundles
-        - stf-crc-ocp_412-local_build
-        - stf-crc-ocp_412-local_build-index_deploy
-        - stf-crc-ocp_413-nightly_bundles
-        - stf-crc-ocp_413-local_build
-        - stf-crc-ocp_413-local_build-index_deploy
-        
+        - stf-crc-provider
+        - stf-crc-consumer
+
 - project:
     name: infrawatch/service-telemetry-operator
     templates:

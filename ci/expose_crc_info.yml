@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+    - name: Return zuul data
+      zuul_return:
+        data:
+          zuul:
+            pause: true
+          # What do I need?
+          test: "{{ test_input }}"
