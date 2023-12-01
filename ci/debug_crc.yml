@@ -3,3 +3,5 @@
   tasks:
     - ansible.builtin.debug:
         msg: "{{ test }}"
+
+    - ansible.builtin.shell: ping -w 5 "{{ provider_ip_address }}"

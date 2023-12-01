@@ -8,3 +8,4 @@
             pause: true
           # What do I need?
           test: "{{ test_input }}"
+          provider_ip_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']  }}"
