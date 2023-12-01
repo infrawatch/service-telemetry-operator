@@ -40,37 +40,10 @@
       ansible.builtin.debug:
         var: pv_output.stdout_lines
 
-    - name: "Show fail message if no pvs with type local_storage available"
+    - name: "Show fail message if no pvs available"
       ansible.builtin.fail:
         msg: "Failed to create Pvs"
       when: pv_output.stdout_lines | length == 0
-
-    - name: Get list of PVs
-      block:
-        - name: Get PV names
-          command: oc get pv --no-headers -o custom-columns=":metadata.name"
-          register: pv_names
-
-        - name: Create PVCs
-          k8s:
-            definition: |
-              apiVersion: v1
-              kind: PersistentVolumeClaim
-              metadata:
-                name: "{{ item }}-claim"
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: "{{ query('k8s', 'items[*].spec.capacity.storage', namespace='default', kind='PersistentVolume', label_selector='metadata.name=' ~ item) | first }}"
-          with_items: "{{ pv_names.stdout_lines }}"
-
-
-      ansible.builtin.shell:
-        cmd: |
-          oc get pv --no-headers -o custom-columns=":metadata.name" | grep {{ __service_telemetry_storage_persistent_storage_class }}
-      register: pvs_result
 
     - name: Get the current default StorageClass
       ansible.builtin.shell:
