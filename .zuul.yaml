@@ -34,16 +34,6 @@
       crc_parameters: '--memory 16000 --disk-size 80 --cpus 6'  # Increase from 14336
 
 - job:
-    name: pvs_crc
-    parent: stf-base
-    description: |
-      Create Pvs in crc Cluster
-    run:
-      - ci/define_pvs.yml
-    vars:
-      scenario: "nightly_bundles"
-
-- job:
     name: stf-crc-nightly_bundles
     parent: stf-base
     abstract: true
@@ -125,11 +115,10 @@
     github-check:
       jobs:
         - stf-crc-ocp_413-local_build
-        #- stf-crc-ocp_412-local_build-index_deploy
-        #- stf-crc-ocp_413-nightly_bundles
-        #- stf-crc-ocp_413-local_build-index_deploy
+        - stf-crc-ocp_412-local_build-index_deploy
+        - stf-crc-ocp_413-nightly_bundles
+        - stf-crc-ocp_413-local_build-index_deploy
         
-
 - project:
     name: infrawatch/service-telemetry-operator
     templates:
