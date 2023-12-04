@@ -1,5 +1,6 @@
 - name: Create ServiceAccount/stf-prometheus-reader
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
       apiVersion: v1
       kind: ServiceAccount
@@ -9,6 +10,7 @@
 
 - name: Create prometheus-reader Role
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
       kind: Role
@@ -27,6 +29,7 @@
 
 - name: Create prometheus-reader RoleBinding for stf-prometheus-reader
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
       kind: RoleBinding
@@ -43,6 +46,7 @@
 
 - name: Create an access token for stf-prometheus-reader
   k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
     definition:
       apiVersion: v1
       kind: Secret
