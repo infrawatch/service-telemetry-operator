@@ -61,3 +61,10 @@
   ignore_errors: true
   retries: 3
   delay: 10
+
+- name: "Get PV and PVC Information  details"
+  ansible.builtin.shell:
+    cmd: |
+      oc -n {{ namespace }} get pv >> {{ logfile_dir }}/post_pv.log 2>&1
+      oc -n {{ namespace }} get pvc >> {{ logfile_dir }}/post_pvc.log 2>&1
+  ignore_errors: true
