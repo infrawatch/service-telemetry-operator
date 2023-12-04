@@ -41,8 +41,7 @@
         tasks_from: add_crc_creds.yml
 
     - name: "Run Create PV job"
-      ansible.builtin.import_playbook:
-        name: define_pvs.yml
+      ansible.builtin.import_playbook: define_pvs.yml
 
     - name: "Create the service-telemetry project"
       kubernetes.core.k8s:
