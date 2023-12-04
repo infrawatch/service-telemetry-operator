@@ -2,5 +2,5 @@
 #ansible-playbook --extra-vars __local_build_enabled=true -e __deploy_from_index_enabled=true --extra-vars working_branch="$(git rev-parse --abbrev-ref HEAD)" --extra-vars __service_telemetry_storage_ephemeral_enabled=true --extra-vars __service_telemetry_observability_strategy=use_redhat ./run-ci.yaml
 __local_build_enabled: true
 __deploy_from_index_enabled: true
-__service_telemetry_ephemeral_enabled: true
+__service_telemetry_ephemeral_enabled: false
 __service_telemetry_observability_strategy: use_redhat
