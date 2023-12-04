@@ -6,17 +6,17 @@
   become: true
 
 - name: "Create the pvs"
-  retries: 3
-  delay: 10
-  until: make_output.rc == 0
   block:
     - name: "Run make crc-storage" 
       ansible.builtin.shell: 
         cmd: |
           STORAGE_CLASS="{{ __service_telemetry_storage_persistent_storage_class }}" STORAGE_CAPACITY=40 make crc_storage
-      register: make_output
       args:
         chdir: "{{ install_yamls_dir }}"
+      register: make_output
+      retries: 3
+      delay: 10
+      until: make_output.rc == 0
 
     - name: "Print make result"
       ansible.builtin.debug:
