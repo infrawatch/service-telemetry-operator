@@ -1,66 +1,63 @@
 ---
-- name: "Define Pvs"
-  hosts: controller
-  tasks:
-    - name: "Log into the cluster"
-      ansible.builtin.import_role:
-        name: rhol_crc
-        tasks_from: add_crc_creds.yml
-    
-    # For testing only , will be removed when integrated with prepare.yml
-    - name: "Get vars common to all jobs"
-      ansible.builtin.include_vars:
-        file: "vars-zuul-common.yml"
-   
-    - name: "Install make if not present"
-      ansible.builtin.package:
-        name: make
-        state: present
-      become: true
+- name: "Log into the cluster"
+  ansible.builtin.import_role:
+    name: rhol_crc
+    tasks_from: add_crc_creds.yml
 
-    - name: "Creating the Pvs" 
-      ansible.builtin.shell: 
-        cmd: |
-          STORAGE_CLASS="{{ __service_telemetry_storage_persistent_storage_class }}" STORAGE_CAPACITY=40 make crc_storage
-      register: make_output
-      args:
-        chdir: "{{ install_yamls_dir }}"
+# For testing only , will be removed when integrated with prepare.yml
+- name: "Get vars common to all jobs"
+  ansible.builtin.include_vars:
+    file: "vars-zuul-common.yml"
 
-    - name: "Print make result"
-      ansible.builtin.debug:
-        var: make_output
+- name: "Install make if not present"
+  ansible.builtin.package:
+    name: make
+    state: present
+  become: true
 
-    - name: "Get Pvs in '{{ namespace }}'"
-      ansible.builtin.shell: 
-        cmd: |
-          oc get pv -n {{ namespace }}| grep {{ __service_telemetry_storage_persistent_storage_class }}
-      register: pv_output
+- name: "Creating the Pvs" 
+  ansible.builtin.shell: 
+    cmd: |
+      STORAGE_CLASS="{{ __service_telemetry_storage_persistent_storage_class }}" STORAGE_CAPACITY=40 make crc_storage
+  register: make_output
+  args:
+    chdir: "{{ install_yamls_dir }}"
 
-    - name: "Print get Pvs result"
-      ansible.builtin.debug:
-        var: pv_output.stdout_lines
+- name: "Print make result"
+  ansible.builtin.debug:
+    var: make_output
 
-    - name: "Show fail message if no pvs available"
-      ansible.builtin.fail:
-        msg: "Failed to create Pvs"
-      when: pv_output.stdout_lines | length == 0
+- name: "Get Pvs in '{{ namespace }}'"
+  ansible.builtin.shell: 
+    cmd: |
+      oc get pv -n {{ namespace }}| grep {{ __service_telemetry_storage_persistent_storage_class }}
+  register: pv_output
 
-    - name: Get the current default StorageClass
-      ansible.builtin.shell:
-        cmd: |
-          oc get storageclass | grep "(default)" | awk '{print $1}'
-      register: current_default_storageclass
-      changed_when: false
+- name: "Print get Pvs result"
+  ansible.builtin.debug:
+    var: pv_output.stdout_lines
 
-    - name: Replace default StorageClass
-      ansible.builtin.shell:
-        cmd: |
-          oc patch storageclass {{ current_default_storageclass.stdout }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-      when: current_default_storageclass.stdout is defined
+- name: "Show fail message if no pvs available"
+  ansible.builtin.fail:
+    msg: "Failed to create Pvs"
+  when: pv_output.stdout_lines | length == 0
 
-    - name: Set new StorageClass as default
-      ansible.builtin.shell:
-        cmd: |
-         oc patch storageclass {{ __service_telemetry_storage_persistent_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+- name: "Get the current default StorageClass"
+  ansible.builtin.shell:
+    cmd: |
+      oc get storageclass | grep "(default)" | awk '{print $1}'
+  register: current_default_storageclass
+  changed_when: false
+
+- name: "Replace default StorageClass"
+  ansible.builtin.shell:
+    cmd: |
+      oc patch storageclass {{ current_default_storageclass.stdout }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+  when: current_default_storageclass.stdout is defined
+
+- name: "Set new StorageClass as default"
+  ansible.builtin.shell:
+    cmd: |
+      oc patch storageclass {{ __service_telemetry_storage_persistent_storage_class }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
       
