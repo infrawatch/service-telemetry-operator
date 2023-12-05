@@ -291,13 +291,6 @@ spec:
                       ingressEnabled:
                         description: Enable ingress access to Grafana
                         type: boolean
-                      adminPassword:
-                        description: Grafana admin password
-                        type: string
-                        format: password
-                      adminUser:
-                        description: Grafana admin user
-                        type: string
                       baseImage:
                         description: Path to the base container image used to instantiate a Grafana instance
                         type: string

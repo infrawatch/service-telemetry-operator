@@ -385,13 +385,6 @@ spec:
                   grafana:
                     description: Grafana related configuration
                     properties:
-                      adminPassword:
-                        description: Grafana admin password
-                        format: password
-                        type: string
-                      adminUser:
-                        description: Grafana admin user
-                        type: string
                       baseImage:
                         description: Path to the base container image used to instantiate
                           a Grafana instance

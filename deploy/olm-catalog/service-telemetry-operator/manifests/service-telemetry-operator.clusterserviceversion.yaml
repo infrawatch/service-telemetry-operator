@@ -117,8 +117,6 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
-                "adminPassword": "secret",
-                "adminUser": "root",
                 "disableSignoutMenu": false,
                 "ingressEnabled": false
               }

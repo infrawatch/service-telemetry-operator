@@ -80,8 +80,6 @@ spec:
     enabled: false
     grafana:
       ingressEnabled: false
-      adminPassword: secret
-      adminUser: root
       disableSignoutMenu: false
   transports:
     qdr:
