@@ -47,7 +47,7 @@ echo "*** [INFO] Working in project ${OCP_PROJECT}"
 echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
 
-echo "*** [INFO] Getting Prometheus authentication password"
+echo "*** [INFO] Getting Prometheus authentication token"
 PROMETHEUS_AUTH_TOKEN=$(oc create token stf-prometheus-reader)
 
 echo "*** [INFO] Creating configmaps..."
