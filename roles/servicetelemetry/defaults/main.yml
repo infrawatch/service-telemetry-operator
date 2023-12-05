@@ -83,8 +83,6 @@ servicetelemetry_defaults:
     enabled: false
     grafana:
       ingress_enabled: false
-      admin_password: secret
-      admin_user: root
       disable_signout_menu: false
       base_image: docker.io/grafana/grafana:8.1.2
 
