@@ -179,8 +179,32 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - kind: ServiceTelemetry
+    - description: Represents an instance of the Service Telemetry Framework
+      displayName: STF Cluster
+      kind: ServiceTelemetry
       name: servicetelemetrys.infra.watch
+      resources:
+      - kind: Pods
+        name: ""
+        version: v1
+      - kind: ConfigMaps
+        name: ""
+        version: v1
+      - kind: ServiceTelemetrys
+        name: servicetelemetrys.infra.watch
+        version: v1beta1
+      - kind: ReplicaSets
+        name: ""
+        version: v1
+      - kind: Deployments
+        name: ""
+        version: v1
+      - kind: Services
+        name: ""
+        version: v1
+      - kind: ServiceMonitors
+        name: servicemonitors.monitoring.coreos.com
+        version: v1
       version: v1beta1
   description: Service Telemetry Operator for monitoring clouds
   displayName: Service Telemetry Operator
