@@ -67,3 +67,74 @@
         state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
         definition:
           '{{ ds_manifest }}'
+
+    - name: Load Cloud Overview Dashboard
+      k8s:
+        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+        definition:
+          apiVersion: integreatly.org/v1alpha1
+          kind: GrafanaDashboard
+          metadata:
+            labels:
+              app: grafana
+              stf_owner: "{{ ansible_operator_meta.name }}"
+            name: rhos-cloud-dashboard-1
+            namespace: "{{ ansible_operator_meta.namespace }}"
+          spec:
+            name: rhos-cloud-dashboard.json
+            plugins:
+              - name: grafana-polystat-panel
+                version: "1.2.11"
+            json: |
+              {{ lookup('file', 'rhos-cloud-dashboard.json') | string }}
+
+    - name: Load Infrastructure Overview Dashboard
+      k8s:
+        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+        definition:
+          apiVersion: integreatly.org/v1alpha1
+          kind: GrafanaDashboard
+          metadata:
+            labels:
+              app: grafana
+              stf_owner: "{{ ansible_operator_meta.name }}"
+            name: rhos-dashboard-1
+            namespace: "{{ ansible_operator_meta.namespace }}"
+          spec:
+            name: rhos-dashboard.json
+            json: |
+              {{ lookup('file', 'rhos-dashboard.json') | string }}
+
+    - name: Load Memcached Dashboard
+      k8s:
+        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+        definition:
+          apiVersion: integreatly.org/v1alpha1
+          kind: GrafanaDashboard
+          metadata:
+            labels:
+              app: grafana
+              stf_owner: "{{ ansible_operator_meta.name }}"
+            name: memcached-dashboard-1
+            namespace: "{{ ansible_operator_meta.namespace }}"
+          spec:
+            name: memcached-dashboard.json
+            json: |
+              {{ lookup('file', 'memcached-dashboard.json') | string }}
+
+    - name: Load Virtual Machine View Dashboard
+      k8s:
+        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+        definition:
+          apiVersion: integreatly.org/v1alpha1
+          kind: GrafanaDashboard
+          metadata:
+            labels:
+              app: grafana
+              stf_owner: "{{ ansible_operator_meta.name }}"
+            name: virtual-machine-dashboard-1
+            namespace: "{{ ansible_operator_meta.namespace }}"
+          spec:
+            name: virtual-machine-view.json
+            json: |
+              {{ lookup('file', 'virtual-machine-view.json') | string }}
