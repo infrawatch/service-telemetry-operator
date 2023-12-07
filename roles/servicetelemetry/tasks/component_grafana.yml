@@ -7,54 +7,6 @@
         kind: Route
         name: 'grafana-route'
 
-- name: Check for existing grafana htpasswd secret
-  no_log: true
-  k8s_info:
-    api_version: v1
-    kind: Secret
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
-  register: grafana_htpasswd_secret
-
-- block:
-    - name: Parse current Grafana htpasswd salt from secret
-      no_log: true
-      set_fact:
-        grafana_htpasswd_salt: "{{ ((grafana_htpasswd_secret.resources[0].data.auth | b64decode).split('$')[-1])[0:22] }}"
-  rescue:
-    - name: Generate initial Grafana htpasswd bcrypt string from grafana.admin_password
-      no_log: true
-      set_fact:
-        init_grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt') | replace('$2b$','$2y$', 1)) }}"
-
-    - name: Read newly generated Grafana htpasswd salt
-      no_log: true
-      set_fact:
-        grafana_htpasswd_salt: "{{ (init_grafana_htpasswd_bcrypt_string.split('$')[-1])[0:22] }}"
-  always:
-    - name: Generate Grafana htpasswd bcrypt string from grafana.adminPassword using salt
-      no_log: true
-      set_fact:
-        grafana_htpasswd_bcrypt_string: "{{ (servicetelemetry_vars.graphing.grafana.admin_password | password_hash('bcrypt', grafana_htpasswd_salt) | replace('$2b$','$2y$', 1)) }}"
-
-    - name: Generate Grafana auth string from grafana.adminUser and grafana_htpasswd_bcrypt_string
-      no_log: true
-      set_fact:
-        grafana_htpasswd_auth_string: "{{ servicetelemetry_vars.graphing.grafana.admin_user }}:{{ grafana_htpasswd_bcrypt_string }}"
-
-- name: Create or patch htpasswd secret for grafana admin
-  no_log: false
-  k8s:
-    definition:
-      api_version: v1
-      kind: Secret
-      metadata:
-        name: '{{ ansible_operator_meta.name }}-grafana-htpasswd'
-        namespace: '{{ ansible_operator_meta.namespace }}'
-      type: Opaque
-      stringData:
-        auth: '{{ grafana_htpasswd_auth_string }}'
-
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"

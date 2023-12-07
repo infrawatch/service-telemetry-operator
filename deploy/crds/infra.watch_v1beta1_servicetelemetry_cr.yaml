@@ -80,8 +80,6 @@ spec:
     enabled: false
     grafana:
       ingressEnabled: true
-      adminPassword: secret
-      adminUser: root
       disableSignoutMenu: false
       baseImage: registry.redhat.io/rhel8/grafana:7
       dashboards:

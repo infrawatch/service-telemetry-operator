@@ -117,8 +117,6 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
-                "adminPassword": "secret",
-                "adminUser": "root",
                 "baseImage": "registry.redhat.io/rhel8/grafana:7",
                 "dashboards": {
                   "enabled": true
