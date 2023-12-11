@@ -83,8 +83,6 @@ servicetelemetry_defaults:
     enabled: false
     grafana:
       ingress_enabled: true
-      admin_password: secret
-      admin_user: root
       disable_signout_menu: false
       base_image: registry.redhat.io/rhel8/grafana:7
       dashboards:
