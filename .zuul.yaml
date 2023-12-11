@@ -93,6 +93,7 @@
       - name: github.com/infrawatch/sg-core
       - name: github.com/infrawatch/prometheus-webhook-snmp
     pre-run:
+      - ci/debug_deploy.yml
       - ci/prepare.yml
     run:
       - ci/deploy_stf.yml
