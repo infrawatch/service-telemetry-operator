@@ -40,9 +40,6 @@
         name: rhol_crc
         tasks_from: add_crc_creds.yml
 
-    - name: "Create pvs for crc"
-      ansible.builtin.include: define_pvs.yml
-
     - name: "Create the service-telemetry project"
       kubernetes.core.k8s:
         api_version: v1
