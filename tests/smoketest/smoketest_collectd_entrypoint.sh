@@ -5,7 +5,7 @@ set +e
 PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}
 ELASTICSEARCH=${ELASTICSEARCH:-"https://elasticsearch-es-http:9200"}
 ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
-PROMETHEUS_AUTH_PASS=${PROMETHEUS_AUTH_PASS:-""}
+PROMETHEUS_AUTH_TOKEN=${PROMETHEUS_AUTH_TOKEN:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
 
@@ -37,12 +37,12 @@ sleep 30
 
 
 echo "*** [INFO] List of metric names for debugging..."
-curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
+curl -k -H "Authorization: Bearer ${PROMETHEUS_AUTH_TOKEN}" -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
 echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent CPU metrics..."
-curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=collectd_cpu_total{container="sg-core",plugin_instance="0",type_instance="user",service="default-cloud1-coll-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
+curl -k -H "Authorization: Bearer ${PROMETHEUS_AUTH_TOKEN}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=collectd_cpu_total{container="sg-core",plugin_instance="0",type_instance="user",service="default-cloud1-coll-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
 echo; echo
 
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code
@@ -53,7 +53,7 @@ echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent healthcheck metrics..."
-curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=sensubility_container_health_status{container="sg-core",service="default-cloud1-sens-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
+curl -k -H "Authorization: Bearer ${PROMETHEUS_AUTH_TOKEN}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=sensubility_container_health_status{container="sg-core",service="default-cloud1-sens-meter",host="'"${POD}"'"}[1m]' 2>&2 | tee /tmp/query_output
 echo; echo
 
 # The egrep exit code is the result of the test and becomes the container/pod/job exit code

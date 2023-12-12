@@ -12,14 +12,13 @@ spec:
       jsonData:
         timeInterval: 5s
         tlsAuthWithCACert: true
+        httpHeaderName1: 'Authorization'
       name: STFPrometheus
       type: prometheus
       url: 'https://{{ ansible_operator_meta.name }}-prometheus-proxy.{{ ansible_operator_meta.namespace }}.svc:9092'
       version: 1
-      basicAuth: true
-      basicAuthUser: internal
       secureJsonData:
-        basicAuthPassword: '{{ prom_basicauth_passwd }}'
+        httpHeaderValue1: 'Bearer {{prometheus_reader_token}}'
         tlsCACert: |
           {{ serving_certs_ca.resources[0].data['service-ca.crt'] | indent(10) }}
 {% endif %}
