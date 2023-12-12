@@ -42,6 +42,12 @@
         - subjectaccessreviews
         verbs:
         - create
+      - apiGroups:
+        - ""
+        resources:
+        - namespaces
+        verbs:
+        - get
 
 - name: Setup ClusterRoleBinding for Prometheus
   block:
@@ -117,18 +123,6 @@
         - securitycontextconstraints
         verbs:
         - use
-      - apiGroups:
-        - '{{ prometheus_operator_api_string | replace("/v1","") }}'
-        resources:
-        - alertmanagers
-        verbs:
-        - get
-      - apiGroups:
-        - smartgateway.infra.watch
-        resources:
-        - smartgateways
-        verbs:
-        - get
 
 - name: Setup RoleBinding for Prometheus
   block:
