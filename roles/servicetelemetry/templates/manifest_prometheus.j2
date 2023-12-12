@@ -20,7 +20,6 @@ spec:
     labels:
       prometheus: '{{ ansible_operator_meta.name }}'
     annotations:
-      hash-of-entire-htpasswd-secret-to-force-restart-if-changed: {{ prometheus_htpasswd | sha1 }}
 {% if servicetelemetry_vars.alerting.enabled %}
   alerting:
     alertmanagers:
@@ -42,10 +41,11 @@ spec:
     - -tls-cert=/etc/tls/private/tls.crt
     - -tls-key=/etc/tls/private/tls.key
     - -upstream=http://localhost:9090/
-    - -htpasswd-file=/etc/proxy/htpasswd/auth
     - -cookie-secret-file=/etc/proxy/secrets/session_secret
     - -openshift-service-account=prometheus-stf
-    - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+    - '-openshift-sar={"namespace":"{{ ansible_operator_meta.namespace }}","resource": "prometheus", "group":"{{ prometheus_operator_api_string | replace("/v1","") }}", "verb":"get"}'
+    - '-openshift-delegate-urls={"/":{"namespace":"{{ ansible_operator_meta.namespace }}","resource": "prometheus", "group":"{{ prometheus_operator_api_string | replace("/v1","") }}", "verb":"get"}}'
+
     ports:
       - containerPort: 9092
         name: https
@@ -55,14 +55,11 @@ spec:
         name: secret-{{ ansible_operator_meta.name }}-prometheus-proxy-tls
       - mountPath: /etc/proxy/secrets
         name: secret-{{ ansible_operator_meta.name }}-session-secret
-      - mountPath: /etc/proxy/htpasswd
-        name: secret-{{ ansible_operator_meta.name }}-prometheus-htpasswd
   configMaps:
     - serving-certs-ca-bundle
   secrets:
     - '{{ ansible_operator_meta.name }}-prometheus-proxy-tls'
     - '{{ ansible_operator_meta.name }}-session-secret'
-    - '{{ ansible_operator_meta.name }}-prometheus-htpasswd'
 {% if servicetelemetry_vars.backends.metrics.prometheus.storage.strategy == "persistent" %}
   storage:
     volumeClaimTemplate:
