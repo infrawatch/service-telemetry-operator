@@ -4,7 +4,6 @@
 # -- initial setup
 - name: Setup default values
   ansible.builtin.set_fact:
-    # The branch should be removed, we should assume that everything is checked out to the right place.
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ namespace if namespace is defined else (working_namespace | default('service-telemetry'))}}"
 
