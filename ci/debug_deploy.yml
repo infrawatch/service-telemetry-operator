@@ -3,6 +3,8 @@
   name: Get some info about the environment
   gather_facts: true
   ignore_errors: true
+  environment:
+    PATH: "~/.crc/bin:~/.crc/bin/oc:~/bin:{{ ansible_env.PATH }}"
   tasks:
     - name: Show hostvars
       ansible.builtin.debug:
