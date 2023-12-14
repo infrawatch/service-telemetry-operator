@@ -36,6 +36,9 @@
         cmd: |
          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ansible_user_dir }}/login.yml
 
+    - name: "Update teh kubeconfig path"
+      set_fact:
+        cifmw_openshift_kubeconfig: "/home/zuul/.kube/config"
     - name: Check for the kubeconfig file
       ansible.builtin.shell:
         cmd: |
