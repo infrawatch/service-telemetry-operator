@@ -55,3 +55,13 @@
   ignore_errors: true
   retries: 3
   delay: 10
+
+- name: "Get SGO,STO and QDR logs"
+  ansible.builtin.shell:
+    cmd: |
+      oc -n {{ namespace }} logs $(oc -n {{ namespace }} get pod -l name=service-telemetry-operator -o jsonpath='{.items[].metadata.name}') >> {{ logfile_dir }}/logs_sto.log 2>&1
+      oc -n {{ namespace }} logs $(oc -n {{ namespace }} get pod -l app=smart-gateway-operator -o jsonpath='{.items[].metadata.name}') >> {{ logfile_dir }}/logs_sgo.log 2>&1
+      oc -n {{ namespace }} logs $(oc -n {{ namespace }} get pod -l qdr -o jsonpath='{.items[].metadata.name}') >> {{ logfile_dir }}/logs_qdr.log 2>&1
+  ignore_errors: true
+  retries: 3
+  delay: 10
