@@ -47,6 +47,8 @@
 - block:
   - name: Create Prometheus instance
     include_tasks: component_prometheus.yml
+  - name: Create Prometheus read-only user
+    include_tasks: component_prometheus_reader.yml
 
   # --> alerting
   - name: Create Alertmanager instance

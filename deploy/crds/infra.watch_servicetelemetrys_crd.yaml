@@ -289,18 +289,18 @@ spec:
                         description: Whether to disable the Grafana signout menu
                         type: boolean
                       ingressEnabled:
-                        description: Enable ingress access to Grafana
+                        description: Whether to enable ingress access to Grafana
                         type: boolean
-                      adminPassword:
-                        description: Grafana admin password
-                        type: string
-                        format: password
-                      adminUser:
-                        description: Grafana admin user
-                        type: string
                       baseImage:
                         description: Path to the base container image used to instantiate a Grafana instance
                         type: string
+                      dashboards:
+                        description: Dashboard configurations for Grafana
+                        properties:
+                          enabled:
+                            description: Whether to enable built-in dashboards provided by Service Telemetry Framework
+                            type: boolean
+                        type: object
                     type: object
                 type: object
               cloudsRemoveOnMissing:
