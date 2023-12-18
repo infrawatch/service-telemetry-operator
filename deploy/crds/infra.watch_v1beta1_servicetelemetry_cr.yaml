@@ -79,10 +79,11 @@ spec:
   graphing:
     enabled: false
     grafana:
-      ingressEnabled: false
-      adminPassword: secret
-      adminUser: root
+      ingressEnabled: true
       disableSignoutMenu: false
+      baseImage: registry.redhat.io/rhel8/grafana:7
+      dashboards:
+        enabled: true
   transports:
     qdr:
       enabled: true

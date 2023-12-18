@@ -4,7 +4,6 @@
 # -- initial setup
 - name: Setup default values
   ansible.builtin.set_fact:
-    # The branch should be removed, we should assume that everything is checked out to the right place.
     branch: "{{ working_branch | default('master') }}"
     namespace: "{{ namespace if namespace is defined else (working_namespace | default('service-telemetry'))}}"
 
@@ -220,7 +219,9 @@
     args:
       executable: /bin/bash
     register: validate_deployment
+    failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
 
   - name: Show the result of the validate_deployment script
     ansible.builtin.debug:
-      var: validate_deployment.stdout
+      var: validate_deployment.stdout_lines[-1]
+

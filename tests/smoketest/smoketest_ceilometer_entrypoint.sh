@@ -5,7 +5,7 @@ set +e
 PROMETHEUS=${PROMETHEUS:-"https://default-prometheus-proxy:9092"}
 ELASTICSEARCH=${ELASTICSEARCH:-"https://elasticsearch-es-http:9200"}
 ELASTICSEARCH_AUTH_PASS=${ELASTICSEARCH_AUTH_PASS:-""}
-PROMETHEUS_AUTH_PASS=${PROMETHEUS_AUTH_PASS:-""}
+PROMETHEUS_AUTH_TOKEN=${PROMETHEUS_AUTH_TOKEN:-""}
 CLOUDNAME=${CLOUDNAME:-"smoke1"}
 POD=$(hostname)
 
@@ -13,21 +13,21 @@ POD=$(hostname)
 echo "*** [INFO] My pod is: ${POD}"
 
 # Run ceilometer_publisher script
-python3 /ceilometer_publish.py default-interconnect:5671 'driver=amqp&topic=cloud1-metering' 'driver=amqp&topic=cloud1-event'
+python3 /ceilometer_publish.py qdr-test:5672 'driver=amqp&topic=cloud1-metering' 'driver=amqp&topic=cloud1-event'
 
 # Sleeping to produce data
-echo "*** [INFO] Sleeping for 20 seconds to produce all metrics and events"
-sleep 20
+echo "*** [INFO] Sleeping for 30 seconds to produce all metrics and events"
+sleep 30
 
 echo "*** [INFO] List of metric names for debugging..."
-curl -sk -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
+curl -sk -H "Authorization: Bearer ${PROMETHEUS_AUTH_TOKEN}" -g "${PROMETHEUS}/api/v1/label/__name__/values" 2>&2 | tee /tmp/label_names
 echo; echo
 
 # Checks that the metrics actually appear in prometheus
 echo "*** [INFO] Checking for recent image metrics..."
 
 echo "[DEBUG] Running the curl command to return a query"
-curl -k -u "internal:${PROMETHEUS_AUTH_PASS}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
+curl -k -H "Authorization: Bearer ${PROMETHEUS_AUTH_TOKEN}" -g "${PROMETHEUS}/api/v1/query?" --data-urlencode 'query=ceilometer_image_size' 2>&1 | grep '"result":\[{"metric":{"__name__":"ceilometer_image_size"'
 metrics_result=$?
 echo "[DEBUG] Set metrics_result to $metrics_result"
 

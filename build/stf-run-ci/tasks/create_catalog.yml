@@ -38,9 +38,7 @@
   register: index_dockercfg_secret
   ignore_errors: true
 
-# There's an error when the requested resource doesn't exist, so check the rc
-- when: index_dockercfg_secret.rc != 0
-  block:
+- block:
   - name: Create config.json to import as Secret
     ansible.builtin.template:
       variable_start_string: "<<"
@@ -58,9 +56,32 @@
   register: ose_op_registry_is
   ignore_errors: true
 
-- name: Create ImageStream for ose-operator-registry
-  ansible.builtin.command: oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }} --confirm
+- name: Set the operator_registry_image
+  ansible.builtin.set_fact:
+    operator_registry_image: "{{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }}"
+
+  # --show-multiarch=true is used because you get an error (and rc!=0) when you query a multi-arch image without specifying the arch, even when the image exists
+- name: "Try to get the image info for the operator registry image"
+  ansible.builtin.command:
+    cmd: oc image info --show-multiarch=true "{{ operator_registry_image }}"
+  ignore_errors: true
+  register: image_info
+
+- name: Test alternative operator image
+  ansible.builtin.set_fact:
+    operator_registry_image: "quay.io/openshift/origin-operator-registry:4.13"
+  when: image_info.rc != 0
+
+- name: Create ImageStream for ose-operator-registry, if it doesn't already exist
+  ansible.builtin.command:
+    cmd: |
+      oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ operator_registry_image }} --confirm
   when: ose_op_registry_is.rc != 0
+  register: create_ose_is
+
+- name: Show the image stream
+  ansible.builtin.debug:
+    var: create_ose_is
 
 - name: Delete the existing imagestream, if it exists
   ansible.builtin.command: oc delete imagestream -n {{ namespace }} service-telemetry-framework-index
@@ -75,8 +96,16 @@
   register: stf_index_imagestream
   ignore_errors: true
 
-- when: stf_index_imagestream.rc != 0
-  name: Create BuildConfig for service-telemetry-framework-index
+- name: Show STF index image stream
+  ansible.builtin.debug:
+    var: stf_index_imagestream
+
+- name: Create index.yaml base for index image
+  ansible.builtin.template:
+    src: index-yaml.j2
+    dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
+
+- name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
     definition:
       apiVersion: build.openshift.io/v1
@@ -102,7 +131,8 @@
           dockerfile: |
             # The base image is expected to contain
             # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
-            FROM {{default_operator_registry_image_base}}:{{default_operator_registry_image_tag}}
+
+            FROM {{ operator_registry_image }}
 
             COPY --chmod=666 index.yaml /configs/
 
@@ -121,7 +151,7 @@
           dockerStrategy:
             from:
               kind: ImageStreamTag
-              name: "ose-operator-registry:{{default_operator_registry_image_tag}}"
+              name: "ose-operator-registry:{{ default_operator_registry_image_tag }}"
             volumes:
             - mounts:
               - destinationPath: /opt/app-root/auth
@@ -134,24 +164,13 @@
           type: Docker
         successfulBuildsHistoryLimit: 5
 
-- name: Get builds of service-telemetry-framework-index
-  kubernetes.core.k8s_info:
-    api_version: build.openshift.io/v1
-    kind: Build
-    namespace: "{{ namespace }}"
-    label_selectors:
-      - "build=service-telemetry-framework-index"
-  register: index_builds
-
-- when: index_builds.resources | length == 0
-  block:
-  - name: Create index.yaml base for index image
-    ansible.builtin.template:
-      src: index-yaml.j2
-      dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
-
-  - name: Build service-telemetry-framework-index
-    ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+- name: Build service-telemetry-framework-index
+  ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --follow --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+  register: build_result
+  ignore_errors: true
+  retries: 3
+  delay: 10
+  until: build_result.rc == 0
 
 - name: Create CloudOps CatalogSource
   kubernetes.core.k8s:
@@ -170,4 +189,4 @@
           securityContextConfig: legacy
         updateStrategy:
           registryPoll:
-            interval: 1m
+            interval: 5m

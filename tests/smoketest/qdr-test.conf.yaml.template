@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: qdr-test-config
+data:
+    qdrouterd.conf: |
+        router {
+            mode: edge
+            id: qdr-test.smoketest
+            workerThreads: 2
+            saslConfigDir: /etc/sasl2
+            saslConfigName: qdrouterd
+        }
+
+        sslProfile {
+            name: sslProfile
+            caCertFile: /etc/pki/tls/certs/ca.crt
+        }
+
+        listener {
+            host: 0.0.0.0
+            port: 5672
+            authenticatePeer: false
+            saslMechanisms: ANONYMOUS
+        }
+
+        connector {
+            host: default-interconnect
+            port: 5671
+            role: edge
+            saslPassword: pass:<<AMQP_PASS>>
+            saslUsername: guest@default-interconnect
+            sslProfile: sslProfile
+            verifyHostname: false
+        }
+
+        address {
+            prefix: unicast
+            distribution: closest
+        }
+
+        address {
+            prefix: exclusive
+            distribution: closest
+        }
+
+        address {
+            prefix: broadcast
+            distribution: multicast
+        }
+
+        address {
+            distribution: multicast
+            prefix: collectd
+        }
+
+        address {
+            distribution: multicast
+            prefix: anycast/ceilometer
+        }
+
+        log {
+            module: DEFAULT
+            enable: info+
+            includeTimestamp: true
+        }

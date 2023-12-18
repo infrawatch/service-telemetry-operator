@@ -27,13 +27,6 @@ if [ "${OC_CLIENT_VERSION_Y}" -lt "${OC_CLIENT_VERSION_Y_REQUIRED}" ] || [ "${OC
     exit 1
 fi
 
-if [ "$(oc get stf default -o=jsonpath='{.spec.transports.qdr.auth}')" != "none" ]; then
-    echo "*** QDR authentication is currently not supported in smoketests."
-    echo "To disable it, use: oc patch stf default --patch '{\"spec\":{\"transports\":{\"qdr\":{\"auth\":\"none\"}}}}' --type=merge"
-    echo "For more info: https://github.com/infrawatch/service-telemetry-operator/pull/492"
-    exit 1
-fi
-
 CLEANUP=${CLEANUP:-true}
 SMOKETEST_VERBOSE=${SMOKETEST_VERBOSE:-true}
 
@@ -54,25 +47,36 @@ echo "*** [INFO] Working in project ${OCP_PROJECT}"
 echo "*** [INFO] Getting ElasticSearch authentication password"
 ELASTICSEARCH_AUTH_PASS=$(oc get secret elasticsearch-es-elastic-user -ogo-template='{{ .data.elastic | base64decode }}')
 
-echo "*** [INFO] Getting Prometheus authentication password"
-PROMETHEUS_AUTH_PASS=$(oc get secret default-prometheus-htpasswd -ogo-template='{{ .data.password | base64decode }}')
-
-echo "*** [INFO] Setting namepsace for collectd-sensubility config"
-sed "s/<<NAMESPACE>>/${OCP_PROJECT}/g" "${REL}/collectd-sensubility.conf" > /tmp/collectd-sensubility.conf
+echo "*** [INFO] Getting Prometheus authentication token"
+PROMETHEUS_AUTH_TOKEN=$(oc create token stf-prometheus-reader)
 
 echo "*** [INFO] Creating configmaps..."
 oc delete configmap/stf-smoketest-healthcheck-log configmap/stf-smoketest-collectd-config configmap/stf-smoketest-sensubility-config configmap/stf-smoketest-collectd-entrypoint-script configmap/stf-smoketest-ceilometer-publisher configmap/stf-smoketest-ceilometer-entrypoint-script job/stf-smoketest || true
 oc create configmap stf-smoketest-healthcheck-log --from-file "${REL}/healthcheck.log"
 oc create configmap stf-smoketest-collectd-config --from-file "${REL}/minimal-collectd.conf.template"
-oc create configmap stf-smoketest-sensubility-config --from-file /tmp/collectd-sensubility.conf
+oc create configmap stf-smoketest-sensubility-config --from-file "${REL}/collectd-sensubility.conf"
 oc create configmap stf-smoketest-collectd-entrypoint-script --from-file "${REL}/smoketest_collectd_entrypoint.sh"
 oc create configmap stf-smoketest-ceilometer-publisher --from-file "${REL}/ceilometer_publish.py"
 oc create configmap stf-smoketest-ceilometer-entrypoint-script --from-file "${REL}/smoketest_ceilometer_entrypoint.sh"
 
+echo "*** [INFO] Waiting for QDR password upgrade"
+AMQP_PASS=''
+while [ ${#AMQP_PASS} -lt 32 ]; do AMQP_PASS=$(oc get secret default-interconnect-users -o json | jq -r .data.guest | base64 -d); sleep 3; done
+
+echo "*** [INFO] Creating Mock OSP Metrics QDR..."
+oc delete pod qdr-test
+oc delete service qdr-test
+oc delete configmap qdr-test-config
+oc create -f <(sed -e "s/<<AMQP_PASS>>/${AMQP_PASS}/;" "${REL}/qdr-test.conf.yaml.template")
+oc create -f "${REL}/qdr-test.yaml"
+
+echo -e "\n* [INFO] Waiting for OSP Metrics QDR pod to be Running\n"
+oc wait --for=jsonpath='{.status.phase}'=Running pod/qdr-test
+
 echo "*** [INFO] Creating smoketest jobs..."
 oc delete job -l app=stf-smoketest
 for NAME in "${CLOUDNAMES[@]}"; do
-    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_PASS>>/${PROMETHEUS_AUTH_PASS}/" ${REL}/smoketest_job.yaml.template)
+    oc create -f <(sed -e "s/<<CLOUDNAME>>/${NAME}/;s/<<ELASTICSEARCH_AUTH_PASS>>/${ELASTICSEARCH_AUTH_PASS}/;s/<<PROMETHEUS_AUTH_TOKEN>>/${PROMETHEUS_AUTH_TOKEN}/" ${REL}/smoketest_job.yaml.template)
 done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
