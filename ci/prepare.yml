@@ -12,6 +12,14 @@
         sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
+    - name: Run make targets for setup
+      community.general.make:
+        chdir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/openstack-k8s-operators/ci-framework"].src_dir }}'
+        target: "{{ item }}"
+      with_items:
+        - setup_tests
+        - setup_molecule
+
     - name: "Run bootstrap playbook"
       ansible.builtin.shell:
         cmd: |
