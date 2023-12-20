@@ -23,7 +23,7 @@
         name: "{{ item }}"
       with_items:
         - "kubernetes.core:2.3.2"
-        - "community.general:6.2.0"
+        - "community.general"
 
     - name: "Log into the cluster"
       ansible.builtin.import_role:
