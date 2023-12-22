@@ -22,7 +22,7 @@
     - name: Run ci_framework infra playbook
       ansible.builtin.shell:
         cmd: |
-          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/02-infra.yml
+          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml -e cifmw_use_opn=false -e cifmw_use_devscripts=false {{ ci_framework_dir }}/playbooks/02-infra.yml
         chdir: "{{ ci_framework_dir }}"
 
     - name: Run make targets for setup
