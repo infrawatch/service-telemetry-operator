@@ -15,7 +15,7 @@
     - name: "Run bootstrap playbook"
       ansible.builtin.shell:
         cmd: |
-          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/ci_framework/playbooks/01-bootstrap.yml
+          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/01-bootstrap.yml
         chdir: "{{ ci_framework_dir }}"
 
     - name: "Check for oc"

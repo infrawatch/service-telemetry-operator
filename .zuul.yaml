@@ -23,18 +23,19 @@
       - name: crc
         label: coreos-crc-extracted-2.30.0-xxl
 
+# Based on the 2-node job cookbook at https://github.com/openstack-k8s-operators/ci-framework/blob/main/docs/source/cookbooks/zuul-job-nodeset.md
 - job:
     name: stf-base-2node
     parent: podified-multinode-edpm-deployment-crc
     abstract: true
     required-projects:
-      - name: openstack-k8s-operators/dataplane-operator
+      - name: github.com/openstack-k8s-operators/dataplane-operator
         override-checkout: main
-      - name: openstack-k8s-operators/infra-operator
+      - name: github.com/openstack-k8s-operators/infra-operator
         override-checkout: main
       - name: github.com/openstack-k8s-operators/openstack-operator
         override-checkout: main
-      - name: openstack-k8s-operators/openstack-must-gather
+      - name: github.com/openstack-k8s-operators/openstack-must-gather
         override-checkout: main
     pre-run:
       - ci/pre-2node.yml
@@ -132,63 +133,63 @@
     name: stf-crc-ocp_412-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
-      Deploy STF using the nightly bundles on OCP 4.12.13
+      Deploy STF using the nightly bundles on OCP 4.12
     nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_413-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
-      Deploy STF using the nightly bundles on OCP 4.13.14
+      Deploy STF using the nightly bundles on OCP 4.13
     nodeset: stf-crc_extracted-ocp413
 
 - job:
     name: stf-crc-ocp_414-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
-      Deploy STF using the nightly bundles on OCP 4.14.3
+      Deploy STF using the nightly bundles on OCP 4.14
     nodeset: stf-crc_extracted-ocp414
 
 - job:
     name: stf-crc-ocp_412-local_build
     parent: stf-crc-local_build
     description: |
-      Build images locally and deploy STF on OCP 4.12.13
+      Build images locally and deploy STF on OCP 4.12
     nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_413-local_build
     parent: stf-crc-local_build
     description: |
-      Build images locally and deploy STF on OCP 4.13.14
+      Build images locally and deploy STF on OCP 4.13
     nodeset: stf-crc_extracted-ocp413
 
 - job:
     name: stf-crc-ocp_414-local_build
     parent: stf-crc-local_build
     description: |
-      Build images locally and deploy STF on OCP 4.14.3
+      Build images locally and deploy STF on OCP 4.14
     nodeset: stf-crc_extracted-ocp414
 
 - job:
     name: stf-crc-ocp_412-local_build-index_deploy
     parent: stf-crc-local_build-index_deploy
     description: |
-      Build STF locally and deploy from index on OCP 4.12.13
+      Build STF locally and deploy from index on OCP 4.12
     nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_413-local_build-index_deploy
     parent: stf-crc-local_build-index_deploy
     description: |
-      Build STF locally and deploy from index on OCP 4.13.14
+      Build STF locally and deploy from index on OCP 4.13
     nodeset: stf-crc_extracted-ocp413
 
 - job:
     name: stf-crc-ocp_414-local_build-index_deploy
     parent: stf-crc-local_build-index_deploy
     description: |
-      Build STF locally and deploy from index on OCP 4.14.3
+      Build STF locally and deploy from index on OCP 4.14
     nodeset: stf-crc_extracted-ocp414
 
 - project-template:
