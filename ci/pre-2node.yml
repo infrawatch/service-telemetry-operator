@@ -41,3 +41,14 @@
       ansible.builtin.shell:
         cmd: |
           ls {{ cifmw_openshift_kubeconfig }}
+
+    - name: Symlink the kubeconfig files
+      ansible.builtin.shell:
+        cmd: |
+          mkdir -p {{ ansible_env.HOME }}/.kube/
+          ln -s {{ cifmw_openshift_kubeconfig }} {{ ansible_env.HOME }}/.kube/config
+
+    - name: Check for the kubeconfig file
+      ansible.builtin.shell:
+        cmd: |
+          ls -l {{ ansible_env.HOME }}/.kube/config
