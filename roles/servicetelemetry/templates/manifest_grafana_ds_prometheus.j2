@@ -1,0 +1,24 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: {{ ansible_operator_meta.name }}-ds-stf-prometheus
+  namespace: {{ ansible_operator_meta.namespace }}
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "stf"
+  datasource:
+    name: STFPrometheus
+    type: prometheus
+    access: proxy
+    url: 'https://{{ ansible_operator_meta.name }}-prometheus-proxy.{{ ansible_operator_meta.namespace }}.svc:9092'
+    isDefault: true
+    editable: true
+    jsonData:
+      'timeInterval': "5s"
+      'tlsAuthWithCACert': true
+      'httpHeaderName1': 'Authorization'
+    secureJsonData:
+      'httpHeaderValue1': 'Bearer {{prometheus_reader_token}}'
+      'tlsCACert': |
+        {{ serving_certs_ca.resources[0].data['service-ca.crt'] | indent(8) }}

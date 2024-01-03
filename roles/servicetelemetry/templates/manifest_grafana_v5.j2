@@ -1,0 +1,95 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: {{ ansible_operator_meta.name }}-grafana
+  namespace: {{ ansible_operator_meta.namespace }}
+  labels:
+    dashboards: "stf"
+spec:
+  serviceAccount:
+    metadata:
+      annotations:
+        serviceaccounts.openshift.io/oauth-redirectreference.primary: '{{ grafana_oauth_redir_ref | to_json }}'
+{% if servicetelemetry_vars.graphing.grafana.ingress_enabled is defined and servicetelemetry_vars.graphing.grafana.ingress_enabled %}
+  route:
+    spec:
+      port:
+        targetPort: web
+      tls:
+        termination: reencrypt
+      to:
+        kind: Service
+        name: {{ ansible_operator_meta.name }}-grafana-service
+        weight: 100
+      wildcardPolicy: None
+{% endif %}
+  client:
+    preferIngress: false
+  config:
+    auth:
+      disable_signout_menu: "{{ servicetelemetry_vars.graphing.grafana.disable_signout_menu }}"
+      disable_login_form: "True"
+    auth.anonymous:
+      enabled: "True"
+    auth.proxy:
+      enabled: "True"
+      enable_login_token: "True"
+      header_property: "username"
+      header_name: "X-Forwarded-User"
+    log:
+      level: warn
+      mode: "console"
+  deployment:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: 'secret-{{ ansible_operator_meta.name }}-grafana-proxy-tls'
+            secret:
+              secretName: '{{ ansible_operator_meta.name }}-grafana-proxy-tls'
+          - name: 'secret-{{ ansible_operator_meta.name }}-session-secret'
+            secret:
+              secretName: '{{ ansible_operator_meta.name }}-session-secret'
+          containers:
+          - name: oauth-proxy
+            image: {{ oauth_proxy_image }}
+            args:
+            - '-provider=openshift'
+            - '-pass-basic-auth=false'
+            - '-https-address=:3002'
+            - '-http-address='
+            - '-email-domain=*'
+            - '-openshift-sar={"namespace":"{{ ansible_operator_meta.namespace }}","resource": "grafana", "group":"grafana.integreatly.org", "verb":"get"}'
+            - '-upstream=http://localhost:3000'
+            - '-tls-cert=/etc/tls/private/tls.crt'
+            - '-tls-key=/etc/tls/private/tls.key'
+            - '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token'
+            - '-cookie-secret-file=/etc/proxy/secrets/session_secret'
+            - '-openshift-service-account={{ ansible_operator_meta.name }}-grafana-sa'
+            - '-openshift-ca=/etc/pki/tls/cert.pem'
+            - '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+            - '-skip-auth-regex=^/metrics'
+            ports:
+              - containerPort: 3002
+                name: https
+                protocol: TCP
+            resources: { }
+            volumeMounts:
+              - mountPath: /etc/tls/private
+                name: secret-{{ ansible_operator_meta.name }}-grafana-proxy-tls
+              - mountPath: /etc/proxy/secrets
+                name: secret-{{ ansible_operator_meta.name }}-session-secret
+{% if servicetelemetry_vars.graphing.grafana.base_image is defined %}
+          - name: grafana
+            image: {{ servicetelemetry_vars.graphing.grafana.base_image }}
+{% endif %}
+  service:
+    metadata:
+      annotations:
+        service.alpha.openshift.io/serving-cert-secret-name: {{ ansible_operator_meta.name }}-grafana-proxy-tls
+    spec:
+      ports:
+        - name: web
+          port: 3002
+          protocol: TCP
+          targetPort: https
