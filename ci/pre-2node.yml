@@ -33,12 +33,11 @@
         - setup_tests
         - setup_molecule
 
-          #- name: "Copy the login playbook to the controller"
-          #  ansible.builtin.copy:
-          #    src: "{{ playbook_dir }}/pre-get_kubeconfig.yml"
-          #    dest: "{{ ansible_user_dir }}/login.yml"
+    - name: "Update the kubeconfig path"
+      ansible.builtin.set_fact:
+        cifmw_openshift_kubeconfig: "/home/zuul/.kube/config"
 
-          #- name: "Run the login playbook"
-          #  ansible.builtin.shell:
-          #    cmd: |
-          #     ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ansible_user_dir }}/login.yml
+    - name: Check for the kubeconfig file
+      ansible.builtin.shell:
+        cmd: |
+          ls {{ cifmw_openshift_kubeconfig }}
