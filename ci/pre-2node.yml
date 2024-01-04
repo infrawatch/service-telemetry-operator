@@ -33,10 +33,6 @@
         - setup_tests
         - setup_molecule
 
-    - name: "Update the kubeconfig path"
-      ansible.builtin.set_fact:
-        cifmw_openshift_kubeconfig: "/home/zuul/.kube/config"
-
     - name: Check for the kubeconfig file
       ansible.builtin.shell:
         cmd: |
