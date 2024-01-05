@@ -460,4 +460,5 @@ spec:
   minKubeVersion: 1.23.0
   provider:
     name: Red Hat
+  replaces: service-telemetry-operator.v---bundle-latest-released-version
   version: 1.99.0
