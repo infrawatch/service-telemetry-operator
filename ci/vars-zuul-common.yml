@@ -10,4 +10,3 @@ sg_core_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/sg-
 sg_bridge_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/sg-bridge'].src_dir }}"
 prometheus_webhook_snmp_dir: "{{ ansible_env.HOME }}/{{ zuul.projects['github.com/infrawatch/prometheus-webhook-snmp'].src_dir }}"
 __service_telemetry_storage_persistent_storage_class: "crc-csi-hostpath-provisioner"
-__service_telemetry_storage_ephemeral_enabled: false
