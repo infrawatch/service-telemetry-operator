@@ -35,6 +35,15 @@ generate_bundle() {
     ${OPERATOR_SDK} generate bundle --verbose --channels ${BUNDLE_CHANNELS} --default-channel ${BUNDLE_DEFAULT_CHANNEL} --manifests --metadata --version "${OPERATOR_BUNDLE_VERSION}" --output-dir "${WORKING_DIR}" >> ${LOGFILE} 2>&1
     popd > /dev/null 2>&1
 
+    # CSVs without a spec.replaces field are valid, so fall back to those if
+    # latest released version is unknown.
+    # Placeholder value is validated by operator-sdk during local bundle
+    # generation and so needs to conform to RFC1123.
+    if [[ -n "$BUNDLE_LATEST_RELEASED_VERSION" ]]; then
+        REPLACE_REGEX="$REPLACE_REGEX;s#---bundle-latest-released-version#${BUNDLE_LATEST_RELEASED_VERSION}#g"
+    else sed -i '/---bundle-latest-released-version/d' "${WORKING_DIR}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"
+    fi
+
     sed -i -E "${REPLACE_REGEX}" "${WORKING_DIR}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"
 }
 
