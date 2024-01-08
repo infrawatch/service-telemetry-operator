@@ -12,17 +12,23 @@
         sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
+    - name: "Check whether the zuul-params file exists at this time"
+      ansible.builtin.shell:
+        cmd: ls {{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/
+      register: output
+
+    - ansible.builtin.debug: var=output.stdout
+
     - name: "Run bootstrap playbook"
       ansible.builtin.shell:
         cmd: |
           ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/01-bootstrap.yml
         chdir: "{{ ci_framework_dir }}"
 
-    ## TODO: look at the source and figure out whether I need the -e@zuul-params.yaml, since I need to add the cifmw_basedir option https://review.rdoproject.org/zuul/build/0585946f8f0a4e07a1e8f6f8d8d599db/console
     - name: Run ci_framework infra playbook
       ansible.builtin.shell:
         cmd: |
-          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml -e cifmw_use_opn=false -e cifmw_use_devscripts=false -e cifmw_basedir={{ ansible_user_dir }}/ci-framework-data/ -e cifmw_openshift_setup_skip_internal_registry_tls_verify=true {{ ci_framework_dir }}/playbooks/02-infra.yml
+          ansible-playbook -e cifmw_use_opn=false -e cifmw_use_devscripts=false -e cifmw_basedir={{ ansible_user_dir }}/ci-framework-data/ -e cifmw_openshift_setup_skip_internal_registry_tls_verify=true {{ ci_framework_dir }}/playbooks/02-infra.yml
         chdir: "{{ ci_framework_dir }}"
 
     - name: Run make targets for setup
