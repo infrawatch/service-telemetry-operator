@@ -29,8 +29,6 @@
       ansible.builtin.import_role:
         name: rhol_crc
         tasks_from: add_crc_creds.yml
-      vars:
-        cifmw_rhol_crc_kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
 
     - name: "Create the service-telemetry project"
       kubernetes.core.k8s:

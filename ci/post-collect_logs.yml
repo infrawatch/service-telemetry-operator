@@ -27,8 +27,6 @@
       ansible.builtin.import_role:
         name: rhol_crc
         tasks_from: add_crc_creds.yml
-      vars:
-        cifmw_rhol_crc_kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
 
     - name: "Gather logs from stf deployment"
       ansible.builtin.import_role:
