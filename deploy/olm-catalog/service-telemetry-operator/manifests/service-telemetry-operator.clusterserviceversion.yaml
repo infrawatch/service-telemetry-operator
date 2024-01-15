@@ -365,6 +365,7 @@ spec:
           - monitoring.coreos.com
           - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
+          - grafana.integreatly.org
           - integreatly.org
           resources:
           - '*'

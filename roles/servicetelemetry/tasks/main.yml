@@ -87,12 +87,16 @@
     loop_var: this_cloud
 
 # --> graphing
-- name: Check if we have integreatly.org API
+- name: Check if we have integreatly.org API (Grafana Operator v4)
   set_fact:
     has_integreatly_api: "{{ True if 'integreatly.org' in api_groups else False }}"
 
+- name: Check if we have grafana.integreatly.org API (Grafana Operator v5)
+  set_fact:
+    has_grafana_integreatly_api: "{{ True if 'grafana.integreatly.org' in api_groups else False }}"
+
 - when:
-    - has_integreatly_api | bool
+    - (has_integreatly_api | bool) or (has_grafana_integreatly_api | bool)
   name: Start graphing component plays
   include_tasks: component_grafana.yml
 
