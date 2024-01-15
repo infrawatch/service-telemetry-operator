@@ -135,6 +135,8 @@
     - openshift-cert-manager-operator
     - cert-manager-operator
     - cert-manager
+  retries: 3
+  delay: 10
 
 - name: Remove Elasticsearch
   ignore_errors: true
