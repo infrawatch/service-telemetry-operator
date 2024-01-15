@@ -1,30 +1,9 @@
-- name: Construct oauth redirect reference
-  set_fact:
-    grafana_oauth_redir_ref:
-      kind: OAuthRedirectReference
-      apiVersion: v1
-      reference:
-        kind: Route
-        name: 'grafana-route'
-
-- name: Lookup template
-  debug:
-    msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
-
-- name: Set default Grafana manifest
-  set_fact:
-    grafana_manifest: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
-  when: grafana_manifest is not defined
-
-- name: Create an instance of Grafana
-  k8s:
-    state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
-    definition:
-      '{{ grafana_manifest }}'
-
+# dashboard setup first looks for Grafana Operator v5 CRDs. If existing, prefer setup with v5.
+# If v5 doesn't exist, then try v4. Don't create objects for v4 if v5 CRDs exist.
 - when: servicetelemetry_vars.graphing.enabled
   block:
     - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
+      name: Get auth data for datasources to Prometheus
       block:
         - name: Retrieve configmap for OAUTH CA certs
           k8s_info:
@@ -47,94 +26,247 @@
           set_fact:
             prometheus_reader_token: '{{ prometheus_reader_secret.resources[0].data.token | b64decode }}'
 
-    # Lookup existing datasources
-    - name: Remove legacy datasources
-      k8s:
-        api_version: integreatly.org/v1alpha1
-        name: '{{ ansible_operator_meta.name }}-ds-prometheus'
-        kind: GrafanaDataSource
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        state: absent
+#---- deploy Grafana with v5 Operator (preferred)
+    - when: has_grafana_integreatly_api
+      name: Deploying with Grafana Operator v5
+      block:
+        - name: Construct oauth redirect reference
+          set_fact:
+            grafana_oauth_redir_ref:
+              kind: OAuthRedirectReference
+              apiVersion: v1
+              reference:
+                kind: Route
+                name: '{{ ansible_operator_meta.name }}-grafana-route'
 
-    # NOTE: this can fail if you enable grafana without prometheus due to missing resources referenced in the template
-    - name: Set datasources
-      set_fact:
-        ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
-      when: ds_manifest is not defined
+        - name: Lookup template
+          debug:
+            msg: "{{ lookup('template', './manifest_grafana_v5.j2') | from_yaml }}"
 
-    - name: Create the datasources
-      k8s:
-        state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
-        definition:
-          '{{ ds_manifest }}'
+        - name: Set default Grafana manifest (Grafana Operator v5)
+          set_fact:
+            grafana_manifest: "{{ lookup('template', './manifest_grafana_v5.j2') | from_yaml }}"
+          when: grafana_manifest is not defined
 
-    - name: Load Cloud Overview Dashboard
-      k8s:
-        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
-        definition:
-          apiVersion: integreatly.org/v1alpha1
-          kind: GrafanaDashboard
-          metadata:
-            labels:
-              app: grafana
-              stf_owner: "{{ ansible_operator_meta.name }}"
-            name: rhos-cloud-dashboard-1
-            namespace: "{{ ansible_operator_meta.namespace }}"
-          spec:
-            name: rhos-cloud-dashboard.json
-            plugins:
-              - name: grafana-polystat-panel
-                version: "1.2.11"
-            json: |
-              {{ lookup('file', 'rhos-cloud-dashboard.json') | string }}
+        - name: Create an instance of Grafana (Grafana Operator v5)
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
+            definition:
+              '{{ grafana_manifest }}'
 
-    - name: Load Infrastructure Overview Dashboard
-      k8s:
-        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
-        definition:
-          apiVersion: integreatly.org/v1alpha1
-          kind: GrafanaDashboard
-          metadata:
-            labels:
-              app: grafana
-              stf_owner: "{{ ansible_operator_meta.name }}"
-            name: rhos-dashboard-1
-            namespace: "{{ ansible_operator_meta.namespace }}"
-          spec:
-            name: rhos-dashboard.json
-            json: |
-              {{ lookup('file', 'rhos-dashboard.json') | string }}
+        # NOTE: we only provide events forwarding with STF. We don't use events
+        # in dashboards, so there is no need to create an Elasticsearch
+        # datasource.
+        - when: servicetelemetry_vars.backends.metrics.prometheus.enabled
+          name: Create Grafana datasource for Prometheus
+          block:
+            - name: Set datasource for Prometheus
+              set_fact:
+                ds_manifest: "{{ lookup('template', './manifest_grafana_ds_prometheus.j2') | from_yaml }}"
+              when: ds_manifest is not defined
 
-    - name: Load Memcached Dashboard
-      k8s:
-        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
-        definition:
-          apiVersion: integreatly.org/v1alpha1
-          kind: GrafanaDashboard
-          metadata:
-            labels:
-              app: grafana
-              stf_owner: "{{ ansible_operator_meta.name }}"
-            name: memcached-dashboard-1
-            namespace: "{{ ansible_operator_meta.namespace }}"
-          spec:
-            name: memcached-dashboard.json
-            json: |
-              {{ lookup('file', 'memcached-dashboard.json') | string }}
+            - name: Create the datasource for Prometheus
+              k8s:
+                state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
+                definition:
+                  '{{ ds_manifest }}'
 
-    - name: Load Virtual Machine View Dashboard
-      k8s:
-        state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
-        definition:
-          apiVersion: integreatly.org/v1alpha1
-          kind: GrafanaDashboard
-          metadata:
-            labels:
-              app: grafana
-              stf_owner: "{{ ansible_operator_meta.name }}"
-            name: virtual-machine-dashboard-1
-            namespace: "{{ ansible_operator_meta.namespace }}"
-          spec:
-            name: virtual-machine-view.json
-            json: |
-              {{ lookup('file', 'virtual-machine-view.json') | string }}
+        - name: Load Cloud Overview Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: grafana.integreatly.org/v1beta1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: rhos-cloud-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                instanceSelector:
+                  matchLabels:
+                    dashboards: "stf"
+                name: rhos-cloud-dashboard.json
+                json: |
+                  {{ lookup('file', 'rhos-cloud-dashboard.json') | string }}
+
+        - name: Load Infrastructure Overview Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: grafana.integreatly.org/v1beta1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: rhos-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                instanceSelector:
+                  matchLabels:
+                    dashboards: "stf"
+                name: rhos-dashboard.json
+                json: |
+                  {{ lookup('file', 'rhos-dashboard.json') | string }}
+
+        - name: Load Memcached Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: grafana.integreatly.org/v1beta1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: memcached-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                instanceSelector:
+                  matchLabels:
+                    dashboards: "stf"
+                name: memcached-dashboard.json
+                json: |
+                  {{ lookup('file', 'memcached-dashboard.json') | string }}
+
+        - name: Load Virtual Machine View Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: grafana.integreatly.org/v1beta1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: virtual-machine-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                instanceSelector:
+                  matchLabels:
+                    dashboards: "stf"
+                name: virtual-machine-view.json
+                json: |
+                  {{ lookup('file', 'virtual-machine-view.json') | string }}
+
+#---- deploy Grafana with v4 Operator if v5 CRDs are not available (legacy deployments)
+    - when: has_integreatly_api and not has_grafana_integreatly_api
+      name: Deploying with Grafana Operator v4
+      block:
+        - name: Construct oauth redirect reference
+          set_fact:
+            grafana_oauth_redir_ref:
+              kind: OAuthRedirectReference
+              apiVersion: v1
+              reference:
+                kind: Route
+                name: 'grafana-route'
+
+        - name: Lookup template
+          debug:
+            msg: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
+
+        - name: Set default Grafana manifest (Grafana Operator v4)
+          set_fact:
+            grafana_manifest: "{{ lookup('template', './manifest_grafana.j2') | from_yaml }}"
+          when: grafana_manifest is not defined
+
+        - name: Create an instance of Grafana (Grafana Operator v4)
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
+            definition:
+              '{{ grafana_manifest }}'
+
+        - name: Remove legacy datasources
+          k8s:
+            api_version: integreatly.org/v1alpha1
+            name: '{{ ansible_operator_meta.name }}-ds-prometheus'
+            kind: GrafanaDataSource
+            namespace: '{{ ansible_operator_meta.namespace }}'
+            state: absent
+
+        # NOTE: This can fail if you enable grafana without prometheus due
+        # to missing resources referenced in the template. The v1alpha1 CRD
+        # of GrafanaDatasources uses a list, so logic would need to be
+        # added to the template directly checking for parameters set in
+        # ServiceTelemetry.
+        - name: Set datasources
+          set_fact:
+            ds_manifest: "{{ lookup('template', './manifest_grafana_ds.j2') | from_yaml }}"
+          when: ds_manifest is not defined
+
+        - name: Create the datasources
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.enabled else "absent" }}'
+            definition:
+              '{{ ds_manifest }}'
+
+        - name: Load Cloud Overview Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: integreatly.org/v1alpha1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: rhos-cloud-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                name: rhos-cloud-dashboard.json
+                json: |
+                  {{ lookup('file', 'rhos-cloud-dashboard.json') | string }}
+
+        - name: Load Infrastructure Overview Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: integreatly.org/v1alpha1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: rhos-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                name: rhos-dashboard.json
+                json: |
+                  {{ lookup('file', 'rhos-dashboard.json') | string }}
+
+        - name: Load Memcached Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: integreatly.org/v1alpha1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: memcached-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                name: memcached-dashboard.json
+                json: |
+                  {{ lookup('file', 'memcached-dashboard.json') | string }}
+
+        - name: Load Virtual Machine View Dashboard
+          k8s:
+            state: '{{ "present" if servicetelemetry_vars.graphing.grafana.dashboards.enabled else "absent" }}'
+            definition:
+              apiVersion: integreatly.org/v1alpha1
+              kind: GrafanaDashboard
+              metadata:
+                labels:
+                  app: grafana
+                  stf_owner: "{{ ansible_operator_meta.name }}"
+                name: virtual-machine-dashboard-1
+                namespace: "{{ ansible_operator_meta.namespace }}"
+              spec:
+                name: virtual-machine-view.json
+                json: |
+                  {{ lookup('file', 'virtual-machine-view.json') | string }}
