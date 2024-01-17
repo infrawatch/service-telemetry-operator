@@ -198,12 +198,6 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-ocp_412-nightly_bundles:
-            voting: false
-        - stf-crc-ocp_413-nightly_bundles:
-            voting: false
-        - stf-crc-ocp_414-nightly_bundles:
-            voting: false
         - stf-crc-ocp_412-local_build
         - stf-crc-ocp_413-local_build
         - stf-crc-ocp_414-local_build
@@ -215,3 +209,8 @@
     name: infrawatch/service-telemetry-operator
     templates:
       - stf-crc-jobs
+    periodic:
+      jobs:
+        - stf-crc-ocp_412-nightly_bundles
+        - stf-crc-ocp_413-nightly_bundles
+        - stf-crc-ocp_414-nightly_bundles
