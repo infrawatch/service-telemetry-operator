@@ -1,33 +1,22 @@
 ---
-- name: "Get builds"
-  ansible.builtin.shell:
-    cmd: |
-      echo "*** [INFO] Showing oc get builds" > {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-      oc -n {{ namespace }} get builds -oyaml >> {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-      echo "*** [INFO] Showing oc get builds -oyaml" >> {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-      oc -n {{ namespace }} get builds -oyaml >> {{ logfile_dir }}/post_oc_get_builds.log 2>&1
-      cat {{ logfile_dir }}/post_oc_get_builds.log
+- name: "Get resources logs [ Builds, Subscriptions, Image, Imagestreams, Pods ]"
+  ansible.builtin.shell: |
+    for resource in {{ resource_types|join(' ') }}; do
+      log_file="{{ logfile_dir }}/post_oc_get_$resource.log"
+      echo "*** [INFO] Showing oc get '$resource'" > "$log_file" 2>&1
+      oc -n {{ namespace }} get "$resource" >> "$log_file" 2>&1
+      echo "[INFO] oc get '$resource' -oyaml" >> "$log_file" 2>&1
+      oc -n {{ namespace }} get "$resource" -oyaml >> "$log_file" 2>&1
+    done
+  delay: 10
+  retries: 3
   ignore_errors: true
   changed_when: false
 
-- name: "Get subscription details"
+- name: "Get Additional Information  details"
   ansible.builtin.shell:
     cmd: |
-      oc -n {{ namespace }} get subscriptions > {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
-      oc -n {{ namespace }} describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_get_subscriptions.log 2>&1
-  ignore_errors: true
-
-- name: "Get image infos"
-  ansible.builtin.shell:
-    cmd: |
-      echo "[INFO] oc  get images" > {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      oc -n {{ namespace }} get images >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      echo "[INFO] oc  get imagestreams" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      oc -n {{ namespace }} get imagestream >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      echo "[INFO] oc  get imagestream -oyaml" >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-      oc -n {{ namespace }} get imagestream -oyaml >> {{ logfile_dir }}/post_oc_get_images.log 2>&1
-  retries: 3
-  delay: 10
+      oc -n {{ namespace }} describe subscription service-telemetry-operator >> {{ logfile_dir }}/post_oc_describe_subscriptions_STO.log 2>&1
   ignore_errors: true
 
 - name: "Get STO info"
@@ -47,15 +36,45 @@
       oc -n {{ namespace }} get csv | grep service-telemetry-operator >> {{ logfile_dir }}/post_question_deployment.log 2>&1
       oc -n {{ namespace }} get csv $(oc -n {{ namespace }} get csv | grep "service-telemetry-operator" | awk '{ print $1}') -oyaml >> {{ logfile_dir }}/post_question_deployment.log 2>&1
   register: output
+  ignore_errors: true
   retries: 3
   delay: 10
 
-- name: "Get pods"
-  ansible.builtin.command:
+- name: "Describe non-completed, non-running pods"
+  ansible.builtin.shell:
     cmd: |
-      oc -n {{ namespace }} get pods > {{ logfile_dir }}/post_oc_get_pods.log 2>&1
-      echo "Additional information" >> {{ logfile_dir }}/post_oc_get_pods.log
-      oc -n {{ namespace }} describe pods >> {{ logfile_dir }}/post_oc_get_pods.log 2>&1
+      for pod in $(oc get pods | grep -v NAME | grep -v Running | awk '{ print $1 }');
+      do
+        oc -n {{ namespace }} describe pod $pod > {{ logfile_dir }}/post_oc_describe_pod_${pod}.log 2>&1
+      done
+  ignore_errors: true
+  retries: 3
+  delay: 10
+
+- name: "Describe builds"
+  ansible.builtin.shell:
+    cmd: |
+      for build in $(oc -n {{ namespace }} get builds -o json | jq -r '.items[].metadata.name');
+      do
+        oc -n {{ namespace }} describe build $build > {{ logfile_dir }}/post_oc_describe_build_${build}.log 2>&1
+      done
+  ignore_errors: true
+  retries: 3
+  delay: 10
+
+- name: "Get PV and PVC information  details"
+  ansible.builtin.shell:
+    cmd: |
+      oc -n {{ namespace }} get pv >> {{ logfile_dir }}/post_pv.log 2>&1
+      oc -n {{ namespace }} get pvc >> {{ logfile_dir }}/post_pvc.log 2>&1
+  ignore_errors: true
+
+- name: "Get SGO,STO and QDR logs"
+  ansible.builtin.shell:
+    cmd: |
+      oc -n {{ namespace }} logs $(oc -n {{ namespace }} get pod -l name=service-telemetry-operator -o jsonpath='{.items[].metadata.name}') >> {{ logfile_dir }}/logs_sto.log 2>&1
+      oc -n {{ namespace }} logs $(oc -n {{ namespace }} get pod -l app=smart-gateway-operator -o jsonpath='{.items[].metadata.name}') >> {{ logfile_dir }}/logs_sgo.log 2>&1
+      oc -n {{ namespace }} logs $(oc -n {{ namespace }} get pod -l qdr -o jsonpath='{.items[].metadata.name}') >> {{ logfile_dir }}/logs_qdr.log 2>&1
   ignore_errors: true
   retries: 3
   delay: 10

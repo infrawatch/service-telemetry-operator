@@ -4,4 +4,3 @@
 
 __local_build_enabled: false
 __deploy_from_bundles_enabled: true
-__service_telemetry_storage_ephemeral_enabled: true
