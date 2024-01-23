@@ -6,7 +6,7 @@ The playbooks in this directory are used by zuul jobs, which are defined in ../.
 
 ### PR jobs
 
-There are 6 jobs run on every PR that is targeting master.
+There are 6 jobs run on every PR that is targeting `master`.
 These are reported under the `rdoproject.org/github-check` check.
 
 Two scenarios run:
@@ -27,20 +27,20 @@ The same three versions of OCP are used.
 
 The jobs in this repo have two base jobs:
 
-- stf-base-2node
-- stf-base
+- `stf-base-2node`
+- `stf-base`
 
 These two base jobs are split according to purpose: infrastructure provisioning and STF deployment.
 
 `stf-base-2node` inherits from jobs defined in [ci-framework](http://github.com/openstack-k8s-operators/ci-framework), [rdo-jobs](https://review.rdoproject.org/cgit/rdo-jobs/) and [rdo/config](https://review.rdoproject.org/cgit/config/) repos.
 This job configures the hosts used for running the jobs.
-It is expected that stf-base-2node should not be modified unless there are changes to the upstream jobs.
+It is expected that `stf-base-2node` should not be modified unless there are changes to the upstream jobs.
 
 `stf-base` inherits from `stf-base-2node`, and defines the stf-specific parts of the jobs (prepare hosts, build STF images, deploy STF, test STF).
 
-These jobs are abstract and cannot be run directly, however, they contain the plumbing that allows the deployment scenario and OPC version to be configured.
+These jobs are [abstract](https://zuul-ci.org/docs/zuul/latest/config/job.html#attr-job.abstract) and cannot be run directly, however, they contain the plumbing that allows the deployment scenario and OCP version to be configured.
 
-The scenario (`nightly_bundles`, `local_build`, `local_build-index_deploy`) is seledcted by passing a `scenario` var to the job.
+The scenario (`nightly_bundles`, `local_build`, `local_build-index_deploy`) is selected by passing a `scenario` [var to the job](https://zuul-ci.org/docs/zuul/latest/config/job.html#attr-job.vars).
 The OCP version is selected by changing the nodeset that is use in the job.
 
 The jobs are named to describe the combination of scenario and OCP version that is used in the job.
@@ -80,7 +80,7 @@ Below are examples of how to add a job. Take note of how the `scenario` var and 
         parent: stf-base
         abstract: true
         description: |
-          Example of a job that extends the stf-base-job, and passes the "nightly_bundles" scenario var. This job does NOT have a nodeset defined so it must be abstract.
+          Example of a job that extends the `stf-base` job, and passes the `nightly_bundles` scenario var. This job does NOT have a nodeset defined so it must be abstract.
         vars:
           scenario: "nightly_bundles"
 
@@ -97,15 +97,32 @@ OR
 All non-abstract jobs inheriting from `stf-base` must pass a `scenario` var to work correctly. There is no default value for the `scenario`.
 All non-abstract jobs defined in this repo must have a `nodeset` to run correctly. Specifically, the nodeset must include nodes called `controller` and `crc`. This requirements comes from the `stf-base-2node` job.
 
+Once a new job is defined, it should be added to a project or to the `stf-crc-jobs` [template](https://zuul-ci.org/docs/zuul/latest/config/project.html#project-template) in `.zuul.yaml`.
+Any job added to a project is run only against changes to that project.
+Any job added to the `stf-crc-jobs` project template is run in the other repos across the infrawatch org.
+
 ## Troubleshooting
 
 ## FAQ
 
 ### How does Zuul work across branches?
 Each branch has its own zuul configuration. The configuration for a particular branch lives on that branch.
-To run jobs on a branch, the .zuul.yaml file needs to exist on that branch.
+To run jobs on a branch, the `.zuul.yaml` file needs to exist on that branch.
 
 ### How does Zuul decide which branches to check out?
 
-### How do I test dependant patches?
+- For the repo-in-test, zuul checks out the dev branch.
+- For all other required repos, zuul checks out the branch with the same name as the target (usually master, sometimes stable*)
+- If  `branch-override` option is specified in the job definition, then that branch is checked out instead of the default.
+- When you use `Depends-On`, it checks out the branch in the referenced PR/changeset.
 
+### How do I test dependant patches?
+If you're working on a a change that involves PRs to multiple repos (which are tested by Zuul), you can add a `Depends-On: <url of PR>` line to the PR description of your change.
+
+You can use `Depends-On` to reference a change in any repo that zuul knows about (i.e. included in `project.yaml` in RDO in this case).
+
+### How do I add Zuul to a new repo?
+The Zuul instance we used is hosted by RDO. In order for jobs to be run on a new repo, the following criteria must be met:
+- The `softwarefactory-project-zuul` github app must also be added to the organisation (this is already done for infrawatch).
+- The repo must be configured in [rdo/config](https://review.rdoproject.org/cgit/config/tree/zuul/rdo.yaml). An example of adding a repo is (here)[https://review.rdoproject.org/r/c/config/+/51666).
+- The `softwarefactory-project-zuul` app must have repository access configured for the repo you want to add. This setting can be found in organisation/infrawatch -> settings -> Github Apps.

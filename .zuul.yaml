@@ -23,7 +23,6 @@
       - name: crc
         label: coreos-crc-extracted-2-30-0-xxl
 
-# Based on the 2-node job cookbook at https://github.com/openstack-k8s-operators/ci-framework/blob/main/docs/source/cookbooks/zuul-job-nodeset.md
 - job:
     name: stf-base-2node
     parent: podified-multinode-edpm-deployment-crc
