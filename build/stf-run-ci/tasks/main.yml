@@ -68,6 +68,14 @@
     base_dir: "{{ playbook_dir }}"
   when: base_dir | length == 0
 
+- name: Set the repo destination dirs, if not provided
+  ansible.builtin.set_fact:
+    sto_dir: "{{ sto_dir if sto_dir is defined else base_dir + '/..' }}"
+    sgo_dir: "{{ sgo_dir if sgo_dir is defined else base_dir + '/working/smart-gateway-operator' }}"
+    sg_core_dir: "{{ sg_core_dir if sg_core_dir is defined else base_dir + '/working/sg-core' }}"
+    sg_bridge_dir: "{{ sg_bridge_dir if sg_bridge_dir is defined else base_dir + '/working/sg-bridge'}}"
+    prometheus_webhook_snmp_dir: "{{ prometheus_webhook_snmp_dir if prometheus_webhook_snmp_dir is defined else base_dir + '/working/prometheus-webhook-snmp' }}"
+
 - name: Get operator_sdk_v0 (build bundles)
   ansible.builtin.command:
     cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
@@ -97,6 +105,7 @@
     - create_builds
   block:
   - name: Setup supporting repositories
+    when: clone_repos | bool
     ansible.builtin.include_tasks: clone_repos.yml
     tags:
       - clone
@@ -104,11 +113,11 @@
   - name: Create base build list
     ansible.builtin.set_fact:
       build_list:
-        - {name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: "{{ base_dir }}/../"}
-        - {name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: "{{ base_dir }}/working/smart-gateway-operator"}
-        - {name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: "{{ base_dir }}/working/sg-core"}
-        - {name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: "{{ base_dir }}/working/sg-bridge"}
-        - {name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: "{{ base_dir }}/working/prometheus-webhook-snmp"}
+        - {name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: "{{ sto_dir }}"}
+        - {name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: "{{ sgo_dir }}"}
+        - {name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: "{{ sg_core_dir }}"}
+        - {name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: "{{ sg_bridge_dir }}"}
+        - {name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: "{{ prometheus_webhook_snmp_dir }}"}
 
   - ansible.builtin.debug:
       var: build_list
@@ -206,11 +215,12 @@
   - name: Validate system is operational
     ansible.builtin.shell: |
       OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 1200 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
+      cat {{ logfile_dir }}/validate_deployment.log
     args:
       executable: /bin/bash
     register: validate_deployment
+    failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
 
   - name: Show the result of the validate_deployment script
-    ansible.builtin.shell:
-      cmd: |
-        cat {{ logfile_dir }}/validate_deployment.log
+    ansible.builtin.debug:
+      var: validate_deployment.stdout_lines[-1]

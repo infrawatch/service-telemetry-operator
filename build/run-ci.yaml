@@ -7,9 +7,14 @@
   - name: Run the STF CI system
     import_role:
       name: stf-run-ci
-          
+
+  - name: Create Log directory
+    file:
+      path: "{{ playbook_dir }}/working/logs"
+      state: directory
+
   - name: Collect the logs
     import_role:
       name: stf-collect-logs
     vars:
-      logfile_dir: "{{ playbook_dir }}/"
+      logfile_dir: "{{ playbook_dir }}/working/logs/"

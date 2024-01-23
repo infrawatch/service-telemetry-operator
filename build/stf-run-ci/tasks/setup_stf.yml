@@ -9,7 +9,7 @@
         namespace: openshift-marketplace
       spec:
         displayName: InfraWatch Operators
-        image: quay.io/infrawatch-operators/infrawatch-catalog:nightly-1.5
+        image: quay.io/infrawatch-operators/infrawatch-catalog:nightly
         publisher: InfraWatch
         sourceType: grpc
         updateStrategy:

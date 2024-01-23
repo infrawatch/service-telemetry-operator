@@ -117,10 +117,12 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
-                "adminPassword": "secret",
-                "adminUser": "root",
+                "baseImage": "registry.redhat.io/rhel8/grafana:7",
+                "dashboards": {
+                  "enabled": true
+                },
                 "disableSignoutMenu": false,
-                "ingressEnabled": false
+                "ingressEnabled": true
               }
             },
             "highAvailability": {
@@ -363,6 +365,7 @@ spec:
           - monitoring.coreos.com
           - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
+          - grafana.integreatly.org
           - integreatly.org
           resources:
           - '*'
@@ -458,4 +461,5 @@ spec:
   minKubeVersion: 1.23.0
   provider:
     name: Red Hat
+  replaces: service-telemetry-operator.v---bundle-latest-released-version
   version: 1.99.0
