@@ -32,7 +32,7 @@ The jobs in this repo have two base jobs:
 
 These two base jobs are split according to purpose: infrastructure provisioning and STF deployment.
 
-`stf-2node-base` inherits from jobs defined in [ci-framework](http://github.com/openstack-k8s-operators/ci-framework), [rdo-jobs](https://review.rdoproject.org/cgit/rdo-jobs/) and [rdo/config](https://review.rdoproject.org/cgit/config/) repos.
+`stf-base-2node` inherits from jobs defined in [ci-framework](http://github.com/openstack-k8s-operators/ci-framework), [rdo-jobs](https://review.rdoproject.org/cgit/rdo-jobs/) and [rdo/config](https://review.rdoproject.org/cgit/config/) repos.
 This job configures the hosts used for running the jobs.
 It is expected that stf-base-2node should not be modified unless there are changes to the upstream jobs.
 
