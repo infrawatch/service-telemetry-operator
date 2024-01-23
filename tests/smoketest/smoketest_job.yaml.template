@@ -22,8 +22,8 @@ spec:
           value: <<CLOUDNAME>>
         - name: ELASTICSEARCH_AUTH_PASS
           value: "<<ELASTICSEARCH_AUTH_PASS>>"
-        - name: PROMETHEUS_AUTH_PASS
-          value: "<<PROMETHEUS_AUTH_PASS>>"
+        - name: PROMETHEUS_AUTH_TOKEN
+          value: "<<PROMETHEUS_AUTH_TOKEN>>"
         - name: OBSERVABILITY_STRATEGY
           value: "<<OBSERVABILITY_STRATEGY>>"
         volumeMounts:
@@ -51,8 +51,8 @@ spec:
           value: <<CLOUDNAME>>
         - name: ELASTICSEARCH_AUTH_PASS
           value: "<<ELASTICSEARCH_AUTH_PASS>>"
-        - name: PROMETHEUS_AUTH_PASS
-          value: "<<PROMETHEUS_AUTH_PASS>>"
+        - name: PROMETHEUS_AUTH_TOKEN
+          value: "<<PROMETHEUS_AUTH_TOKEN>>"
         - name: OBSERVABILITY_STRATEGY
           value: "<<OBSERVABILITY_STRATEGY>>"
         volumeMounts:
