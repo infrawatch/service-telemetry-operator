@@ -9,8 +9,6 @@ observability_strategy: use_redhat
 prometheus_operator_api_string: ""
 prometheus_operator_label: ""
 
-certificate_duration: 70080h
-
 servicetelemetry_defaults:
   high_availability:
     enabled: false
