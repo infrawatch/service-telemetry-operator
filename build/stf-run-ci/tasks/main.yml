@@ -212,6 +212,11 @@
   - name: Deploy an instance of STF
     ansible.builtin.include_tasks: deploy_stf.yml
 
+  - name: Sleep for 300 seconds and continue with play
+    ansible.builtin.wait_for:
+      timeout: 1200
+    delegate_to: localhost
+
   - name: Validate system is operational
     ansible.builtin.shell: |
       OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 1200 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
