@@ -88,7 +88,6 @@
       - name: openstack-k8s-operators/ci-framework
         override-checkout: main
       - name: github.com/infrawatch/service-telemetry-operator
-        override-checkout: master
       - name: github.com/infrawatch/smart-gateway-operator
         override-checkout: master
       - name: github.com/infrawatch/sg-bridge
