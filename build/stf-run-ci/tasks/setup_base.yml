@@ -38,13 +38,13 @@
       metadata:
         labels:
           operators.coreos.com/observability-operator.openshift-operators: ""
-        name: observability-operator
+        name: cluster-observability-operator
         namespace: openshift-operators
       spec:
-        channel: stable
+        channel: development
         installPlanApproval: Automatic
-        name: observability-operator
-        source: community-operators
+        name: cluster-observability-operator
+        source: redhat-operators
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']

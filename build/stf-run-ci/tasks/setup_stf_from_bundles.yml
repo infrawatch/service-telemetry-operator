@@ -64,7 +64,7 @@
       data:
         cert.pem: "{{ lookup('file', 'CA.pem') | b64encode }}"
 
-- when: setup_bundle_registry_tls_ca
+- when: setup_bundle_registry_tls_ca | bool
   name: Patch the default service account to use our pull secret
   kubernetes.core.k8s_json_patch:
     kind: ServiceAccount
@@ -90,10 +90,10 @@
 - name: "Ensure that the bundle paths are set."
   ansible.builtin.assert:
     that:
-      - '__smart_gateway_bundle_image_path is defined and __smart_gateway_bundle_image_path != None'
-      - '__service_telemetry_bundle_image_path is defined and __service_telemetry_bundle_image_path != None'
+      - '__smart_gateway_bundle_image_path | default("") | length > 0'
+      - '__service_telemetry_bindle_image_path | default("") | length > 0'
     fail_msg: "Bundle path(s) not set. __smart_gateway_bundle_image_path is '{{ __smart_gateway_bundle_image_path }}' and __service_telemetry_bundle_image_path is '{{ __service_telemetry_bundle_image_path }}'. Both values need to be set."
-    success_msg: "Bundle paths are defined and not None"
+    success_msg: "Bundle paths are defined, are not None and have a non-zero-length"
 
 - name: Deploy SGO via OLM bundle
   ansible.builtin.shell:

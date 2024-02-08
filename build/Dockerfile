@@ -18,4 +18,3 @@ USER 1001
 # copy in required artifacts for the operator
 COPY watches.yaml ${HOME}/watches.yaml
 COPY roles/ ${HOME}/roles/
-COPY collections/ ${HOME}/.ansible/collections/
