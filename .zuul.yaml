@@ -89,9 +89,13 @@
         override-checkout: main
       - name: github.com/infrawatch/service-telemetry-operator
       - name: github.com/infrawatch/smart-gateway-operator
+        override-checkout: master
       - name: github.com/infrawatch/sg-bridge
+        override-checkout: master
       - name: github.com/infrawatch/sg-core
+        override-checkout: master
       - name: github.com/infrawatch/prometheus-webhook-snmp
+        override-checkout: master
     pre-run:
       - ci/prepare.yml
     run:
