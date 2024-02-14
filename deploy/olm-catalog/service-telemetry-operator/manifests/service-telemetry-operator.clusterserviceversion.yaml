@@ -117,10 +117,12 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
-                "adminPassword": "secret",
-                "adminUser": "root",
+                "baseImage": "registry.redhat.io/rhel8/grafana:9",
+                "dashboards": {
+                  "enabled": true
+                },
                 "disableSignoutMenu": false,
-                "ingressEnabled": false
+                "ingressEnabled": true
               }
             },
             "highAvailability": {
@@ -154,7 +156,7 @@ metadata:
     features.operators.openshift.io/cnf: "false"
     features.operators.openshift.io/cni: "false"
     features.operators.openshift.io/csi: "false"
-    features.operators.openshift.io/disconnected: "false"
+    features.operators.openshift.io/disconnected: "true"
     features.operators.openshift.io/fips-compliant: "false"
     features.operators.openshift.io/proxy-aware: "false"
     features.operators.openshift.io/tls-profiles: "false"
@@ -363,6 +365,7 @@ spec:
           - monitoring.coreos.com
           - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
+          - grafana.integreatly.org
           - integreatly.org
           resources:
           - '*'
