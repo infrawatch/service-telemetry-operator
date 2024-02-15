@@ -33,8 +33,11 @@
 
 - name: "Set supporting container image paths"
   set_fact:
-    prometheus_webhook_snmp_container_image_path: "{{ lookup('env', 'RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE') | default('quay.io/infrawatch/prometheus-webhook-snmp:latest', true) }}" # noqa 204
+    alertmanager_image_path: "{{ lookup('env', 'RELATED_IMAGE_ALERTMANAGER_IMAGE') | default('quay.io/prometheus/alertmanager:latest', true) }}" # noqa 204
+    grafana_image_path: "{{ lookup('env', 'RELATED_IMAGE_GRAFANA_IMAGE') | default({{ servicetelemetry_defaults.graphing.grafana.base_image }}, true) }}" # noqa 204
     oauth_proxy_image: "{{ lookup('env', 'RELATED_IMAGE_OAUTH_PROXY_IMAGE') | default('quay.io/openshift/origin-oauth-proxy:latest', true) }}" # noqa 204
+    prometheus_webhook_snmp_container_image_path: "{{ lookup('env', 'RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_IMAGE') | default('quay.io/infrawatch/prometheus-webhook-snmp:latest', true) }}" # noqa 204
+    prometheus_image_path: "{{ lookup('env', 'RELATED_IMAGE_PROMETHEUS_IMAGE') | default('quay.io/prometheus/prometheus:latest', true) }}" # noqa 204
 
 - name: Adjust defaults when highAvailability.enabled is true
   block:
