@@ -84,6 +84,9 @@ spec:
 {% if servicetelemetry_vars.graphing.grafana.base_image is defined %}
           - name: grafana
             image: {{ servicetelemetry_vars.graphing.grafana.base_image }}
+{% else %}
+          - name: grafana
+            image: {{ grafana_image_path }}
 {% endif %}
   service:
     metadata:
