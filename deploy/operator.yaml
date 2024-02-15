@@ -37,6 +37,12 @@ spec:
               value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
             - name: RELATED_IMAGE_OAUTH_PROXY_IMAGE
               value: <<RELATED_IMAGE_OAUTH_PROXY>>:<<RELATED_IMAGE_OAUTH_PROXY_TAG>>
+            - name: RELATED_IMAGE_GRAFANA_IMAGE
+              value: <<RELATED_IMAGE_GRAFANA>>:<<RELATED_IMAGE_GRAFANA_TAG>>
+            - name: RELATED_IMAGE_PROMETHEUS_IMAGE
+              value: <<RELATED_IMAGE_PROMETHEUS>>:<<RELATED_IMAGE_PROMETHEUS_TAG>>
+            - name: RELATED_IMAGE_ALERTMANAGER
+              value: <<RELATED_IMAGE_ALERTMANAGER>>:<<RELATED_IMAGE_ALERTMANAGER_TAG>>
       volumes:
         - name: runner
           emptyDir: {}
