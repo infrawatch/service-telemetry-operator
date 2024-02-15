@@ -91,7 +91,7 @@
   ansible.builtin.assert:
     that:
       - '__smart_gateway_bundle_image_path | default("") | length > 0'
-      - '__service_telemetry_bindle_image_path | default("") | length > 0'
+      - '__service_telemetry_bundle_image_path | default("") | length > 0'
     fail_msg: "Bundle path(s) not set. __smart_gateway_bundle_image_path is '{{ __smart_gateway_bundle_image_path }}' and __service_telemetry_bundle_image_path is '{{ __service_telemetry_bundle_image_path }}'. Both values need to be set."
     success_msg: "Bundle paths are defined, are not None and have a non-zero-length"
 
