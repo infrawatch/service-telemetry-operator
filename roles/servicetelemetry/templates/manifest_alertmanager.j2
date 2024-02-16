@@ -7,6 +7,9 @@ metadata:
   name: '{{ ansible_operator_meta.name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
+{% if observability_strategy != "use_community" %}
+  image: {{ alertmanager_image_path }}
+{% endif %}
   replicas: {{ servicetelemetry_vars.alerting.alertmanager.deployment_size }}
   serviceAccountName: alertmanager-stf
   serviceMonitorSelector:
