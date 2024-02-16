@@ -9,6 +9,7 @@ metadata:
 spec:
 {% if observability_strategy != "use_community" %}
   version: null
+  image: {{ prometheus_image_path }}
 {% else %}
   version: v2.43.0
 {% endif %}
