@@ -117,6 +117,7 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
+                "baseImage": "registry.redhat.io/rhel8/grafana:9",
                 "dashboards": {
                   "enabled": true
                 },
