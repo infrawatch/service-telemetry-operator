@@ -16,7 +16,7 @@
       ansible.builtin.git:
         repo: "{{ sgo_repository }}"
         dest: "{{ sgo_dir }}"
-        version: "{{ version_branches.sgo | default(branch, true) }}"
+        version: "{{ sgo_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sgo }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
@@ -36,7 +36,7 @@
       ansible.builtin.git:
         repo: "{{ sg_core_repository }}"
         dest: "{{ sg_core_dir }}"
-        version: "{{ version_branches.sg_core | default(branch, true) }}"
+        version: "{{ sg_core_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sg_core }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
@@ -56,7 +56,7 @@
       ansible.builtin.git:
         repo: "{{ sg_bridge_repository }}"
         dest: "{{ sg_bridge_dir }}"
-        version: "{{ version_branches.sg_bridge | default(branch, true) }}"
+        version: "{{ sg_bridge_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.sg_bridge }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:
@@ -76,7 +76,7 @@
       ansible.builtin.git:
         repo: "{{ prometheus_webhook_snmp_repository }}"
         dest: "{{ prometheus_webhook_snmp_dir }}"
-        version: "{{ version_branches.prometheus_webhook_snmp | default(branch, true) }}"
+        version: "{{ prometheus_webhook_snmp_branch | default(branch, true) }}"
   rescue:
     - name: "Get {{ version_branches.prometheus_webhook_snmp }} upstream branch because specified branch or repository doesn't exist"
       ansible.builtin.git:

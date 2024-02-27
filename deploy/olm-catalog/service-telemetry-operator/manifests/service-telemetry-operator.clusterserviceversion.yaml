@@ -117,10 +117,12 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
-                "adminPassword": "secret",
-                "adminUser": "root",
+                "baseImage": "registry.redhat.io/rhel8/grafana:9",
+                "dashboards": {
+                  "enabled": true
+                },
                 "disableSignoutMenu": false,
-                "ingressEnabled": false
+                "ingressEnabled": true
               }
             },
             "highAvailability": {
@@ -154,7 +156,7 @@ metadata:
     features.operators.openshift.io/cnf: "false"
     features.operators.openshift.io/cni: "false"
     features.operators.openshift.io/csi: "false"
-    features.operators.openshift.io/disconnected: "false"
+    features.operators.openshift.io/disconnected: "true"
     features.operators.openshift.io/fips-compliant: "false"
     features.operators.openshift.io/proxy-aware: "false"
     features.operators.openshift.io/tls-profiles: "false"
@@ -293,6 +295,10 @@ spec:
                   value: <<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>:<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>
                 - name: RELATED_IMAGE_OAUTH_PROXY_IMAGE
                   value: <<RELATED_IMAGE_OAUTH_PROXY>>:<<RELATED_IMAGE_OAUTH_PROXY_TAG>>
+                - name: RELATED_IMAGE_PROMETHEUS_IMAGE
+                  value: <<RELATED_IMAGE_PROMETHEUS>>:<<RELATED_IMAGE_PROMETHEUS_TAG>>
+                - name: RELATED_IMAGE_ALERTMANAGER_IMAGE
+                  value: <<RELATED_IMAGE_ALERTMANAGER>>:<<RELATED_IMAGE_ALERTMANAGER_TAG>>
                 image: <<OPERATOR_IMAGE>>:<<OPERATOR_TAG>>
                 imagePullPolicy: Always
                 name: operator
@@ -363,6 +369,7 @@ spec:
           - monitoring.coreos.com
           - monitoring.rhobs
           - elasticsearch.k8s.elastic.co
+          - grafana.integreatly.org
           - integreatly.org
           resources:
           - '*'
@@ -458,4 +465,5 @@ spec:
   minKubeVersion: 1.23.0
   provider:
     name: Red Hat
+  replaces: service-telemetry-operator.v---bundle-latest-released-version
   version: 1.99.0

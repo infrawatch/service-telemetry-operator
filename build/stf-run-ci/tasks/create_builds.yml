@@ -23,7 +23,6 @@
 
   - name: Kill first build since it will always fail (triggered on BuildConfig creation)
     ansible.builtin.shell: sleep 10 ; oc delete build {{ artifact.name }}-1 -n "{{ namespace }}"
-    ignore_errors: true
     retries: 3
     delay: 10
     register: kill_build
@@ -34,7 +33,6 @@
       ansible.builtin.command: oc start-build {{ artifact.name }} -n "{{ namespace }}" --follow --wait --from-dir "{{ artifact.working_build_dir }}"
       register: build_results
       when: build_lookup.resources | length == 0
-      ignore_errors: true
       retries: 3
       delay: 10
       until: build_results.rc == 0
