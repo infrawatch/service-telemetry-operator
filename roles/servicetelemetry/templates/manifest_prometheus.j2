@@ -7,7 +7,12 @@ metadata:
   name: '{{ ansible_operator_meta.name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
+{% if observability_strategy != "use_community" %}
+  version: null
+  image: {{ prometheus_image_path }}
+{% else %}
   version: v2.43.0
+{% endif %}
   replicas: {{ servicetelemetry_vars.backends.metrics.prometheus.deployment_size }}
   ruleSelector: {}
   securityContext: {}

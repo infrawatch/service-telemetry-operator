@@ -81,7 +81,7 @@ spec:
     grafana:
       ingressEnabled: true
       disableSignoutMenu: false
-      baseImage: registry.redhat.io/rhel8/grafana:7
+      baseImage: registry.redhat.io/rhel8/grafana:9
       dashboards:
         enabled: true
   transports:
