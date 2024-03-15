@@ -122,7 +122,13 @@ If you're working on a a change that involves PRs to multiple repos (which are t
 You can use `Depends-On` to reference a change in any repo that zuul knows about (i.e. included in `project.yaml` in RDO in this case).
 
 ### How do I add Zuul to a new repo?
-The Zuul instance we used is hosted by RDO. In order for jobs to be run on a new repo, the following criteria must be met:
+The Zuul instance we use is hosted by RDO. In order for jobs to be run on a new repo, the following criteria must be met:
 - The `softwarefactory-project-zuul` github app must also be added to the organisation (this is already done for infrawatch).
 - The repo must be configured in [rdo/config](https://review.rdoproject.org/cgit/config/tree/zuul/rdo.yaml). An example of adding a repo is (here)[https://review.rdoproject.org/r/c/config/+/51666).
 - The `softwarefactory-project-zuul` app must have repository access configured for the repo you want to add. This setting can be found in organisation/infrawatch -> settings -> Github Apps.
+
+### How do I configure job triggers?
+In Zuul, jobs themselves don't have triggers. Triggers are configure per-pipeline.
+Each job needs to be added to a pipeline to run.
+
+RDO Zuul defines the (pipelines that we can use)[https://review.rdoproject.org/cgit/config/tree/zuul.d/pipelines.yaml].
