@@ -15,10 +15,13 @@
       - name: crc
         label: coreos-crc-extracted-2-30-0-xxl
 
-# Based on the 2-node job cookbook at https://github.com/openstack-k8s-operators/ci-framework/blob/main/docs/source/cookbooks/zuul-job-nodeset.md
 - job:
     name: stf-base-2node
     parent: podified-multinode-edpm-deployment-crc
+    description: |
+      A base job for STF that deploys extracted CRC with a 2-node topology.
+      This job is based on the cookbook example in: https://github.com/openstack-k8s-operators/ci-framework/blob/main/docs/source/cookbooks/zuul-job-nodeset.md
+      All non-abstract jobs that inherit from this must have a nodeset configured.
     abstract: true
     required-projects:
       - name: github.com/openstack-k8s-operators/dataplane-operator
@@ -68,11 +71,11 @@
 
 - job:
     name: stf-base
-    # defined in: https://review.rdoproject.org/cgit/config/tree/zuul.d/_jobs-crc.yaml
     parent: stf-base-2node
     abstract: true
     description: |
       Run the stf-run-ci role, and then test stf
+      Any non-abstract jobs that inherit from this must pass a `scenario` var.
     roles:  # adds in dependent roles i.e. put it in the role path
       - zuul: github.com/openstack-k8s-operators/ci-framework
     # These are the additional repos that zuul will clone
@@ -99,7 +102,7 @@
     parent: stf-base
     abstract: true
     description: |
-      Deploy STF using the nightly bundles
+      Deploy stf using the nightly bundles
     vars:
       scenario: "nightly_bundles"
 
