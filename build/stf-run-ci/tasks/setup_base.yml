@@ -30,7 +30,7 @@
         - "{{ namespace }}"
 
 # documented procedure: https://infrawatch.github.io/documentation/#deploying-observability-operator_assembly-installing-the-core-components-of-stf
-- name: Subscribe to Red Hat Obervability Operator
+- name: Subscribe to Red Hat Observability Operator
   kubernetes.core.k8s:
     definition:
       apiVersion: operators.coreos.com/v1alpha1
@@ -111,7 +111,7 @@
           sourceNamespace: openshift-marketplace
 
 # installed by properties.yaml definition as of STF 1.5.3
-- when: not __deploy_from_index_enabled | bool
+- when: __local_build_enabled | bool
   block:
     - name: Subscribe to AMQ Interconnect Operator
       kubernetes.core.k8s:
