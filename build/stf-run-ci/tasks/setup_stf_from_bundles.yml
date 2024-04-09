@@ -97,8 +97,8 @@
 
 - name: Deploy SGO via OLM bundle
   ansible.builtin.shell:
-    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __smart_gateway_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
+    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __smart_gateway_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --enable-alpha --timeout 600s"
 
 - name: Deploy STO via OLM bundle
   ansible.builtin.shell:
-    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __service_telemetry_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --timeout 600s"
+    cmd: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v1 }} --verbose run bundle {{ __service_telemetry_bundle_image_path }} {% if pull_secret | length > 0 %} --pull-secret-name=pull-secret --ca-secret-name=registry-tls-ca {% endif %} --namespace={{ namespace }} --enable-alpha --timeout 600s"
