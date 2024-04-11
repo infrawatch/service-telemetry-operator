@@ -14,8 +14,24 @@
     - name: "Run bootstrap playbook"
       ansible.builtin.shell:
         cmd: |
-          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/01-bootstrap.yml
+          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/01-bootstrap.yml -t packages
         chdir: "{{ ci_framework_dir }}"
+
+    - name: Show cifmw_install_yamls_environment var
+      ansible.builtin.debug:
+        var: cifmw_install_yamls_environment
+
+    - name: reset value of cifmw_install_yamls_environment
+      ansible.builtin.set_fact:
+        cifmw_install_yamls_environment: {}
+
+    # Since we skipped bootstrap, the install_yamls role wasn't run, which means there's no "{{ cifmw_basedir|default(ansible_user_dir ~ '/ci-framework-data') }}/artifacts/parameters/install-yamls-params.yml file created. This file is expected by the openshift_login role.
+    # I think this can be addressed by adding a when to the task that accesses the params file, since it is only accessed to update the file. The update only takes place if a certain var is set.
+    - name: workaround - create install_yamls paramaterers file
+      ansible.builtin.shell:
+        cmd: |
+          touch {{ cifmw_basedir|default(ansible_user_dir ~ '/ci-framework-data') }}/artifacts/parameters/install-yamls-params.yml
+      ignore_errors: true
 
     - name: Run ci_framework infra playbook
       ansible.builtin.shell:
