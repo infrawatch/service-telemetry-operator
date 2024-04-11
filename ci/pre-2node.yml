@@ -14,7 +14,7 @@
     - name: "Run bootstrap playbook"
       ansible.builtin.shell:
         cmd: |
-          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/01-bootstrap.yml
+          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/playbooks/01-bootstrap.yml -t packages
         chdir: "{{ ci_framework_dir }}"
 
     - name: Run ci_framework infra playbook
