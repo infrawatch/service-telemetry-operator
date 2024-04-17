@@ -58,6 +58,7 @@ pull_secret_pass:
 redhat_operators: redhat-operators
 community_operators: community-operators
 certified_operators: certified-operators
+infrawatch_operators: infrawatch-operators
 
 stf_channel: unstable
 
