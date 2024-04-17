@@ -1,5 +1,6 @@
 ---
 - name: Set default InfraWatch OperatorSource manifest
+  when: __deploy_from_index_enabled | bool and infrawatch_catalog_source_manifest is not defined 
   ansible.builtin.set_fact:
     infrawatch_catalog_source_manifest: |
       apiVersion: operators.coreos.com/v1alpha1
@@ -15,9 +16,9 @@
         updateStrategy:
           registryPoll:
             interval: 30m
-  when: infrawatch_catalog_source_manifest is not defined
 
 - name: Set default Smart Gateway Operator Subscription manifest
+  when: smart_gateway_operator_subscription_manifest is not defined
   ansible.builtin.set_fact:
     smart_gateway_operator_subscription_manifest: |
       apiVersion: operators.coreos.com/v1alpha1
@@ -26,14 +27,14 @@
         name: smart-gateway-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: "{{ stf_channel }}"
         installPlanApproval: Automatic
         name: smart-gateway-operator
-        source: infrawatch-operators
+        source: "{{ infrawatch_operators }}"
         sourceNamespace: openshift-marketplace
-  when: smart_gateway_operator_subscription_manifest is not defined
 
 - name: Set default Service Telemetry Operator Subscription manifest
+  when: service_telemetry_operator_subscription_manifest is not defined
   ansible.builtin.set_fact:
     service_telemetry_operator_subscription_manifest: |
       apiVersion: operators.coreos.com/v1alpha1
@@ -42,15 +43,15 @@
         name: service-telemetry-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: "{{ stf_channel }}"
         installPlanApproval: Automatic
         name: service-telemetry-operator
-        source: infrawatch-operators
+        source: "{{ infrawatch_operators }}"
         sourceNamespace: openshift-marketplace
-  when: service_telemetry_operator_subscription_manifest is not defined
 
 # enable catalogsource
 - name: Enable InfraWatch Catalog Source
+  when: __deploy_from_index_enabled | bool
   kubernetes.core.k8s:
     definition:
       '{{ infrawatch_catalog_source_manifest }}'
