@@ -82,12 +82,20 @@
     fail_msg: "Bundle path(s) not set. __smart_gateway_bundle_image_path is '{{ __smart_gateway_bundle_image_path }}' and __service_telemetry_bundle_image_path is '{{ __service_telemetry_bundle_image_path }}'. Both values need to be set."
     success_msg: "Bundle paths are defined, are not None and have a non-zero-length"
 
-- name: Check that we can access to the STO bundle
+- name: Try to access to the STO bundle
   ansible.builtin.command: oc image info {{ __service_telemetry_bundle_image_path }}
   register: sto_bundle_info
-  failed_when: sto_bundle_info.rc != 0
+  ignore_errors: true
 
-- name: Check that we can access to the SGO bundle
+- name: Try to access to the SGO bundle
   ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
   register: sgo_bundle_info
-  failed_when: sgo_bundle_info.rc != 0
+  ignore_errors: true
+
+- name: Check successful read access to STO and SGO bundles in the internal registry
+  ansible.builtin.assert:
+    that:
+      - sto_bundle_info.rc != 0
+      - sgo_bundle_info.rc != 0
+    fail_msg: "Bundles couldn't be retrieved. Check configuration for the internal registry and retry."
+    success_msg: "Bundles were correctly retrieved from the internal registry."
