@@ -36,6 +36,11 @@
     msg: __deploy_from_index_enabled can not be used with __deploy_from_bundles_enabled
   when: __deploy_from_index_enabled | bool and __deploy_from_bundles_enabled | bool
 
+- name: Fail when disconnected deploy and other deployment options also requested
+  ansible.builtin.fail:
+    msg: __disconnected_deploy cannot be used if __deploy_from_bundles_enabled, __deploy_from_index_enabled or __local_build_enabled
+  when: __disconnected_deploy | bool and (__deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool or __local_build_enabled | bool) 
+
 - name: Get the list of nodes
   kubernetes.core.k8s_info:
     kind: Node
@@ -77,6 +82,7 @@
     prometheus_webhook_snmp_dir: "{{ prometheus_webhook_snmp_dir if prometheus_webhook_snmp_dir is defined else base_dir + '/working/prometheus-webhook-snmp' }}"
 
 - name: Get operator_sdk_v0 (build bundles)
+  when: __local_build_enabled | bool
   ansible.builtin.command:
     cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
