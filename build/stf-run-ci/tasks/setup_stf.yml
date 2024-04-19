@@ -1,6 +1,8 @@
 ---
 - name: Set default InfraWatch OperatorSource manifest
-  when: __deploy_from_index_enabled | bool and infrawatch_catalog_source_manifest is not defined 
+  when:
+   - __deploy_from_index_enabled | bool
+   - infrawatch_catalog_source_manifest is not defined 
   ansible.builtin.set_fact:
     infrawatch_catalog_source_manifest: |
       apiVersion: operators.coreos.com/v1alpha1

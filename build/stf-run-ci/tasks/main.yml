@@ -24,22 +24,30 @@
 - name: Fail on mutually exclusive flags
   ansible.builtin.fail:
     msg: __deploy_from_bundles_enabled not currently supported with __local_build_enabled (but should be)
-  when: __local_build_enabled | bool and __deploy_from_bundles_enabled | bool
+  when:
+    - __local_build_enabled | bool
+    - __deploy_from_bundles_enabled | bool
 
 - name: Fail when deploying from index image and local build disabled
   ansible.builtin.fail:
     msg: __deploy_from_index_enabled must also have __local_build_enabled
-  when: __deploy_from_index_enabled | bool and not __local_build_enabled | bool
+  when:
+   - __deploy_from_index_enabled | bool
+   - not __local_build_enabled | bool
 
 - name: Fail when deploying from index images and deployment from bundles also requested (mutually exclusive methods)
   ansible.builtin.fail:
     msg: __deploy_from_index_enabled can not be used with __deploy_from_bundles_enabled
-  when: __deploy_from_index_enabled | bool and __deploy_from_bundles_enabled | bool
+  when:
+   - __deploy_from_index_enabled | bool
+   - __deploy_from_bundles_enabled | bool
 
 - name: Fail when disconnected deploy and other deployment options also requested
   ansible.builtin.fail:
     msg: __disconnected_deploy cannot be used if __deploy_from_bundles_enabled, __deploy_from_index_enabled or __local_build_enabled
-  when: __disconnected_deploy | bool and (__deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool or __local_build_enabled | bool) 
+  when:
+   - __disconnected_deploy | bool
+   - __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool or __local_build_enabled | bool 
 
 - name: Get the list of nodes
   kubernetes.core.k8s_info:
