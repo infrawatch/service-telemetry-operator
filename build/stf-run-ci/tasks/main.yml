@@ -55,7 +55,7 @@
   tags:
     - pre-clean
 
-- name: Set up internal registry credentials (deploy from bundles)
+- name: Set up bundle registry credentials (deploy from bundles)
   ansible.builtin.include_tasks: setup_registry_auth.yml
   when:
   - __deploy_from_bundles_enabled | bool
