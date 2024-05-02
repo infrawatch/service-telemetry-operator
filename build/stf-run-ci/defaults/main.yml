@@ -37,7 +37,7 @@ default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator
 default_operator_registry_image_tag: v4.13
 
 elasticsearch_version: 7.17.20
-elasticsearch_image: "registry.redhat.io/elastic/elasticsearch:7.17.20"
+elasticsearch_image: registry.connect.redhat.com/elastic/elasticsearch
 
 sgo_image_tag: latest
 sto_image_tag: latest
