@@ -1,4 +1,5 @@
 - name: Update Pull Secret with bundle registry credentials
+  when: setup_bundle_registry_auth | bool
   block:
   - name: Get existing Pull Secret from openshift config
     kubernetes.core.k8s_info:
@@ -51,6 +52,7 @@
           .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
 
 - name: Create registry CA Cert
+  when: setup_bundle_registry_tls_ca | bool
   kubernetes.core.k8s:
     state: present
     definition:
@@ -64,6 +66,7 @@
         cert.pem: "{{ lookup('file', 'CA.pem') | b64encode }}"
 
 - name: Patch the default service account to use our pull secret
+  when: setup_bundle_registry_tls_ca | bool
   kubernetes.core.k8s_json_patch:
     kind: ServiceAccount
     namespace: "{{ namespace }}"
