@@ -65,7 +65,7 @@ Usually, CRC is run using the `crc start` command, which created a VM on your ho
 In Zuul, the provisioned hosts are also virtual machines, so running `crc start` would result in a VM in a VM. This nested virtualisation causes some performance issues.
 
 The `extracted` deployment try to address the performance issues associated with nested virtualisation. The infrastructure is more complicated than nested.
-The `coreos-crc-extracted-...` labels provide a VM with an extracted CRC VM image, so that the CRC VM can be booted directly by the cloud provider. The `crc` VM is not accessed directly, but via a second `controller` VM, on which tests are run. The `stf-base-2node` job includes a network configuration to make sure the controller can communicate with the OCP deployment in CRC. All ansible playbooks should be run against `controller`. The `stf-base-2node` job is a common parent to all the jobs in the repo, and should rarely need an update.
+The `coreos-crc-extracted-...` labels provide a VM with an extracted CRC VM image, so that the CRC VM can be booted directly by the cloud provider. The `crc` VM is not accessed directly, but via a second `controller` VM, on which tests are run. The `stf-base-2node` job includes a network configuration to make sure the controller can communicate with the OCP deployment in CRC.
 
 The name of each nodeset corresponds to the version of OCP that is deployed by the CRC image.
 
@@ -73,7 +73,7 @@ The name of each nodeset corresponds to the version of OCP that is deployed by t
 
 If a new job needs to be added, it should inherit from `stf-base` ( or one of its child-jobs) which includes common tasks for setting up STF. The new jobs should have minimal configuration lines; either the `scenario` var is passed, which selects a vars file for stf-run-ci, to change its configuration, or the nodeset should be updated, which selects the OCP version.
 
-Below are examples of how to add a job. Take note of how the `scenario` var and the `nodeset` is passed.
+Below is an example of how to add a job. Take note of how the `scenario` var and the `nodeset` is passed.
 
     - job:
         name: stf-crc-nightly_bundles
@@ -84,7 +84,6 @@ Below are examples of how to add a job. Take note of how the `scenario` var and 
         vars:
           scenario: "nightly_bundles"
 
-OR
 
     - job:
         name: stf-crc-ocp_414-nightly_bundles
