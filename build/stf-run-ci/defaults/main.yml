@@ -38,7 +38,8 @@ __smart_gateway_bundle_image_path: "quay.io/infrawatch-operators/smart-gateway-o
 default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator-registry
 default_operator_registry_image_tag: v4.13
 
-elasticsearch_version: 7.16.1
+elasticsearch_version: 7.17.20
+elasticsearch_image: registry.connect.redhat.com/elastic/elasticsearch
 
 sgo_image_tag: latest
 sto_image_tag: latest

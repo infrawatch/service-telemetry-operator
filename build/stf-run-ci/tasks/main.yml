@@ -60,6 +60,10 @@
   tags:
     - pre-clean
 
+- name: Set up bundle registry credentials (deploy from bundles)
+  ansible.builtin.include_tasks: setup_registry_auth.yml
+  when: __deploy_from_bundles_enabled | bool or setup_bundle_registry_auth | bool
+
 - name: Setup supporting Operator subscriptions
   ansible.builtin.include_tasks: setup_base.yml
   tags:
