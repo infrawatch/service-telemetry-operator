@@ -114,11 +114,3 @@
   ansible.builtin.fail:
     msg: "The requested SGO bundle couldn't be retrieved from the bundle registry. Check configuration for the bundles registry and retry."
   when: "__smart_gateway_bundle_image_path not in sgo_bundle_info.stdout"
-
-- name: Check successful read access to STO and SGO bundles in the internal registry
-  ansible.builtin.assert:
-    that:
-      - '__service_telemetry_bundle_image_path in sto_bundle_info.stdout'
-      - '__smart_gateway_bundle_image_path in sgo_bundle_info.stdout'
-    fail_msg: "Bundles couldn't be retrieved. Check configuration for the bundles registry and retry."
-    success_msg: "Bundles were correctly retrieved from the registry."
