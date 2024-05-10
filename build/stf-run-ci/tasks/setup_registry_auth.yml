@@ -95,7 +95,7 @@
     msg:
     - "{{ sto_bundle_info }}"
 
-- name: Fail is the expected STO bundle was not correctly fetched
+- name: Fail if the expected STO bundle was not correctly fetched
   ansible.builtin.fail:
     msg: "The requested STO bundle couldn't be retrieved from the bundle registry. Check configuration for the bundles registry and retry."
   when: "__service_telemetry_bundle_image_path not in sto_bundle_info.stdout"
