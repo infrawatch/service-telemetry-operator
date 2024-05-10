@@ -90,15 +90,27 @@
   register: sto_bundle_info
   ignore_errors: true
 
+- name: Print STO bundle info
+  ansible.builtin.debug:
+    msg:
+    - "{{ sto_bundle_info }}"
+
+- name: Fail if the expected STO bundle was not correctly fetched
+  ansible.builtin.fail:
+    msg: "The requested STO bundle couldn't be retrieved from the bundle registry. Check configuration for the bundles registry and retry."
+  when: "__service_telemetry_bundle_image_path not in sto_bundle_info.stdout"
+
 - name: Try to access to the SGO bundle
   ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
   register: sgo_bundle_info
   ignore_errors: true
 
-- name: Check successful read access to STO and SGO bundles in the internal registry
-  ansible.builtin.assert:
-    that:
-      - sto_bundle_info.rc != 0
-      - sgo_bundle_info.rc != 0
-    fail_msg: "Bundles couldn't be retrieved. Check configuration for the bundles registry and retry."
-    success_msg: "Bundles were correctly retrieved from the registry."
+- name: Print SGO bundle info
+  ansible.builtin.debug:
+    msg:
+    - "{{ sgo_bundle_info }}"
+
+- name: Fail is the expected SGO bundle was not correctly fetched
+  ansible.builtin.fail:
+    msg: "The requested SGO bundle couldn't be retrieved from the bundle registry. Check configuration for the bundles registry and retry."
+  when: "__smart_gateway_bundle_image_path not in sgo_bundle_info.stdout"
