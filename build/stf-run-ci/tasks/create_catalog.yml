@@ -16,8 +16,21 @@
 - name: Create info variables from bundle generation output (deploy from bundles)
   when: __deploy_from_bundles_enabled | bool
   ansible.builtin.set_fact:
-    sto_bundle_info: { 'bundle_default_channel': 'stable-1.5', 'bundle-channels': 'stable-1.5', 'operator_bundle_version': {{ __service_telemetry_bundle_image_path.split(':').1 }} }
-    sgo_bundle_info: { 'bundle_default_channel': 'stable-1.5', 'bundle-channels': 'stable-1.5', 'operator_bundle_version': {{ __smart_gateway_bundle_image_path.split(':').1 }} }
+    sto_bundle_info:
+      'bundle_default_channel': stable-1.5
+      'bundle-channels': stable-1.5
+      'operator_bundle_version': "{{ __service_telemetry_bundle_image_path.split(':').1 }}"
+    sgo_bundle_info:
+      'bundle_default_channel': stable-1.5
+      'bundle-channels': stable-1.5
+      'operator_bundle_version': "{{ __smart_gateway_bundle_image_path.split(':').1 }}"
+
+- name: Show STO and SGO bundle info that will used in the index image
+  when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool
+  ansible.builtin.debug:
+    msg:
+    - "{{ sto_bundle_info }}"
+    - "{{ sgo_bundle_info }}"
 
 - name: Get the builder-dockercfg Secret name
   ansible.builtin.command: oc get secret -n {{ namespace }} --field-selector='type==kubernetes.io/dockercfg' -ojsonpath='{.items[?(@.metadata.annotations.kubernetes\.io/service-account\.name=="builder")].metadata.name}'
@@ -112,11 +125,11 @@
     src: index-yaml.j2
     dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
 
-- name: Set correct sto and sgo bundle paths when deploying from index with pre-built bundles
+- name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
   when: __deploy_from_bundles_enabled | bool
   ansible.builtin.set_fact:
-    sto_bundle_image_path: {{ __service_telemetry_bundle_image_path }}
-    sgo_bundle_image_path: {{ __smart_gateway_bundle_image_path }}
+    sto_bundle_image_path: "{{ __service_telemetry_bundle_image_path }}"
+    sgo_bundle_image_path: "{{ __smart_gateway_bundle_image_path }}"
 
 - name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
