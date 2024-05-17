@@ -18,11 +18,11 @@
   ansible.builtin.set_fact:
     sto_bundle_info:
       'bundle_default_channel': stable-1.5
-      'bundle-channels': stable-1.5
+      'bundle_channels': stable-1.5
       'operator_bundle_version': "{{ __service_telemetry_bundle_image_path.split(':').1 }}"
     sgo_bundle_info:
       'bundle_default_channel': stable-1.5
-      'bundle-channels': stable-1.5
+      'bundle_channels': stable-1.5
       'operator_bundle_version': "{{ __smart_gateway_bundle_image_path.split(':').1 }}"
 
 - name: Show STO and SGO bundle info that will used in the index image
