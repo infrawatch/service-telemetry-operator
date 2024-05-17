@@ -35,8 +35,8 @@
 - name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
   when: __deploy_from_bundles_enabled | bool
   ansible.builtin.set_fact:
-    sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sto_bundle_info.operator_bundle_version }}"
-    sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sgo_bundle_info.operator_bundle_version }}"
+    sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_version }}"
+    sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_version }}"
 
 - name: Create ImageStream for STO and SGO (deploying from bundles)
   when: __deploy_from_bundles_enabled
