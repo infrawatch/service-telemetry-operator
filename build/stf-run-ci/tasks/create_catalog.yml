@@ -44,13 +44,13 @@
     - name: Create ImageStream for STO
       ansible.builtin.command:
         cmd: |
-          oc import-image -n {{ namespace }} service-telemetry-operator-bundle:{{ sto_bundle_image_tag }} --from={{ __service_telemetry_bundle_image_path }} --confirm --insecure
+          oc import-image -n {{ namespace }} service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_version }} --from={{ __service_telemetry_bundle_image_path }} --confirm --insecure
       register: sto_is
 
     - name: Create ImageStream for SGO
       ansible.builtin.command:
         cmd: |
-          oc import-image -n {{ namespace }} smart-gateway-operator-bundle:{{ sgo_bundle_image_tag }} --from={{ __smart_gateway_bundle_image_path }} --confirm --insecure
+          oc import-image -n {{ namespace }} smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_version }} --from={{ __smart_gateway_bundle_image_path }} --confirm --insecure
       register: sgo_is
 
 - name: Get the builder-dockercfg Secret name
