@@ -32,6 +32,12 @@
     - "{{ sto_bundle_info }}"
     - "{{ sgo_bundle_info }}"
 
+- name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
+  when: __deploy_from_bundles_enabled | bool
+  ansible.builtin.set_fact:
+    sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sto_bundle_info.operator_bundle_version }}"
+    sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sgo_bundle_info.operator_bundle_version }}"
+
 - name: Create ImageStream for STO and SGO (deploying from bundles)
   when: __deploy_from_bundles_enabled
   block:
@@ -139,12 +145,6 @@
   ansible.builtin.template:
     src: index-yaml.j2
     dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
-
-- name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
-  when: __deploy_from_bundles_enabled | bool
-  ansible.builtin.set_fact:
-    sto_bundle_image_path: "{{ __service_telemetry_bundle_image_path }}"
-    sgo_bundle_image_path: "{{ __smart_gateway_bundle_image_path }}"
 
 - name: Create BuildConfig for service-telemetry-framework-index
   kubernetes.core.k8s:
