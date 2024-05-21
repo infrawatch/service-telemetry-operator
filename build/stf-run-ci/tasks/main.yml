@@ -24,7 +24,9 @@
 - name: Fail on mutually exclusive flags
   ansible.builtin.fail:
     msg: __deploy_from_bundles_enabled not currently supported with __local_build_enabled (but should be)
-  when: __local_build_enabled | bool and __deploy_from_bundles_enabled | bool
+  when:
+    - __local_build_enabled | bool
+    - __deploy_from_bundles_enabled | bool
 
 - name: Get the list of nodes
   kubernetes.core.k8s_info:
@@ -63,6 +65,7 @@
     prometheus_webhook_snmp_dir: "{{ prometheus_webhook_snmp_dir if prometheus_webhook_snmp_dir is defined else base_dir + '/working/prometheus-webhook-snmp' }}"
 
 - name: Get operator_sdk_v0 (build bundles)
+  when: __local_build_enabled | bool
   ansible.builtin.command:
     cmd: "./get_operator_sdk.sh {{ operator_sdk_v0 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}"
