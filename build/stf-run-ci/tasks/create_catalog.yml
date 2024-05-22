@@ -13,17 +13,22 @@
     sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
     sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
 
-- name: Create info variables from bundle generation output (deploy from bundles)
+- name: Create info variables from provided pre-built bundles (deploy from bundles)
   when: __deploy_from_bundles_enabled | bool
-  ansible.builtin.set_fact:
-    sto_bundle_info:
-      'bundle_default_channel': stable-1.5
-      'bundle_channels': stable-1.5
-      'operator_bundle_version': "{{ __service_telemetry_bundle_image_path.split(':').1.split('-').0 }}"
-    sgo_bundle_info:
-      'bundle_default_channel': stable-1.5
-      'bundle_channels': stable-1.5
-      'operator_bundle_version': "{{ __smart_gateway_bundle_image_path.split(':').1.split('-').0 }}"
+  block:
+    - name: Define channel for pre-built bundles
+      ansible.builtin.set_fact:
+        stf_channel: stable-1.5
+    - name: Set info variables from provided pre-built bundles
+      ansible.builtin.set_fact:
+        sto_bundle_info:
+          'bundle_default_channel': "{{ stf_channel }}"
+          'bundle_channels': "{{ stf_channel }}"
+          'operator_bundle_version': "{{ sto_bundle_image_tag }}"
+        sgo_bundle_info:
+          'bundle_default_channel': stable-1.5
+          'bundle_channels': stable-1.5
+          'operator_bundle_version': "{{ sgo_bundle_image_tag }}"
 
 - name: Show STO and SGO bundle info that will used in the index image
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool
@@ -35,8 +40,8 @@
 - name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
   when: __deploy_from_bundles_enabled | bool
   ansible.builtin.set_fact:
-    sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_version }}"
-    sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_version }}"
+    sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_image_tag }}"
+    sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_image_tag }}"
 
 - name: Create ImageStream for STO and SGO (deploying from bundles)
   when: __deploy_from_bundles_enabled
@@ -44,13 +49,13 @@
     - name: Create ImageStream for STO
       ansible.builtin.command:
         cmd: |
-          oc import-image -n {{ namespace }} service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_version }} --from={{ __service_telemetry_bundle_image_path }} --confirm --insecure
+          oc import-image -n {{ namespace }} service-telemetry-operator-bundle:{{ sto_bundle_image_tag }} --from={{ __service_telemetry_bundle_image_path }} --confirm --insecure
       register: sto_is
 
     - name: Create ImageStream for SGO
       ansible.builtin.command:
         cmd: |
-          oc import-image -n {{ namespace }} smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_version }} --from={{ __smart_gateway_bundle_image_path }} --confirm --insecure
+          oc import-image -n {{ namespace }} smart-gateway-operator-bundle:{{ sgo_bundle_image_tag }} --from={{ __smart_gateway_bundle_image_path }} --confirm --insecure
       register: sgo_is
 
 - name: Get the builder-dockercfg Secret name
