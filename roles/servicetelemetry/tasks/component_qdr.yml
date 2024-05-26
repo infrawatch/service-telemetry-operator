@@ -227,7 +227,7 @@
             prefix: ceilometer
         edgeListeners:
           - expose: true
-            host: 0.0.0.0
+            host: ''
             port: 5671
       {% if servicetelemetry_vars.transports.qdr.auth == "basic" %}
             saslMechanisms: PLAIN
