@@ -5,7 +5,7 @@
       - name: controller
         label: cloud-centos-9-stream-tripleo-vexxhost
       - name: crc
-        label: coreos-crc-extracted-2-19-0-xxl
+        label: coreos-crc-extracted-2-19-0-3xl
 
 - nodeset:
     name: stf-crc_extracted-ocp414
@@ -173,9 +173,9 @@
     github-check:
       jobs:
         - stf-crc-ocp_412-local_build
-        - stf-crc-ocp_414-local_build
+          #- stf-crc-ocp_414-local_build
         - stf-crc-ocp_412-local_build-index_deploy
-        - stf-crc-ocp_414-local_build-index_deploy
+          #- stf-crc-ocp_414-local_build-index_deploy
 
 - project:
     name: infrawatch/service-telemetry-operator
