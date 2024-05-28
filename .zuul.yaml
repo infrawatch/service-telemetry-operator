@@ -5,6 +5,14 @@
       - name: controller
         label: cloud-centos-9-stream-tripleo-vexxhost
       - name: crc
+        label: coreos-crc-extracted-2-19-0-xxl
+
+- nodeset:
+    name: stf-crc_extracted-ocp412-new
+    nodes:
+      - name: controller
+        label: cloud-centos-9-stream-tripleo-vexxhost
+      - name: crc
         label: coreos-crc-extracted-2-19-0-3xl
 
 - nodeset:
