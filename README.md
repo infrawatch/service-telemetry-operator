@@ -1,3 +1,5 @@
+TEST-ONLY CHANGE TO CHECK NEW CI NODESETS
+
 # service-telemetry-operator
 
 Umbrella Operator to instantiate all required components for Service Telemetry
