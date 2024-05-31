@@ -8,14 +8,6 @@
         label: coreos-crc-extracted-2-19-0-xxl
 
 - nodeset:
-    name: stf-crc_extracted-ocp412-new
-    nodes:
-      - name: controller
-        label: cloud-centos-9-stream-tripleo-vexxhost
-      - name: crc
-        label: coreos-crc-extracted-2-19-0-3xl
-
-- nodeset:
     name: stf-crc_extracted-ocp414
     nodes:
       - name: controller
@@ -137,7 +129,7 @@
     parent: stf-crc-nightly_bundles
     description: |
       Deploy STF using the nightly bundles on OCP 4.12
-    nodeset: stf-crc_extracted-ocp412-new
+    nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_414-nightly_bundles
@@ -151,7 +143,7 @@
     parent: stf-crc-local_build
     description: |
       Build images locally and deploy STF on OCP 4.12
-    nodeset: stf-crc_extracted-ocp412-new
+    nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_414-local_build
@@ -165,7 +157,7 @@
     parent: stf-crc-local_build-index_deploy
     description: |
       Build STF locally and deploy from index on OCP 4.12
-    nodeset: stf-crc_extracted-ocp412-new
+    nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_414-local_build-index_deploy
@@ -193,39 +185,3 @@
       jobs:
         - stf-crc-ocp_412-nightly_bundles
         - stf-crc-ocp_414-nightly_bundles
-    github-check:
-      jobs:
-        - stf-crc-ocp_412-local_build
-        - stf-crc-ocp_412-local_build-index_deploy
-        - stf-crc-ocp_412-local_build-index_deploy:
-            nodeset:
-              #name: 3xl
-              nodes:
-               - name: controller
-                 label: cloud-centos-9-stream-tripleo-vexxhost
-               - name: crc
-                 label: coreos-crc-extracted-2-19-0-3xl
-        - stf-crc-ocp_412-local_build-index_deploy:
-            nodeset:
-              #name: 4xlargdde
-              nodes:
-               - name: controller
-                 label: cloud-centos-9-stream-tripleo-vexxhost
-               - name: crc
-                 label: coreos-crc-extracted-2-19-0-4xlarge
-        - stf-crc-ocp_412-local_build-index_deploy:
-            nodeset:
-              #name: 5xlarge
-              nodes:
-               - name: controller
-                 label: cloud-centos-9-stream-tripleo-vexxhost
-               - name: crc
-                 label: coreos-crc-extracted-2-19-0-5xlarge
-        - stf-crc-ocp_412-local_build-index_deploy:
-            nodeset:
-              #name: 6xlarge
-              nodes:
-               - name: controller
-                 label: cloud-centos-9-stream-tripleo-vexxhost
-               - name: crc
-                 label: coreos-crc-extracted-2-19-0-6xlarge
