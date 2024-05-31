@@ -276,11 +276,11 @@
       jobs:
         - stf-crc-ocp_412-local_build
         - stf-crc-ocp_412-local_build-3xl
-        - stf-crc-ocp_412-local_build-4xlarge
-        - stf-crc-ocp_412-local_build-5xlarge
-        - stf-crc-ocp_412-local_build-6xlarge
+          #- stf-crc-ocp_412-local_build-4xlarge
+          #- stf-crc-ocp_412-local_build-5xlarge
+          #- stf-crc-ocp_412-local_build-6xlarge
         - stf-crc-ocp_412-local_build-index_deploy
         - stf-crc-ocp_412-local_build-index_deploy-3xl
-        - stf-crc-ocp_412-local_build-index_deploy-4xlarge
-        - stf-crc-ocp_412-local_build-index_deploy-5xlarge
-        - stf-crc-ocp_412-local_build-index_deploy-6xlarge
+          #- stf-crc-ocp_412-local_build-index_deploy-4xlarge
+          #- stf-crc-ocp_412-local_build-index_deploy-5xlarge
+          #- stf-crc-ocp_412-local_build-index_deploy-6xlarge
