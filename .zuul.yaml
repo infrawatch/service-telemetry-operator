@@ -182,24 +182,24 @@
          label: coreos-crc-extracted-2-19-0-3xl
 
 - job:
-    name: stf-crc-ocp_412-local_build-4xlarge
+    name: stf-crc-ocp_412-local_build-4xl
     parent: stf-crc-ocp_412-local_build
     nodeset:
       nodes:
        - name: controller
          label: cloud-centos-9-stream-tripleo-vexxhost
        - name: crc
-         label: coreos-crc-extracted-2-19-0-4xlarge
+         label: coreos-crc-extracted-2-19-0-4xl
 
 - job:
-    name: stf-crc-ocp_412-local_build-5xlarge
+    name: stf-crc-ocp_412-local_build-5xl
     parent: stf-crc-ocp_412-local_build
     nodeset:
       nodes:
        - name: controller
          label: cloud-centos-9-stream-tripleo-vexxhost
        - name: crc
-         label: coreos-crc-extracted-2-19-0-5xlarge
+         label: coreos-crc-extracted-2-19-0-5xl
 
 - job:
     name: stf-crc-ocp_412-local_build-6xlarge
@@ -230,7 +230,7 @@
        - name: controller
          label: cloud-centos-9-stream-tripleo-vexxhost
        - name: crc
-         label: coreos-crc-extracted-2-19-0-4xlarge
+         label: coreos-crc-extracted-2-19-0-4xl
 
 - job:
     name: stf-crc-ocp_412-local_build-index_deploy-5xlarge
@@ -240,7 +240,7 @@
        - name: controller
          label: cloud-centos-9-stream-tripleo-vexxhost
        - name: crc
-         label: coreos-crc-extracted-2-19-0-5xlarge
+         label: coreos-crc-extracted-2-19-0-5xl
 
 - job:
     name: stf-crc-ocp_412-local_build-index_deploy-6xlarge
@@ -250,7 +250,7 @@
        - name: controller
          label: cloud-centos-9-stream-tripleo-vexxhost
        - name: crc
-         label: coreos-crc-extracted-2-19-0-6xlarge
+         label: coreos-crc-extracted-2-19-0-6xl
 
 - project-template:
     name: stf-crc-jobs
@@ -275,11 +275,11 @@
       jobs:
         - stf-crc-ocp_412-local_build
         - stf-crc-ocp_412-local_build-3xl
-          #- stf-crc-ocp_412-local_build-4xlarge
-          #- stf-crc-ocp_412-local_build-5xlarge
-          #- stf-crc-ocp_412-local_build-6xlarge
+          #- stf-crc-ocp_412-local_build-4xl
+          #- stf-crc-ocp_412-local_build-5xl
+          #- stf-crc-ocp_412-local_build-6xl
         - stf-crc-ocp_412-local_build-index_deploy
         - stf-crc-ocp_412-local_build-index_deploy-3xl
-          #- stf-crc-ocp_412-local_build-index_deploy-4xlarge
-          #- stf-crc-ocp_412-local_build-index_deploy-5xlarge
-          #- stf-crc-ocp_412-local_build-index_deploy-6xlarge
+          #- stf-crc-ocp_412-local_build-index_deploy-4xl
+          #- stf-crc-ocp_412-local_build-index_deploy-5xl
+          #- stf-crc-ocp_412-local_build-index_deploy-6xl
