@@ -8,14 +8,6 @@
         label: coreos-crc-extracted-2-19-0-xxl
 
 - nodeset:
-    name: stf-crc_extracted-ocp412-new
-    nodes:
-      - name: controller
-        label: cloud-centos-9-stream-tripleo-vexxhost
-      - name: crc
-        label: coreos-crc-extracted-2-19-0-3xl
-
-- nodeset:
     name: stf-crc_extracted-ocp414
     nodes:
       - name: controller
@@ -174,6 +166,92 @@
       Build STF locally and deploy from index on OCP 4.14
     nodeset: stf-crc_extracted-ocp414
 
+# ##########
+# Test jobs
+# ##########
+# Local_build
+#
+- job:
+    name: stf-crc-ocp_412-local_build-3xl
+    parent: stf-crc-ocp_412-local_build
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-3xl
+
+- job:
+    name: stf-crc-ocp_412-local_build-4xlarge
+    parent: stf-crc-ocp_412-local_build
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-4xlarge
+
+- job:
+    name: stf-crc-ocp_412-local_build-5xlarge
+    parent: stf-crc-ocp_412-local_build
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-5xlarge
+
+- job:
+    name: stf-crc-ocp_412-local_build-6xlarge
+    parent: stf-crc-ocp_412-local_build
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-6xlarge
+
+# local_build-index_deploy
+- job:
+    name: stf-crc-ocp_412-local_build-index_deploy-3xl
+    parent: stf-crc-ocp_412-local_build-index_deploy
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-3xl
+
+- job:
+    name: stf-crc-ocp_412-local_build-index_deploy-4xlarge
+    parent: stf-crc-ocp_412-local_build-index_deploy
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-4xlarge
+
+- job:
+    name: stf-crc-ocp_412-local_build-index_deploy-5xlarge
+    parent: stf-crc-ocp_412-local_build-index_deploy
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-5xlarge
+
+- job:
+    name: stf-crc-ocp_412-local_build-index_deploy-6xlarge
+    parent: stf-crc-ocp_412-local_build-index_deploy
+    nodeset:
+      nodes:
+       - name: controller
+         label: cloud-centos-9-stream-tripleo-vexxhost
+       - name: crc
+         label: coreos-crc-extracted-2-19-0-6xlarge
+
 - project-template:
     name: stf-crc-jobs
     description: |
@@ -187,9 +265,21 @@
 
 - project:
     name: infrawatch/service-telemetry-operator
-    templates:
-      - stf-crc-jobs
+    #templates:
+    #  - stf-crc-jobs
     periodic:
       jobs:
         - stf-crc-ocp_412-nightly_bundles
         - stf-crc-ocp_414-nightly_bundles
+    github-check:
+      jobs:
+        - stf-crc-ocp_412-local_build
+        - stf-crc-ocp_412-local_build-3xl
+        - stf-crc-ocp_412-local_build-4xlarge
+        - stf-crc-ocp_412-local_build-5xlarge
+        - stf-crc-ocp_412-local_build-6xlarge
+        - stf-crc-ocp_412-local_build-index_deploy
+        - stf-crc-ocp_412-local_build-index_deploy-3xl
+        - stf-crc-ocp_412-local_build-index_deploy-4xlarge
+        - stf-crc-ocp_412-local_build-index_deploy-5xlarge
+        - stf-crc-ocp_412-local_build-index_deploy-6xlarge
