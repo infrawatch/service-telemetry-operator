@@ -272,7 +272,6 @@
         - stf-crc-ocp_412-nightly_bundles
         - stf-crc-ocp_414-nightly_bundles
     github-check:
-      debug: true
       jobs:
         - stf-crc-ocp_412-local_build
         - stf-crc-ocp_412-local_build-3xl
