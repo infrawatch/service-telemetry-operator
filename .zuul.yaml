@@ -202,14 +202,14 @@
          label: coreos-crc-extracted-2-19-0-5xl
 
 - job:
-    name: stf-crc-ocp_412-local_build-6xlarge
+    name: stf-crc-ocp_412-local_build-6xl
     parent: stf-crc-ocp_412-local_build
     nodeset:
       nodes:
        - name: controller
          label: cloud-centos-9-stream-tripleo-vexxhost
        - name: crc
-         label: coreos-crc-extracted-2-19-0-6xlarge
+         label: coreos-crc-extracted-2-19-0-6xl
 
 # local_build-index_deploy
 - job:
@@ -223,7 +223,7 @@
          label: coreos-crc-extracted-2-19-0-3xl
 
 - job:
-    name: stf-crc-ocp_412-local_build-index_deploy-4xlarge
+    name: stf-crc-ocp_412-local_build-index_deploy-4xl
     parent: stf-crc-ocp_412-local_build-index_deploy
     nodeset:
       nodes:
@@ -233,7 +233,7 @@
          label: coreos-crc-extracted-2-19-0-4xl
 
 - job:
-    name: stf-crc-ocp_412-local_build-index_deploy-5xlarge
+    name: stf-crc-ocp_412-local_build-index_deploy-5xl
     parent: stf-crc-ocp_412-local_build-index_deploy
     nodeset:
       nodes:
@@ -243,7 +243,7 @@
          label: coreos-crc-extracted-2-19-0-5xl
 
 - job:
-    name: stf-crc-ocp_412-local_build-index_deploy-6xlarge
+    name: stf-crc-ocp_412-local_build-index_deploy-6xl
     parent: stf-crc-ocp_412-local_build-index_deploy
     nodeset:
       nodes:
