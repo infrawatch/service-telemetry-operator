@@ -177,7 +177,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-3xl
 
@@ -187,7 +187,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-4xl
 
@@ -197,7 +197,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-5xl
 
@@ -207,7 +207,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-6xl
 
@@ -218,7 +218,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-3xl
 
@@ -228,7 +228,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-4xl
 
@@ -238,7 +238,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-5xl
 
@@ -248,7 +248,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo-vexxhost
+         label: cloud-centos-9-stream-tripleo
        - name: crc
          label: coreos-crc-extracted-2-19-0-6xl
 
