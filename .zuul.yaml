@@ -218,7 +218,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo
+         label: cloud-centos-9-stream
        - name: crc
          label: coreos-crc-extracted-2-19-0-3xl
 
@@ -228,7 +228,7 @@
     nodeset:
       nodes:
        - name: controller
-         label: cloud-centos-9-stream-tripleo
+         label: cloud-centos-9-stream
        - name: crc
          label: coreos-crc-extracted-2-19-0-4xl
 
@@ -276,10 +276,10 @@
         - stf-crc-ocp_412-local_build
         - stf-crc-ocp_412-local_build-3xl
         - stf-crc-ocp_412-local_build-4xl
-        - stf-crc-ocp_412-local_build-5xl
-        - stf-crc-ocp_412-local_build-6xl
+          #- stf-crc-ocp_412-local_build-5xl
+          #- stf-crc-ocp_412-local_build-6xl
         - stf-crc-ocp_412-local_build-index_deploy
         - stf-crc-ocp_412-local_build-index_deploy-3xl
         - stf-crc-ocp_412-local_build-index_deploy-4xl
-        - stf-crc-ocp_412-local_build-index_deploy-5xl
-        - stf-crc-ocp_412-local_build-index_deploy-6xl
+          #- stf-crc-ocp_412-local_build-index_deploy-5xl
+          #- stf-crc-ocp_412-local_build-index_deploy-6xl
