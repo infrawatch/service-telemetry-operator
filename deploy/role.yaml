@@ -129,14 +129,14 @@ rules:
 - apiGroups:
   - monitoring.coreos.com
   resources:
-  - servicemonitors
+  - scrapeconfigs
   verbs:
   - get
   - create
 - apiGroups:
   - monitoring.rhobs
   resources:
-  - servicemonitors
+  - scrapeconfigs
   verbs:
   - get
   - create
