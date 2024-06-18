@@ -26,8 +26,8 @@
           'bundle_channels': "{{ stf_channel }}"
           'operator_bundle_version': "{{ sto_bundle_image_tag }}"
         sgo_bundle_info:
-          'bundle_default_channel': stable-1.5
-          'bundle_channels': stable-1.5
+          'bundle_default_channel': "{{ stf_channel }}"
+          'bundle_channels': "{{ stf_channel }}"
           'operator_bundle_version': "{{ sgo_bundle_image_tag }}"
 
 - name: Show STO and SGO bundle info that will used in the index image
