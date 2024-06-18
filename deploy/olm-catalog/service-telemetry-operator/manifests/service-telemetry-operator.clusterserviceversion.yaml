@@ -200,9 +200,18 @@ spec:
       - kind: Services
         name: ""
         version: v1
+      - kind: ServiceMonitors
+        name: servicemonitors.monitoring.coreos.com
+        version: v1
       - kind: ScrapeConfigs
         name: scrapeconfigs.monitoring.coreos.com
+        version: v1alpha1
+      - kind: ServiceMonitors
+        name: servicemonitors.monitoring.rhobs
         version: v1
+      - kind: ScrapeConfigs
+        name: scrapeconfigs.monitoring.rhobs
+        version: v1alpha1
       version: v1beta1
   description: Service Telemetry Operator for monitoring clouds
   displayName: Service Telemetry Operator
@@ -379,16 +388,20 @@ spec:
           - monitoring.coreos.com
           resources:
           - scrapeconfigs
+          - servicemonitors
           verbs:
           - get
           - create
+          - delete
         - apiGroups:
           - monitoring.rhobs
           resources:
           - scrapeconfigs
+          - servicemonitors
           verbs:
           - get
           - create
+          - delete
         - apiGroups:
           - apps
           resourceNames:

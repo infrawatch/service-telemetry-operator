@@ -130,16 +130,20 @@ rules:
   - monitoring.coreos.com
   resources:
   - scrapeconfigs
+  - servicemonitors
   verbs:
   - get
   - create
+  - delete
 - apiGroups:
   - monitoring.rhobs
   resources:
   - scrapeconfigs
+  - servicemonitors
   verbs:
   - get
   - create
+  - delete
 - apiGroups:
   - apps
   resourceNames:

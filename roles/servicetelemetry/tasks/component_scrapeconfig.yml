@@ -77,3 +77,11 @@
     definition:
       '{{ servicemonitor_manifest }}'
   when: servicemonitor_manifest is defined
+
+- name: Remove (legacy) default ServiceMonitors
+  k8s:
+    state: absent
+    api_version: '{{ prometheus_operator_api_string }}'
+    kind: ServiceMonitor
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ this_smartgateway }}'
