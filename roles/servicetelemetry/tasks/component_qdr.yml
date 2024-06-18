@@ -246,9 +246,11 @@
         listeners:
           - port: 5672
             host: 127.0.0.1
-          - expose: {{ servicetelemetry_vars.transports.qdr.web.enabled }}
+      {% if servicetelemetry_vars.transports.qdr.web.enabled == "true" %}
+          - expose: true
             http: true
             port: 8672
+      {% endif %}
         sslProfiles:
           - caCert: {{ ansible_operator_meta.name }}-interconnect-openstack-ca
             credentials: {{ ansible_operator_meta.name }}-interconnect-openstack-credentials
