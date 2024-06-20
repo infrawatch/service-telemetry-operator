@@ -33,19 +33,25 @@
         metricRelabelings:
           - action: labeldrop
             regex: pod
-            sourcelabels: []
           - action: labeldrop
             regex: namespace
-            sourcelabels: []
           - action: labeldrop
             regex: instance
-            sourcelabels: []
+          - action: replace
+            regex: '.*/(.*)$'
+            replacement: $1
+            sourceLabels: [job]
+            targetLabel: service
           - action: labeldrop
             regex: job
-            sourcelabels: []
           - action: labeldrop
             regex: publisher
-            sourcelabels: []
+          - action: replace
+            targetLabel: container
+            replacement: sg-core
+          - action: replace
+            targetLabel: endpoint
+            replacement: prom-https
         scheme: HTTPS
         scrapeInterval: {{ servicetelemetry_vars.backends.metrics.prometheus.scrape_interval }}
         staticConfigs:
