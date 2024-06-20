@@ -129,8 +129,8 @@ echo "*** [INFO] Showing oc get all..."
 oc get all
 echo
 
-echo "*** [INFO] Showing servicemonitors..."
-oc get servicemonitors.monitoring.rhobs -o yaml
+echo "*** [INFO] Showing scrapeconfigs..."
+oc get scrapeconfigs.monitoring.rhobs -o yaml
 echo
 
 if [ "$SMOKETEST_VERBOSE" = "true" ]; then
