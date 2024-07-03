@@ -131,7 +131,7 @@
     description: |
       Create an index image using nightly bundles and deploy STF from it
     vars:
-      scenario: "local_build-index_deploy"
+      scenario: "nightly_bundles-index_deploy"
 
 - job:
     name: stf-crc-ocp_412-nightly_bundles
