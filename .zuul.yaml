@@ -125,6 +125,15 @@
       scenario: "local_build-index_deploy"
 
 - job:
+    name: stf-crc-nightly_bundles-index_deploy
+    parent: stf-base
+    abstract: true
+    description: |
+      Create an index image using nightly bundles and deploy STF from it
+    vars:
+      scenario: "local_build-index_deploy"
+
+- job:
     name: stf-crc-ocp_412-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
@@ -166,6 +175,13 @@
       Build STF locally and deploy from index on OCP 4.14
     nodeset: stf-crc_extracted-ocp414
 
+- job:
+    name: stf-crc-ocp_414-nightly_bundles-index_deploy
+    parent: stf-crc-nightly_bundles-index_deploy
+    description: |
+      Create an index image using nightly bundles and deploy STF from it on OCP 4.14
+    nodeset: stf-crc_extracted-ocp414
+
 - project-template:
     name: stf-crc-jobs
     description: |
@@ -176,6 +192,7 @@
         - stf-crc-ocp_414-local_build
         - stf-crc-ocp_412-local_build-index_deploy
         - stf-crc-ocp_414-local_build-index_deploy
+        - stf-crc-ocp_414-nightly_bundles-index_deploy
 
 - project:
     name: infrawatch/service-telemetry-operator
