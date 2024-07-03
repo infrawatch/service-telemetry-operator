@@ -15,20 +15,15 @@
 
 - name: Create info variables from provided pre-built bundles (deploy from bundles)
   when: __deploy_from_bundles_enabled | bool
-  block:
-    - name: Define channel for pre-built bundles
-      ansible.builtin.set_fact:
-        stf_channel: stable-1.5
-    - name: Set info variables from provided pre-built bundles
-      ansible.builtin.set_fact:
-        sto_bundle_info:
-          'bundle_default_channel': "{{ stf_channel }}"
-          'bundle_channels': "{{ stf_channel }}"
-          'operator_bundle_version': "{{ sto_bundle_image_tag }}"
-        sgo_bundle_info:
-          'bundle_default_channel': "{{ stf_channel }}"
-          'bundle_channels': "{{ stf_channel }}"
-          'operator_bundle_version': "{{ sgo_bundle_image_tag }}"
+  ansible.builtin.set_fact:
+    sto_bundle_info:
+      'bundle_default_channel': "{{ stf_channel }}"
+      'bundle_channels': "{{ stf_channel }}"
+      'operator_bundle_version': "{{ sto_bundle_image_tag }}"
+    sgo_bundle_info:
+      'bundle_default_channel': "{{ stf_channel }}"
+      'bundle_channels': "{{ stf_channel }}"
+      'operator_bundle_version': "{{ sgo_bundle_image_tag }}"
 
 - name: Show STO and SGO bundle info that will used in the index image
   ansible.builtin.debug:
