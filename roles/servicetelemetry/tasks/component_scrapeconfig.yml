@@ -14,7 +14,7 @@
     name: '{{ service_account.resources[0].secrets[0].name }}'
   register: auth_secret
 
-- name: Create SG-specific Service Monitor manifest
+- name: Create SG-specific Scrape Config manifest
   set_fact:
     sg_specific_scrapeconfig_manifest: |
       apiVersion: {{ prometheus_operator_api_string | replace("/v1","/v1alpha1") }}
