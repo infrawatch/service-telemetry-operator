@@ -15,27 +15,15 @@
 
 - name: Create info variables from provided pre-built bundles (deploy from bundles)
   when: __deploy_from_bundles_enabled | bool
-  block:
-    - name: Get STO bundle operator bundle version
-      ansible.builtin.shell:
-        cmd: "{{ base_dir }}/working/opm-{{ ocp_version }} render {{ __service_telemetry_bundle_image_path }} | jq .name | split('.', 1)"
-        register: sto_operator_bundle_version
-
-    - name: Get SGO bundle operator bundle version
-      ansible.builtin.shell:
-        cmd: "{{ base_dir }}/working/opm-{{ ocp_version }} render {{ __smart_gateway_bundle_image_path }} | jq .name | split('.', 1)"
-        register: sgo_operator_bundle_version
-
-    - name: Set info variables from provided pre-built bundles
-      ansible.builtin.set_fact:
-        sto_bundle_info:
-          'bundle_default_channel': "{{ stf_channel }}"
-          'bundle_channels': "{{ stf_channel }}"
-          'operator_bundle_version': "{{ sto_operator_bundle_version }}"
-        sgo_bundle_info:
-          'bundle_default_channel': "{{ stf_channel }}"
-          'bundle_channels': "{{ stf_channel }}"
-          'operator_bundle_version': "{{ sgo_operator_bundle_version }}"
+  ansible.builtin.set_fact:
+    sto_bundle_info:
+      'bundle_default_channel': "{{ stf_channel }}"
+      'bundle_channels': "{{ stf_channel }}"
+      'operator_bundle_version': "{{ sto_bundle_image_tag }}"
+    sgo_bundle_info:
+      'bundle_default_channel': "{{ stf_channel }}"
+      'bundle_channels': "{{ stf_channel }}"
+      'operator_bundle_version': "{{ sgo_bundle_image_tag }}"
 
 - name: Show STO and SGO bundle info that will used in the index image
   ansible.builtin.debug:
