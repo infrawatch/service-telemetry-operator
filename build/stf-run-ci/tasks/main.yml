@@ -81,8 +81,8 @@
 - name: Get opm (deploy from index with pre-built bundles)
   when: __deploy_from_bundles_enabled | bool and __deploy_from_index_enabled | bool
   ansible.builtin.command:
-    cmd: "{{ base_dir }}/get_opm.sh {{ ocp_version }}"
-    creates: "{{ base_dir }}/working/opm-{{ ocp_version }}"
+    cmd: "{{ base_dir }}/get_opm.sh {{ opm_version }}"
+    creates: "{{ base_dir }}/working/opm"
     chdir: "{{ base_dir }}"
 
 - name: Set logfile_dir

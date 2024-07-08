@@ -80,3 +80,5 @@ base_dir: ''
 clone_repos: true
 setup_bundle_registry_auth: true
 setup_bundle_registry_tls_ca: true
+
+opm_version: latest-4.14
