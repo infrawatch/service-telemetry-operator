@@ -19,12 +19,12 @@
     - name: Get STO bundle operator bundle version
       ansible.builtin.shell:
         cmd: "{{ base_dir }}/working/opm render {{ __service_telemetry_bundle_image_path }} | jq .name | split('.', 1)"
-        register: sto_operator_bundle_version
+      register: sto_operator_bundle_version
 
     - name: Get SGO bundle operator bundle version
       ansible.builtin.shell:
         cmd: "{{ base_dir }}/working/opm render {{ __smart_gateway_bundle_image_path }} | jq .name | split('.', 1)"
-        register: sgo_operator_bundle_version
+      register: sgo_operator_bundle_version
 
     - name: Set info variables from provided pre-built bundles
       ansible.builtin.set_fact:
