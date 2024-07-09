@@ -8,37 +8,37 @@
 # Updating to use stdout_lines[-1] so that any additional info that gets added to generate_bundles (e.g. for debug) doesn't break this task
 # Adding from_json so that the JSON output is parsed into a dictionary
 - name: Create info variables from bundle generation output (local build)
-  when: __local_build_enabled | bool
+  when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
   ansible.builtin.set_fact:
     sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
     sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
 
 - name: Create info variables from provided pre-built bundles (deploy from bundles)
-  when: __deploy_from_bundles_enabled | bool
+  when: __deploy_from_bundles_enabled | bool and not __local_build_enabled | bool
   block:
     - name: Get STO operator bundle info
       ansible.builtin.command: oc image info {{ __service_telemetry_bundle_image_path }}
-      register: sto_bundle_info
+      register: sto_prebuilt_image_info
 
     - name: Get SGO operator bundle info
       ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
-      register: sgo_bundle_info
+      register: sgo_prebuilt_image_info
 
     - name: Get STO and SGO bundle versions
       ansible.builtin.set_fact:
-        sto_operator_bundle_version: "{{ sto_bundle_info.stdout_lines[-1] | split('=') | last }}"
-        sgo_operator_bundle_version: "{{ sgo_bundle_info.stdout_lines[-1] | split('=') | last }}"
+        sto_prebuilt_bundle_version: "{{ sto_prebuilt_image_info.stdout_lines[-1] | split('=') | last }}"
+        sgo_prebuilt_bundle_version: "{{ sgo_prebuilt_image_info.stdout_lines[-1] | split('=') | last }}"
 
     - name: Set info variables from provided pre-built bundles
       ansible.builtin.set_fact:
         sto_bundle_info:
           'bundle_default_channel': "{{ stf_channel }}"
           'bundle_channels': "{{ stf_channel }}"
-          'operator_bundle_version': "{{ sto_operator_bundle_version }}"
+          'operator_bundle_version': "{{ sto_prebuilt_bundle_version }}"
         sgo_bundle_info:
           'bundle_default_channel': "{{ stf_channel }}"
           'bundle_channels': "{{ stf_channel }}"
-          'operator_bundle_version': "{{ sgo_operator_bundle_version }}"
+          'operator_bundle_version': "{{ sgo_prebuilt_bundle_version }}"
 
 - name: Show STO and SGO bundle info that will used in the index image
   ansible.builtin.debug:
