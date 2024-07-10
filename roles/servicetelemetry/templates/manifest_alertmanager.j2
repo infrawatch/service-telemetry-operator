@@ -12,7 +12,7 @@ spec:
 {% endif %}
   replicas: {{ servicetelemetry_vars.alerting.alertmanager.deployment_size }}
   serviceAccountName: alertmanager-stf
-  serviceMonitorSelector:
+  scrapeConfigSelector:
     matchLabels:
       app: smart-gateway
   listenLocal: true
