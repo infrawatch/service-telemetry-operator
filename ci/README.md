@@ -15,7 +15,6 @@ Two scenarios run:
 
 Each of these scenarios run across the following OCP versions:
 - 4.12
-- 4.13
 - 4.14
 
 ### Periodic jobs
