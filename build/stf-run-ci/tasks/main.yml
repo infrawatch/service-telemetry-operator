@@ -28,27 +28,6 @@
     - __local_build_enabled | bool
     - __deploy_from_bundles_enabled | bool
 
-- name: Fail when deploying from index image and local build disabled
-  ansible.builtin.fail:
-    msg: __deploy_from_index_enabled must also have __local_build_enabled
-  when:
-   - __deploy_from_index_enabled | bool
-   - not __local_build_enabled | bool
-
-- name: Fail when deploying from index images and deployment from bundles also requested (mutually exclusive methods)
-  ansible.builtin.fail:
-    msg: __deploy_from_index_enabled can not be used with __deploy_from_bundles_enabled
-  when:
-   - __deploy_from_index_enabled | bool
-   - __deploy_from_bundles_enabled | bool
-
-- name: Fail when disconnected deploy and other deployment options also requested
-  ansible.builtin.fail:
-    msg: __disconnected_deploy cannot be used if __deploy_from_bundles_enabled, __deploy_from_index_enabled or __local_build_enabled
-  when:
-   - __disconnected_deploy | bool
-   - __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool or __local_build_enabled | bool 
-
 - name: Get the list of nodes
   kubernetes.core.k8s_info:
     kind: Node
@@ -159,7 +138,7 @@
           pod-security.kubernetes.io/audit: restricted
           pod-security.kubernetes.io/warn: restricted
 
-- when: __deploy_from_index_enabled | bool
+- when: __deploy_from_index_enabled | bool and __local_build_enabled | bool
   tags:
     - create_bundles
   block:
@@ -180,11 +159,13 @@
       tags:
         - build
 
+- when: __deploy_from_index_enabled | bool
+  block:
     - name: Create file-based catalog
       ansible.builtin.include_tasks: create_catalog.yml
 
 # -- deploy
-- when: not __local_build_enabled | bool
+- when: not __local_build_enabled | bool and not __deploy_from_index_enabled | bool
   block:
   - name: Setup Service Telemetry Framework from supplied bundle URLs
     ansible.builtin.include_tasks: setup_stf_from_bundles.yml
@@ -206,7 +187,7 @@
         name: service-telemetry-operator
         namespace: "{{ namespace }}"
       spec:
-        channel: unstable
+        channel: "{{ stf_channel }}"
         installPlanApproval: Automatic
         name: service-telemetry-operator
         source: service-telemetry-framework-operators
