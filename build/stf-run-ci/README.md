@@ -20,7 +20,7 @@ choose to override:
 | `__deploy_stf`                                                       | {true,false}                                                | true                                                                          | Whether to deploy an instance of STF                                                                                                                                                                                    |
 | `__local_build_enabled`                                              | {true,false}                                                | true                                                                          | Whether to deploy STF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch`                                                                                                                  |
 | `__deploy_from_bundles_enabled`                                      | {true,false}                                                | false                                                                         | Whether to deploy STF from OLM bundles (TODO: compat with `__local_build_enabled`)                                                                                                                                      |
-| `__deploy_from_index_enabled`                                        | {true,false}                                                | false                                                                         | Whether to deploy STF from locally built bundles and index image.                                                                                                                                                       |
+| `__deploy_from_index_enabled`                                        | {true,false}                                                | false                                                                         | Whether to deploy STF from locally built bundles/OLM bundles and index image.                                                                                                                                                       |
 | `__disconnected_deploy`                                              | {true,false}                                                | false                                                                         | Whether to deploy on a disconnected cluster                                                                                                                                                                               |
 | `__service_telemetry_bundle_image_path`                              | <image_path>                                                | `quay.io/infrawatch-operators/service-telemetry-operator-bundle:nightly-head` | Image path to Service Telemetry Operator bundle                                                                                                                                                                         |
 | `__smart_gateway_bundle_image_path`                                  | <image_path>                                                | `quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head`     | Image path to Smart Gateway Operator bundle                                                                                                                                                                             |
@@ -83,9 +83,10 @@ choose to override:
 You can deploy Service Telemetry Framework using this role in a few
 configuration methods:
 
-* local build artifacts from Git repository cloned locally
-* local build artifacts, local bundle artifacts, and Subscription via OLM using locally built index image
-* standard deployment using Subscription and OLM
+* local build artifacts from Git repository cloned locally (local build)
+* local build artifacts, local bundle artifacts, and Subscription via OLM using locally built index image (local build + deploy from index)
+* externally build bundle artifacts and Subscription via OLM using locally built index image (deploy from bundles + deploy from index)
+* standard deployment using Subscription and OLM (deploy from bundles)
 * supporting components but no instance of Service Telemetry Operator
 
 ## Basic deployment
@@ -133,6 +134,27 @@ You can perform a deployment using OLM and a Subscription from locally built art
 ```sh
 ansible-playbook -e __local_build_enabled=true -e __deploy_from_index_enabled=true run-ci.yaml
 ```
+
+## Deployment with pre-build bundles and index
+
+Instead of relying on the operator-sdk to deploy from selected bundles using the "operator-sdk run bundle" utility,
+you can perform a deployment using OLM and a Subscription to a locally created index image like this:
+
+```sh
+ansible-playbook -e __local_build_enabled=false -e __deploy_from_bundles_enabled=true \
+  -e __deploy_from_index_enabled=true \
+  -e __service_telemetry_bundle_image_path=<registry>/<namespace>/stf-service-telemetry-operator-bundle:<tag> \
+  -e __smart_gateway_bundle_image_path=<registry>/<namespace>/stf-smart-gateway-operator-bundle:<tag> \
+  -e pull_secret_registry=<registry> \
+  -e pull_secret_user=<username> \
+  -e pull_secret_pass=<password>
+  run-ci.yaml
+```
+
+Since you will fetch the selected images from a bundle registry, it is required that you have all the required
+access credentials for the desired registry correctly configured. Check the "Deployment with pre-build bundles"
+docs above to get more information about this.
+
 
 # License
 
