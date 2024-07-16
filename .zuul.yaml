@@ -212,7 +212,7 @@
     nodeset: stf-crc_extracted-ocp414
 
 - job:
-    name: stf-crc-ocp_41i6-nightly_bundles-index_deploy
+    name: stf-crc-ocp_416-nightly_bundles-index_deploy
     parent: stf-crc-nightly_bundles-index_deploy
     description: |
       Create an index image using nightly bundles and deploy STF from it on OCP 4.16
