@@ -78,3 +78,8 @@
   ignore_errors: true
   retries: 3
   delay: 10
+
+- name: Get deployments
+  ansible.builtin.shell:
+    cmd: |
+      oc -n {{ namespace }}get deployment -oyaml >> {{ logfile_dir }}/post_get_deployment.log
