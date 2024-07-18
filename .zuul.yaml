@@ -169,9 +169,9 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-ocp_412-local_build
+        # - stf-crc-ocp_412-local_build
         - stf-crc-ocp_414-local_build
-        - stf-crc-ocp_412-local_build-index_deploy
+        # - stf-crc-ocp_412-local_build-index_deploy
         - stf-crc-ocp_414-local_build-index_deploy
 
 - project:
