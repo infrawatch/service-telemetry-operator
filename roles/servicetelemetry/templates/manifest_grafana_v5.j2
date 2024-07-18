@@ -61,7 +61,7 @@ spec:
             - '-https-address=:3002'
             - '-http-address='
             - '-email-domain=*'
-            - '-openshift-sar={"namespace":"{{ ansible_operator_meta.namespace }}","resource": "grafana", "group":"grafana.integreatly.org", "verb":"get"}'
+            - '-openshift-sar={"namespace":"{{ ansible_operator_meta.namespace }}","resource": "grafanas", "resourceAPIGroup":"grafana.integreatly.org", "verb":"get"}'
             - '-upstream=http://localhost:3000'
             - '-tls-cert=/etc/tls/private/tls.crt'
             - '-tls-key=/etc/tls/private/tls.key'
