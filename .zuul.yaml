@@ -232,6 +232,7 @@
         #- stf-crc-ocp_416-local_build-index_deploy
         #- stf-crc-ocp_414-nightly_bundles-index_deploy
         #- stf-crc-ocp_416-nightly_bundles-index_deploy
+        - stf-crc-ocp_414-nightly_bundles
         - stf-crc-ocp_416-nightly_bundles
 
 - project:
