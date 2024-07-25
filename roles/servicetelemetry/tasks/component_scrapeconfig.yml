@@ -1,18 +1,15 @@
-- name: Look up prometheus-stf SA to get auth secret name
-  k8s_info:
-    api_version: v1
-    kind: ServiceAccount
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: prometheus-stf
-  register: service_account
-
-- name: Look up auth secret to get token secret name
-  k8s_info:
-    api_version: v1
-    kind: Secret
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: '{{ service_account.resources[0].secrets[0].name }}'
-  register: auth_secret
+- name: Create an access token for prometheus-stf to use in scrapeconfigs
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: prometheus-stf-token
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        annotations:
+          kubernetes.io/service-account.name: prometheus-stf
+      type: kubernetes.io/service-account-token
 
 - name: Create SG-specific Scrape Config manifest
   set_fact:
@@ -28,7 +25,7 @@
         authorization:
           type: bearer
           credentials:
-            name: '{{ auth_secret.resources[0].metadata.annotations['openshift.io/token-secret.name'] }}'
+            name: prometheus-stf-token
             key: token
         metricRelabelings:
           - action: labeldrop
