@@ -1,11 +1,11 @@
 ---
-- nodeset:
-    name: stf-crc_extracted-ocp412
-    nodes:
-      - name: controller
-        label: cloud-centos-9-stream-tripleo-vexxhost
-      - name: crc
-        label: coreos-crc-extracted-2-19-0-xxl
+#- nodeset:
+#    name: stf-crc_extracted-ocp412
+#    nodes:
+#      - name: controller
+#        label: cloud-centos-9-stream-tripleo-vexxhost
+#      - name: crc
+#        label: coreos-crc-extracted-2-19-0-xxl
 
 - nodeset:
     name: stf-crc_extracted-ocp414
@@ -142,13 +142,6 @@
       scenario: "nightly_bundles-index_deploy"
 
 - job:
-    name: stf-crc-ocp_412-nightly_bundles
-    parent: stf-crc-nightly_bundles
-    description: |
-      Deploy STF using the nightly bundles on OCP 4.12
-    nodeset: stf-crc_extracted-ocp412
-
-- job:
     name: stf-crc-ocp_414-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
@@ -163,13 +156,6 @@
     nodeset: stf-crc_extracted-ocp416
 
 - job:
-    name: stf-crc-ocp_412-local_build
-    parent: stf-crc-local_build
-    description: |
-      Build images locally and deploy STF on OCP 4.12
-    nodeset: stf-crc_extracted-ocp412
-
-- job:
     name: stf-crc-ocp_414-local_build
     parent: stf-crc-local_build
     description: |
@@ -182,13 +168,6 @@
     description: |
       Build STF locally and deploy from index on OCP 4.16
     nodeset: stf-crc_extracted-ocp416
-
-- job:
-    name: stf-crc-ocp_412-local_build-index_deploy
-    parent: stf-crc-local_build-index_deploy
-    description: |
-      Build STF locally and deploy from index on OCP 4.12
-    nodeset: stf-crc_extracted-ocp412
 
 - job:
     name: stf-crc-ocp_414-local_build-index_deploy
@@ -224,16 +203,12 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        #- stf-crc-ocp_412-local_build
-        #- stf-crc-ocp_414-local_build
+        - stf-crc-ocp_414-local_build
         - stf-crc-ocp_416-local_build
-        #- stf-crc-ocp_412-local_build-index_deploy
-        #- stf-crc-ocp_414-local_build-index_deploy
+        - stf-crc-ocp_414-local_build-index_deploy
         - stf-crc-ocp_416-local_build-index_deploy
-        #- stf-crc-ocp_414-nightly_bundles-index_deploy
+        - stf-crc-ocp_414-nightly_bundles-index_deploy
         - stf-crc-ocp_416-nightly_bundles-index_deploy
-        #- stf-crc-ocp_414-nightly_bundles
-        - stf-crc-ocp_416-nightly_bundles
 
 - project:
     name: infrawatch/service-telemetry-operator
@@ -241,6 +216,5 @@
       - stf-crc-jobs
     periodic:
       jobs:
-        - stf-crc-ocp_412-nightly_bundles
         - stf-crc-ocp_414-nightly_bundles
         - stf-crc-ocp_416-nightly_bundles
