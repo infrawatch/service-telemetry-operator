@@ -14,8 +14,8 @@ Two scenarios run:
 - `local_build-index_deploy`, which builds the images and does an index-based deployment
 
 Each of these scenarios run across the following OCP versions:
-- 4.12
 - 4.14
+- 4.16
 
 ### Periodic jobs
 
