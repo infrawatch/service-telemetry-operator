@@ -6,8 +6,8 @@
   k8s:
     definition: "{{ lookup('template', manifest) | from_yaml }}"
 
-- name: Deploy SG-specific ServiceMonitor for metrics SGs
-  include_tasks: component_servicemonitor.yml
+- name: Deploy SG-specific ScrapeConfig for metrics SGs
+  include_tasks: component_scrapeconfig.yml
   when:
     - data_type == 'metrics'
     - has_monitoring_api | bool
