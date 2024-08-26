@@ -1,0 +1,90 @@
+- name: Create an access token for prometheus-stf to use in scrapeconfigs
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: prometheus-stf-token
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        annotations:
+          kubernetes.io/service-account.name: prometheus-stf
+      type: kubernetes.io/service-account-token
+
+- name: Create SG-specific Scrape Config manifest
+  set_fact:
+    sg_specific_scrapeconfig_manifest: |
+      apiVersion: {{ prometheus_operator_api_string | replace("/v1","/v1alpha1") }}
+      kind: ScrapeConfig
+      metadata:
+        labels:
+          app: smart-gateway
+        name: '{{ this_smartgateway }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        authorization:
+          type: bearer
+          credentials:
+            name: prometheus-stf-token
+            key: token
+        metricRelabelings:
+          - action: labeldrop
+            regex: pod
+          - action: labeldrop
+            regex: namespace
+          - action: labeldrop
+            regex: instance
+          - action: replace
+            regex: '.*/(.*)$'
+            replacement: $1
+            sourceLabels: [job]
+            targetLabel: service
+          - action: labeldrop
+            regex: job
+          - action: labeldrop
+            regex: publisher
+          - action: replace
+            targetLabel: container
+            replacement: sg-core
+          - action: replace
+            targetLabel: endpoint
+            replacement: prom-https
+        scheme: HTTPS
+        scrapeInterval: {{ servicetelemetry_vars.backends.metrics.prometheus.scrape_interval }}
+        staticConfigs:
+        - targets:
+          - '{{ this_smartgateway }}.{{ ansible_operator_meta.namespace }}.svc:8083'
+        tlsConfig:
+          ca:
+            configMap:
+              name: serving-certs-ca-bundle
+              key: service-ca.crt
+          serverName: '{{ this_smartgateway }}.{{ ansible_operator_meta.namespace }}.svc'
+
+- name: Create ScrapeConfig to scrape Smart Gateway
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      '{{ sg_specific_scrapeconfig_manifest }}'
+
+- name: Create additional ScrapeConfig if provided
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      '{{ scrapeconfig_manifest }}'
+  when: scrapeconfig_manifest is defined
+
+- name: Create additional ServiceMonitor if provided (legacy)
+  k8s:
+    state: '{{ "present" if servicetelemetry_vars.backends.metrics.prometheus.enabled else "absent" }}'
+    definition:
+      '{{ servicemonitor_manifest }}'
+  when: servicemonitor_manifest is defined
+
+- name: Remove (legacy) default ServiceMonitors
+  k8s:
+    state: absent
+    api_version: '{{ prometheus_operator_api_string }}'
+    kind: ServiceMonitor
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ this_smartgateway }}'
