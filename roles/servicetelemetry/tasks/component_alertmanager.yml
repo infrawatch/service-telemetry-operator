@@ -46,6 +46,7 @@
     name: '{{ ansible_operator_meta.name }}'
     namespace: '{{ ansible_operator_meta.namespace }}'
   when:
+    - "'monitoring.rhobs' in api_groups"
     - observability_strategy not in ['use_redhat', 'use_hybrid']
 
 # TODO: expand the management of alertmanager receivers and move this functionality to a common location
