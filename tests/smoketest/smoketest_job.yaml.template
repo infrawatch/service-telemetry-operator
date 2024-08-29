@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: smoketest-collectd
-        image: quay.io/tripleomaster/openstack-collectd:current-tripleo
+        image: quay.io/tripleomastercentos9/openstack-collectd:current-tripleo
         command:
         - /smoketest_collectd_entrypoint.sh
         env:
@@ -43,7 +43,7 @@ spec:
           allowPrivilegeEscalation: false
 
       - name: smoketest-ceilometer
-        image: quay.io/tripleomaster/openstack-ceilometer-notification:current-tripleo
+        image: quay.io/tripleomastercentos9/openstack-ceilometer-notification:current-tripleo
         command:
         - /smoketest_ceilometer_entrypoint.sh
         env:

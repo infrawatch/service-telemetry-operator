@@ -17,6 +17,8 @@
         RELATED_IMAGE_BRIDGE_SMARTGATEWAY_TAG={{ sg_bridge_image_path | parse_tag | quote }} \
         OPERATOR_IMAGE={{ sgo_image_path | parse_image | quote }} \
         OPERATOR_TAG={{ sgo_image_path | parse_tag | quote }} \
+        BUNDLE_CHANNELS={{ stf_channel }} \
+        BUNDLE_DEFAULT_CHANNEL={{ stf_channel }} \
         ./generate_bundle.sh
     register: generate_bundle_sgo
   rescue:
@@ -67,6 +69,8 @@
         RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
         OPERATOR_IMAGE={{ sto_image_path | parse_image | quote }} \
         OPERATOR_TAG={{ sto_image_path | parse_tag | quote }} \
+        BUNDLE_CHANNELS={{ stf_channel }} \
+        BUNDLE_DEFAULT_CHANNEL={{ stf_channel }} \
         ./generate_bundle.sh
     register: generate_bundle_sto
   rescue:

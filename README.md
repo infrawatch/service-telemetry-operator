@@ -40,6 +40,7 @@ loaded for you.
 * smartgatewayCollectdEventsManifest
 * smartgatewayCeilometerEventsManifest
 * servicemonitorManifest
+* scrapeconfigManifest
 
 ## Development
 

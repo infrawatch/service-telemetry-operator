@@ -1,0 +1,5 @@
+---
+# ansible-playbook -e __local_build_enabled=false -e __deploy_from_index_enabled=true -e __deploy_from_bundles_enabled=true -e __service_telemetry_bundle_image_path=quay.io/infrawatch-operators/service-telemetry-operator-bundle:nightly-head -e __smart_gateway_bundle_image_path=quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head --skip-tags bundle_registry_tls_ca --skip-tags bundle_registry_auth build/run-ci.yaml
+__local_build_enabled: false
+__deploy_from_bundles_enabled: true
+__deploy_from_index_enabled: true
