@@ -129,7 +129,7 @@
 - name: Create ImageStream for ose-operator-registry, if it doesn't already exist
   ansible.builtin.command:
     cmd: |
-      oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ operator_registry_image }} --confirm
+      oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ operator_registry_image }} --confirm --insecure
   when: ose_op_registry_is.rc != 0
   register: create_ose_is
 
