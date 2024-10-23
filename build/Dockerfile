@@ -1,4 +1,4 @@
-FROM quay.io/openshift/origin-ansible-operator:4.17
+FROM quay.io/operator-framework/ansible-operator:v1.35.0
 
 # temporarily switch to root user to adjust image layers
 USER 0
