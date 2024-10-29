@@ -12,6 +12,10 @@ RUN bash -c -- 'if [ "${NO_PROXY:-__ZZZZZ}" == "__ZZZZZ" ]; then echo "Applying 
 # -- cleans up the cached data from dnf to keep the image as small as possible
 RUN dnf update -y --exclude=ansible* && dnf install -y python3-passlib python3-bcrypt && dnf clean all && rm -rf /var/cache/dnf
 
+COPY requirements.yml ${HOME}/requirements.yml
+RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
+ && chmod -R ug+rwx ${HOME}/.ansible
+
 # switch back to user 1001 when running the base image (non-root)
 USER 1001
 
