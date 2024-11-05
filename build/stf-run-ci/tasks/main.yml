@@ -15,10 +15,14 @@
     sg_bridge_image_path: "{{ __internal_registry_path }}/{{ namespace }}/sg-bridge:{{ sg_bridge_image_tag }}"
     prometheus_webhook_snmp_image_path: "{{ __internal_registry_path }}/{{ namespace }}/prometheus-webhook-snmp:{{ prometheus_webhook_snmp_image_tag }}"
 
-- name: Set default image paths for bundle and index builds
+- name: Set default image paths for bundle builds
+  when: __local_build_enabled | bool
   ansible.builtin.set_fact:
     sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_image_tag }}"
     sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_image_tag }}"
+
+- name: Set default image paths for index builds
+  ansible.builtin.set_fact:
     stf_index_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-framework-index:{{ stf_index_image_tag }}"
 
 - name: Fail on mutually exclusive flags
