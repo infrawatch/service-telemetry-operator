@@ -7,7 +7,7 @@ schema: olm.channel
 package: service-telemetry-operator
 name: {{ sto_bundle_info.bundle_channels }}
 entries:
-  - name: service-telemetry-operator.v{{ sto_bundle_info.operator_bundle_version }}
+  - name: {{ sto_bundle_info.package_name }}
 ---
 defaultChannel: {{ sgo_bundle_info.bundle_default_channel }}
 name: smart-gateway-operator
@@ -17,4 +17,4 @@ schema: olm.channel
 package: smart-gateway-operator
 name: {{ sgo_bundle_info.bundle_channels }}
 entries:
-  - name: smart-gateway-operator.v{{ sgo_bundle_info.operator_bundle_version }}
+  - name: {{ sgo_bundle_info.package_name }}
