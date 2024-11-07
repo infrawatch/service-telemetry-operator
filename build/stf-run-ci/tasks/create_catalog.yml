@@ -32,14 +32,30 @@
       args:
         chdir: "{{ base_dir }}/working/service-telemetry-framework-index/"
 
+    - name: Set the csv_dest based on whether zuul is used or not
+      ansible.builtin.set_fact:
+        csv_dest: "{{ zuul.executor.work_dir if zuul is defined else base_dir + '/working/service-telemetry-framework-index/' }}"
+
+    - name: "Put the CSV files onto the ansible controller, so we can include_vars"
+      ansible.builtin.fetch:
+        src: "{{ base_dir }}/working/service-telemetry-framework-index/service-telemetry-operator.clusterserviceversion.yaml"
+        dest: "{{ csv_dest }}/"
+        flat: yes
+
+    - name: "Put the CSV files onto the ansible controller, so we can include_vars"
+      ansible.builtin.fetch:
+         src: "{{ base_dir }}/working/service-telemetry-framework-index/smart-gateway-operator.clusterserviceversion.yaml"
+         dest: "{{ csv_dest }}/"
+         flat: yes
+
     - name: Read STO bundle CSV file contents
       ansible.builtin.include_vars:
-        file: "{{ base_dir }}/working/service-telemetry-framework-index/service-telemetry-operator.clusterserviceversion.yaml"
+        file: "{{ csv_dest }}/service-telemetry-operator.clusterserviceversion.yaml"
         name: sto_prebuilt_bundle_csv
 
     - name: Read SGO bundle CSV file contents
       ansible.builtin.include_vars:
-        file: "{{ base_dir }}/working/service-telemetry-framework-index/smart-gateway-operator.clusterserviceversion.yaml"
+        file: "{{ csv_dest }}/smart-gateway-operator.clusterserviceversion.yaml"
         name: sgo_prebuilt_bundle_csv
 
     - name: Get STO and SGO bundle package names (from CSV)
