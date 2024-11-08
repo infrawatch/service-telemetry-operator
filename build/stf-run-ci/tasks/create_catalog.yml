@@ -34,7 +34,7 @@
 
     - name: Set the csv_dest based on whether zuul is used or not
       ansible.builtin.set_fact:
-        csv_dest: "{{ zuul.executor.work_dir if zuul is defined else base_dir + '/working/service-telemetry-framework-index/' }}"
+        csv_dest: "{{ zuul.executor.work_root if zuul is defined else base_dir + '/working/service-telemetry-framework-index/' }}"
 
     - name: "Put the CSV files onto the ansible controller, so we can include_vars"
       ansible.builtin.fetch:
