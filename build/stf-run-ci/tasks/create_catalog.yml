@@ -13,23 +13,62 @@
     sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
     sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
 
+- name: Generate default package names (local build)
+  when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
+  ansible.builtin.set_fact:
+    sto_bundle_info: "{{ sto_bundle_info | combine({'package_name':'service-telemetry-operator.v%s'|format(sto_bundle_info.operator_bundle_version)}) }}"
+    sgo_bundle_info: "{{ sgo_bundle_info | combine({'package_name':'smart-gateway-operator.v%s'|format(sgo_bundle_info.operator_bundle_version)}) }}"
+
 - name: Create info variables from provided pre-built bundles (deploy from bundles)
   when: __deploy_from_bundles_enabled | bool and not __local_build_enabled | bool
   block:
-    - name: Get STO operator bundle info
-      ansible.builtin.command: oc image info {{ __service_telemetry_bundle_image_path }}
-      register: sto_prebuilt_image_info
+    - name: Get STO operator bundle CSV file
+      ansible.builtin.command: oc image extract {{ __service_telemetry_bundle_image_path }} --file /manifests/*clusterserviceversion.yaml
+      args:
+        chdir: "{{ base_dir }}/working/service-telemetry-framework-index/"
 
-    - name: Get SGO operator bundle info
-      ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
-      register: sgo_prebuilt_image_info
+    - name: Get SGO operator bundle CSV file
+      ansible.builtin.command: oc image extract {{ __smart_gateway_bundle_image_path }}  --file /manifests/*clusterserviceversion.yaml
+      args:
+        chdir: "{{ base_dir }}/working/service-telemetry-framework-index/"
 
-    - name: Get STO and SGO bundle versions (from metadata)
+    - name: Set the csv_dest based on whether zuul is used or not
       ansible.builtin.set_fact:
-        sto_prebuilt_bundle_version: "{{ sto_prebuilt_image_info.stdout_lines[-1] | split('=') | last }}"
-        sgo_prebuilt_bundle_version: "{{ sgo_prebuilt_image_info.stdout_lines[-1] | split('=') | last }}"
+        csv_dest: "{{ zuul.executor.work_root if zuul is defined else base_dir + '/working/service-telemetry-framework-index/' }}"
 
-    - name: Get STO and SGO bundle tags (from name)
+    - name: "Put the CSV files onto the ansible controller, so we can include_vars"
+      ansible.builtin.fetch:
+        src: "{{ base_dir }}/working/service-telemetry-framework-index/service-telemetry-operator.clusterserviceversion.yaml"
+        dest: "{{ csv_dest }}/"
+        flat: yes
+
+    - name: "Put the CSV files onto the ansible controller, so we can include_vars"
+      ansible.builtin.fetch:
+         src: "{{ base_dir }}/working/service-telemetry-framework-index/smart-gateway-operator.clusterserviceversion.yaml"
+         dest: "{{ csv_dest }}/"
+         flat: yes
+
+    - name: Read STO bundle CSV file contents
+      ansible.builtin.include_vars:
+        file: "{{ csv_dest }}/service-telemetry-operator.clusterserviceversion.yaml"
+        name: sto_prebuilt_bundle_csv
+
+    - name: Read SGO bundle CSV file contents
+      ansible.builtin.include_vars:
+        file: "{{ csv_dest }}/smart-gateway-operator.clusterserviceversion.yaml"
+        name: sgo_prebuilt_bundle_csv
+
+    - name: Get STO and SGO bundle package names (from CSV)
+      ansible.builtin.set_fact:
+        sto_prebuilt_bundle_package_name: "{{ sto_prebuilt_bundle_csv.metadata.name }}"
+        sgo_prebuilt_bundle_package_name: "{{ sgo_prebuilt_bundle_csv.metadata.name }}"
+
+    - name: Get STO and SGO bundle versions (from CSV)
+      ansible.builtin.set_fact:
+        sto_prebuilt_bundle_version: "{{ sto_prebuilt_bundle_csv.spec.version }}"
+        sgo_prebuilt_bundle_version: "{{ sgo_prebuilt_bundle_csv.spec.version }}"
+
+    - name: Get STO and SGO bundle image tags (from name)
       ansible.builtin.set_fact:
         sto_prebuilt_bundle_tag: "{{ __service_telemetry_bundle_image_path | split(':') | last }}"
         sgo_prebuilt_bundle_tag: "{{ __smart_gateway_bundle_image_path | split(':') | last }}"
@@ -37,11 +76,13 @@
     - name: Set info variables from provided pre-built bundles
       ansible.builtin.set_fact:
         sto_bundle_info:
+          'package_name': "{{ sto_prebuilt_bundle_package_name }}"
           'bundle_default_channel': "{{ stf_channel }}"
           'bundle_channels': "{{ stf_channel }}"
           'operator_bundle_version': "{{ sto_prebuilt_bundle_version }}"
           'operator_bundle_tag': "{{ sto_prebuilt_bundle_tag }}"
         sgo_bundle_info:
+          'package_name': "{{ sgo_prebuilt_bundle_package_name }}"
           'bundle_default_channel': "{{ stf_channel }}"
           'bundle_channels': "{{ stf_channel }}"
           'operator_bundle_version': "{{ sgo_prebuilt_bundle_version }}"
