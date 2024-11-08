@@ -13,8 +13,8 @@
     sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
     sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
 
-- name: Generate default package names if not present
-  when: sto_bundle_info is defined and sto_bundle_info.package_name is not defined
+- name: Generate default package names (local build)
+  when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
   ansible.builtin.set_fact:
     sto_bundle_info: "{{ sto_bundle_info | combine({'package_name':'service-telemetry-operator.v%s'|format(sto_bundle_info.operator_bundle_version)}) }}"
     sgo_bundle_info: "{{ sgo_bundle_info | combine({'package_name':'smart-gateway-operator.v%s'|format(sto_bundle_info.operator_bundle_version)}) }}"
