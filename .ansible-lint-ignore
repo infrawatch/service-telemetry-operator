@@ -1,4 +1,6 @@
 # This file contains ignores rule violations for ansible-lint
+
+# roles/servicetelemetry
 roles/servicetelemetry/defaults/main.yml var-naming[no-role-prefix]
 roles/servicetelemetry/meta/main.yml schema[meta]
 roles/servicetelemetry/tasks/base_smartgateway.yml fqcn[action-core]
@@ -46,3 +48,36 @@ roles/servicetelemetry/tasks/pre.yml key-order[task]
 roles/servicetelemetry/tasks/pre.yml name[missing]
 roles/servicetelemetry/tasks/pre.yml warning[outdated-tag]
 roles/servicetelemetry/vars/dummy_user_certs.yml var-naming[no-role-prefix]
+
+# build/stf-run-ci
+build/stf-run-ci/handlers/main.yml yaml[new-line-at-end-of-file]
+build/stf-run-ci/tasks/clone_repos.yml name[template]
+build/stf-run-ci/tasks/clone_repos.yml yaml[empty-lines]
+build/stf-run-ci/tasks/create_builds.yml name[missing]
+build/stf-run-ci/tasks/create_builds.yml no-changed-when
+build/stf-run-ci/tasks/create_catalog.yml ignore-errors
+build/stf-run-ci/tasks/create_catalog.yml jinja[spacing]
+build/stf-run-ci/tasks/create_catalog.yml name[missing]
+build/stf-run-ci/tasks/create_catalog.yml no-changed-when
+build/stf-run-ci/tasks/create_catalog.yml risky-file-permissions
+build/stf-run-ci/tasks/create_catalog.yml yaml[truthy]
+build/stf-run-ci/tasks/main.yml jinja[spacing]
+build/stf-run-ci/tasks/main.yml key-order[task]
+build/stf-run-ci/tasks/main.yml name[missing]
+build/stf-run-ci/tasks/main.yml no-changed-when
+build/stf-run-ci/tasks/main.yml yaml[braces]
+build/stf-run-ci/tasks/pre-clean.yml ignore-errors
+build/stf-run-ci/tasks/preflight_checks.yml name[missing]
+build/stf-run-ci/tasks/preflight_checks.yml no-changed-when
+build/stf-run-ci/tasks/setup_base.yml name[missing]
+build/stf-run-ci/tasks/setup_elasticsearch.yml yaml[new-line-at-end-of-file]
+build/stf-run-ci/tasks/setup_registry_auth.yml no-changed-when
+build/stf-run-ci/tasks/setup_stf.yml yaml[trailing-spaces]
+build/stf-run-ci/tasks/setup_stf_from_bundles.yml command-instead-of-shell
+build/stf-run-ci/tasks/setup_stf_from_bundles.yml no-changed-when
+build/stf-run-ci/tasks/setup_stf_local_build.yml command-instead-of-module
+build/stf-run-ci/tasks/setup_stf_local_build.yml command-instead-of-shell
+build/stf-run-ci/tasks/setup_stf_local_build.yml name[missing]
+build/stf-run-ci/tasks/setup_stf_local_build.yml no-changed-when
+build/stf-run-ci/tests/test.yml syntax-check[specific]
+build/stf-run-ci/vars/main.yml yaml[new-line-at-end-of-file]
