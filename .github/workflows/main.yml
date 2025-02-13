@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           # Set exact version of a Python version or can use '3.x'.
-          python-version: '3.11' 
+          python-version: '3.12.8' 
 
       - name: Install Ansible
         run: pip install ansible
@@ -24,7 +24,7 @@ jobs:
         run: ansible-galaxy collection install operator_sdk.util
 
       - name: Install ansible-lint
-        run: pip install ansible-lint
+        run: pip install ansible-lint==24.7.0
 
       - name: Lint Ansible roles/servicetelemetry/ directory
         run: ansible-lint roles/servicetelemetry
@@ -42,13 +42,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           # Set exact version of a Python version or can use '3.x'.
-          python-version: '3.11' 
+          python-version: '3.12.8' 
 
       - name: Install Ansible
         run: pip install ansible
 
       - name: Install ansible-lint
-        run: pip install ansible-lint
+        run: pip install ansible-lint==24.7.0
 
       - name: Lint Ansible build/stf-run-ci  directory
         run: ansible-lint build/stf-run-ci
