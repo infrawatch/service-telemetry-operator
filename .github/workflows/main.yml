@@ -27,7 +27,7 @@ jobs:
         run: pip install ansible-lint
 
       - name: Lint Ansible roles/servicetelemetry/ directory
-        run: ${HOME}/.local/bin/ansible-lint roles/servicetelemetry
+        run: ansible-lint roles/servicetelemetry
 
   stf-run-ci-linting:
     name: stf-run-ci Linting
