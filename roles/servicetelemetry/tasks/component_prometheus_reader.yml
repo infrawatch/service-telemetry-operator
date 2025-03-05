@@ -21,7 +21,7 @@
       - apiGroups:
         - '{{ prometheus_operator_api_string | replace("/v1","") }}'
         resources:
-        - prometheus
+        - prometheuses
         verbs:
         - get
         namespaces:

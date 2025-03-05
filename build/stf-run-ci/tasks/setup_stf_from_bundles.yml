@@ -1,81 +1,3 @@
-- when: setup_bundle_registry_auth | bool
-  block:
-  - name: Get existing Pull Secret from openshift config
-    kubernetes.core.k8s_info:
-      api_version: v1
-      kind: Secret
-      namespace: openshift-config
-      name: pull-secret
-    register: pull_secret
-
-  - name: Decode docker config json
-    ansible.builtin.set_fact:
-      dockerconfigjson: "{{ pull_secret.resources[0].data['.dockerconfigjson'] | b64decode }}"
-
-  - name: Merge registry creds into auth section of docker config
-    ansible.builtin.set_fact:
-      new_dockerauths: "{{ dockerconfigjson['auths'] | combine( {
-        pull_secret_registry:{
-              'auth': (pull_secret_user ~ ':' ~ pull_secret_pass) | b64encode
-            }
-        }) }}"
-
-  - name: Create new docker config
-    ansible.builtin.set_fact:
-      new_dockerconfigjson: "{{ dockerconfigjson | combine({'auths': new_dockerauths}) }}"
-
-  - name: Create Pull Secret for bundle registry access (in the local namespace)
-    kubernetes.core.k8s:
-      state: present
-      definition:
-        apiVersion: v1
-        kind: Secret
-        type: kubernetes.io/dockerconfigjson
-        metadata:
-          name: pull-secret
-          namespace: "{{ namespace }}"
-        data:
-          .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
-
-  - name: Create Pull Secret for bundle registry access (in the global namespace)
-    kubernetes.core.k8s:
-      state: present
-      definition:
-        apiVersion: v1
-        kind: Secret
-        type: kubernetes.io/dockerconfigjson
-        metadata:
-          name: pull-secret
-          namespace: openshift-config
-        data:
-          .dockerconfigjson: "{{ new_dockerconfigjson | tojson | b64encode }}"
-
-- when: setup_bundle_registry_tls_ca | bool
-  name: Create registry CA Cert
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      type: Opaque
-      metadata:
-        name: registry-tls-ca
-        namespace: "{{ namespace }}"
-      data:
-        cert.pem: "{{ lookup('file', 'CA.pem') | b64encode }}"
-
-- when: setup_bundle_registry_tls_ca | bool
-  name: Patch the default service account to use our pull secret
-  kubernetes.core.k8s_json_patch:
-    kind: ServiceAccount
-    namespace: "{{ namespace }}"
-    name: default
-    patch:
-      - op: add
-        path: /imagePullSecrets
-        value:
-          - name: pull-secret
-
   # When the task is skipped, pull_secret is still defined. It is set to the task output i.e.
   # "pull_secret": {
   #    "changed": false,
@@ -86,14 +8,6 @@
   when: not (setup_bundle_registry_auth | bool)
   ansible.builtin.set_fact:
     pull_secret: ''
-
-- name: "Ensure that the bundle paths are set."
-  ansible.builtin.assert:
-    that:
-      - '__smart_gateway_bundle_image_path | default("") | length > 0'
-      - '__service_telemetry_bundle_image_path | default("") | length > 0'
-    fail_msg: "Bundle path(s) not set. __smart_gateway_bundle_image_path is '{{ __smart_gateway_bundle_image_path }}' and __service_telemetry_bundle_image_path is '{{ __service_telemetry_bundle_image_path }}'. Both values need to be set."
-    success_msg: "Bundle paths are defined, are not None and have a non-zero-length"
 
 - name: Deploy SGO via OLM bundle
   ansible.builtin.shell:

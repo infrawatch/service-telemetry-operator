@@ -1,5 +1,6 @@
 ---
 - name: Setup OperatorHub dependencies
+  when: not __disconnected_deploy | bool
   kubernetes.core.k8s:
     definition:
       apiVersion: config.openshift.io/v1
@@ -30,7 +31,7 @@
         - "{{ namespace }}"
 
 # documented procedure: https://infrawatch.github.io/documentation/#deploying-observability-operator_assembly-installing-the-core-components-of-stf
-- name: Subscribe to Red Hat Obervability Operator
+- name: Subscribe to Red Hat Observability Operator
   kubernetes.core.k8s:
     definition:
       apiVersion: operators.coreos.com/v1alpha1
@@ -41,10 +42,10 @@
         name: cluster-observability-operator
         namespace: openshift-operators
       spec:
-        channel: development
+        channel: stable
         installPlanApproval: Automatic
         name: cluster-observability-operator
-        source: redhat-operators
+        source: "{{ redhat_operators }}"
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy in ['use_redhat', 'use_hybrid']
@@ -62,7 +63,7 @@
         channel: beta
         installPlanApproval: Automatic
         name: prometheus
-        source: community-operators
+        source: "{{ community_operators }}"
         sourceNamespace: openshift-marketplace
   when:
     - __service_telemetry_observability_strategy == "use_community"
@@ -107,11 +108,11 @@
           channel: stable-v1
           installPlanApproval: Automatic
           name: openshift-cert-manager-operator
-          source: redhat-operators
+          source: "{{ redhat_operators }}"
           sourceNamespace: openshift-marketplace
 
 # installed by properties.yaml definition as of STF 1.5.3
-- when: not __deploy_from_index_enabled | bool
+- when: __local_build_enabled | bool
   block:
     - name: Subscribe to AMQ Interconnect Operator
       kubernetes.core.k8s:
@@ -125,7 +126,7 @@
             channel: 1.10.x
             installPlanApproval: Automatic
             name: amq7-interconnect-operator
-            source: redhat-operators
+            source: "{{ redhat_operators }}"
             sourceNamespace: openshift-marketplace
 
 # undocumented procedure: used for backwards compatilibity verification
@@ -142,7 +143,7 @@
             channel: stable
             installPlanApproval: Automatic
             name: elasticsearch-eck-operator-certified
-            source: certified-operators
+            source: "{{ certified_operators }}"
             sourceNamespace: openshift-marketplace
 
     - name: Wait for Elasticsearch CRD to appear

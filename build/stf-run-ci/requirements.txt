@@ -1,5 +1,5 @@
 # https://stackoverflow.com/questions/64073422/importerror-cannot-import-name-oauth1session-from-requests-oauthlib
-requests==2.31.0
+requests==2.32.0
 requests_oauthlib==1.3.0
 # https://github.com/domainaware/parsedmarc/issues/318
 oauthlib==3.2.2

@@ -227,7 +227,6 @@
             prefix: ceilometer
         edgeListeners:
           - expose: true
-            host: 0.0.0.0
             port: 5671
       {% if servicetelemetry_vars.transports.qdr.auth == "basic" %}
             saslMechanisms: PLAIN
@@ -246,9 +245,12 @@
             sslProfile: inter-router
         listeners:
           - port: 5672
-          - expose: {{ servicetelemetry_vars.transports.qdr.web.enabled }}
+            host: 127.0.0.1
+      {% if servicetelemetry_vars.transports.qdr.web.enabled == "true" %}
+          - expose: true
             http: true
             port: 8672
+      {% endif %}
         sslProfiles:
           - caCert: {{ ansible_operator_meta.name }}-interconnect-openstack-ca
             credentials: {{ ansible_operator_meta.name }}-interconnect-openstack-credentials
