@@ -88,7 +88,7 @@
       - zuul: github.com/openstack-k8s-operators/ci-framework
     # These are the additional repos that zuul will clone
     required-projects:
-      - name: openstack-k8s-operators/ci-framework
+      - name: github.com/openstack-k8s-operators/ci-framework
         override-checkout: main
       - name: github.com/infrawatch/service-telemetry-operator
       - name: github.com/infrawatch/smart-gateway-operator
