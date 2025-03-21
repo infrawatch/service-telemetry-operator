@@ -176,7 +176,9 @@
     github-check:
       debug: true
       jobs:
-        - stf-crc-deployment
+        - stf-crc-deployment:
+            files:
+              - .zuul.yaml
         #- stf-crc-ocp_416-local_build:
         #    dependencies:
         #      - stf-crc-deployment
