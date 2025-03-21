@@ -73,10 +73,8 @@
     name: stf-base-2node-crc-deployment
     parent: stf-base-2node
     description: |
-      A base job for STF that deploys extracted CRC with a 2-node topology.
-      This job is based on the cookbook example in: https://github.com/openstack-k8s-operators/ci-framework/blob/main/docs/source/cookbooks/zuul-job-nodeset.md
-      All non-abstract jobs that inherit from this must have a nodeset configured.
-    abstract: true
+      A provider job that provisions CRC.
+    abstract: false
     pre-run:
       - ci/pre-2node.yml
     run:
