@@ -32,8 +32,8 @@
         override-checkout: main
       - name: github.com/openstack-k8s-operators/openstack-must-gather
         override-checkout: main
-    pre-run:
-      - ci/pre-2node.yml
+    #pre-run:
+    #  - ci/pre-2node.yml
     vars:
       cifmw_deploy_edpm: false
       podified_validation: true
@@ -70,6 +70,20 @@
                 ip: 172.19.0.5
 
 - job:
+    name: stf-base-2node-crc-deployment
+    parent: stf-base-2node
+    description: |
+      A base job for STF that deploys extracted CRC with a 2-node topology.
+      This job is based on the cookbook example in: https://github.com/openstack-k8s-operators/ci-framework/blob/main/docs/source/cookbooks/zuul-job-nodeset.md
+      All non-abstract jobs that inherit from this must have a nodeset configured.
+    abstract: true
+    pre-run:
+      - ci/pre-2node.yml
+    run:
+      - ci/prepare.yml
+      - ci/pause-the-job.yml
+
+- job:
     name: stf-base
     parent: stf-base-2node
     abstract: true
@@ -87,13 +101,15 @@
       - name: github.com/infrawatch/sg-bridge
       - name: github.com/infrawatch/sg-core
       - name: github.com/infrawatch/prometheus-webhook-snmp
-    pre-run:
-      - ci/prepare.yml
+    #pre-run:
+    #  - ci/prepare.yml
     run:
       - ci/deploy_stf.yml
       - ci/test_stf.yml
     post-run:
       - ci/post-collect_logs.yml
+    dependencies:
+      - stf-base-2node-crc-deployment
     # The default (~30 minutes) is not enough to run through all the job stages
     timeout: 3600
 
@@ -149,6 +165,7 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
+        - stf-base-2node-crc-deployment
         - stf-crc-ocp_416-local_build
         - stf-crc-ocp_418-local_build
         - stf-crc-ocp_416-local_build-index_deploy
