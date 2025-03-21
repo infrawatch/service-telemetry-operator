@@ -160,7 +160,6 @@
     description: |
       STF CRC jobs that build and deploy STF
     github-check:
-      debug: true
       jobs:
         - stf-crc-deployment
         - stf-crc-ocp_416-local_build:
@@ -175,6 +174,7 @@
     # templates:
     #   - stf-crc-jobs
     github-check:
+      debug: true
       jobs:
         - stf-crc-deployment
         - stf-crc-ocp_416-local_build:
