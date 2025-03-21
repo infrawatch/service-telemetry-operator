@@ -70,7 +70,7 @@
                 ip: 172.19.0.5
 
 - job:
-    name: stf-base-2node-crc-deployment
+    name: stf-crc-deployment
     parent: stf-base-2node
     description: |
       A provider job that provisions CRC.
@@ -106,8 +106,6 @@
       - ci/test_stf.yml
     post-run:
       - ci/post-collect_logs.yml
-    dependencies:
-      - stf-base-2node-crc-deployment
     # The default (~30 minutes) is not enough to run through all the job stages
     timeout: 3600
 
@@ -164,9 +162,9 @@
     github-check:
       debug: true
       jobs:
-        - stf-base-2node-crc-deployment
+        - stf-crc-deployment
         - stf-crc-ocp_416-local_build:
-            dependencies: stf-base-2node-crc-deployment
+            dependencies: stf-crc-deployment
         - stf-crc-ocp_418-local_build
         - stf-crc-ocp_416-local_build-index_deploy
         - stf-crc-ocp_418-local_build-index_deploy
