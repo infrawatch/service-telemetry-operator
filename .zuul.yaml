@@ -155,19 +155,19 @@
       Build STF locally and deploy from index on OCP 4.18
     nodeset: stf-crc_extracted-ocp418
 
-- project-template:
-    name: stf-crc-jobs
-    description: |
-      STF CRC jobs that build and deploy STF
-    github-check:
-      jobs:
-        - stf-crc-deployment
-        - stf-crc-ocp_416-local_build:
-            dependencies: 
-              -stf-crc-deployment
-        - stf-crc-ocp_418-local_build
-        - stf-crc-ocp_416-local_build-index_deploy
-        - stf-crc-ocp_418-local_build-index_deploy
+#- project-template:
+#    name: stf-crc-jobs
+#    description: |
+#      STF CRC jobs that build and deploy STF
+#    github-check:
+#      jobs:
+#        - stf-crc-deployment
+#        - stf-crc-ocp_416-local_build:
+#            dependencies: 
+#              -stf-crc-deployment
+#        - stf-crc-ocp_418-local_build
+#        - stf-crc-ocp_416-local_build-index_deploy
+#        - stf-crc-ocp_418-local_build-index_deploy
 
 - project:
     name: infrawatch/service-telemetry-operator
