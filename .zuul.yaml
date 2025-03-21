@@ -32,8 +32,8 @@
         override-checkout: main
       - name: github.com/openstack-k8s-operators/openstack-must-gather
         override-checkout: main
-    #pre-run:
-    #  - ci/pre-2node.yml
+    # pre-run:
+    #   - ci/pre-2node.yml
     vars:
       cifmw_deploy_edpm: false
       podified_validation: true
@@ -70,18 +70,6 @@
                 ip: 172.19.0.5
 
 - job:
-    name: stf-crc-deployment
-    parent: stf-base-2node
-    description: |
-      A provider job that provisions CRC.
-    abstract: false
-    pre-run:
-      - ci/pre-2node.yml
-    run:
-      - ci/prepare.yml
-      - ci/pause-the-job.yml
-
-- job:
     name: stf-base
     parent: stf-base-2node
     abstract: true
@@ -99,8 +87,8 @@
       - name: github.com/infrawatch/sg-bridge
       - name: github.com/infrawatch/sg-core
       - name: github.com/infrawatch/prometheus-webhook-snmp
-    #pre-run:
-    #  - ci/prepare.yml
+    pre-run:
+      - ci/prepare.yml
     run:
       - ci/deploy_stf.yml
       - ci/test_stf.yml
@@ -108,6 +96,15 @@
       - ci/post-collect_logs.yml
     # The default (~30 minutes) is not enough to run through all the job stages
     timeout: 3600
+
+- job:
+    name: stf-crc-nightly_bundles
+    parent: stf-base
+    abstract: true
+    description: |
+      Deploy stf using the nightly bundles
+    vars:
+      scenario: "nightly_bundles"
 
 - job:
     name: stf-crc-local_build
@@ -126,6 +123,29 @@
       Build STF locally and deploy from index
     vars:
       scenario: "local_build-index_deploy"
+
+- job:
+    name: stf-crc-nightly_bundles-index_deploy
+    parent: stf-base
+    abstract: true
+    description: |
+      Create an index image using nightly bundles and deploy STF from it
+    vars:
+      scenario: "nightly_bundles-index_deploy"
+
+- job:
+    name: stf-crc-ocp_416-nightly_bundles
+    parent: stf-crc-nightly_bundles
+    description: |
+      Deploy STF using the nightly bundles on OCP 4.16
+    nodeset: stf-crc_extracted-ocp416
+
+- job:
+    name: stf-crc-ocp_418-nightly_bundles
+    parent: stf-crc-nightly_bundles
+    description: |
+      Deploy STF using the nightly bundles on OCP 4.18
+    nodeset: stf-crc_extracted-ocp418
 
 - job:
     name: stf-crc-ocp_416-local_build
@@ -155,31 +175,52 @@
       Build STF locally and deploy from index on OCP 4.18
     nodeset: stf-crc_extracted-ocp418
 
-#- project-template:
-#    name: stf-crc-jobs
-#    description: |
-#      STF CRC jobs that build and deploy STF
-#    github-check:
-#      jobs:
-#        - stf-crc-deployment
-#        - stf-crc-ocp_416-local_build:
-#            dependencies: 
-#              -stf-crc-deployment
-#        - stf-crc-ocp_418-local_build
-#        - stf-crc-ocp_416-local_build-index_deploy
-#        - stf-crc-ocp_418-local_build-index_deploy
+- job:
+    name: stf-crc-ocp_416-nightly_bundles-index_deploy
+    parent: stf-crc-nightly_bundles-index_deploy
+    description: |
+      Create an index image using nightly bundles and deploy STF from it on OCP 4.16
+    nodeset: stf-crc_extracted-ocp416
+
+- job:
+    name: stf-crc-ocp_418-nightly_bundles-index_deploy
+    parent: stf-crc-nightly_bundles-index_deploy
+    description: |
+      Create an index image using nightly bundles and deploy STF from it on OCP 4.18
+    nodeset: stf-crc_extracted-ocp418
+
+- project-template:
+    name: stf-crc-jobs
+    description: |
+      STF CRC jobs that build and deploy STF
+    github-check:
+      jobs:
+        - stf-crc-ocp_416-local_build
+        - stf-crc-ocp_418-local_build
+        - stf-crc-ocp_416-local_build-index_deploy
+        - stf-crc-ocp_418-local_build-index_deploy
+        - stf-crc-ocp_416-nightly_bundles-index_deploy
+        - stf-crc-ocp_418-nightly_bundles-index_deploy
+
+- job:
+    name: stf-crc-deployment
+    parent: stf-base-2node
+    description: |
+      A provider job that provisions CRC.
+    pre-run:
+      - ci/pre-2node.yml
+    run:
+      - ci/prepare.yml
+      - ci/pause-the-job.yml
 
 - project:
     name: infrawatch/service-telemetry-operator
     # templates:
     #   - stf-crc-jobs
     github-check:
-      debug: true
       jobs:
-        - stf-crc-deployment:
-            files:
-              - .zuul.yaml
-        #- stf-crc-ocp_416-local_build:
-        #    dependencies:
-        #      - stf-crc-deployment
-  
+        - stf-crc-deployment
+    periodic:
+      jobs:
+        - stf-crc-ocp_416-nightly_bundles
+        - stf-crc-ocp_418-nightly_bundles
