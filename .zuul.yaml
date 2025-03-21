@@ -219,7 +219,8 @@
     #   - stf-crc-jobs
     github-check:
       jobs:
-        - stf-crc-deployment
+        - stf-crc-deployment:
+            override-checkout: main
         - noop
     periodic:
       jobs:
