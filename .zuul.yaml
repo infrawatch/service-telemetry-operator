@@ -220,6 +220,7 @@
     github-check:
       jobs:
         - stf-crc-deployment
+        - noop
     periodic:
       jobs:
         - stf-crc-ocp_416-nightly_bundles
