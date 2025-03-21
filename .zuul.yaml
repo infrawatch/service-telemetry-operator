@@ -164,7 +164,8 @@
       jobs:
         - stf-crc-deployment
         - stf-crc-ocp_416-local_build:
-            dependencies: stf-crc-deployment
+            dependencies: 
+              -stf-crc-deployment
         - stf-crc-ocp_418-local_build
         - stf-crc-ocp_416-local_build-index_deploy
         - stf-crc-ocp_418-local_build-index_deploy
@@ -176,5 +177,6 @@
     jobs:
       - stf-crc-deployment
       - stf-crc-ocp_416-local_build:
-            dependencies: stf-crc-deployment
+          dependencies:
+            - stf-crc-deployment
 
