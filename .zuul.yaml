@@ -171,5 +171,10 @@
 
 - project:
     name: infrawatch/service-telemetry-operator
-    templates:
-      - stf-crc-jobs
+    # templates:
+    #   - stf-crc-jobs
+    jobs:
+      - stf-crc-deployment
+      - stf-crc-ocp_416-local_build:
+            dependencies: stf-crc-deployment
+
