@@ -32,11 +32,6 @@
     - __local_build_enabled | bool
     - __deploy_from_bundles_enabled | bool
 
-- name: Get the list of nodes
-  kubernetes.core.k8s_info:
-    kind: Node
-  register: node_info
-
 # -- prepare environment and cleanup
 - name: Clean up any existing global artifacts
   ansible.builtin.include_tasks: pre-clean.yml
