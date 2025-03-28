@@ -29,7 +29,7 @@
         type: collection
         name: "{{ item }}"
       with_items:
-        - "kubernetes.core:2.3.2"
+        - "kubernetes.core:5.0.0"
         - "community.general"
 
     - name: "Log into the cluster"
