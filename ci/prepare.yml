@@ -18,12 +18,14 @@
         name: pip
         state: latest
         extra_args: "-U"
+        executable: pip3.12
 
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
         requirements: "{{ sto_dir }}/build/stf-run-ci/requirements.txt"
         chdir: "{{ sto_dir }}"
         state: present
+        executable: pip3.12
 
     - name: "Install ansible collections"
       community.general.ansible_galaxy_install:
