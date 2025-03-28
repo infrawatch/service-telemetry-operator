@@ -5,6 +5,13 @@
     - name: "Setup play vars"
       ansible.builtin.include_tasks: "common-tasks.yml"
 
+    - name: "Install Python 3.12"
+      ansible.builtin.package:
+        name:
+          - python3.12
+          - python3.12-pip 
+        state: latest
+
     - name: "Update pip"
       ansible.builtin.pip:
         name: pip
