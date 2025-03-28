@@ -9,9 +9,10 @@ The playbooks in this directory are used by zuul jobs, which are defined in ../.
 There are 6 jobs run on every PR that is targeting `master`.
 These are reported under the `rdoproject.org/github-check` check.
 
-Two scenarios run:
+Three scenarios run:
 - `local_build`, which builds the STF images and deploys by creating a STF object.
-- `local_build-index_deploy`, which builds the images and does an index-based deployment
+- `local_build-index_deploy`, which builds the images and does an index-based deployment.
+- `nightly_bundles-index_deploy`, which retrieves the nightly bundles and does an index-based deployment.
 
 Each of these scenarios run across the following OCP versions:
 - 4.16
