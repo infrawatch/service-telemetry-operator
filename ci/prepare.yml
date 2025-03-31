@@ -5,24 +5,34 @@
     - name: "Setup play vars"
       ansible.builtin.include_tasks: "common-tasks.yml"
 
+    - name: "Install Python 3.12"
+      ansible.builtin.package:
+        name:
+          - python3.12
+          - python3.12-pip 
+        state: latest
+      become: true
+
     - name: "Update pip"
       ansible.builtin.pip:
         name: pip
         state: latest
         extra_args: "-U"
+        executable: pip3.12
 
     - name: "Install pre-reqs from pip"
       ansible.builtin.pip:
         requirements: "{{ sto_dir }}/build/stf-run-ci/requirements.txt"
         chdir: "{{ sto_dir }}"
         state: present
+        executable: pip3.12
 
     - name: "Install ansible collections"
       community.general.ansible_galaxy_install:
         type: collection
         name: "{{ item }}"
       with_items:
-        - "kubernetes.core:2.3.2"
+        - "kubernetes.core:5.0.0"
         - "community.general"
 
     - name: "Log into the cluster"
