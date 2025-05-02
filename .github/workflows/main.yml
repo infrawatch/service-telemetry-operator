@@ -73,7 +73,7 @@ jobs:
         run: sudo mv operator-sdk /usr/local/bin
 
       - name: Generate bundle locally
-        run: operator-sdk generate bundle --package service-telemetry-operator --input-dir deploy --manifests --metadata --default-channel unstable --channels unstable
+        run: 0<&- operator-sdk generate bundle --package service-telemetry-operator --input-dir deploy --manifests --metadata --default-channel unstable --channels unstable
 
       - name: Check if bundle generation results in local changes
         run: git diff --exit-code
