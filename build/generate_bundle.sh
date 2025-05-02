@@ -32,8 +32,11 @@ generate_bundle() {
     REPLACE_REGEX="s#<<CREATED_DATE>>#${CREATED_DATE}#g;s#<<OPERATOR_IMAGE>>#${OPERATOR_IMAGE}#g;s#<<OPERATOR_TAG>>#${OPERATOR_TAG}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG}#g;s#<<RELATED_IMAGE_OAUTH_PROXY>>#${RELATED_IMAGE_OAUTH_PROXY}#g;s#<<RELATED_IMAGE_OAUTH_PROXY_TAG>>#${RELATED_IMAGE_OAUTH_PROXY_TAG}#g;s#<<RELATED_IMAGE_PROMETHEUS>>#${RELATED_IMAGE_PROMETHEUS}#g;s#<<RELATED_IMAGE_PROMETHEUS_TAG>>#${RELATED_IMAGE_PROMETHEUS_TAG}#g;s#<<RELATED_IMAGE_ALERTMANAGER>>#${RELATED_IMAGE_ALERTMANAGER}#g;s#<<RELATED_IMAGE_ALERTMANAGER_TAG>>#${RELATED_IMAGE_ALERTMANAGER_TAG}#g;s#<<OPERATOR_BUNDLE_VERSION>>#${OPERATOR_BUNDLE_VERSION}#g;s#1.99.0#${OPERATOR_BUNDLE_VERSION}#g;s#<<OPERATOR_DOCUMENTATION_URL>>#${OPERATOR_DOCUMENTATION_URL}#g;s#<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>>#${BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND}#g"
 
     pushd "${REL}/../" > /dev/null 2>&1
-    ${OPERATOR_SDK} generate bundle --verbose --channels ${BUNDLE_CHANNELS} --default-channel ${BUNDLE_DEFAULT_CHANNEL} --manifests --metadata --version "${OPERATOR_BUNDLE_VERSION}" --output-dir "${WORKING_DIR}" >> ${LOGFILE} 2>&1
+    ${OPERATOR_SDK} generate bundle --verbose --package ${OPERATOR_NAME} --input-dir deploy --channels ${BUNDLE_CHANNELS} --default-channel ${BUNDLE_DEFAULT_CHANNEL} --manifests --metadata --version "${OPERATOR_BUNDLE_VERSION}" --output-dir "${WORKING_DIR}" >> ${LOGFILE} 2>&1
     popd > /dev/null 2>&1
+    # Hacks to generate the same bundle using v1.39.2 operator-sdk as we got using v0.19.4.
+    # Can be removed if we ever adapt to latest operator-sdk project dir expectations.
+    rm -f "${WORKING_DIR}/manifests/prometheus-alarm-rules_monitoring.rhobs_v1_prometheusrule.yaml"
 
     # CSVs without a spec.replaces field are valid, so fall back to those if
     # latest released version is unknown.
