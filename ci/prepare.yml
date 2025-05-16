@@ -2,6 +2,9 @@
 - name: "Prepare the environment for running stf"
   hosts: controller
   tasks:
+    # NOTE: maybe this prepare isn't required in the CRC provider, since it is for STF...
+    # I can probably split this up into two playbooks, prepare and prepare STF.
+    # Prepare will run these tasks, common-tasks needs to remove the scenario-specific vars file, and it should be explicitly be included in the STF play
     - name: "Setup play vars"
       ansible.builtin.include_tasks: "common-tasks.yml"
 
@@ -40,11 +43,13 @@
         name: rhol_crc
         tasks_from: add_crc_creds.yml
 
-    - name: "Create the service-telemetry project"
-      kubernetes.core.k8s:
-        api_version: v1
-        kind: Namespace
-        name: "{{ namespace }}"
-        state: present
-      retries: 3
-      delay: 30
+        # After this point is specifically STF, which can be removed for now.
+        # This won't let STF pass, but it will be fine.
+#    - name: "Create the service-telemetry project"
+#      kubernetes.core.k8s:
+#        api_version: v1
+#        kind: Namespace
+#        name: "{{ namespace }}"
+#        state: present
+#      retries: 3
+#      delay: 30
