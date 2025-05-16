@@ -9,7 +9,7 @@
       chdir: "{{ sgo_dir }}/build"
       cmd: |
         LOGFILE="{{ logfile_dir }}/sgo_gen_bundle.log" \
-        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
+        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk }}" \
         WORKING_DIR="{{ base_dir }}/working/smart-gateway-operator-bundle" \
         RELATED_IMAGE_CORE_SMARTGATEWAY={{ sg_core_image_path | parse_image | quote }} \
         RELATED_IMAGE_BRIDGE_SMARTGATEWAY={{ sg_bridge_image_path | parse_image | quote }} \
@@ -63,7 +63,7 @@
       chdir: "{{ sto_dir }}/build"
       cmd: |
         LOGFILE="{{ logfile_dir }}/sto_gen_bundle.log" \
-        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk_v0 }}" \
+        OPERATOR_SDK="{{ base_dir }}/working/operator-sdk-{{ operator_sdk }}" \
         WORKING_DIR="{{ base_dir }}/working/service-telemetry-operator-bundle" \
         RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP={{ prometheus_webhook_snmp_image_path | parse_image | quote }} \
         RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_TAG={{ prometheus_webhook_snmp_image_path | parse_tag | quote }} \
