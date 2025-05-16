@@ -87,8 +87,10 @@
       - name: github.com/infrawatch/sg-bridge
       - name: github.com/infrawatch/sg-core
       - name: github.com/infrawatch/prometheus-webhook-snmp
-    #pre-run:
-    #  - ci/prepare.yml
+    # I think this should be included here, and needs to have the crc credentials passed in.
+    # ... eventually
+    pre-run:
+      - ci/prepare.yml
     run:
       - ci/deploy_stf.yml
       - ci/test_stf.yml
@@ -210,8 +212,13 @@
     pre-run:
       - ci/pre-2node.yml
     run:
+      # It might be better to remove this later, since this does some stf-specific things.
       - ci/prepare.yml
       - ci/pause-the-job.yml
+    # Keep scenario for now, it sets some vars, which are set again once STF runs.
+    # This can get removed later
+    vars:
+      scenario: local_build
 
 - project:
     name: infrawatch/service-telemetry-operator
