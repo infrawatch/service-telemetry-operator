@@ -32,8 +32,8 @@
         override-checkout: main
       - name: github.com/openstack-k8s-operators/openstack-must-gather
         override-checkout: main
-    pre-run:
-      - ci/pre-2node.yml
+    # pre-run:
+    #   - ci/pre-2node.yml
     vars:
       cifmw_deploy_edpm: false
       podified_validation: true
@@ -87,6 +87,8 @@
       - name: github.com/infrawatch/sg-bridge
       - name: github.com/infrawatch/sg-core
       - name: github.com/infrawatch/prometheus-webhook-snmp
+    # I think this should be included here, and needs to have the crc credentials passed in.
+    # ... eventually
     pre-run:
       - ci/prepare.yml
     run:
@@ -202,10 +204,33 @@
         - stf-crc-ocp_416-nightly_bundles-index_deploy
         - stf-crc-ocp_418-nightly_bundles-index_deploy
 
+- job:
+    name: stf-crc-deployment
+    parent: stf-base-2node
+    description: |
+      A provider job that provisions CRC.
+    pre-run:
+      - ci/pre-2node.yml
+    run:
+      # It might be better to remove this later, since this does some stf-specific things.
+      - ci/prepare.yml
+      - ci/pause-the-job.yml
+    # Keep scenario for now, it sets some vars, which are set again once STF runs.
+    # This can get removed later
+    vars:
+      scenario: local_build
+
 - project:
     name: infrawatch/service-telemetry-operator
-    templates:
-      - stf-crc-jobs
+    # templates:
+    #   - stf-crc-jobs
+    github-check:
+      jobs:
+        - stf-crc-deployment:
+            override-checkout: main
+        - stf-crc-ocp_416-local_build:
+            dependencies: stf-crc-deployment
+        - noop
     periodic:
       jobs:
         - stf-crc-ocp_416-nightly_bundles
