@@ -38,10 +38,28 @@
         - "kubernetes.core:5.0.0"
         - "community.general"
 
+        # this won't succeed, since it needs kubeconfif to be set
+        # Try using openshift_login instead, since the vars are already set from the provider job.
+    #- name: "Log into the cluster"
+    #  ansible.builtin.import_role:
+    #    name: rhol_crc
+    #    tasks_from: add_crc_creds.yml
+
+    - name: "Show the openshift cluster information from the provider"
+      ansible.builtin.debug:
+        msg: |
+          The provider_openshift_login_api value is {{ provider_openshift_login_api | default('unset')}}.
+          The provider_openshift_login_user is {{ provider_openshift_login_user | default('unset') }}
+          The provider_openshift_login_password is {{ provider_openshift_login_password | default('unset')}}
+
+    # The vars are hardcoded for now, but will become vars later.
     - name: "Log into the cluster"
       ansible.builtin.import_role:
-        name: rhol_crc
-        tasks_from: add_crc_creds.yml
+        name: openshift_login
+      vars:
+        cifmw_openshift_login_api: "https://api.crc.testing:6443"
+        cifmw_openshift_login_user: "kubeadmin"
+        cifmw_openshift_login_password: "12345678"
 
         # After this point is specifically STF, which can be removed for now.
         # This won't let STF pass, but it will be fine.
