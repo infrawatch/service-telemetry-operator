@@ -37,7 +37,7 @@ generate_bundle() {
             declare ${image}_PULLSPEC="${!image}:${!tag}"
         fi
     done
-    REPLACE_REGEX="s#<<CREATED_DATE>>#${CREATED_DATE}#g;s#<<OPERATOR_IMAGE_PULLSPEC>>#${OPERATOR_IMAGE_PULLSPEC}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_PULLSPEC>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_PULLSPEC}#g;s#<<RELATED_IMAGE_OAUTH_PROXY_PULLSPEC>>#${RELATED_IMAGE_OAUTH_PROXY_PULLSPEC}#g;s#<<RELATED_IMAGE_PROMETHEUS_PULLSPEC>>#${RELATED_IMAGE_PROMETHEUS_PULLSPEC}#g;s#<<RELATED_IMAGE_ALERTMANAGER_PULLSPEC>>#${RELATED_IMAGE_ALERTMANAGER_PULLSPEC}#g;s#<<OPERATOR_BUNDLE_VERSION>>#${OPERATOR_BUNDLE_VERSION}#g;s#1.99.0#${OPERATOR_BUNDLE_VERSION}#g;s#<<OPERATOR_DOCUMENTATION_URL>>#${OPERATOR_DOCUMENTATION_URL}#g;s#<<BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND>>#${BUNDLE_OLM_SKIP_RANGE_LOWER_BOUND}#g"
+    REPLACE_REGEX="s#<<CREATED_DATE>>#${CREATED_DATE}#g;s#<<OPERATOR_IMAGE_PULLSPEC>>#${OPERATOR_IMAGE_PULLSPEC}#g;s#<<RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_PULLSPEC>>#${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_PULLSPEC}#g;s#<<RELATED_IMAGE_OAUTH_PROXY_PULLSPEC>>#${RELATED_IMAGE_OAUTH_PROXY_PULLSPEC}#g;s#<<RELATED_IMAGE_PROMETHEUS_PULLSPEC>>#${RELATED_IMAGE_PROMETHEUS_PULLSPEC}#g;s#<<RELATED_IMAGE_ALERTMANAGER_PULLSPEC>>#${RELATED_IMAGE_ALERTMANAGER_PULLSPEC}#g;s#<<OPERATOR_BUNDLE_VERSION>>#${OPERATOR_BUNDLE_VERSION}#g;s#1.99.0#${OPERATOR_BUNDLE_VERSION}#g;s#<<OPERATOR_DOCUMENTATION_URL>>#${OPERATOR_DOCUMENTATION_URL}#g"
 
     pushd "${REL}/../" > /dev/null 2>&1
     ${OPERATOR_SDK} generate bundle --verbose --package ${OPERATOR_NAME} --input-dir deploy --channels ${BUNDLE_CHANNELS} --default-channel ${BUNDLE_DEFAULT_CHANNEL} --manifests --metadata --version "${OPERATOR_BUNDLE_VERSION}" --output-dir "${WORKING_DIR}" >> ${LOGFILE} 2>&1 0<&-
@@ -45,15 +45,6 @@ generate_bundle() {
     # Hacks to generate the same bundle using v1.39.2 operator-sdk as we got using v0.19.4.
     # Can be removed if we ever adapt to latest operator-sdk project dir expectations.
     rm -f "${WORKING_DIR}/manifests/prometheus-alarm-rules_monitoring.rhobs_v1_prometheusrule.yaml"
-
-    # CSVs without a spec.replaces field are valid, so fall back to those if
-    # latest released version is unknown.
-    # Placeholder value is validated by operator-sdk during local bundle
-    # generation and so needs to conform to RFC1123.
-    if [[ -n "$BUNDLE_LATEST_RELEASED_VERSION" ]]; then
-        REPLACE_REGEX="$REPLACE_REGEX;s#---bundle-latest-released-version#${BUNDLE_LATEST_RELEASED_VERSION}#g"
-    else sed -i '/---bundle-latest-released-version/d' "${WORKING_DIR}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"
-    fi
 
     sed -i -E "${REPLACE_REGEX}" "${WORKING_DIR}/manifests/${OPERATOR_NAME}.clusterserviceversion.yaml"
 }
