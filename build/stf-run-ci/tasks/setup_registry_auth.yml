@@ -85,11 +85,6 @@
     fail_msg: "Bundle path(s) not set. __smart_gateway_bundle_image_path is '{{ __smart_gateway_bundle_image_path }}' and __service_telemetry_bundle_image_path is '{{ __service_telemetry_bundle_image_path }}'. Both values need to be set."
     success_msg: "Bundle paths are defined, are not None and have a non-zero-length."
 
-- name: Log in to the registry
-  when: setup_bundle_registry_auth | bool
-  ansible.builtin.shell:
-    cmd: 'podman login {{ pull_secret_registry }} -u "{{ pull_secret_user }}" -p "{{ pull_secret_pass }}"'
-
 - name: Try to access to the STO bundle
   ansible.builtin.command: oc image info {{ __service_telemetry_bundle_image_path }}
   register: sto_bundle_info
@@ -114,6 +109,23 @@
   ansible.builtin.debug:
     msg:
     - "{{ sgo_bundle_info }}"
+
+- name: If SGO bundle was not correctly fetched, login to registry and retry
+  block:
+    - name: Login to registry
+      ansible.builtin.shell:
+        cmd: 'podman login {{ pull_secret_registry }} -u "{{ pull_secret_user }}" -p "{{ pull_secret_pass }}"'
+
+    - name: Try to access to the SGO bundle
+      ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
+      register: sgo_bundle_info
+      ignore_errors: true
+
+    - name: Print SGO bundle info
+      ansible.builtin.debug:
+        msg:
+        - "{{ sgo_bundle_info }}"
+  when: "__smart_gateway_bundle_image_path not in sgo_bundle_info.stdout"
 
 - name: Fail is the expected SGO bundle was not correctly fetched
   ansible.builtin.fail:
