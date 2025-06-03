@@ -113,8 +113,10 @@
 - name: If SGO bundle was not correctly fetched, login to registry and retry
   block:
     - name: Login to registry
-      ansible.builtin.shell:
-        cmd: 'podman login {{ pull_secret_registry }} -u "{{ pull_secret_user }}" -p "{{ pull_secret_pass }}"'
+      containers.podman.podman_login:
+        username: "{{ pull_secret_user }}"
+        password: "{{ pull_secret_pass }}"
+        registry: "{{ pull_secret_registry }}"
 
     - name: Try to access to the SGO bundle
       ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
