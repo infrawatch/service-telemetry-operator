@@ -100,7 +100,7 @@ spec:
                                 type: string
                               storageSelector:
                                 description: Storage selector definition for Alertmanager
-                                type: string
+                                type: object
                             type: object
                           strategy:
                             description: Storage strategy. One of 'ephemeral' or 'persistent'.
@@ -249,7 +249,7 @@ spec:
                                     type: string
                                   storageSelector:
                                     description: Storage selector definition for Prometheus
-                                    type: string
+                                    type: object
                                 type: object
                               retention:
                                 description: Time duration Prometheus shall retain

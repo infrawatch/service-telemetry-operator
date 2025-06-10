@@ -102,7 +102,7 @@ spec:
                                 type: string
                               storageSelector:
                                 description: Storage selector definition for Alertmanager
-                                type: string
+                                type: object
                               pvcStorageRequest:
                                 description: PVC storage requested size for Alertmanager
                                 type: string
@@ -155,7 +155,7 @@ spec:
                                     type: string
                                   storageSelector:
                                     description: Storage selector definition for Prometheus
-                                    type: string
+                                    type: object
                                   pvcStorageRequest:
                                     description: PVC storage requested size for Prometheus
                                     type: string
