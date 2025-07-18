@@ -9,9 +9,16 @@
 # Adding from_json so that the JSON output is parsed into a dictionary
 - name: Create info variables from bundle generation output (local build)
   when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
-  ansible.builtin.set_fact:
-    sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
-    sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
+  block:
+    - name: Get local builds bundles info
+      ansible.builtin.set_fact:
+        sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
+        sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
+
+    - name: Set correct STO and SGO bundle paths when deploying from index with local bundle builds
+      ansible.builtin.set_fact:
+        sto_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_tag }}"
+        sgo_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_tag }}"
 
 - name: Generate default package names (local build)
   when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
@@ -111,8 +118,8 @@
 
     - name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
       ansible.builtin.set_fact:
-        sto_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_tag }}"
-        sgo_bundle_image_path: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_tag }}"
+        sto_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_tag }}"
+        sgo_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_tag }}"
 
 - name: Get the builder-dockercfg Secret name
   ansible.builtin.command: oc get secret -n {{ namespace }} --field-selector='type==kubernetes.io/dockercfg' -ojsonpath='{.items[?(@.metadata.annotations.kubernetes\.io/service-account\.name=="builder")].metadata.name}'
@@ -241,7 +248,7 @@
             RUN mkdir /tmp/auth/
             # we need the contents of the mounted build volume from secret placed into config.json
             RUN cp /opt/app-root/auth/.dockerconfigjson /tmp/auth/config.json
-            RUN DOCKER_CONFIG=/tmp/auth /bin/opm --skip-tls-verify render {{ sto_bundle_image_path }} {{ sgo_bundle_image_path }} --output=yaml >> /configs/index.yaml
+            RUN DOCKER_CONFIG=/tmp/auth /bin/opm --skip-tls-verify render {{ sto_bundle_image_path_internal }} {{ sgo_bundle_image_path_internal }} --output=yaml >> /configs/index.yaml
 
             ENTRYPOINT ["/bin/opm"]
             CMD ["serve", "/configs"]
