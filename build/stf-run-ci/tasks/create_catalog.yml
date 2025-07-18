@@ -15,16 +15,16 @@
         sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
         sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
 
-    - name: Set correct STO and SGO bundle paths when deploying from index with local bundle builds
+    - name: Generate default package names with local builds bundles info
+      when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
       ansible.builtin.set_fact:
-        sto_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_tag }}"
-        sgo_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_tag }}"
+        sto_bundle_info: "{{ sto_bundle_info | combine({'package_name':'service-telemetry-operator.v%s'|format(sto_bundle_info.operator_bundle_version)}) }}"
+        sgo_bundle_info: "{{ sgo_bundle_info | combine({'package_name':'smart-gateway-operator.v%s'|format(sgo_bundle_info.operator_bundle_version)}) }}"
 
-- name: Generate default package names (local build)
-  when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
-  ansible.builtin.set_fact:
-    sto_bundle_info: "{{ sto_bundle_info | combine({'package_name':'service-telemetry-operator.v%s'|format(sto_bundle_info.operator_bundle_version)}) }}"
-    sgo_bundle_info: "{{ sgo_bundle_info | combine({'package_name':'smart-gateway-operator.v%s'|format(sgo_bundle_info.operator_bundle_version)}) }}"
+    - name: Set correct STO and SGO bundle paths when deploying from index with local bundle builds (local build)
+      ansible.builtin.set_fact:
+        sto_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_image_tag }}"
+        sgo_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_image_tag }}"
 
 - name: Create info variables from provided pre-built bundles (deploy from bundles)
   when: __deploy_from_bundles_enabled | bool and not __local_build_enabled | bool
