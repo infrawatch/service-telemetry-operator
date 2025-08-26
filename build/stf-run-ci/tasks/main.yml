@@ -25,12 +25,20 @@
   ansible.builtin.set_fact:
     stf_index_image_path: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-framework-index:{{ stf_index_image_tag }}"
 
-- name: Fail on mutually exclusive flags
+- name: Fail on mutually exclusive flags (deploy from prebuilt bundles, local builds or deploy from catalog)
   ansible.builtin.fail:
-    msg: __deploy_from_bundles_enabled not currently supported with __local_build_enabled (but should be)
+    msg: __deploy_from_bundles_enabled, __local_build_enabled and __deploy_from_catalog are mutually exclusive deployment options
   when:
     - __local_build_enabled | bool
     - __deploy_from_bundles_enabled | bool
+    - __deploy_from_catalog | bool
+
+- name: Fail on mutually exclusive flags (deploy from index or deploy from catalog)
+  ansible.builtin.fail:
+    msg: __deploy_from_index_enabled and __deploy_from_catalog are mutually exclusive deployment options
+  when:
+    - __deploy_from_index_enabled | bool
+    - __deploy_from_catalog | bool
 
 # -- prepare environment and cleanup
 - name: Clean up any existing global artifacts
@@ -116,7 +124,7 @@
     tags:
       - deploy
 
-- when: __deploy_from_index_enabled | bool or __deploy_from_bundles_enabled | bool
+- when: __deploy_from_index_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_catalog | bool
   name: Relax the pod security admission controls to allow local catalog index registry pods
   kubernetes.core.k8s:
     definition:
@@ -153,8 +161,19 @@
 
 - when: __deploy_from_index_enabled | bool
   block:
-    - name: Create file-based catalog
+    - name: Create index image to use in CloudOps CatalogSource
+      ansible.builtin.include_tasks: create_index_image.yml
+
+    - name: Create CloudOps CatalogSource
       ansible.builtin.include_tasks: create_catalog.yml
+
+- when: __deploy_from_catalog | bool
+  block:
+    - name: Create CloudOps CatalogSource
+      ansible.builtin.include_role:
+        name: create_catalog.yml
+      vars:
+        stf_index_image_path: "{{ __stf_catalog_index_image_path }}"
 
 # -- deploy
 - when: not __local_build_enabled | bool and not __deploy_from_index_enabled | bool
