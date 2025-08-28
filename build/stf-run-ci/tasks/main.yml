@@ -170,7 +170,7 @@
 - when: __deploy_from_catalog | bool
   block:
     - name: Create CloudOps CatalogSource
-      ansible.builtin.include_role:
+      ansible.builtin.include_tasks:
         name: create_catalog.yml
       vars:
         stf_index_image_path: "{{ __stf_catalog_index_image_path }}"
