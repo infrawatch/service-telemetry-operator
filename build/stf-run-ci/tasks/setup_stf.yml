@@ -1,24 +1,4 @@
 ---
-- name: Set default InfraWatch OperatorSource manifest
-  when:
-   - __deploy_from_index_enabled | bool
-   - infrawatch_catalog_source_manifest is not defined 
-  ansible.builtin.set_fact:
-    infrawatch_catalog_source_manifest: |
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        name: "{{ infrawatch-operators }}"
-        namespace: "{{ namespace }}"
-      spec:
-        displayName: InfraWatch Operators
-        image: quay.io/infrawatch-operators/infrawatch-catalog:nightly
-        publisher: InfraWatch
-        sourceType: grpc
-        updateStrategy:
-          registryPoll:
-            interval: 30m
-
 - name: Set default Smart Gateway Operator Subscription manifest
   when: smart_gateway_operator_subscription_manifest is not defined
   ansible.builtin.set_fact:
@@ -50,13 +30,6 @@
         name: service-telemetry-operator
         source: "{{ infrawatch_operators }}"
         sourceNamespace: "{{ namespace }}"
-
-# enable catalogsource
-- name: Enable InfraWatch Catalog Source
-  when: __deploy_from_index_enabled | bool
-  kubernetes.core.k8s:
-    definition:
-      '{{ infrawatch_catalog_source_manifest }}'
 
 # subscribe to the Operators from the defined CatalogSource sources.
 # STO will automatically install SGO via dependencies but pre-subscribe in case deployment from different CatalogSources is specified in an override (for testing purposes).

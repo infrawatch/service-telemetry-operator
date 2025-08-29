@@ -181,12 +181,13 @@
   - name: Setup Service Telemetry Framework from supplied bundle URLs
     ansible.builtin.include_tasks: setup_stf_from_bundles.yml
     when: __deploy_from_bundles_enabled | bool
-  # Deploy from application registry using published catalog
+  # Deploy from catalog
   - name: Setup Service Telemetry Framework from application registry
     ansible.builtin.include_tasks: setup_stf.yml
     when: not __deploy_from_bundles_enabled | bool
 
 - when: __deploy_from_index_enabled | bool
+  # Deploy from an index image created by either local builds or pre-built bundles
   name: Subscribe to locally built Service Telemetry Operator
   kubernetes.core.k8s:
     definition:
