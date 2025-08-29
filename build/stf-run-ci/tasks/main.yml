@@ -175,35 +175,16 @@
         stf_index_image_path: "{{ __stf_catalog_index_image_path }}"
 
 # -- deploy
-- when: not __local_build_enabled | bool and not __deploy_from_index_enabled | bool
-  block:
-  # Deploy from pre-built bundles using operator-sdk
-  - name: Setup Service Telemetry Framework from supplied bundle URLs
-    ansible.builtin.include_tasks: setup_stf_from_bundles.yml
-    when: __deploy_from_bundles_enabled | bool
-  # Deploy from catalog
-  - name: Setup Service Telemetry Framework from application registry
-    ansible.builtin.include_tasks: setup_stf.yml
-    when: not __deploy_from_bundles_enabled | bool
+# Deploy from pre-built bundles using operator-sdk
+- when: not __deploy_from_index_enabled | bool and __deploy_from_bundles_enabled | bool
+  name: Setup Service Telemetry Framework from supplied bundle URLs
+  ansible.builtin.include_tasks: setup_stf_from_bundles.yml
 
-- when: __deploy_from_index_enabled | bool
-  # Deploy from an index image created by either local builds or pre-built bundles
+- # Deploy from an index image created by either local builds or pre-built bundles
+  # Deploy from catalog
+  # Deploy with default values (no deployment option)
   name: Subscribe to locally built Service Telemetry Operator
-  kubernetes.core.k8s:
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: Subscription
-      metadata:
-        labels:
-          operators.coreos.com/service-telemetry-operator.service-telemetry: ""
-        name: service-telemetry-operator
-        namespace: "{{ namespace }}"
-      spec:
-        channel: "{{ stf_channel }}"
-        installPlanApproval: Automatic
-        name: service-telemetry-operator
-        source: "{{ infrawatch-operators }}"
-        sourceNamespace: "{{ namespace }}"
+  ansible.builtin.include_tasks: setup_stf.yml
 
 # -- check if we're ready to instantiate
 - name: Pre-flight checks
