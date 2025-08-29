@@ -235,3 +235,10 @@
       jobs:
         - stf-crc-ocp_416-nightly_bundles
         - stf-crc-ocp_418-nightly_bundles
+        - stf-crc-ocp_416-local_build
+        - stf-crc-ocp_418-local_build
+        - stf-crc-ocp_416-local_build-index_deploy
+        - stf-crc-ocp_418-local_build-index_deploy
+        - stf-crc-ocp_416-nightly_bundles-index_deploy
+        - stf-crc-ocp_418-nightly_bundles-index_deploy
+
