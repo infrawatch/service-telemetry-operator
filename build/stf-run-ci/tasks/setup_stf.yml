@@ -8,8 +8,8 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: CatalogSource
       metadata:
-        name: infrawatch-operators
-        namespace: openshift-marketplace
+        name: "{{ infrawatch-operators }}"
+        namespace: "{{ namespace }}"
       spec:
         displayName: InfraWatch Operators
         image: quay.io/infrawatch-operators/infrawatch-catalog:nightly
@@ -33,7 +33,7 @@
         installPlanApproval: Automatic
         name: smart-gateway-operator
         source: "{{ infrawatch_operators }}"
-        sourceNamespace: openshift-marketplace
+        sourceNamespace: "{{ namespace }}"
 
 - name: Set default Service Telemetry Operator Subscription manifest
   when: service_telemetry_operator_subscription_manifest is not defined
@@ -49,7 +49,7 @@
         installPlanApproval: Automatic
         name: service-telemetry-operator
         source: "{{ infrawatch_operators }}"
-        sourceNamespace: openshift-marketplace
+        sourceNamespace: "{{ namespace }}"
 
 # enable catalogsource
 - name: Enable InfraWatch Catalog Source

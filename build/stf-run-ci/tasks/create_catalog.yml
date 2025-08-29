@@ -5,10 +5,10 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: CatalogSource
       metadata:
-        name: service-telemetry-framework-operators
+        name: "{{ infrawatch-operators }}"
         namespace: "{{ namespace }}"
       spec:
-        displayName: CloudOps Operators
+        displayName: Infrawatch Operators
         image: "{{ stf_index_image_path }}"
         publisher: CloudOps
         sourceType: grpc

@@ -177,10 +177,11 @@
 # -- deploy
 - when: not __local_build_enabled | bool and not __deploy_from_index_enabled | bool
   block:
+  # Deploy from pre-built bundles using operator-sdk
   - name: Setup Service Telemetry Framework from supplied bundle URLs
     ansible.builtin.include_tasks: setup_stf_from_bundles.yml
     when: __deploy_from_bundles_enabled | bool
-
+  # Deploy from application registry using published catalog
   - name: Setup Service Telemetry Framework from application registry
     ansible.builtin.include_tasks: setup_stf.yml
     when: not __deploy_from_bundles_enabled | bool
@@ -200,7 +201,7 @@
         channel: "{{ stf_channel }}"
         installPlanApproval: Automatic
         name: service-telemetry-operator
-        source: service-telemetry-framework-operators
+        source: "{{ infrawatch-operators }}"
         sourceNamespace: "{{ namespace }}"
 
 # -- check if we're ready to instantiate
