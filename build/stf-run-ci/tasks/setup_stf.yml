@@ -13,5 +13,5 @@
         channel: "{{ stf_channel }}"
         installPlanApproval: Automatic
         name: service-telemetry-operator
-        source: "{{ infrawatch-operators }}"
+        source: "{{ infrawatch_operators }}"
         sourceNamespace: "{{ namespace }}"
