@@ -134,6 +134,15 @@
       scenario: "nightly_bundles-index_deploy"
 
 - job:
+    name: stf-crc-catalog_deploy
+    parent: stf-base
+    abstract: true
+    description: |
+      Use a pre-built index image to create a CatalogSource and deploy STF from it
+    vars:
+      scenario: "catalog_deploy"
+
+- job:
     name: stf-crc-ocp_416-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
@@ -189,18 +198,34 @@
       Create an index image using nightly bundles and deploy STF from it on OCP 4.18
     nodeset: stf-crc_extracted-ocp418
 
+- job:
+    name: stf-crc-ocp_416-catalog_deploy
+    parent: stf-crc-catalog_deploy
+    description: |
+      Use a pre-built index image to create a CatalogSource and deploy STF from it on OCP 4.16
+    nodeset: stf-crc_extracted-ocp416
+
+- job:
+    name: stf-crc-ocp_418-catalog_deploy
+    parent: stf-crc-catalog_deploy
+    description: |
+      Use a pre-built index image to create a CatalogSource and deploy STF from it on OCP 4.18
+    nodeset: stf-crc_extracted-ocp418
+
 - project-template:
     name: stf-crc-jobs
     description: |
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-ocp_416-local_build
-        - stf-crc-ocp_418-local_build
-        - stf-crc-ocp_416-local_build-index_deploy
-        - stf-crc-ocp_418-local_build-index_deploy
-        - stf-crc-ocp_416-nightly_bundles-index_deploy
-        - stf-crc-ocp_418-nightly_bundles-index_deploy
+        # - stf-crc-ocp_416-local_build
+        # - stf-crc-ocp_418-local_build
+        # - stf-crc-ocp_416-local_build-index_deploy
+        # - stf-crc-ocp_418-local_build-index_deploy
+        # - stf-crc-ocp_416-nightly_bundles-index_deploy
+        # - stf-crc-ocp_418-nightly_bundles-index_deploy
+        - stf-crc-ocp_416-catalog_deploy
+        - stf-crc-ocp_418-catalog_deploy
 
 - project:
     name: infrawatch/service-telemetry-operator
