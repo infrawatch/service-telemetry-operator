@@ -1,0 +1,16 @@
+---
+- hosts: controller
+  tasks:
+    #- name: Get credentials
+    #  import_role:
+    #    <openshift_login>
+    - zuul_return:
+        data:
+          zuul:
+            pause: true
+          # need to return the login informatin for the crc
+          # this is needed by stf to access the cluster
+          # TODO: Change the names of the vars once we know they are set correctly.
+          provider_openshift_login_api: "https://api.crc.testing:6443"
+          provider_openshift_login_user: "kubeadmin"
+          provider_openshift_login_password: "12345678

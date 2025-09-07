@@ -8,6 +8,7 @@
   ansible.builtin.include_vars:
     file: "vars-zuul-common.yml"
 
+  # TODO: if using prepare for crc-provider, remove dependency on scenario
 - name: "Get scenario-specific vars"
   ansible.builtin.include_vars:
     file: "vars-{{ scenario }}.yml"
