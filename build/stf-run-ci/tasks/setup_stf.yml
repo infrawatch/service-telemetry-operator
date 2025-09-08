@@ -1,71 +1,17 @@
 ---
-- name: Set default InfraWatch OperatorSource manifest
-  when:
-   - __deploy_from_index_enabled | bool
-   - infrawatch_catalog_source_manifest is not defined 
-  ansible.builtin.set_fact:
-    infrawatch_catalog_source_manifest: |
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        name: infrawatch-operators
-        namespace: openshift-marketplace
-      spec:
-        displayName: InfraWatch Operators
-        image: quay.io/infrawatch-operators/infrawatch-catalog:nightly
-        publisher: InfraWatch
-        sourceType: grpc
-        updateStrategy:
-          registryPoll:
-            interval: 30m
-
-- name: Set default Smart Gateway Operator Subscription manifest
-  when: smart_gateway_operator_subscription_manifest is not defined
-  ansible.builtin.set_fact:
-    smart_gateway_operator_subscription_manifest: |
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: Subscription
-      metadata:
-        name: smart-gateway-operator
-        namespace: "{{ namespace }}"
-      spec:
-        channel: "{{ stf_channel }}"
-        installPlanApproval: Automatic
-        name: smart-gateway-operator
-        source: "{{ infrawatch_operators }}"
-        sourceNamespace: openshift-marketplace
-
-- name: Set default Service Telemetry Operator Subscription manifest
-  when: service_telemetry_operator_subscription_manifest is not defined
-  ansible.builtin.set_fact:
-    service_telemetry_operator_subscription_manifest: |
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: Subscription
-      metadata:
-        name: service-telemetry-operator
-        namespace: "{{ namespace }}"
-      spec:
-        channel: "{{ stf_channel }}"
-        installPlanApproval: Automatic
-        name: service-telemetry-operator
-        source: "{{ infrawatch_operators }}"
-        sourceNamespace: openshift-marketplace
-
-# enable catalogsource
-- name: Enable InfraWatch Catalog Source
-  when: __deploy_from_index_enabled | bool
-  kubernetes.core.k8s:
-    definition:
-      '{{ infrawatch_catalog_source_manifest }}'
-
-# subscribe to the Operators from the defined CatalogSource sources.
-# STO will automatically install SGO via dependencies but pre-subscribe in case deployment from different CatalogSources is specified in an override (for testing purposes).
-- name: Subscribe to Smart Gateway Operator
-  kubernetes.core.k8s:
-    definition:
-      '{{ smart_gateway_operator_subscription_manifest }}'
-
 - name: Subscribe to Service Telemetry Operator
   kubernetes.core.k8s:
     definition:
-      '{{ service_telemetry_operator_subscription_manifest }}'
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        labels:
+          operators.coreos.com/service-telemetry-operator.service-telemetry: ""
+        name: service-telemetry-operator
+        namespace: "{{ namespace }}"
+      spec:
+        channel: "{{ stf_channel }}"
+        installPlanApproval: Automatic
+        name: service-telemetry-operator
+        source: "{{ infrawatch_operators }}"
+        sourceNamespace: "{{ namespace }}"

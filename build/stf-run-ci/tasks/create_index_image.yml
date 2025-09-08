@@ -1,0 +1,281 @@
+---
+- name: Create service-telemetry-framework-index working directory
+  ansible.builtin.file:
+    path: "{{ base_dir }}/working/service-telemetry-framework-index"
+    state: directory
+    mode: '0755'
+
+# Updating to use stdout_lines[-1] so that any additional info that gets added to generate_bundles (e.g. for debug) doesn't break this task
+# Adding from_json so that the JSON output is parsed into a dictionary
+- name: Create info variables from bundle generation output (local build)
+  when: __local_build_enabled | bool and not __deploy_from_bundles_enabled | bool
+  block:
+    - name: Get local builds bundles info
+      ansible.builtin.set_fact:
+        sto_bundle_info: "{{ generate_bundle_sto.stdout_lines[-1] | from_json }}"
+        sgo_bundle_info: "{{ generate_bundle_sgo.stdout_lines[-1] | from_json }}"
+
+    - name: Generate default package names with local builds bundles info
+      ansible.builtin.set_fact:
+        sto_bundle_info: "{{ sto_bundle_info | combine({'package_name':'service-telemetry-operator.v%s'|format(sto_bundle_info.operator_bundle_version)}) }}"
+        sgo_bundle_info: "{{ sgo_bundle_info | combine({'package_name':'smart-gateway-operator.v%s'|format(sgo_bundle_info.operator_bundle_version)}) }}"
+
+    - name: Set correct STO and SGO bundle paths when deploying from index with local bundle builds (local build)
+      ansible.builtin.set_fact:
+        sto_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_image_tag }}"
+        sgo_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_image_tag }}"
+
+- name: Create info variables from provided pre-built bundles (deploy from bundles)
+  when: __deploy_from_bundles_enabled | bool and not __local_build_enabled | bool
+  block:
+    - name: Get STO operator bundle CSV file
+      ansible.builtin.command: oc image extract {{ __service_telemetry_bundle_image_path }} --file /manifests/*clusterserviceversion.yaml
+      args:
+        chdir: "{{ base_dir }}/working/service-telemetry-framework-index/"
+
+    - name: Get SGO operator bundle CSV file
+      ansible.builtin.command: oc image extract {{ __smart_gateway_bundle_image_path }}  --file /manifests/*clusterserviceversion.yaml
+      args:
+        chdir: "{{ base_dir }}/working/service-telemetry-framework-index/"
+
+    - name: Set the csv_dest based on whether zuul is used or not
+      ansible.builtin.set_fact:
+        csv_dest: "{{ zuul.executor.work_root if zuul is defined else '/tmp/service-telemetry-framework-index/' }}"
+
+    - name: "Put the CSV files onto the ansible controller, so we can include_vars"
+      ansible.builtin.fetch:
+        src: "{{ base_dir }}/working/service-telemetry-framework-index/service-telemetry-operator.clusterserviceversion.yaml"
+        dest: "{{ csv_dest }}/"
+        flat: yes
+
+    - name: "Put the CSV files onto the ansible controller, so we can include_vars"
+      ansible.builtin.fetch:
+         src: "{{ base_dir }}/working/service-telemetry-framework-index/smart-gateway-operator.clusterserviceversion.yaml"
+         dest: "{{ csv_dest }}/"
+         flat: yes
+
+    - name: Read STO bundle CSV file contents
+      ansible.builtin.include_vars:
+        file: "{{ csv_dest }}/service-telemetry-operator.clusterserviceversion.yaml"
+        name: sto_prebuilt_bundle_csv
+
+    - name: Read SGO bundle CSV file contents
+      ansible.builtin.include_vars:
+        file: "{{ csv_dest }}/smart-gateway-operator.clusterserviceversion.yaml"
+        name: sgo_prebuilt_bundle_csv
+
+    - name: Get STO and SGO bundle package names (from CSV)
+      ansible.builtin.set_fact:
+        sto_prebuilt_bundle_package_name: "{{ sto_prebuilt_bundle_csv.metadata.name }}"
+        sgo_prebuilt_bundle_package_name: "{{ sgo_prebuilt_bundle_csv.metadata.name }}"
+
+    - name: Get STO and SGO bundle versions (from CSV)
+      ansible.builtin.set_fact:
+        sto_prebuilt_bundle_version: "{{ sto_prebuilt_bundle_csv.spec.version }}"
+        sgo_prebuilt_bundle_version: "{{ sgo_prebuilt_bundle_csv.spec.version }}"
+
+    - name: Get STO and SGO bundle image tags (from name)
+      ansible.builtin.set_fact:
+        sto_prebuilt_bundle_tag: "{{ __service_telemetry_bundle_image_path | split(':') | last }}"
+        sgo_prebuilt_bundle_tag: "{{ __smart_gateway_bundle_image_path | split(':') | last }}"
+
+    - name: Set info variables from provided pre-built bundles
+      ansible.builtin.set_fact:
+        sto_bundle_info:
+          'package_name': "{{ sto_prebuilt_bundle_package_name }}"
+          'bundle_default_channel': "{{ stf_channel }}"
+          'bundle_channels': "{{ stf_channel }}"
+          'operator_bundle_version': "{{ sto_prebuilt_bundle_version }}"
+          'operator_bundle_tag': "{{ sto_prebuilt_bundle_tag }}"
+        sgo_bundle_info:
+          'package_name': "{{ sgo_prebuilt_bundle_package_name }}"
+          'bundle_default_channel': "{{ stf_channel }}"
+          'bundle_channels': "{{ stf_channel }}"
+          'operator_bundle_version': "{{ sgo_prebuilt_bundle_version }}"
+          'operator_bundle_tag': "{{ sgo_prebuilt_bundle_tag }}"
+
+- name: Show STO and SGO bundle info that will used in the index image
+  ansible.builtin.debug:
+    msg:
+    - "{{ sto_bundle_info }}"
+    - "{{ sgo_bundle_info }}"
+
+- name: Create ImageStream for STO and SGO (deploying from bundles)
+  when: __deploy_from_bundles_enabled | bool
+  block:
+    - name: Create ImageStream for STO
+      ansible.builtin.command:
+        cmd: |
+          oc import-image -n {{ namespace }} service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_tag }} --from={{ __service_telemetry_bundle_image_path }} --confirm --insecure
+      register: sto_is
+
+    - name: Create ImageStream for SGO
+      ansible.builtin.command:
+        cmd: |
+          oc import-image -n {{ namespace }} smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_tag }} --from={{ __smart_gateway_bundle_image_path }} --confirm --insecure
+      register: sgo_is
+
+    - name: Set correct STO and SGO bundle paths when deploying from index with pre-built bundles
+      ansible.builtin.set_fact:
+        sto_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/service-telemetry-operator-bundle:{{ sto_bundle_info.operator_bundle_tag }}"
+        sgo_bundle_image_path_internal: "{{ __internal_registry_path }}/{{ namespace }}/smart-gateway-operator-bundle:{{ sgo_bundle_info.operator_bundle_tag }}"
+
+- name: Get the builder-dockercfg Secret name
+  ansible.builtin.command: oc get secret -n {{ namespace }} --field-selector='type=kubernetes.io/dockercfg' -ojsonpath='{.items[?(@.metadata.annotations.openshift\.io/internal-registry-auth-token\.service-account=="builder")].metadata.name}'
+  register: secret_builder_dockercfg_name
+
+- name: Get contents of builder Secret
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "{{ secret_builder_dockercfg_name.stdout }}"
+    namespace: "{{ namespace }}"
+  register: secret_builder_dockercfg_results
+
+- name: Get builder-dockercfg authentication contents
+  ansible.builtin.set_fact:
+    builder_dockercfg_auth_results: "{{ secret_builder_dockercfg_results.resources[0].data['.dockercfg'] | b64decode }}"
+
+- name: Set internal registry authentication
+  ansible.builtin.set_fact:
+    internal_registry: "{{ builder_dockercfg_auth_results['image-registry.openshift-image-registry.svc:5000'] | to_json }}"
+
+- name: Get Secrets to check for service-telemetry-framework-index-dockercfg
+  ansible.builtin.command:
+    cmd: oc get secret -n {{ namespace }} service-telemetry-framework-index-dockercfg
+  register: index_dockercfg_secret
+  ignore_errors: true
+
+- block:
+  - name: Create config.json to import as Secret
+    ansible.builtin.template:
+      variable_start_string: "<<"
+      variable_end_string: ">>"
+      src: config-json.j2
+      dest: "{{ base_dir }}/working/service-telemetry-framework-index/config.json"
+
+  - name: Create a Secret for the dockercfg
+    ansible.builtin.command: oc create secret generic -n {{ namespace }} service-telemetry-framework-index-dockercfg --from-file=.dockerconfigjson={{ base_dir }}/working/service-telemetry-framework-index/config.json --type=kubernetes.io/dockerconfigjson
+    ignore_errors: true
+
+- name: Get the ose-operator-registry ImageStream
+  ansible.builtin.command:
+    cmd: oc get -n {{ namespace }} ImageStream ose-operator-registry
+  register: ose_op_registry_is
+  ignore_errors: true
+
+- name: Set the operator_registry_image
+  ansible.builtin.set_fact:
+    operator_registry_image: "{{ default_operator_registry_image_base }}:{{ default_operator_registry_image_tag }}"
+
+  # --show-multiarch=true is used because you get an error (and rc!=0) when you query a multi-arch image without specifying the arch, even when the image exists
+- name: "Try to get the image info for the operator registry image"
+  ansible.builtin.command:
+    cmd: oc image info --show-multiarch=true "{{ operator_registry_image }}"
+  ignore_errors: true
+  register: image_info
+
+- name: Test alternative operator image
+  ansible.builtin.set_fact:
+    operator_registry_image: "quay.io/openshift/origin-operator-registry:4.13"
+  when: image_info.rc != 0
+
+- name: Create ImageStream for ose-operator-registry, if it doesn't already exist
+  ansible.builtin.command:
+    cmd: |
+      oc import-image -n {{ namespace }} ose-operator-registry:{{ default_operator_registry_image_tag }} --from={{ operator_registry_image }} --confirm --insecure
+  when: ose_op_registry_is.rc != 0
+  register: create_ose_is
+
+- name: Show the image stream
+  ansible.builtin.debug:
+    var: create_ose_is
+
+- name: Delete the existing imagestream, if it exists
+  ansible.builtin.command: oc delete imagestream -n {{ namespace }} service-telemetry-framework-index
+  ignore_errors: true
+
+- name: Create ImageStream for service-telemetry-framework-index
+  ansible.builtin.command: oc create imagestream -n {{ namespace }} service-telemetry-framework-index
+
+- name: Get STF index image stream
+  ansible.builtin.command:
+    cmd: oc get -n {{ namespace }} ImageStream service-telemetry-framework-index
+  register: stf_index_imagestream
+  ignore_errors: true
+
+- name: Show STF index image stream
+  ansible.builtin.debug:
+    var: stf_index_imagestream
+
+- name: Create index.yaml base for index image
+  ansible.builtin.template:
+    src: index-yaml.j2
+    dest: "{{ base_dir }}/working/service-telemetry-framework-index/index.yaml"
+
+- name: Create BuildConfig for service-telemetry-framework-index
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: build.openshift.io/v1
+      kind: BuildConfig
+      metadata:
+        annotations:
+          openshift.io/generated-by: stf-run-ci
+        labels:
+          build: service-telemetry-framework-index
+        name: service-telemetry-framework-index
+        namespace: "{{ namespace }}"
+      spec:
+        failedBuildsHistoryLimit: 5
+        nodeSelector: null
+        output:
+          to:
+            kind: ImageStreamTag
+            name: service-telemetry-framework-index:latest
+        postCommit: {}
+        resources: {}
+        runPolicy: Serial
+        source:
+          dockerfile: |
+            # The base image is expected to contain
+            # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
+
+            FROM {{ operator_registry_image }}
+
+            COPY --chmod=666 index.yaml /configs/
+
+            RUN mkdir /tmp/auth/
+            # we need the contents of the mounted build volume from secret placed into config.json
+            RUN cp /opt/app-root/auth/.dockerconfigjson /tmp/auth/config.json
+            RUN DOCKER_CONFIG=/tmp/auth /bin/opm --skip-tls-verify render {{ sto_bundle_image_path_internal }} {{ sgo_bundle_image_path_internal }} --output=yaml >> /configs/index.yaml
+
+            ENTRYPOINT ["/bin/opm"]
+            CMD ["serve", "/configs"]
+            # Set DC-specific label for the location of the DC root directory
+            # in the image
+            LABEL operators.operatorframework.io.index.configs.v1=/configs
+          type: Dockerfile
+        strategy:
+          dockerStrategy:
+            from:
+              kind: ImageStreamTag
+              name: "ose-operator-registry:{{ default_operator_registry_image_tag }}"
+            volumes:
+            - mounts:
+              - destinationPath: /opt/app-root/auth
+              name: pull-secret
+              source:
+                secret:
+                  defaultMode: 420
+                  secretName: service-telemetry-framework-index-dockercfg
+                type: Secret
+          type: Docker
+        successfulBuildsHistoryLimit: 5
+
+- name: Build service-telemetry-framework-index
+  ansible.builtin.command: oc start-build -n "{{ namespace }}" service-telemetry-framework-index --wait --follow --from-dir {{ base_dir }}/working/service-telemetry-framework-index
+  register: build_result
+  ignore_errors: true
+  retries: 3
+  delay: 10
+  until: build_result.rc == 0
