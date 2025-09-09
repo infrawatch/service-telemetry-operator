@@ -21,9 +21,11 @@ choose to override:
 | `__local_build_enabled`                                              | {true,false}                                                | true                                                                          | Whether to deploy STF from local built artifacts. Also see `working_branch`, `sg_branch`, `sgo_branch`                                                                                                                  |
 | `__deploy_from_bundles_enabled`                                      | {true,false}                                                | false                                                                         | Whether to deploy STF from OLM bundles (TODO: compat with `__local_build_enabled`)                                                                                                                                      |
 | `__deploy_from_index_enabled`                                        | {true,false}                                                | false                                                                         | Whether to deploy STF from locally built bundles/OLM bundles and index image.                                                                                                                                                       |
+| `__deploy_from_catalog`                                              | {true,false}                                                | false                                                                         | Whether to deploy STF from a pre-built index image.                                                                                                                                                                    |
 | `__disconnected_deploy`                                              | {true,false}                                                | false                                                                         | Whether to deploy on a disconnected cluster                                                                                                                                                                               |
 | `__service_telemetry_bundle_image_path`                              | <image_path>                                                | `quay.io/infrawatch-operators/service-telemetry-operator-bundle:nightly-head` | Image path to Service Telemetry Operator bundle                                                                                                                                                                         |
 | `__smart_gateway_bundle_image_path`                                  | <image_path>                                                | `quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head`     | Image path to Smart Gateway Operator bundle                                                                                                                                                                             |
+| `__stf_catalog_index_image_path`                                     | <image_path>                                                | `quay.io/infrawatch-operators/infrawatch-catalog:nightly`                     | Index image path to STF catalog                                                                                                                                                                                              |
 | `setup_bundle_registry_tls_ca`                                       | {true,false}                                                | true                                                                          | Whether to setup or not a TLS CA cert for the bundle registry access                                                                                                                                                    |
 | `setup_bundle_registry_auth`                                         | {true,false}                                                | true                                                                          | Whether to setup or not the auth for the bundle registry access                                                                                                                                                         |
 | `prometheus_webhook_snmp_branch`                                     | <git_branch>                                                | master                                                                        | Which Prometheus Webhook SNMP git branch to checkout                                                                                                                                                                    |
@@ -135,7 +137,7 @@ You can perform a deployment using OLM and a Subscription from locally built art
 ansible-playbook -e __local_build_enabled=true -e __deploy_from_index_enabled=true run-ci.yaml
 ```
 
-## Deployment with pre-build bundles and index
+## Deployment with pre-built bundles and locally created index image
 
 Instead of relying on the operator-sdk to deploy from selected bundles using the "operator-sdk run bundle" utility,
 you can perform a deployment using OLM and a Subscription to a locally created index image like this:
@@ -155,6 +157,19 @@ Since you will fetch the selected images from a bundle registry, it is required 
 access credentials for the desired registry correctly configured. Check the "Deployment with pre-build bundles"
 docs above to get more information about this.
 
+## Deployment with pre-built index image
+
+Is it also possible to pass the path for a pre-build index image to create a CatalogSource and deploy STF from it.
+This can be done as follows:
+
+```sh
+ansible-playbook -e __local_build_enabled=false -e __deploy_from_catalog=true \
+  -e __stf_catalog_index_image_path=<registry>/<namespace>/infrawatch-catalog:<tag> \
+  -e pull_secret_registry=<registry> \
+  -e pull_secret_user=<username> \
+  -e pull_secret_pass=<password>
+  run-ci.yaml
+```
 
 # License
 
