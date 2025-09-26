@@ -26,7 +26,7 @@ jobs:
         run: ansible-galaxy collection install operator_sdk.util
 
       - name: Install ansible-lint
-        run: pip install ansible-lint
+        run: pip install ansible-lint==25.2.0
 
       - name: Lint Ansible roles/servicetelemetry/ directory
         run: ansible-lint roles/servicetelemetry
@@ -50,7 +50,7 @@ jobs:
         run: pip install ansible
 
       - name: Install ansible-lint
-        run: pip install ansible-lint==24.7.0
+        run: pip install ansible-lint==25.2.0
 
       - name: Lint Ansible build/stf-run-ci  directory
         run: ansible-lint build/stf-run-ci
