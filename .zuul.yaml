@@ -13,7 +13,7 @@
       - name: controller
         label: cloud-centos-9-stream-tripleo-vexxhost
       - name: crc
-        label: coreos-crc-extracted-2-48-0-3xl
+        label: crc-cloud-ocp-4-18-1-3xl
 
 - job:
     name: stf-base-2node
@@ -210,3 +210,10 @@
       jobs:
         - stf-crc-ocp_416-nightly_bundles
         - stf-crc-ocp_418-nightly_bundles
+        - stf-crc-ocp_416-local_build
+        - stf-crc-ocp_418-local_build
+        - stf-crc-ocp_416-local_build-index_deploy
+        - stf-crc-ocp_418-local_build-index_deploy
+        - stf-crc-ocp_416-nightly_bundles-index_deploy
+        - stf-crc-ocp_418-nightly_bundles-index_deploy
+
