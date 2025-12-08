@@ -169,7 +169,7 @@
     parent: stf-crc-nightly_bundles
     description: |
       Deploy STF using the nightly bundles on OCP 4.20
-    nodeset: centos-9-medium-crc-cloud-ocp-4-20-1-3xl
+    nodeset: stf-crc_extracted-ocp420
 
 - job:
     name: stf-crc-ocp_416-local_build
@@ -190,7 +190,7 @@
     parent: stf-crc-local_build
     description: |
       Build STF locally and deploy from index on OCP 4.20
-    nodeset: centos-9-medium-crc-cloud-ocp-4-20-1-3xl
+    nodeset: stf-crc_extracted-ocp420
 
 - job:
     name: stf-crc-ocp_416-local_build-index_deploy
@@ -211,7 +211,7 @@
     parent: stf-crc-local_build-index_deploy
     description: |
       Build STF locally and deploy from index on OCP 4.20
-    nodeset: centos-9-medium-crc-cloud-ocp-4-20-1-3xl
+    nodeset: stf-crc_extracted-ocp420
 
 - job:
     name: stf-crc-ocp_416-nightly_bundles-index_deploy
@@ -232,7 +232,7 @@
     parent: stf-crc-nightly_bundles-index_deploy
     description: |
       Create an index image using nightly bundles and deploy STF from it on OCP 4.20
-    nodeset: centos-9-medium-crc-cloud-ocp-4-20-1-3xl
+    nodeset: stf-crc_extracted-ocp420
 
 - job:
     name: stf-crc-ocp_416-catalog_deploy
@@ -253,7 +253,7 @@
     parent: stf-crc-catalog_deploy
     description: |
       Use a pre-built index image to create a CatalogSource and deploy STF from it on OCP 4.20
-    nodeset: centos-9-medium-crc-cloud-ocp-4-20-1-3xl
+    nodeset: stf-crc_extracted-ocp420
 
 
 - project-template:
