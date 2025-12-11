@@ -225,8 +225,8 @@
         # - stf-crc-ocp_420-local_build-index_deploy
         - stf-crc-ocp_418-nightly_bundles-index_deploy
         - stf-crc-ocp_420-nightly_bundles-index_deploy
-        # - stf-crc-ocp_418-catalog_deploy
-        # - stf-crc-ocp_420-catalog_deploy
+        - stf-crc-ocp_418-catalog_deploy
+        - stf-crc-ocp_420-catalog_deploy
 
 - project:
     name: infrawatch/service-telemetry-operator
