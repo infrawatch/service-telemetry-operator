@@ -27,11 +27,11 @@
 
 - name: Fail on mutually exclusive flags (deploy from prebuilt bundles, local builds or deploy from catalog)
   ansible.builtin.fail:
-    msg: __deploy_from_bundles_enabled, __local_build_enabled and __deploy_from_catalog are mutually exclusive deployment options
-  when:
-    - __local_build_enabled | bool
-    - __deploy_from_bundles_enabled | bool
-    - __deploy_from_catalog | bool
+    msg: __deploy_from_bundles_enabled, __local_build_enabled and __deploy_from_catalog are mutually exclusive deployment options. Only one can be true.
+  when: >-
+    (__local_build_enabled | bool | int) +
+    (__deploy_from_bundles_enabled | bool | int) +
+    (__deploy_from_catalog | bool | int) > 1
 
 - name: Fail on mutually exclusive flags (deploy from index or deploy from catalog)
   ansible.builtin.fail:
