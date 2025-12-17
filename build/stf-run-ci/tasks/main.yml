@@ -205,17 +205,6 @@
     register: validate_deployment
     failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
 
-  - name: Get cert-manager subscription details
-    ansible.builtin.shell:
-      cmd: |
-        oc -n cert-manager-operator describe subscription openshift-cert-manager-operator
-    register: cert_manager_subscription
-    ignore_errors: true
-
-  - name: Debug cert-manager-operator subscription
-    ansible.builtin.debug:
-      msg: "{{ cert_manager_subscription.stdout }}"
-
   - name: Show the result of the validate_deployment script
     ansible.builtin.debug:
       var: validate_deployment.stdout_lines[-1]
