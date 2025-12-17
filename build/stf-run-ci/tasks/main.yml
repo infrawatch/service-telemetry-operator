@@ -205,6 +205,33 @@
     register: validate_deployment
     failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
 
+  # Debug steps for OCP 4.20
+  - name: Show service-telemetry pods
+    kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: service-telemetry
+    register: pod_list_info
+
+  - name: Display the full list of resources found
+    ansible.builtin.debug:
+      var: pod_list_info.resources
+
+  - name: Get all CertificateSigningRequests (CSRs)
+    kubernetes.core.k8s_info:
+      api_version: certificates.k8s.io/v1
+      kind: CertificateSigningRequest
+    register: csr_list_info
+
+  - name: Display the names and conditions of the CSRs
+    ansible.builtin.debug:
+      msg:
+        - "CSR: {{ item.metadata.name }}"
+        - "Status: {{ item.status.conditions | map(attribute='type') | join(', ') }}"
+    loop: "{{ csr_list_info.resources }}"
+    loop_control:
+      label: "{{ item.metadata.name }}"
+
   - name: Show the result of the validate_deployment script
     ansible.builtin.debug:
       var: validate_deployment.stdout_lines[-1]

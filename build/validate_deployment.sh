@@ -54,7 +54,7 @@ esac
 
 echo -e "\n* [info] Waiting for all pods to show Ready/Complete\n"
 while oc get pods --selector '!openshift.io/build.name' | tail -n +2 | grep -v -E 'Running|Completed'; do
-    sleep 5m
+    sleep 3
 done
 
 echo -e "\n* [info] CI Build complete. You can now run tests.\n"
