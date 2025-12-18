@@ -1,19 +1,19 @@
 ---
 - nodeset:
-    name: stf-crc_extracted-ocp416
-    nodes:
-      - name: controller
-        label: cloud-centos-9-stream-tripleo-vexxhost
-      - name: crc
-        label: coreos-crc-extracted-2-39-0-3xl
-
-- nodeset:
-    name: stf-crc_extracted-ocp418
+    name: stf-crc_cloud-ocp418
     nodes:
       - name: controller
         label: cloud-centos-9-stream-tripleo-vexxhost
       - name: crc
         label: crc-cloud-ocp-4-18-1-3xl
+
+- nodeset:
+    name: stf-crc_cloud-ocp420
+    nodes:
+      - name: controller
+        label: cloud-centos-9-stream-tripleo-vexxhost
+      - name: crc
+        label: crc-cloud-ocp-4-20-1-3xl
 
 - job:
     name: stf-base-2node
@@ -143,74 +143,75 @@
       scenario: "catalog_deploy"
 
 - job:
-    name: stf-crc-ocp_416-nightly_bundles
-    parent: stf-crc-nightly_bundles
-    description: |
-      Deploy STF using the nightly bundles on OCP 4.16
-    nodeset: stf-crc_extracted-ocp416
-
-- job:
     name: stf-crc-ocp_418-nightly_bundles
     parent: stf-crc-nightly_bundles
     description: |
       Deploy STF using the nightly bundles on OCP 4.18
-    nodeset: stf-crc_extracted-ocp418
+    nodeset: stf-crc_cloud-ocp418
 
 - job:
-    name: stf-crc-ocp_416-local_build
-    parent: stf-crc-local_build
+    name: stf-crc-ocp_420-nightly_bundles
+    parent: stf-crc-nightly_bundles
     description: |
-      Build STF locally and deploy from index on OCP 4.16
-    nodeset: stf-crc_extracted-ocp416
+      Deploy STF using the nightly bundles on OCP 4.20
+    nodeset: stf-crc_cloud-ocp420
 
 - job:
     name: stf-crc-ocp_418-local_build
     parent: stf-crc-local_build
     description: |
       Build STF locally and deploy from index on OCP 4.18
-    nodeset: stf-crc_extracted-ocp418
+    nodeset: stf-crc_cloud-ocp418
 
 - job:
-    name: stf-crc-ocp_416-local_build-index_deploy
-    parent: stf-crc-local_build-index_deploy
+    name: stf-crc-ocp_420-local_build
+    parent: stf-crc-local_build
     description: |
-      Build STF locally and deploy from index on OCP 4.16
-    nodeset: stf-crc_extracted-ocp416
+      Build STF locally and deploy from index on OCP 4.20
+    nodeset: stf-crc_cloud-ocp420
 
 - job:
     name: stf-crc-ocp_418-local_build-index_deploy
     parent: stf-crc-local_build-index_deploy
     description: |
       Build STF locally and deploy from index on OCP 4.18
-    nodeset: stf-crc_extracted-ocp418
+    nodeset: stf-crc_cloud-ocp418
 
 - job:
-    name: stf-crc-ocp_416-nightly_bundles-index_deploy
-    parent: stf-crc-nightly_bundles-index_deploy
+    name: stf-crc-ocp_420-local_build-index_deploy
+    parent: stf-crc-local_build-index_deploy
     description: |
-      Create an index image using nightly bundles and deploy STF from it on OCP 4.16
-    nodeset: stf-crc_extracted-ocp416
+      Build STF locally and deploy from index on OCP 4.20
+    nodeset: stf-crc_cloud-ocp420
 
 - job:
     name: stf-crc-ocp_418-nightly_bundles-index_deploy
     parent: stf-crc-nightly_bundles-index_deploy
     description: |
       Create an index image using nightly bundles and deploy STF from it on OCP 4.18
-    nodeset: stf-crc_extracted-ocp418
+    nodeset: stf-crc_cloud-ocp418
 
 - job:
-    name: stf-crc-ocp_416-catalog_deploy
-    parent: stf-crc-catalog_deploy
+    name: stf-crc-ocp_420-nightly_bundles-index_deploy
+    parent: stf-crc-nightly_bundles-index_deploy
     description: |
-      Use a pre-built index image to create a CatalogSource and deploy STF from it on OCP 4.16
-    nodeset: stf-crc_extracted-ocp416
+      Create an index image using nightly bundles and deploy STF from it on OCP 4.20
+    nodeset: stf-crc_cloud-ocp420
 
 - job:
     name: stf-crc-ocp_418-catalog_deploy
     parent: stf-crc-catalog_deploy
     description: |
       Use a pre-built index image to create a CatalogSource and deploy STF from it on OCP 4.18
-    nodeset: stf-crc_extracted-ocp418
+    nodeset: stf-crc_cloud-ocp418
+
+- job:
+    name: stf-crc-ocp_420-catalog_deploy
+    parent: stf-crc-catalog_deploy
+    description: |
+      Use a pre-built index image to create a CatalogSource and deploy STF from it on OCP 4.20
+    nodeset: stf-crc_cloud-ocp420
+
 
 - project-template:
     name: stf-crc-jobs
@@ -218,14 +219,14 @@
       STF CRC jobs that build and deploy STF
     github-check:
       jobs:
-        - stf-crc-ocp_416-local_build
         - stf-crc-ocp_418-local_build
-        - stf-crc-ocp_416-local_build-index_deploy
+        - stf-crc-ocp_420-local_build
         - stf-crc-ocp_418-local_build-index_deploy
-        - stf-crc-ocp_416-nightly_bundles-index_deploy
+        - stf-crc-ocp_420-local_build-index_deploy
         - stf-crc-ocp_418-nightly_bundles-index_deploy
-        - stf-crc-ocp_416-catalog_deploy
+        - stf-crc-ocp_420-nightly_bundles-index_deploy
         - stf-crc-ocp_418-catalog_deploy
+        - stf-crc-ocp_420-catalog_deploy
 
 - project:
     name: infrawatch/service-telemetry-operator
@@ -233,12 +234,12 @@
       - stf-crc-jobs
     periodic:
       jobs:
-        - stf-crc-ocp_416-nightly_bundles
         - stf-crc-ocp_418-nightly_bundles
-        - stf-crc-ocp_416-local_build
+        - stf-crc-ocp_420-nightly_bundles
         - stf-crc-ocp_418-local_build
-        - stf-crc-ocp_416-local_build-index_deploy
+        - stf-crc-ocp_420-local_build
         - stf-crc-ocp_418-local_build-index_deploy
-        - stf-crc-ocp_416-nightly_bundles-index_deploy
+        - stf-crc-ocp_420-local_build-index_deploy
+        - stf-crc-ocp_418-nightly_bundles-index_deploy
         - stf-crc-ocp_418-nightly_bundles-index_deploy
 
