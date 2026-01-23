@@ -159,7 +159,7 @@ docs above to get more information about this.
 
 ## Deployment with pre-built index image
 
-Is it also possible to pass the path for a pre-build index image to create a CatalogSource and deploy STF from it.
+It is also possible to pass the path of a pre-built index image to create a CatalogSource and deploy STF from it.
 This can be done as follows:
 
 ```sh
