@@ -8,6 +8,7 @@ list_of_stf_objects:
 __local_build_enabled: true
 __deploy_from_bundles_enabled: false
 __deploy_from_index_enabled: false
+__deploy_from_catalog: false
 __deploy_stf: true
 
 __disconnected_deploy: false
@@ -34,6 +35,7 @@ __service_telemetry_transports_certificates_ca_cert_duration: 70080h
 __internal_registry_path: image-registry.openshift-image-registry.svc:5000
 __service_telemetry_bundle_image_path: "quay.io/infrawatch-operators/service-telemetry-operator-bundle:nightly-head"
 __smart_gateway_bundle_image_path: "quay.io/infrawatch-operators/smart-gateway-operator-bundle:nightly-head"
+__stf_catalog_index_image_path: "quay.io/infrawatch-operators/infrawatch-catalog:nightly"
 
 default_operator_registry_image_base: registry.redhat.io/openshift4/ose-operator-registry
 default_operator_registry_image_tag: v4.13
