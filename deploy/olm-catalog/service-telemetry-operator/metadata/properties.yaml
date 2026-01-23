@@ -1,6 +1,6 @@
 properties:
   - type: olm.maxOpenShiftVersion
-    value: "4.18"
+    value: "4.20"
   - type: olm.constraint
     value:
       failureMessage: Require Smart Gateway for Service Telemetry Framework

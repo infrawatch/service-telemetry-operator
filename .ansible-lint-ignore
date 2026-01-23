@@ -50,6 +50,7 @@ roles/servicetelemetry/tasks/pre.yml warning[outdated-tag]
 roles/servicetelemetry/vars/dummy_user_certs.yml var-naming[no-role-prefix]
 
 # build/stf-run-ci
+# This file contains ignores rule violations for ansible-lint
 build/stf-run-ci/defaults/main.yml var-naming[no-reserved]
 build/stf-run-ci/handlers/main.yml yaml[new-line-at-end-of-file]
 build/stf-run-ci/tasks/clone_repos.yml name[template]
@@ -57,13 +58,14 @@ build/stf-run-ci/tasks/clone_repos.yml yaml[empty-lines]
 build/stf-run-ci/tasks/create_builds.yml jinja[invalid]
 build/stf-run-ci/tasks/create_builds.yml name[missing]
 build/stf-run-ci/tasks/create_builds.yml no-changed-when
-build/stf-run-ci/tasks/create_catalog.yml ignore-errors
 build/stf-run-ci/tasks/create_catalog.yml jinja[invalid]
-build/stf-run-ci/tasks/create_catalog.yml jinja[spacing]
-build/stf-run-ci/tasks/create_catalog.yml name[missing]
-build/stf-run-ci/tasks/create_catalog.yml no-changed-when
-build/stf-run-ci/tasks/create_catalog.yml risky-file-permissions
-build/stf-run-ci/tasks/create_catalog.yml yaml[truthy]
+build/stf-run-ci/tasks/create_index_image.yml ignore-errors
+build/stf-run-ci/tasks/create_index_image.yml jinja[invalid]
+build/stf-run-ci/tasks/create_index_image.yml jinja[spacing]
+build/stf-run-ci/tasks/create_index_image.yml name[missing]
+build/stf-run-ci/tasks/create_index_image.yml no-changed-when
+build/stf-run-ci/tasks/create_index_image.yml risky-file-permissions
+build/stf-run-ci/tasks/create_index_image.yml yaml[truthy]
 build/stf-run-ci/tasks/main.yml jinja[invalid]
 build/stf-run-ci/tasks/main.yml jinja[spacing]
 build/stf-run-ci/tasks/main.yml key-order[task]
@@ -82,7 +84,7 @@ build/stf-run-ci/tasks/setup_elasticsearch.yml jinja[invalid]
 build/stf-run-ci/tasks/setup_elasticsearch.yml yaml[new-line-at-end-of-file]
 build/stf-run-ci/tasks/setup_registry_auth.yml jinja[invalid]
 build/stf-run-ci/tasks/setup_registry_auth.yml no-changed-when
-build/stf-run-ci/tasks/setup_stf.yml yaml[trailing-spaces]
+build/stf-run-ci/tasks/setup_stf.yml jinja[invalid]
 build/stf-run-ci/tasks/setup_stf_from_bundles.yml command-instead-of-shell
 build/stf-run-ci/tasks/setup_stf_from_bundles.yml no-changed-when
 build/stf-run-ci/tasks/setup_stf_local_build.yml command-instead-of-module

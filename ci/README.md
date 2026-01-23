@@ -15,8 +15,8 @@ Three scenarios run:
 - `nightly_bundles-index_deploy`, which retrieves the nightly bundles and does an index-based deployment.
 
 Each of these scenarios run across the following OCP versions:
-- 4.16
 - 4.18
+- 4.20
 
 ### Periodic jobs
 
