@@ -2,6 +2,9 @@
 - name: "Prepare the environment for running stf"
   hosts: controller
   tasks:
+    # NOTE: maybe this prepare isn't required in the CRC provider, since it is for STF...
+    # I can probably split this up into two playbooks, prepare and prepare STF.
+    # Prepare will run these tasks, common-tasks needs to remove the scenario-specific vars file, and it should be explicitly be included in the STF play
     - name: "Setup play vars"
       ansible.builtin.include_tasks: "common-tasks.yml"
 
@@ -35,16 +38,43 @@
         - "kubernetes.core:5.0.0"
         - "community.general"
 
+    - name: "Show the openshift cluster information from the provider"
+      ansible.builtin.debug:
+        msg: |
+          The provider_openshift_login_api value is {{ provider_openshift_login_api | default('unset')}}.
+          The provider_openshift_login_user is {{ provider_openshift_login_user | default('unset') }}
+          The provider_openshift_login_password is {{ provider_openshift_login_password | default('unset')}}
+
+
+    - name: Use creds to log in
+      shell:
+        cmd: |
+          oc login -u {{ provider_openshift_login_user }} -p {{ provider_openshift_login_password }} -s {{ provider_openstack_login_api }}
+
+ 
+        # this won't succeed, since it needs kubeconfig to be set
+        # Try using openshift_login instead, since the vars are already set from the provider job.
     - name: "Log into the cluster"
       ansible.builtin.import_role:
         name: rhol_crc
         tasks_from: add_crc_creds.yml
 
-    - name: "Create the service-telemetry project"
-      kubernetes.core.k8s:
-        api_version: v1
-        kind: Namespace
-        name: "{{ namespace }}"
-        state: present
-      retries: 3
-      delay: 30
+    ## The vars are hardcoded for now, but will become vars later.
+    #- name: "Log into the cluster"
+    #  ansible.builtin.import_role:
+    #    name: openshift_login
+    #  vars:
+    #    cifmw_openshift_login_api: "https://api.crc.testing:6443"
+    #    cifmw_openshift_login_user: "kubeadmin"
+    #    cifmw_openshift_login_password: "12345678"
+
+        # After this point is specifically STF, which can be removed for now.
+        # This won't let STF pass, but it will be fine.
+#    - name: "Create the service-telemetry project"
+#      kubernetes.core.k8s:
+#        api_version: v1
+#        kind: Namespace
+#        name: "{{ namespace }}"
+#        state: present
+#      retries: 3
+#      delay: 30

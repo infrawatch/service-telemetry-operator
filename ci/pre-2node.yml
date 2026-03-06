@@ -28,6 +28,12 @@
         chdir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/openstack-k8s-operators/ci-framework"].src_dir }}'
         target: "{{ item }}"
       with_items:
+
         - setup_tests
         - setup_molecule
 
+# Need to know what vars have been set.
+# openshift_login role needs username/password
+#   cifmw_openshift_login_user and cifmw_openshift_login_password
+# it also needs cifmw_openshift_login_api <- I think this should be returned from a provisioning job, unless it's a fixed value.
+#
