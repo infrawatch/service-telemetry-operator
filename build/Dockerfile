@@ -12,6 +12,9 @@ RUN bash -c -- 'if [ "${NO_PROXY:-__ZZZZZ}" == "__ZZZZZ" ]; then echo "Applying 
 # -- cleans up the cached data from dnf to keep the image as small as possible
 RUN dnf update -y --exclude=ansible* && dnf install -y python3-passlib python3-bcrypt && dnf clean all && rm -rf /var/cache/dnf
 
+# upgrade pyasn1 to fix CVE-2026-30922 (DoS vulnerability via unbounded recursion)
+RUN pip3 install --upgrade 'pyasn1>=0.6.3'
+
 COPY requirements.yml ${HOME}/requirements.yml
 RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
  && chmod -R ug+rwx ${HOME}/.ansible
