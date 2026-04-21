@@ -11,17 +11,20 @@
         sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
-    - name: "Run bootstrap playbook"
-      ansible.builtin.shell:
-        cmd: |
-          ansible-playbook -e@{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml {{ ci_framework_dir }}/roles/cifmw_setup/tasks/bootstrap.yml
-        chdir: "{{ ci_framework_dir }}"
+    - name: "Load zuul parameters"
+      ansible.builtin.include_vars:
+        file: "{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml"
 
-    - name: Run ci_framework infra playbook
-      ansible.builtin.shell:
-        cmd: |
-          ansible-playbook -e cifmw_use_opn=false -e cifmw_use_devscripts=false -e cifmw_basedir={{ ansible_user_dir }}/ci-framework-data/ -e cifmw_openshift_setup_skip_internal_registry_tls_verify=true {{ ci_framework_dir }}/roles/cifmw_setup/tasks/infra.yml
-        chdir: "{{ ci_framework_dir }}"
+    - name: "Run bootstrap tasks"
+      ansible.builtin.include_tasks: "{{ ci_framework_dir }}/roles/cifmw_setup/tasks/bootstrap.yml"
+
+    - name: "Run ci_framework infra tasks"
+      ansible.builtin.include_tasks: "{{ ci_framework_dir }}/roles/cifmw_setup/tasks/infra.yml"
+      vars:
+        cifmw_use_opn: false
+        cifmw_use_devscripts: false
+        cifmw_basedir: "{{ ansible_user_dir }}/ci-framework-data/"
+        cifmw_openshift_setup_skip_internal_registry_tls_verify: true
 
     - name: Run make targets for setup
       community.general.make:
