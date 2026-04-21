@@ -11,10 +11,6 @@
         sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
       when: sto_dir | default('') | length == 0
 
-    - name: "Load zuul parameters"
-      ansible.builtin.include_vars:
-        file: "{{ ansible_user_dir }}/ci-framework-data/artifacts/parameters/zuul-params.yml"
-
     - name: "Run bootstrap tasks"
       ansible.builtin.include_tasks: "{{ ci_framework_dir }}/roles/cifmw_setup/tasks/bootstrap.yml"
 
