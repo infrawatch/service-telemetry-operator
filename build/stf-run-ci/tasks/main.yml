@@ -40,6 +40,23 @@
     - __deploy_from_index_enabled | bool
     - __deploy_from_catalog | bool
 
+- name: Wait for OpenShift API server rollout to complete
+  ansible.builtin.command: >
+    oc rollout status deployment/apiserver
+    -n openshift-apiserver --timeout=300s
+
+- name: Wait for required OpenShift API groups to be available
+  ansible.builtin.command: >
+    oc api-resources --api-group={{ item }}
+  loop:
+    - build.openshift.io
+    - project.openshift.io
+    - operators.coreos.com
+  register: _api_check
+  until: _api_check.rc == 0 and _api_check.stdout | length > 0
+  retries: 30
+  delay: 10
+
 # -- prepare environment and cleanup
 - name: Clean up any existing global artifacts
   ansible.builtin.include_tasks: pre-clean.yml
