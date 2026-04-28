@@ -1,5 +1,7 @@
 # service-telemetry-operator
 
+> **⚠️ DEPRECATED**: This operator is deprecated and will no longer receive updates with new features. Changes in this repository are only related to maintenance tasks. Users should migrate to alternative telemetry solutions.
+
 Umbrella Operator to instantiate all required components for Service Telemetry
 Framework.
 

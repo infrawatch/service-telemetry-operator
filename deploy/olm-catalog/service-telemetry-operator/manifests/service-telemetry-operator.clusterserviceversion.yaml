@@ -150,9 +150,12 @@ metadata:
     certified: "false"
     containerImage: <<OPERATOR_IMAGE_PULLSPEC>>
     createdAt: <<CREATED_DATE>>
-    description: Service Telemetry Framework. Umbrella Operator for instantiating
-      the required dependencies and configuration of various components to build a
-      Service Telemetry platform for telco grade monitoring.
+    description: 'DEPRECATED: This operator is deprecated and will no longer receive updates
+      with new features. Users should migrate to alternative telemetry solutions.
+      Service Telemetry Framework. Umbrella Operator for instantiating the required
+      dependencies and configuration of various components to build a Service Telemetry
+      platform for telco grade monitoring.'
+    operators.operatorframework.io/deprecated: "true"
     features.operators.openshift.io/cnf: "false"
     features.operators.openshift.io/cni: "false"
     features.operators.openshift.io/csi: "false"
