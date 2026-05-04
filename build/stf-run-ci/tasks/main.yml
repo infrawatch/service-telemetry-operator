@@ -43,7 +43,7 @@
 - name: Wait for OpenShift API server rollout to complete
   ansible.builtin.command: >
     oc rollout status deployment/apiserver
-    -n openshift-apiserver --timeout=300s
+    -n openshift-apiserver --timeout=310s
 
 - name: Wait for required OpenShift API groups to be available
   ansible.builtin.command: >
