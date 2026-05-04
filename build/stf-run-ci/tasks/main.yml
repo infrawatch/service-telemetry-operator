@@ -45,6 +45,18 @@
     oc rollout status deployment/apiserver
     -n openshift-apiserver --timeout=300s
 
+- name: Wait for OpenShift API server to be available and not progressing
+  kubernetes.core.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterOperator
+    name: openshift-apiserver
+  register: _co_status
+  until: >
+    (_co_status.resources | length > 0) and
+    (_co_status.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | map(attribute='status') | first == 'True')
+  retries: 60
+  delay: 10
+
 - name: Wait for required OpenShift API groups to be available
   ansible.builtin.command: >
     oc api-resources --api-group={{ item }}
