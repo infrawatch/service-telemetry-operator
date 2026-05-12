@@ -81,3 +81,5 @@ base_dir: ''
 clone_repos: true
 setup_bundle_registry_auth: true
 setup_bundle_registry_tls_ca: true
+
+stf_cluster_stable_period: 120
