@@ -40,10 +40,15 @@
     - __deploy_from_index_enabled | bool
     - __deploy_from_catalog | bool
 
-- name: Wait for OpenShift API server rollout to complete
-  ansible.builtin.command: >
-    oc rollout status deployment/apiserver
-    -n openshift-apiserver --timeout=300s
+- name: Copy script for ensuring if cluster is stable
+  become: true
+  ansible.builtin.template:
+    src: check-cluster-co.sh.j2
+    dest: /usr/local/bin/check-cluster-co.sh
+    mode: "0755"
+
+- name: Run script to ensure cluster is stable
+  ansible.builtin.command: /usr/local/bin/check-cluster-co.sh
 
 - name: Wait for required OpenShift API groups to be available
   ansible.builtin.command: >

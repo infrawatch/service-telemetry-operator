@@ -11,7 +11,7 @@
 
   - name: Decode docker config json
     ansible.builtin.set_fact:
-      dockerconfigjson: "{{ pull_secret.resources[0].data['.dockerconfigjson'] | b64decode }}"
+      dockerconfigjson: "{{ pull_secret.resources[0].data['.dockerconfigjson'] | b64decode | from_json }}"
 
   - name: Merge registry creds into auth section of docker config
     ansible.builtin.set_fact:
