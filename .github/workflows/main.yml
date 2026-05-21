@@ -1,5 +1,10 @@
 name: CI
-on: push
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+      - stable-1.5
 permissions:
   contents: read
 
@@ -9,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6
 
-      # Python version being set because of issue with Ubuntu permissions and versions of Python < 3.11 
+      # Python version being set because of issue with Ubuntu permissions and versions of Python < 3.11
       - name: Set up Python
         # This is the version of the action for setting up Python, not the Python version.
         uses: actions/setup-python@v5
         with:
           # Set exact version of a Python version or can use '3.x'.
-          python-version: '3.12.8' 
+          python-version: '3.12.8'
 
       - name: Install Ansible
         run: pip install ansible==12.0.0
@@ -36,15 +41,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6
 
-      # Python version being set because of issue with Ubuntu permissions and versions of Python < 3.11 
+      # Python version being set because of issue with Ubuntu permissions and versions of Python < 3.11
       - name: Set up Python
         # This is the version of the action for setting up Python, not the Python version.
         uses: actions/setup-python@v5
         with:
           # Set exact version of a Python version or can use '3.x'.
-          python-version: '3.12.8' 
+          python-version: '3.12.8'
 
       - name: Install Ansible
         run: pip install ansible==12.0.0
@@ -63,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6
 
       - name: Get operator-sdk image 1.39.2
         run: curl --output operator-sdk -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk_linux_amd64
@@ -86,7 +91,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6
 
       - name: Verify image builds
         run: docker build --tag infrawatch/service-telemetry-operator:latest --file build/Dockerfile .
@@ -99,7 +104,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6
 
       - name: Get operator-sdk image 1.39.2
         run: curl --output operator-sdk -JL https://github.com/operator-framework/operator-sdk/releases/download/$RELEASE_VERSION/operator-sdk_linux_amd64
@@ -127,7 +132,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6
 
       # prepare environment to buld the bundle
       - name: Get operator-sdk image 1.39.2
