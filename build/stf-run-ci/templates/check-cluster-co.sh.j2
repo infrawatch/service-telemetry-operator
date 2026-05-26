@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# NOTE(dpawlik): Normally we will execute command:
+#     oc adm wait-for-stable-cluster --minimum-stable-period=120s --timeout=30m
+# but the CI is based on CRC where some files that are tracked by machineconfigpool
+# would be degraded.
+
+TIMEOUT=600
+STABLE_PERIOD={{ stf_cluster_stable_period }}
+POLL=10
+
+echo "Waiting for cluster operators to stabilize (ignoring machine-config)..."
+
+start_time=$(date +%s)
+stable_since=0
+
+while true; do
+    now=$(date +%s)
+    if ((now - start_time > TIMEOUT)); then
+        echo "Timeout reached"
+        exit 1
+    fi
+
+    # Any watched CO that is NOT Available=True, Progressing=False, Degraded=False
+    unstable=$(oc get clusteroperator --no-headers 2>/dev/null |
+        grep -v '^machine-config ' |
+        awk '$3 != "True" || $4 != "False" || $5 != "False" { print $1 }')
+
+    if [[ -z "$unstable" ]]; then
+        if ((stable_since == 0)); then
+            stable_since=$now
+            echo "All relevant operators stable. Waiting for minimum stable period (${STABLE_PERIOD}s)..."
+        elif ((now - stable_since >= STABLE_PERIOD)); then
+            echo "Cluster is stable (machine-config ignored)."
+            exit 0
+        fi
+    else
+        if ((stable_since != 0)); then
+            echo "Operators became unstable again: ${unstable[*]}"
+        fi
+        stable_since=0
+    fi
+
+    echo "Sleeping $POLL to meet condition..."
+    sleep "$POLL"
+done
