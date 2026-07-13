@@ -134,7 +134,7 @@
 
 - name: Get builder-dockercfg authentication contents
   ansible.builtin.set_fact:
-    builder_dockercfg_auth_results: "{{ secret_builder_dockercfg_results.resources[0].data['.dockercfg'] | b64decode }}"
+    builder_dockercfg_auth_results: "{{ secret_builder_dockercfg_results.resources[0].data['.dockercfg'] | b64decode | from_json }}"
 
 - name: Set internal registry authentication
   ansible.builtin.set_fact:
