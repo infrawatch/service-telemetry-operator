@@ -7,7 +7,7 @@ spec:
   serviceAccount:
     annotations:
       serviceaccounts.openshift.io/oauth-redirectreference.primary: '{{ grafana_oauth_redir_ref | to_json }}'
-  baseImage: {{ servicetelemetry_vars.graphing.grafana.base_image }}
+  baseImage: {{ grafana_image }}
   ingress:
     enabled: {{ servicetelemetry_vars.graphing.grafana.ingress_enabled }}
     targetPort: web

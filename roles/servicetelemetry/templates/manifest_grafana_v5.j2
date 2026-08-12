@@ -81,10 +81,8 @@ spec:
                 name: secret-{{ ansible_operator_meta.name }}-grafana-proxy-tls
               - mountPath: /etc/proxy/secrets
                 name: secret-{{ ansible_operator_meta.name }}-session-secret
-{% if servicetelemetry_vars.graphing.grafana.base_image is defined %}
           - name: grafana
-            image: {{ servicetelemetry_vars.graphing.grafana.base_image }}
-{% endif %}
+            image: {{ grafana_image }}
   service:
     metadata:
       annotations:

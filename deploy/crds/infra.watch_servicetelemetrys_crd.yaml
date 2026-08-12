@@ -291,9 +291,6 @@ spec:
                       ingressEnabled:
                         description: Whether to enable ingress access to Grafana
                         type: boolean
-                      baseImage:
-                        description: Path to the base container image used to instantiate a Grafana instance
-                        type: string
                       dashboards:
                         description: Dashboard configurations for Grafana
                         properties:

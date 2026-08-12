@@ -117,7 +117,6 @@ metadata:
             "graphing": {
               "enabled": false,
               "grafana": {
-                "baseImage": "registry.redhat.io/rhel8/grafana:9",
                 "dashboards": {
                   "enabled": true
                 },
@@ -318,6 +317,8 @@ spec:
                   value: <<RELATED_IMAGE_PROMETHEUS_PULLSPEC>>
                 - name: RELATED_IMAGE_ALERTMANAGER_IMAGE
                   value: <<RELATED_IMAGE_ALERTMANAGER_PULLSPEC>>
+                - name: RELATED_IMAGE_GRAFANA_IMAGE
+                  value: <<RELATED_IMAGE_GRAFANA_PULLSPEC>>
                 image: <<OPERATOR_IMAGE_PULLSPEC>>
                 imagePullPolicy: Always
                 name: operator

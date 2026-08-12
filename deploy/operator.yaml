@@ -41,6 +41,8 @@ spec:
               value: <<RELATED_IMAGE_PROMETHEUS_PULLSPEC>>
             - name: RELATED_IMAGE_ALERTMANAGER_IMAGE
               value: <<RELATED_IMAGE_ALERTMANAGER_PULLSPEC>>
+            - name: RELATED_IMAGE_GRAFANA_IMAGE
+              value: <<RELATED_IMAGE_GRAFANA_PULLSPEC>>
       volumes:
         - name: runner
           emptyDir: {}

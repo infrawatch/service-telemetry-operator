@@ -385,10 +385,6 @@ spec:
                   grafana:
                     description: Grafana related configuration
                     properties:
-                      baseImage:
-                        description: Path to the base container image used to instantiate
-                          a Grafana instance
-                        type: string
                       dashboards:
                         description: Dashboard configurations for Grafana
                         properties:
