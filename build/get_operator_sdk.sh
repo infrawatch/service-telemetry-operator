@@ -8,7 +8,12 @@ OS=$(uname | awk '{print tolower($0)}')
 VERSION="${1:-v1.5.0}"
 OPERATOR_SDK_DL_URL=https://github.com/operator-framework/operator-sdk/releases/download/${VERSION}
 
-OPERATOR_SDK_SHA256="${2:-04bb2ea8ed6e1b790c6285c0a3a6f0f49cddacbbedf05a9bf5d181370048af3e}"
+OPERATOR_SDK_SHA256="${2:-''}"
+
+if [ -z "${OPERATOR_SDK_SHA256}" ]; then
+	echo "No SHA256 set for OPERATOR_SDK version!"
+	exit 1
+fi
 
 if [[ ! -f ${REL}/working/operator-sdk-${VERSION} ]]; then
 	mkdir ${REL}/working
