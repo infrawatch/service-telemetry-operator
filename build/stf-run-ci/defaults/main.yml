@@ -52,6 +52,7 @@ sgo_bundle_image_tag: latest
 sto_bundle_image_tag: latest
 stf_index_image_tag: latest
 operator_sdk: v1.39.2
+operator_sdk_sha256: 28fc8298a3202cb61fcae941e607f1cab705c9595ca9a7cf2d6d9f54a6b34641
 namespace: service-telemetry
 pull_secret_registry:
 pull_secret_user:
