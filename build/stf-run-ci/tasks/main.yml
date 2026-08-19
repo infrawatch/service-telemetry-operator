@@ -96,7 +96,7 @@
 - name: Get operator_sdk (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
   ansible.builtin.command:
-    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk }}"
+    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk }} {{ operator_sdk_sha256 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk }}"
     chdir: "{{ base_dir }}"
 

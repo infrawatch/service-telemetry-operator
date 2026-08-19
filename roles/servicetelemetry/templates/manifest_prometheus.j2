@@ -15,7 +15,6 @@ spec:
 {% endif %}
   replicas: {{ servicetelemetry_vars.backends.metrics.prometheus.deployment_size }}
   ruleSelector: {}
-  securityContext: {}
   serviceAccountName: prometheus-stf
   scrapeConfigSelector:
     matchLabels:
