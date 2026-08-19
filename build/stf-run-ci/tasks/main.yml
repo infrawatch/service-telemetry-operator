@@ -96,7 +96,7 @@
 - name: Get operator_sdk (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
   ansible.builtin.command:
-    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk }}"
+    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk }} {{ operator_sdk_sha256 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk }}"
     chdir: "{{ base_dir }}"
 
@@ -115,36 +115,61 @@
   tags:
     - create_builds
   block:
-  - name: Setup supporting repositories
-    when: clone_repos | bool
-    ansible.builtin.include_tasks: clone_repos.yml
-    tags:
-      - clone
+    - name: Setup supporting repositories
+      when: clone_repos | bool
+      ansible.builtin.include_tasks: clone_repos.yml
+      tags:
+        - clone
 
-  - name: Create base build list
-    ansible.builtin.set_fact:
-      build_list:
-        - {name: service-telemetry-operator, dockerfile_path: build/Dockerfile, image_reference_name: sto_image_path, working_build_dir: "{{ sto_dir }}"}
-        - {name: smart-gateway-operator, dockerfile_path: build/Dockerfile, image_reference_name: sgo_image_path, working_build_dir: "{{ sgo_dir }}"}
-        - {name: sg-core, dockerfile_path: build/Dockerfile, image_reference_name: sg_core_image_path, working_build_dir: "{{ sg_core_dir }}"}
-        - {name: sg-bridge, dockerfile_path: build/Dockerfile, image_reference_name: sg_bridge_image_path, working_build_dir: "{{ sg_bridge_dir }}"}
-        - {name: prometheus-webhook-snmp, dockerfile_path: Dockerfile, image_reference_name: prometheus_webhook_snmp_image_path, working_build_dir: "{{ prometheus_webhook_snmp_dir }}"}
+    - name: Create base build list
+      ansible.builtin.set_fact:
+        build_list:
+          - {
+              name: service-telemetry-operator,
+              dockerfile_path: build/Dockerfile,
+              image_reference_name: sto_image_path,
+              working_build_dir: "{{ sto_dir }}",
+            }
+          - {
+              name: smart-gateway-operator,
+              dockerfile_path: build/Dockerfile,
+              image_reference_name: sgo_image_path,
+              working_build_dir: "{{ sgo_dir }}",
+            }
+          - {
+              name: sg-core,
+              dockerfile_path: build/Dockerfile,
+              image_reference_name: sg_core_image_path,
+              working_build_dir: "{{ sg_core_dir }}",
+            }
+          - {
+              name: sg-bridge,
+              dockerfile_path: build/Dockerfile,
+              image_reference_name: sg_bridge_image_path,
+              working_build_dir: "{{ sg_bridge_dir }}",
+            }
+          - {
+              name: prometheus-webhook-snmp,
+              dockerfile_path: Dockerfile,
+              image_reference_name: prometheus_webhook_snmp_image_path,
+              working_build_dir: "{{ prometheus_webhook_snmp_dir }}",
+            }
 
-  - ansible.builtin.debug:
-      var: build_list
+    - ansible.builtin.debug:
+        var: build_list
 
-  - name: Create builds and artifacts
-    ansible.builtin.include_tasks: create_builds.yml
-    loop: "{{ build_list }}"
-    loop_control:
-      loop_var: artifact
-    tags:
-      - build
+    - name: Create builds and artifacts
+      ansible.builtin.include_tasks: create_builds.yml
+      loop: "{{ build_list }}"
+      loop_control:
+        loop_var: artifact
+      tags:
+        - build
 
-  - name: Setup STF using local artifacts
-    ansible.builtin.include_tasks: setup_stf_local_build.yml
-    tags:
-      - deploy
+    - name: Setup STF using local artifacts
+      ansible.builtin.include_tasks: setup_stf_local_build.yml
+      tags:
+        - deploy
 
 - when: __deploy_from_index_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_catalog | bool
   name: Relax the pod security admission controls to allow local catalog index registry pods
@@ -167,8 +192,18 @@
     - name: Create base build list
       ansible.builtin.set_fact:
         bundle_build_list:
-          - { name: service-telemetry-operator-bundle, dockerfile_path: Dockerfile, image_reference_name: sto_bundle_image_path, working_build_dir: "{{ base_dir }}/working/service-telemetry-operator-bundle" }
-          - { name: smart-gateway-operator-bundle, dockerfile_path: Dockerfile, image_reference_name: sgo_bundle_image_path, working_build_dir: "{{ base_dir }}/working/smart-gateway-operator-bundle" }
+          - {
+              name: service-telemetry-operator-bundle,
+              dockerfile_path: Dockerfile,
+              image_reference_name: sto_bundle_image_path,
+              working_build_dir: "{{ base_dir }}/working/service-telemetry-operator-bundle",
+            }
+          - {
+              name: smart-gateway-operator-bundle,
+              dockerfile_path: Dockerfile,
+              image_reference_name: sgo_bundle_image_path,
+              working_build_dir: "{{ base_dir }}/working/smart-gateway-operator-bundle",
+            }
 
     - ansible.builtin.debug:
         var: bundle_build_list
@@ -215,18 +250,18 @@
 # -- create a ServiceTelemetry object to stand up the STF instance
 - when: __deploy_stf | bool
   block:
-  - name: Deploy an instance of STF
-    ansible.builtin.include_tasks: deploy_stf.yml
+    - name: Deploy an instance of STF
+      ansible.builtin.include_tasks: deploy_stf.yml
 
-  - name: Validate system is operational
-    ansible.builtin.shell: |
-      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 1200 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
-      cat {{ logfile_dir }}/validate_deployment.log
-    args:
-      executable: /bin/bash
-    register: validate_deployment
-    failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
+    - name: Validate system is operational
+      ansible.builtin.shell: |
+        OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 1200 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
+        cat {{ logfile_dir }}/validate_deployment.log
+      args:
+        executable: /bin/bash
+      register: validate_deployment
+      failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
 
-  - name: Show the result of the validate_deployment script
-    ansible.builtin.debug:
-      var: validate_deployment.stdout_lines[-1]
+    - name: Show the result of the validate_deployment script
+      ansible.builtin.debug:
+        var: validate_deployment.stdout_lines[-1]
