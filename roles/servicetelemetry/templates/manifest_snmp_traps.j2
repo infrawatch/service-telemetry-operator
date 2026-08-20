@@ -13,11 +13,38 @@ spec:
       labels:
         app: '{{ ansible_operator_meta.name }}-snmp-webhook'
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: 'prometheus-webhook-snmp'
           image: '{{ prometheus_webhook_snmp_container_image_path }}'
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 9099
+          resources:
+            requests:
+              cpu: '{{ sto_resources.snmp_webhook.cpu_request }}'
+              memory: '{{ sto_resources.snmp_webhook.memory_request }}'
+            limits:
+              cpu: '{{ sto_resources.snmp_webhook.cpu_limit }}'
+              memory: '{{ sto_resources.snmp_webhook.memory_limit }}'
+          livenessProbe:
+            tcpSocket:
+              port: 9099
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: 9099
+            initialDelaySeconds: 3
+            periodSeconds: 10
           env:
             - name: SNMP_COMMUNITY
               value: "{{ servicetelemetry_vars.alerting.alertmanager.receivers.snmp_traps.community }}"
