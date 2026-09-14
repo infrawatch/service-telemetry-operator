@@ -8,6 +8,7 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
 {% if observability_strategy != "use_community" %}
+  version: v0.26.0
   image: {{ alertmanager_image_path }}
 {% endif %}
   replicas: {{ servicetelemetry_vars.alerting.alertmanager.deployment_size }}

@@ -17,8 +17,9 @@ OPERATOR_DOCUMENTATION_URL=${OPERATOR_DOCUMENTATION_URL:-"https://infrawatch.git
 CREATED_DATE=${CREATED_DATE:-$(date +'%Y-%m-%dT%H:%M:%SZ')}
 RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_PULLSPEC=${RELATED_IMAGE_PROMETHEUS_WEBHOOK_SNMP_PULLSPEC:-quay.io/infrawatch/prometheus-webhook-snmp:latest}
 RELATED_IMAGE_OAUTH_PROXY_PULLSPEC=${RELATED_IMAGE_OAUTH_PROXY_PULLSPEC:-quay.io/openshift/origin-oauth-proxy:latest}
-RELATED_IMAGE_PROMETHEUS_PULLSPEC=${RELATED_IMAGE_PROMETHEUS_PULLSPEC:-quay.io/prometheus/prometheus:latest}
-RELATED_IMAGE_ALERTMANAGER_PULLSPEC=${RELATED_IMAGE_ALERTMANAGER_PULLSPEC:-quay.io/prometheus/alertmanager:latest}
+# NOTE: keep these tags in sync with spec.version in roles/servicetelemetry/templates/manifest_{prometheus,alertmanager}.j2
+RELATED_IMAGE_PROMETHEUS_PULLSPEC=${RELATED_IMAGE_PROMETHEUS_PULLSPEC:-quay.io/prometheus/prometheus:v2.48.1}
+RELATED_IMAGE_ALERTMANAGER_PULLSPEC=${RELATED_IMAGE_ALERTMANAGER_PULLSPEC:-quay.io/prometheus/alertmanager:v0.26.0}
 BUNDLE_PATH=${BUNDLE_PATH:-deploy/olm-catalog/service-telemetry-operator}
 BUNDLE_CHANNELS=${BUNDLE_CHANNELS:-unstable}
 BUNDLE_DEFAULT_CHANNEL=${BUNDLE_DEFAULT_CHANNEL:-unstable}

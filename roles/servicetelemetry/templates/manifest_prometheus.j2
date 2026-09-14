@@ -8,7 +8,7 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
 {% if observability_strategy != "use_community" %}
-  version: null
+  version: v2.48.1
   image: {{ prometheus_image_path }}
 {% else %}
   version: v2.43.0
