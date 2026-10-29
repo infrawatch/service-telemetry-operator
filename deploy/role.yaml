@@ -196,6 +196,8 @@ rules:
   - get
   - create
   - delete
+  - list
+  - watch
 - apiGroups:
   - monitoring.rhobs
   resources:
@@ -205,6 +207,8 @@ rules:
   - get
   - create
   - delete
+  - list
+  - watch
 - apiGroups:
   - apps
   resourceNames:
@@ -246,6 +250,8 @@ rules:
   - rolebindings
   verbs:
   - create
+  - list
+  - watch
 - apiGroups:
   - rbac.authorization.k8s.io
   resources:
