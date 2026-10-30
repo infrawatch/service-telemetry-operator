@@ -479,6 +479,8 @@ spec:
           - get
           - create
           - delete
+          - list
+          - watch
         - apiGroups:
           - monitoring.rhobs
           resources:
@@ -488,6 +490,8 @@ spec:
           - get
           - create
           - delete
+          - list
+          - watch
         - apiGroups:
           - apps
           resourceNames:
@@ -529,6 +533,8 @@ spec:
           - rolebindings
           verbs:
           - create
+          - list
+          - watch
         - apiGroups:
           - rbac.authorization.k8s.io
           resources:
