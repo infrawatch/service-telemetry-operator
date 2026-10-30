@@ -11,7 +11,7 @@ permissions:
 jobs:
   operator-linting:
     name: Operator Linting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -38,7 +38,7 @@ jobs:
 
   stf-run-ci-linting:
     name: stf-run-ci Linting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -62,7 +62,7 @@ jobs:
 
   generate-bundle-diff-check:
     name: Check if generating the bundle would result in local changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       RELEASE_VERSION: v1.39.2
       OPERATOR_SDK_SHA256: 28fc8298a3202cb61fcae941e607f1cab705c9595ca9a7cf2d6d9f54a6b34641
@@ -91,7 +91,7 @@ jobs:
 
   build-operator-check:
     name: Build Operator check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -102,7 +102,7 @@ jobs:
 
   build-bundle-check:
     name: Build bundle check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       RELEASE_VERSION: v1.39.2
       OPERATOR_SDK_SHA256: 28fc8298a3202cb61fcae941e607f1cab705c9595ca9a7cf2d6d9f54a6b34641
@@ -134,7 +134,7 @@ jobs:
 
   check-bundle-validation-scorecard:
     name: Validate the generated bundle and perform scorecard checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       RELEASE_VERSION: v1.39.2
       OPERATOR_SDK_SHA256: 28fc8298a3202cb61fcae941e607f1cab705c9595ca9a7cf2d6d9f54a6b34641
