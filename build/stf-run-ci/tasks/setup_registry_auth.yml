@@ -86,7 +86,7 @@
     success_msg: "Bundle paths are defined, are not None and have a non-zero-length."
 
 - name: Try to access to the STO bundle
-  ansible.builtin.command: oc image info {{ __service_telemetry_bundle_image_path }}
+  ansible.builtin.command: oc image info --show-multiarch=true {{ __service_telemetry_bundle_image_path }}
   register: sto_bundle_info
   ignore_errors: true
 
@@ -101,7 +101,7 @@
   when: "__service_telemetry_bundle_image_path not in sto_bundle_info.stdout"
 
 - name: Try to access to the SGO bundle
-  ansible.builtin.command: oc image info {{ __smart_gateway_bundle_image_path }}
+  ansible.builtin.command: oc image info --show-multiarch=true {{ __smart_gateway_bundle_image_path }}
   register: sgo_bundle_info
   ignore_errors: true
 
