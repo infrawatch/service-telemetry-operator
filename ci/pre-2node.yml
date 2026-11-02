@@ -1,8 +1,15 @@
 ---
+# On the Zuul executor there is no ~/src workspace (prepare-workspace
+# clones the repositories on the nodes only), so point the role to the
+# checkout that Zuul keeps under zuul.executor.src_root.
 - name: Make cifmw collection available on Zuul executor
   hosts: localhost
+  vars:
+    cifmw_helpers_project_dir: >-
+      {{ zuul.executor.src_root }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].canonical_name }}
   tasks:
     - name: Make a symlink to local .ansible collection dir
+      when: zuul.executor.src_root is defined
       ansible.builtin.include_role:
         name: cifmw_helpers
         tasks_from: symlink_cifmw_collection.yml
