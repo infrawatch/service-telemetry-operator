@@ -16,3 +16,55 @@
           OCP_PROJECT={{ namespace }} CLEANUP=false ./tests/smoketest/smoketest.sh > {{ logfile_dir }}/smoketest.log 2>&1
         chdir: "{{ sto_dir }}"
       changed_when: false
+
+    # The smoketest only exercises the first reconcile, which succeeds even
+    # when the operator's RBAC is too restrictive: dependent-resource informers
+    # fail to list/watch and every re-reconcile fails on patching playbook-owned
+    # objects. Force a second reconcile and assert it succeeds cleanly
+    # (OSPRH-40062, https://github.com/infrawatch/service-telemetry-operator/pull/731).
+    # ciReconcileTrigger is a no-op key, bumped only to raise the CR
+    # generation: annotations don't trigger a reconcile (metadata-only
+    # changes are filtered) and spec is x-kubernetes-preserve-unknown-fields,
+    # so an unknown key passes validation.
+    # Completion is detected in the operator log because status conditions are
+    # unusable here: a failed run never updates them, and the Successful=True
+    # window after a good run is transient - the follow-up reconcile (enqueued
+    # by the now-working watches) resets it immediately.
+    - name: Get the reconcile trigger timestamp
+      ansible.builtin.command: |
+        date -u +%Y-%m-%dT%H:%M:%SZ
+      register: sto_reconcile_ts
+      changed_when: false
+
+    - name: Force a ServiceTelemetry re-reconcile
+      ansible.builtin.shell: >
+        oc patch servicetelemetry default -n {{ namespace }} --type merge
+        -p "{\"spec\":{\"ciReconcileTrigger\":\"{{ sto_reconcile_ts.stdout }}\"}}"
+      register: sto_reconcile_trigger
+      changed_when: true
+
+    - name: Wait for the re-reconcile to finish
+      ansible.builtin.shell: >
+        oc logs -n {{ namespace }} deployment/service-telemetry-operator
+        --since-time={{ sto_reconcile_ts.stdout }} 2>/dev/null |
+        awk '/TASK \[Installing service telemetry\]/{run=1}
+        run && /Ansible-runner exited|Reconciler error/{print; exit}'
+      register: sto_reconcile_result
+      until: sto_reconcile_result.stdout | length > 0
+      retries: 60
+      delay: 10
+      changed_when: false
+
+    - name: Assert the re-reconcile succeeded
+      ansible.builtin.fail:
+        msg: "ServiceTelemetry re-reconcile failed: {{ sto_reconcile_result.stdout }}"
+      when: "'Ansible-runner exited successfully' not in sto_reconcile_result.stdout"
+
+    - name: Assert the operator log has no RBAC errors
+      ansible.builtin.shell: >
+        oc logs -n {{ namespace }} deployment/service-telemetry-operator
+        --since-time={{ sto_reconcile_ts.stdout }} 2>/dev/null |
+        grep -E "is forbidden|Failed to watch" | head -20 || true
+      register: sto_rbac_errors
+      failed_when: sto_rbac_errors.stdout | length > 0
+      changed_when: false
