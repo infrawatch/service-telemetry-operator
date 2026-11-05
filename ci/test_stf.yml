@@ -16,3 +16,65 @@
           OCP_PROJECT={{ namespace }} CLEANUP=false ./tests/smoketest/smoketest.sh > {{ logfile_dir }}/smoketest.log 2>&1
         chdir: "{{ sto_dir }}"
       changed_when: false
+
+    - name: Read the current scrapeInterval
+      ansible.builtin.command: >
+        oc get servicetelemetry default -n {{ namespace }}
+        -o jsonpath={.spec.backends.metrics.prometheus.scrapeInterval}
+      register: sto_current_scrape_interval
+      changed_when: false
+
+    - name: Pick a scrapeInterval that differs from the current one
+      ansible.builtin.set_fact:
+        sto_new_scrape_interval: "{{ '30s' if sto_current_scrape_interval.stdout | trim == '45s' else '45s' }}"
+
+    - name: Get the reconcile trigger timestamp
+      ansible.builtin.shell: >
+        set -o pipefail;
+        oc logs -n {{ namespace }} deployment/service-telemetry-operator
+        --timestamps --tail=1 | awk '{print $1}'
+      register: sto_reconcile_ts
+      changed_when: false
+
+    - name: Force a ServiceTelemetry re-reconcile
+      ansible.builtin.command: >
+        oc patch servicetelemetry default
+        -n {{ namespace }}
+        --type merge
+        -p '{"spec":{"backends":{"metrics":{"prometheus":{"scrapeInterval":"{{ sto_new_scrape_interval }}"}}}}}'
+      changed_when: true
+
+    # Assumes the default CI scenario (use_redhat with the default cloud1
+    # collectd metrics), the same assumption smoketest.sh makes with its
+    # scrapeconfigs.monitoring.rhobs and default-cloud1-* names. With
+    # use_community the ScrapeConfig lives under monitoring.coreos.com.
+    - name: Wait for the ScrapeConfig to pick up the new scrapeInterval
+      ansible.builtin.command: >
+        oc get scrapeconfigs.monitoring.rhobs default-cloud1-coll-meter
+        -n {{ namespace }}
+        -o jsonpath={.spec.scrapeInterval}
+      register: sto_scrape_interval
+      until: sto_scrape_interval.stdout | trim == sto_new_scrape_interval
+      retries: 60
+      delay: 10
+      changed_when: false
+
+    - name: Wait for the re-reconcile to finish
+      ansible.builtin.command: >
+        oc get servicetelemetry default -n {{ namespace }}
+        -o jsonpath='{.status.conditions[?(@.type=="Running")].reason}'
+      register: sto_reconcile_state
+      until: sto_reconcile_state.stdout | trim == 'Successful'
+      retries: 60
+      delay: 10
+      changed_when: false
+
+    - name: Assert the operator log has no reconcile or RBAC errors
+      ansible.builtin.shell: >
+        set -eo pipefail;
+        oc logs -n {{ namespace }} deployment/service-telemetry-operator
+        --since-time={{ sto_reconcile_ts.stdout | trim }} > /tmp/sto-operator.log;
+        grep -E "is forbidden|Failed to watch|Reconciler error" /tmp/sto-operator.log | head -20 || true
+      register: sto_rbac_errors
+      failed_when: sto_rbac_errors.stdout | length > 0
+      changed_when: false
