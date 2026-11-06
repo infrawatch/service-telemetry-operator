@@ -1,3 +1,44 @@
+- name: Check for existing resource limits ConfigMap
+  k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: 'snmp-webhook-resource-limits'
+  register: snmp_resource_limits_cm
+
+- name: Create resource limits ConfigMap
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: 'snmp-webhook-resource-limits'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      data:
+        snmp_webhook_cpu_limit: "{{ sto_resource_defaults.snmp_webhook.cpu_limit }}"
+        snmp_webhook_memory_limit: "{{ sto_resource_defaults.snmp_webhook.memory_limit }}"
+        snmp_webhook_cpu_request: "{{ sto_resource_defaults.snmp_webhook.cpu_request }}"
+        snmp_webhook_memory_request: "{{ sto_resource_defaults.snmp_webhook.memory_request }}"
+  when: snmp_resource_limits_cm.resources | length == 0
+
+- name: Set resource limits from ConfigMap
+  vars:
+    cm_data: "{{ snmp_resource_limits_cm.resources[0].data }}"
+  set_fact:
+    sto_resources:
+      snmp_webhook:
+        cpu_limit: "{{ cm_data.snmp_webhook_cpu_limit | default(sto_resource_defaults.snmp_webhook.cpu_limit) }}"
+        memory_limit: "{{ cm_data.snmp_webhook_memory_limit | default(sto_resource_defaults.snmp_webhook.memory_limit) }}"
+        cpu_request: "{{ cm_data.snmp_webhook_cpu_request | default(sto_resource_defaults.snmp_webhook.cpu_request) }}"
+        memory_request: "{{ cm_data.snmp_webhook_memory_request | default(sto_resource_defaults.snmp_webhook.memory_request) }}"
+  when: snmp_resource_limits_cm.resources | length > 0
+
+- name: Set resource limits from defaults
+  set_fact:
+    sto_resources:
+      snmp_webhook: "{{ sto_resource_defaults.snmp_webhook }}"
+  when: snmp_resource_limits_cm.resources | length == 0
+
 - name: Lookup template
   debug:
     msg: "{{ lookup('template', './manifest_snmp_traps.j2') | from_yaml }}"

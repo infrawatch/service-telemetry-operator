@@ -1,0 +1,50 @@
+---
+- name: "Do pre-work to get kubeconfig"
+  hosts: controller
+  gather_facts: true
+  vars:
+    ci_framework_dir: "{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].src_dir }}"
+    cifmw_use_opn: false
+    cifmw_use_devscripts: false
+    cifmw_openshift_setup_skip_internal_registry_tls_verify: true
+    cifmw_target_host: controller
+  environment:
+    PATH: "~/.crc/bin:~/.crc/bin/oc:~/bin:{{ ansible_env.PATH }}"
+  tasks:
+    - name: "Set the sto_dir if it isn't already set"
+      ansible.builtin.set_fact:
+        sto_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/infrawatch/service-telemetry-operator"].src_dir }}'
+      when: sto_dir | default('') | length == 0
+
+    - name: Read group_vars all file
+      vars:
+        included_file: "{{ ci_framework_dir }}/group_vars/all.yml"
+      ansible.builtin.include_role:
+        name: cifmw_helpers
+        tasks_from: include_file.yml
+
+    - name: Run bootstrap playbook
+      ansible.builtin.include_role:
+        name: cifmw_setup
+        tasks_from: bootstrap.yml
+
+    - name: Run pre_infra hooks
+      vars:
+        step: pre_infra
+      ansible.builtin.include_role:
+        name: run_hook
+
+    - name: Prepare the platform
+      vars:
+        step: pre_infra
+      ansible.builtin.include_role:
+        name: cifmw_setup
+        tasks_from: infra.yml
+
+    - name: Run make targets for setup
+      community.general.make:
+        chdir: "{{ ci_framework_dir }}"
+        target: "{{ item }}"
+      with_items:
+        - setup_tests
+        - setup_molecule

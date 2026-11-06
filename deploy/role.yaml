@@ -17,9 +17,17 @@ rules:
   - clusterrolebindings
   verbs:
   - create
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterroles
+  - clusterrolebindings
+  resourceNames:
+  - prometheus-stf
+  - alertmanager-stf
+  - prometheus-k8s-service-telemetry
+  verbs:
   - get
-  - list
-  - watch
   - update
   - patch
   - delete
@@ -116,16 +124,69 @@ rules:
   - '*'
 - apiGroups:
   - interconnectedcloud.github.io
+  resources:
+  - interconnects
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
   - smartgateway.infra.watch
+  resources:
+  - smartgateways
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
   - monitoring.coreos.com
   - monitoring.rhobs
+  resources:
+  - prometheuses
+  - alertmanagers
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
   - elasticsearch.k8s.elastic.co
+  resources:
+  - elasticsearches
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
   - grafana.integreatly.org
   - integreatly.org
   resources:
-  - '*'
+  - grafanas
+  - grafanadashboards
+  - grafanadatasources
   verbs:
-  - '*'
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
 - apiGroups:
   - monitoring.coreos.com
   resources:
@@ -167,9 +228,17 @@ rules:
 - apiGroups:
   - infra.watch
   resources:
-  - '*'
+  - servicetelemetrys
+  - servicetelemetrys/status
+  - servicetelemetrys/finalizers
   verbs:
-  - '*'
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
 - apiGroups:
   - rbac.authorization.k8s.io
   resources:
@@ -177,9 +246,18 @@ rules:
   - rolebindings
   verbs:
   - create
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  resourceNames:
+  - prometheus-stf
+  - alertmanager-stf
+  - prometheus-reader
+  - stf-prometheus-reader
+  verbs:
   - get
-  - list
-  - watch
   - update
   - patch
 - apiGroups:

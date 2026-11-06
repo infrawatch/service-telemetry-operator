@@ -3,3 +3,4 @@
   group: infra.watch
   kind: ServiceTelemetry
   role: /opt/ansible/roles/servicetelemetry
+  markUnsafe: true

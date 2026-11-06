@@ -1,0 +1,9 @@
+---
+schema: olm.deprecations
+package: service-telemetry-operator
+entries:
+  - reference:
+      schema: olm.package
+    message: |
+      service-telemetry-operator is deprecated and future changes are limited to critical fixes.
+      Please migrate to alternative telemetry solutions.

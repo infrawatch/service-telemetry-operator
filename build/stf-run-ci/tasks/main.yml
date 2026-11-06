@@ -40,6 +40,28 @@
     - __deploy_from_index_enabled | bool
     - __deploy_from_catalog | bool
 
+- name: Copy script for ensuring if cluster is stable
+  become: true
+  ansible.builtin.template:
+    src: check-cluster-co.sh.j2
+    dest: /usr/local/bin/check-cluster-co.sh
+    mode: "0755"
+
+- name: Run script to ensure cluster is stable
+  ansible.builtin.command: /usr/local/bin/check-cluster-co.sh
+
+- name: Wait for required OpenShift API groups to be available
+  ansible.builtin.command: >
+    oc api-resources --api-group={{ item }}
+  loop:
+    - build.openshift.io
+    - project.openshift.io
+    - operators.coreos.com
+  register: _api_check
+  until: _api_check.rc == 0 and _api_check.stdout | length > 0
+  retries: 30
+  delay: 10
+
 # -- prepare environment and cleanup
 - name: Clean up any existing global artifacts
   ansible.builtin.include_tasks: pre-clean.yml
@@ -74,7 +96,7 @@
 - name: Get operator_sdk (deploy from bundles)
   when: __local_build_enabled | bool or __deploy_from_bundles_enabled | bool or __deploy_from_index_enabled | bool
   ansible.builtin.command:
-    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk }}"
+    cmd: "{{ base_dir }}/get_operator_sdk.sh {{ operator_sdk }} {{ operator_sdk_sha256 }}"
     creates: "{{ base_dir }}/working/operator-sdk-{{ operator_sdk }}"
     chdir: "{{ base_dir }}"
 

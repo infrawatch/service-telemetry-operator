@@ -34,6 +34,7 @@
         override-checkout: main
     pre-run:
       - ci/pre-2node.yml
+      - ci/2node.yml
     vars:
       cifmw_deploy_edpm: false
       podified_validation: true
@@ -241,5 +242,3 @@
         - stf-crc-ocp_418-local_build-index_deploy
         - stf-crc-ocp_420-local_build-index_deploy
         - stf-crc-ocp_418-nightly_bundles-index_deploy
-        - stf-crc-ocp_418-nightly_bundles-index_deploy
-

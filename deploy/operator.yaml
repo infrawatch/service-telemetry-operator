@@ -12,15 +12,39 @@ spec:
       labels:
         name: service-telemetry-operator
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: service-telemetry-operator
       containers:
         - name: operator
           image: <<OPERATOR_IMAGE_PULLSPEC>>
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
           volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
+          - mountPath: /tmp
+            name: tmp
           env:
+            - name: ANSIBLE_LOCAL_TEMP
+              value: /tmp/ansible-local
+            - name: ANSIBLE_REMOTE_TEMP
+              value: /tmp/ansible-local
             - name: WATCH_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -42,5 +66,5 @@ spec:
             - name: RELATED_IMAGE_ALERTMANAGER_IMAGE
               value: <<RELATED_IMAGE_ALERTMANAGER_PULLSPEC>>
       volumes:
-        - name: runner
+        - name: tmp
           emptyDir: {}

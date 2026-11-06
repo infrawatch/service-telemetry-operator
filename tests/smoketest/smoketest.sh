@@ -90,7 +90,7 @@ fi
 
 # create the alert using startsAt which in theory may cause trigger to be faster
 echo "*** [INFO] Create alert"
-oc delete pod -l run=curl ; oc run curl --wait --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -v -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"status\":\"firing\",\"labels\":{\"alertname\":\"smoketest\",\"severity\":\"warning\"},\"startsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\"}]' https://default-alertmanager-proxy:9095/api/v2/alerts"
+oc delete pod -l run=curl ; oc run curl --wait --restart='Never' --command --image=quay.io/curl/curl:latest -- sh -c "curl -v -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"status\":\"firing\",\"labels\":{\"alertname\":\"smoketest\",\"severity\":\"warning\"},\"startsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\"}]' https://default-alertmanager-proxy:9095/api/v2/alerts"
 oc wait --for=jsonpath='{.status.phase}'=Succeeded pod/curl
 oc logs curl
 
@@ -183,7 +183,7 @@ echo "*** [INFO] Cleanup resources..."
 if $CLEANUP; then
     oc delete "job/stf-smoketest-${NAME}"
     # resolve the alert to clean up the system, otherwise this expires in 5 minutes
-    oc delete pod -l run=curl ; oc run curl --restart='Never' --image=quay.io/infrawatch/busyboxplus:curl -- sh -c "curl -v -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"status\":\"firing\",\"labels\":{\"alertname\":\"smoketest\",\"severity\":\"warning\"},\"startsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\",\"endsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\"}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
+    oc delete pod -l run=curl ; oc run curl --restart='Never' --command --image=quay.io/curl/curl:latest -- sh -c "curl -v -k -H \"Content-Type: application/json\" -H \"Authorization: Bearer ${PROMETHEUS_K8S_TOKEN}\" -d '[{\"status\":\"firing\",\"labels\":{\"alertname\":\"smoketest\",\"severity\":\"warning\"},\"startsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\",\"endsAt\":\"$(date --rfc-3339=seconds | sed 's/ /T/')\"}]' https://default-alertmanager-proxy:9095/api/v1/alerts"
 fi
 echo
 
