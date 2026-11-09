@@ -14,9 +14,10 @@ RUN dnf update -y --exclude=ansible* && dnf install -y python3-passlib python3-b
 
 # NOTE(dpawlik): The base image contains vulnerable pyasn1 library installed,
 # that's why it needs to be updated to newer.
-# upgrade pyasn1 to fix CVE-2026-59885, CVE-2026-59884, CVE-2026-59886
+# upgrade pyasn1 to fix CVE-2026-59885, CVE-2026-59884, CVE-2026-59886,
+# CVE-2026-119194, CVE-2026-119195, CVE-2026-119196, CVE-2026-119197
 RUN rpm -e --nodeps python3-pyasn1 ; \
-    pip3 install --no-cache-dir pyasn1>=0.6.4
+    pip3 install --no-cache-dir pyasn1>=0.6.5
 
 COPY requirements.yml ${HOME}/requirements.yml
 RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
