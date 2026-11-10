@@ -17,13 +17,11 @@
 NUMCLOUDS=${NUMCLOUDS:-1}
 CLOUDNAMES=()
 OCP_PROJECT=${OCP_PROJECT:-}
-OC_CLIENT_VERSION_X=$(oc version --client | grep Client | cut -f2 -d: | tr -s -d "[:space:]" - | cut -d. -f1)
-OC_CLIENT_VERSION_X_REQUIRED=4
-OC_CLIENT_VERSION_Y=$(oc version --client | grep Client | cut -f2 -d: | tr -s -d "[:space:]" - | cut -d. -f2)
-OC_CLIENT_VERSION_Y_REQUIRED=10
+OC_CLIENT_VERSION=$(oc version --client 2>/dev/null | sed -n 's/^Client Version: //p' | head -1)
+OC_CLIENT_VERSION_REQUIRED=4.11
 
-if [ "${OC_CLIENT_VERSION_Y}" -lt "${OC_CLIENT_VERSION_Y_REQUIRED}" ] || [ "${OC_CLIENT_VERSION_X}" != "${OC_CLIENT_VERSION_X_REQUIRED}" ]; then
-    echo "*** Please install 'oc' client version ${OC_CLIENT_VERSION_X_REQUIRED}.${OC_CLIENT_VERSION_Y_REQUIRED} or later ***"
+if ! printf '%s\n%s\n' "${OC_CLIENT_VERSION_REQUIRED}" "${OC_CLIENT_VERSION}" | sort --version-sort --check=quiet; then
+    echo "*** Please install 'oc' client version ${OC_CLIENT_VERSION_REQUIRED} or later ***"
     exit 1
 fi
 
@@ -81,12 +79,7 @@ done
 
 echo "*** [INFO] Triggering an alertmanager notification..."
 
-# check if the oc client version is less than 4.11 and adjust the token command to match available commands
-if [ 0${OC_CLIENT_VERSION_Y} -lt 011 ]; then
-    PROMETHEUS_K8S_TOKEN=$(oc serviceaccounts get-token prometheus-stf)
-else
-    PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-stf)
-fi
+PROMETHEUS_K8S_TOKEN=$(oc create token prometheus-stf)
 
 # create the alert using startsAt which in theory may cause trigger to be faster
 echo "*** [INFO] Create alert"
