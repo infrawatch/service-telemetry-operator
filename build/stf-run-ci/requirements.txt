@@ -2,7 +2,7 @@
 requests==2.33.0
 requests_oauthlib==1.3.0
 # https://github.com/domainaware/parsedmarc/issues/318
-oauthlib==3.2.2
+oauthlib==4.0.1
 kubernetes==24.2.0
 openshift==0.13.1
 ansible-core==2.17.8
