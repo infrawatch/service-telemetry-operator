@@ -65,9 +65,10 @@ done
 OPERATOR_SELECTOR="name=service-telemetry-operator"
 OPERATOR_POD_TIMEOUT="${OPERATOR_POD_TIMEOUT:-300}"
 OPERATOR_RECONCILE_TIMEOUT="${OPERATOR_RECONCILE_TIMEOUT:-900}"
-# Total budget the caller gives this script (see stf-run-ci); used to cap the
-# reconcile wait so we fail with a diagnostic before the outer timeout kills us.
-VALIDATION_TIMEOUT="${VALIDATION_TIMEOUT:-1800}"
+# Total budget the caller gives this script (see stf-run-ci); if set, the
+# reconcile wait is capped so we fail with a diagnostic before the outer
+# timeout kills us. Unset (e.g. when run by hand) means no cap.
+VALIDATION_TIMEOUT="${VALIDATION_TIMEOUT:-}"
 # Optional directory to save the pre-restart operator log into (CI artifacts).
 LOGFILE_DIR="${LOGFILE_DIR:-}"
 RECAP_REGEX='^localhost +: ok=[0-9]+'
@@ -150,23 +151,25 @@ check_log "${OLD_LOG}" "${RBAC_REGEX}" "RBAC denials"
 
 # Delete the pod rather than 'oc rollout restart': on OLM installs the
 # deployment is owned by the CSV, and OLM may revert the restart annotation.
-# Wait for the old pod to be gone so the two never reconcile concurrently
-# (the operator runs without leader election).
+# The ReplicaSet starts the replacement as soon as the old pod is marked for
+# deletion, so the two may briefly overlap during the old pod's grace period.
 echo -e "\n* [info] Deleting ${OLD_POD} to force a reconcile against existing objects\n"
 oc delete "${OLD_POD}" --wait=false
-if ! oc wait "${OLD_POD}" --for=delete --timeout=120s; then
-    echo -e "\n* [error] ${OLD_POD} did not terminate within 120s\n"
-    exit 1
-fi
 wait_for "${OPERATOR_POD_TIMEOUT}" 3 "a new Ready operator pod to replace ${OLD_POD}" new_operator_pod_ready
 NEW_POD=$(operator_pod)
 echo "* [info] New operator pod: ${NEW_POD}"
 
-# Leave 60s of the caller's budget for reporting.
-RECONCILE_BUDGET=$((VALIDATION_TIMEOUT - SECONDS - 60))
-if [ "${RECONCILE_BUDGET}" -lt "${OPERATOR_RECONCILE_TIMEOUT}" ]; then
-    echo "* [info] Capping reconcile wait to ${RECONCILE_BUDGET}s (remaining validation budget)"
-    OPERATOR_RECONCILE_TIMEOUT="${RECONCILE_BUDGET}"
+if [ -n "${VALIDATION_TIMEOUT}" ]; then
+    # Leave 60s of the caller's budget for reporting.
+    RECONCILE_BUDGET=$((VALIDATION_TIMEOUT - SECONDS - 60))
+    if [ "${RECONCILE_BUDGET}" -le 0 ]; then
+        echo -e "\n* [error] Validation budget (${VALIDATION_TIMEOUT}s) exhausted before the post-restart reconcile check\n"
+        exit 1
+    fi
+    if [ "${RECONCILE_BUDGET}" -lt "${OPERATOR_RECONCILE_TIMEOUT}" ]; then
+        echo "* [info] Capping reconcile wait to ${RECONCILE_BUDGET}s (remaining validation budget)"
+        OPERATOR_RECONCILE_TIMEOUT="${RECONCILE_BUDGET}"
+    fi
 fi
 
 echo -e "\n* [info] Waiting for the post-restart reconcile to finish\n"
