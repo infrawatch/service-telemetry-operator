@@ -220,10 +220,12 @@
 
   - name: Validate system is operational
     ansible.builtin.shell: |
-      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" timeout 1200 "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
+      OCP_PROJECT="{{ namespace }}" VALIDATION_SCOPE="{{ __service_telemetry_observability_strategy }}" VALIDATION_TIMEOUT={{ __validate_deployment_timeout }} LOGFILE_DIR="{{ logfile_dir }}" timeout {{ __validate_deployment_timeout }} "{{ base_dir }}/validate_deployment.sh" >> {{ logfile_dir }}/validate_deployment.log 2>&1
       cat {{ logfile_dir }}/validate_deployment.log
     args:
       executable: /bin/bash
+    vars:
+      __validate_deployment_timeout: 1800
     register: validate_deployment
     failed_when: validate_deployment.stdout_lines[-1] != "* [info] CI Build complete. You can now run tests."
 
